@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#FBF9F5"/>
+      <stop offset="100%" stop-color="#EFE9DE"/>
+    </radialGradient>
+    
+    <linearGradient id="kraftPouch" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8DECF"/>
+      <stop offset="50%" stop-color="#DECEBA"/>
+      <stop offset="100%" stop-color="#CFBC9E"/>
+    </linearGradient>
+
+    <filter id="pouchShadow" x="-20%" y="-10%" width="140%" height="130%">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#1B1E1C" flood-opacity="0.14"/>
+    </filter>
+
+    <linearGradient id="teaLeafGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5B8742"/>
+      <stop offset="100%" stop-color="#2D521C"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="800" fill="url(#bg)"/>
+  <rect x="36" y="36" width="728" height="728" fill="none" stroke="#DCD5C8" stroke-width="1"/>
+  <circle cx="400" cy="420" r="260" fill="none" stroke="#E6DFD2" stroke-width="1" stroke-dasharray="4 6"/>
+
+  <ellipse cx="400" cy="690" rx="190" ry="24" fill="#1C1E1B" opacity="0.12"/>
+  <ellipse cx="400" cy="685" rx="140" ry="14" fill="#1C1E1B" opacity="0.16"/>
+
+  <g filter="url(#pouchShadow)">
+    <path d="M 270 180 L 530 180 Q 545 180 548 200 L 565 620 Q 568 648 535 650 L 265 650 Q 232 648 235 620 L 252 200 Q 255 180 270 180 Z" fill="url(#kraftPouch)"/>
+    <path d="M 266 180 L 534 180 L 535 220 L 265 220 Z" fill="#D3C1A7"/>
+    <line x1="265" y1="210" x2="535" y2="210" stroke="#BAA587" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <polygon points="252,210 262,205 262,215" fill="#C5B194"/>
+    <polygon points="548,210 538,205 538,215" fill="#C5B194"/>
+    <path d="M 245 625 Q 400 660 555 625" fill="none" stroke="#BAA487" stroke-width="2" opacity="0.6"/>
+
+    <g transform="translate(285, 245)">
+      <rect width="230" height="340" rx="6" fill="#FDFBF7" stroke="#E5DEC9" stroke-width="1"/>
+      <rect x="8" y="8" width="214" height="324" rx="3" fill="none" stroke="#234B37" stroke-width="0.75" stroke-opacity="0.3"/>
+
+      <text x="115" y="40" text-anchor="middle" font-family="'Georgia', serif" font-size="14" font-weight="bold" fill="#1C1E1B" letter-spacing="3">S E E D L Y</text>
+      <text x="115" y="55" text-anchor="middle" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#6B786E" letter-spacing="2">APOTHECARY • NORTHERN VALLEYS</text>
+
+      <line x1="45" y1="68" x2="185" y2="68" stroke="#D8D0BE" stroke-width="0.75"/>
+
+      <!-- Botanical Emblem: Whole Green Tea Leaves -->
+      <g transform="translate(115, 115)">
+        <path d="M 0 -22 C 8 -10, 10 4, 0 18 C -10 4, -8 -10, 0 -22 Z" fill="url(#teaLeafGreen)"/>
+        <path d="M -12 -8 C -4 -4, 2 6, -4 14 C -12 10, -12 2, -12 -8 Z" fill="#6A994F" opacity="0.8"/>
+        <path d="M 12 -8 C 12 2, 12 10, 4 14 C -2 6, 4 -4, 12 -8 Z" fill="#6A994F" opacity="0.8"/>
+        <line x1="0" y1="-20" x2="0" y2="24" stroke="#DCEDD2" stroke-width="1"/>
+      </g>
+
+      <text x="115" y="180" text-anchor="middle" font-family="'Georgia', serif" font-size="16" font-weight="bold" fill="#1C1E1B">Highland Whole Leaf</text>
+      <text x="115" y="202" text-anchor="middle" font-family="'Georgia', serif" font-size="16" font-style="italic" fill="#234B37">Green Tea</text>
+
+      <line x1="75" y1="218" x2="155" y2="218" stroke="#234B37" stroke-width="1" stroke-opacity="0.4"/>
+
+      <text x="115" y="238" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#3D453E" letter-spacing="1">NET WEIGHT 75 G</text>
+      <text x="115" y="254" text-anchor="middle" font-family="sans-serif" font-size="7.5" fill="#6B786E">SPRING FLUSH • PAN-FIRED WHOLE LEAF</text>
+      <text x="115" y="268" text-anchor="middle" font-family="sans-serif" font-size="7.5" fill="#6B786E">HIGH IN EGCG CATECHINS • ZERO DUST</text>
+
+      <g transform="translate(115, 302)">
+        <rect x="-65" y="-12" width="130" height="18" rx="9" fill="#F0EDE4" stroke="#D5CBB9" stroke-width="0.75"/>
+        <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="7" font-weight="700" fill="#234B37" letter-spacing="1">SINGLE-ESTATE MOUNTAIN TEA</text>
+      </g>
+    </g>
+  </g>
+
+  <text x="60" y="70" font-family="sans-serif" font-size="10" font-weight="700" fill="#234B37" letter-spacing="1.5">SEEDLY BOTANICAL TEA</text>
+  <text x="740" y="70" text-anchor="end" font-family="sans-serif" font-size="9" font-weight="500" fill="#8B9189" letter-spacing="1">BATCH PK-2026-GRN</text>
+  <text x="400" y="746" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#8B9189" letter-spacing="1.5">GENUINE BOTANICAL PACKAGING • LAHORE DISPATCH</text>
+</svg>

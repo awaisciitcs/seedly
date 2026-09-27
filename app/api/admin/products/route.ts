@@ -69,7 +69,7 @@ export async function POST(request: Request) {
       ingredients || '',
       usage_instructions || '',
       storage_instructions || '',
-      image_url || 'https://images.unsplash.com/photo-1596797882870-8c33deeac224?auto=format&fit=crop&q=80&w=800',
+      image_url || '/images/products/pumpkin-seeds.svg',
       badge || null,
       0
     );

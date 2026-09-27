@@ -7,7 +7,7 @@ import { Product, Kit } from '../../lib/types';
 import { formatPKR } from '../../lib/utils';
 import { useCart } from '../../lib/store/cart';
 import { useWishlist } from '../../lib/store/wishlist';
-import { Heart, Plus, Star, Sparkles, Check, Bell } from 'lucide-react';
+import { Heart, Plus, Star, Check, Bell } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
 
 interface ProductCardProps {
@@ -25,6 +25,7 @@ export function ProductCard({ product }: ProductCardProps) {
     ? (product as Kit).computed_stock ?? 0
     : (product as Product).variants?.[0]?.inventory_quantity ?? 50;
   const inStock = stock > 0;
+  const isLowStock = inStock && stock <= 5;
   const href = isKit ? `/kits/${product.slug}` : `/${product.product_type === 'tea' ? 'teas' : 'seeds'}/${product.slug}`;
   const wishlisted = isInWishlist(product.id);
 
@@ -62,15 +63,15 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative bg-white rounded-2xl border border-border-gray/70 overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 flex flex-col">
-      {/* Image container */}
+    <div className="group relative bg-white rounded-2xl border border-border-gray overflow-hidden shadow-subtle hover:shadow-card transition-all duration-300 flex flex-col">
+      {/* Packaging Image container */}
       <Link href={href} className="relative aspect-square w-full bg-cream overflow-hidden block">
         <Image
           src={product.image_url}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          className="object-contain p-3 group-hover:scale-105 transition-transform duration-300 ease-out"
         />
 
         {/* Badges */}
@@ -79,6 +80,10 @@ export function ProductCard({ product }: ProductCardProps) {
             <span className="px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase bg-amber-800/90 backdrop-blur-sm text-white rounded-full">
               Sold Out
             </span>
+          ) : isLowStock ? (
+            <span className="px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase bg-amber-700/90 backdrop-blur-sm text-white rounded-full">
+              Only {stock} Left
+            </span>
           ) : (
             product.badge && (
               <span className="px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase bg-seedly-dark/90 backdrop-blur-sm text-white rounded-full shadow-subtle">
@@ -86,9 +91,9 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             )
           )}
-          {isKit && inStock && (
-            <span className="px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase bg-emerald-700/90 backdrop-blur-sm text-white rounded-full">
-              Curated Kit
+          {isKit && inStock && !isLowStock && (
+            <span className="px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase bg-emerald-800/90 backdrop-blur-sm text-white rounded-full">
+              Curated Box
             </span>
           )}
         </div>
@@ -110,13 +115,19 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Content */}
       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
         <div>
-          {/* Rating */}
+          {/* Authentic Social Proof (No Fabricated Ratings) */}
           <div className="flex items-center gap-1.5 text-xs text-muted-gray mb-1.5">
-            <div className="flex items-center text-amber-500">
-              <Star className="w-3.5 h-3.5 fill-amber-400" />
-            </div>
-            <span className="font-semibold text-charcoal">{product.rating || 5.0}</span>
-            <span className="text-muted-gray/70">({product.review_count || 12})</span>
+            {product.review_count && product.review_count > 0 ? (
+              <>
+                <div className="flex items-center text-amber-500">
+                  <Star className="w-3.5 h-3.5 fill-amber-400" />
+                </div>
+                <span className="font-semibold text-charcoal">{product.rating || '5.0'}</span>
+                <span className="text-muted-gray/80">({product.review_count} verified)</span>
+              </>
+            ) : (
+              <span className="text-[11px] text-muted-gray font-medium">Single-origin harvest</span>
+            )}
           </div>
 
           {/* Product Name */}
@@ -157,7 +168,7 @@ export function ProductCard({ product }: ProductCardProps) {
               onClick={handleAddToCart}
               className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                 added
-                  ? 'bg-emerald-600 text-white'
+                  ? 'bg-emerald-700 text-white'
                   : 'bg-seedly-light text-seedly-dark hover:bg-seedly-dark hover:text-white'
               }`}
               aria-label="Add to cart"
@@ -170,7 +181,7 @@ export function ProductCard({ product }: ProductCardProps) {
               ) : (
                 <>
                   <Plus className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Add</span>
+                  <span>Add</span>
                 </>
               )}
             </button>
@@ -181,24 +192,24 @@ export function ProductCard({ product }: ProductCardProps) {
                 e.stopPropagation();
                 setIsNotifyModalOpen(true);
               }}
-              className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold bg-amber-100 text-amber-900 hover:bg-amber-200 transition-all border border-amber-300 shadow-subtle"
-              aria-label="Notify me when back in stock"
+              className="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100 transition-colors"
+              aria-label="Notify me when available"
             >
               <Bell className="w-3.5 h-3.5 text-amber-700" />
-              <span>Notify Me</span>
+              <span>Notify</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Restock Notification Modal */}
+      {/* Notify Me Modal */}
       <NotifyMeModal
         isOpen={isNotifyModalOpen}
         onClose={() => setIsNotifyModalOpen(false)}
-        productId={!isKit ? product.id : undefined}
-        variantId={!isKit ? (product as Product).variants?.[0]?.id : undefined}
+        itemTitle={product.name}
+        productId={isKit ? undefined : product.id}
+        variantId={isKit ? undefined : (product as Product).variants?.[0]?.id}
         kitId={isKit ? product.id : undefined}
-        sellableTitle={product.name}
       />
     </div>
   );

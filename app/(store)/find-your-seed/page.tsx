@@ -146,8 +146,7 @@ export default function FindYourSeedPage() {
             type: 'kits',
             price: 285000,
             badge: 'PRIMARY RECOMMENDATION',
-            image:
-              'https://images.unsplash.com/photo-1505253758473-96b3015f27eb?auto=format&fit=crop&q=80&w=600',
+            image: '/images/products/complete-kit.svg',
             reason: 'All 4 heirloom seeds portioned for both phases with brass measuring scoop.',
           },
           {
@@ -157,8 +156,7 @@ export default function FindYourSeedPage() {
             type: 'teas',
             price: 115000,
             badge: 'COMPLIMENTARY HERB',
-            image:
-              'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&q=80&w=600',
+            image: '/images/products/spearmint-tea.svg',
             reason: 'Naturally soothes androgenic fluctuations and digestive bloating.',
           },
         ],
@@ -178,8 +176,7 @@ export default function FindYourSeedPage() {
             type: 'teas',
             price: 125000,
             badge: 'PRIMARY BOTANICAL',
-            image:
-              'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=600',
+            image: '/images/products/chamomile-tea.svg',
             reason: 'Hand-picked whole blossoms from Gilgit with natural soothing honey notes.',
           },
           {
@@ -189,8 +186,7 @@ export default function FindYourSeedPage() {
             type: 'seeds',
             price: 95000,
             badge: 'MAGNESIUM RICH',
-            image:
-              'https://images.unsplash.com/photo-1596797882870-8c33deeac224?auto=format&fit=crop&q=80&w=600',
+            image: '/images/products/pumpkin-seeds.svg',
             reason: 'Natural source of tryptophan and magnesium to prime deep REM sleep.',
           },
         ],
@@ -210,8 +206,7 @@ export default function FindYourSeedPage() {
             type: 'seeds',
             price: 68000,
             badge: 'GUT HEALTH',
-            image:
-              'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=600',
+            image: '/images/products/flax-seeds.svg',
             reason: 'High soluble prebiotic fiber matrix that supports a healthy microbiome.',
           },
           {
@@ -221,8 +216,7 @@ export default function FindYourSeedPage() {
             type: 'teas',
             price: 115000,
             badge: 'ANTI-BLOAT',
-            image:
-              'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&q=80&w=600',
+            image: '/images/products/spearmint-tea.svg',
             reason: 'Crisp mountain spearmint to relax intestinal muscles after heavy meals.',
           },
         ],
@@ -242,8 +236,7 @@ export default function FindYourSeedPage() {
           type: 'seeds',
           price: 72000,
           badge: 'VITAMIN E',
-          image:
-            'https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&q=80&w=600',
+          image: '/images/products/sunflower-seeds.svg',
           reason: 'Concentrated natural d-alpha tocopherol for radiant skin vitality.',
         },
         {
@@ -253,8 +246,7 @@ export default function FindYourSeedPage() {
           type: 'teas',
           price: 135000,
           badge: 'CLEAN FOCUS',
-          image:
-            'https://images.unsplash.com/photo-1597481499750-3e6b22637e12?auto=format&fit=crop&q=80&w=600',
+          image: '/images/products/green-tea.svg',
           reason: 'EGCG catechins and natural L-theanine for sustained calm morning alertness.',
         },
       ],
@@ -397,8 +389,8 @@ export default function FindYourSeedPage() {
                 className="rounded-2xl border border-border-gray p-5 bg-cream/30 flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
-                  <div className="relative aspect-video rounded-xl overflow-hidden bg-cream">
-                    <Image src={prod.image} alt={prod.name} fill className="object-cover" />
+                  <div className="relative aspect-video rounded-xl overflow-hidden bg-stone/40 border border-border-gray/50 flex items-center justify-center">
+                    <Image src={prod.image} alt={prod.name} fill className="object-contain p-3" />
                     <span className="absolute top-2 left-2 px-2 py-0.5 bg-seedly-dark text-white text-[10px] font-bold rounded-full">
                       {prod.badge}
                     </span>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="srcBg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#FBF9F5"/>
+      <stop offset="100%" stop-color="#ECE3D4"/>
+    </radialGradient>
+    <linearGradient id="mtnGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2E4F3B"/>
+      <stop offset="100%" stop-color="#14261C"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1000" height="600" fill="url(#srcBg)"/>
+  <rect x="30" y="30" width="940" height="540" fill="none" stroke="#D8CEBE" stroke-width="1"/>
+
+  <!-- Mountain Silhouette (Northern Alpine Valleys of Pakistan) -->
+  <path d="M 50 480 L 250 240 L 420 380 L 620 180 L 820 400 L 950 280 L 950 480 Z" fill="url(#mtnGrad)" opacity="0.95"/>
+  <path d="M 50 480 L 180 340 L 350 440 L 520 280 L 750 460 L 950 360 L 950 480 Z" fill="#4B6E57" opacity="0.45"/>
+
+  <!-- Sun / Dawn Circle -->
+  <circle cx="620" cy="180" r="70" fill="#EADBC3" opacity="0.6"/>
+
+  <!-- Ground Landscape -->
+  <rect x="50" y="480" width="900" height="60" fill="#F4EFE6"/>
+  <line x1="50" y1="480" x2="950" y2="480" stroke="#C5B6A0" stroke-width="1.5"/>
+
+  <text x="500" y="515" text-anchor="middle" font-family="'Georgia', serif" font-size="16" font-weight="bold" fill="#1C1E1B" letter-spacing="3">NORTHERN VALLEYS SOURCING PARTNERSHIPS</text>
+  <text x="500" y="533" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#69766C" letter-spacing="1.5">GILGIT-BALTISTAN • HUNZA • MULTAN • CENTRAL PUNJAB</text>
+</svg>

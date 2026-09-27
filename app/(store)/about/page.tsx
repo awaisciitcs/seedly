@@ -1,106 +1,131 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Leaf, ShieldCheck, HeartHandshake, Sparkles, MapPin, ArrowRight } from 'lucide-react';
+import { Leaf, ShieldCheck, HeartHandshake, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 export default function AboutPage() {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
-      {/* Hero */}
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
+      {/* 1. Header */}
       <div className="text-center max-w-2xl mx-auto space-y-4">
         <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-          Our Philosophy
+          Our Story
         </span>
-        <h1 className="font-serif text-4xl sm:text-5xl font-bold text-charcoal">
-          Rooted in Nature. Made for Modern Life.
+        <h1 className="font-serif text-4xl sm:text-5xl font-bold text-charcoal leading-tight">
+          Why we started Seedly
         </h1>
-        <p className="text-base text-muted-gray leading-relaxed">
-          Seedly is Pakistan's first premium botanical apothecary dedicated to single-origin heirloom seeds and high-elevation loose-leaf teas.
+        <p className="text-base sm:text-lg text-muted-gray leading-relaxed">
+          We wanted to create a place where people in Pakistan could buy simple seeds and herbal teas without having to decode confusing labels or exaggerated health claims.
         </p>
       </div>
 
-      {/* Main Image Banner */}
-      <div className="relative aspect-[16/9] rounded-3xl overflow-hidden shadow-2xl border border-border-gray">
+      {/* 2. Visual Sourcing Banner */}
+      <div className="relative aspect-[16/9] rounded-3xl overflow-hidden shadow-card border border-border-gray bg-white">
         <Image
-          src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&q=80&w=1200"
-          alt="High mountain botanical valleys of Pakistan"
+          src="/images/hero/seedly-sourcing.svg"
+          alt="Northern valleys sourcing partnerships in Pakistan"
           fill
-          className="object-cover"
+          priority
+          className="object-contain p-4"
         />
       </div>
 
-      {/* Story Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-14 text-sm leading-relaxed text-charcoal">
-        <div className="space-y-4">
+      {/* 3. The Story: Plain & Specific */}
+      <div className="space-y-10 text-charcoal leading-relaxed text-sm sm:text-base">
+        <section className="space-y-3">
           <h2 className="font-serif text-2xl font-bold text-charcoal">
-            The Problem with Modern Seeds
+            The problem with supermarket seeds and teas
           </h2>
-          <p>
-            When we examined the seeds available in Pakistan's grocery stores and spice markets, we found a disappointing pattern: seeds stripped of their bran, bleached with chemicals to appear brighter, sitting on warm open-air shelves for months until their delicate essential oils went rancid.
+          <p className="text-muted-gray">
+            When we looked for basic raw seeds in Pakistan's grocery stores, we kept seeing the same issues: seeds stripped of their outer hulls, bleached to look uniformly bright, or sitting in unsealed bins where heat and light turned their delicate oils rancid.
           </p>
-          <p>
-            Teas were equally compromised—chopped into fine industrial dust, placed in bleached paper bags that leach billions of microplastic particles into boiling water.
+          <p className="text-muted-gray">
+            Teas were equally compromised. Most commercial herbal tea bags contain pulverized tea dust and fannings, sealed in bleached paper pouches that offer little aroma and even less flavor.
           </p>
-        </div>
+        </section>
 
-        <div className="space-y-4">
+        <section className="space-y-3">
           <h2 className="font-serif text-2xl font-bold text-charcoal">
-            The Seedly Standard
+            What we sell
           </h2>
-          <p>
-            We set out to create an uncompromising alternative. We travel directly to the organic valleys of Gilgit-Baltistan, Hunza, and the fertile plains of Punjab to work alongside family farmers who respect the soil.
+          <p className="text-muted-gray">
+            We focus on a small, deliberate list of products:
           </p>
-          <p>
-            Our seeds are 100% heirloom, raw, non-GMO, and unbleached. We mill our flax cold to protect delicate omega-3 fats, and we leave our chamomile and spearmint as whole blossoms and hand-cut leaves.
+          <ul className="list-disc pl-5 space-y-2 text-muted-gray text-sm">
+            <li>
+              <strong className="text-charcoal font-semibold">Four raw heirloom seeds:</strong> Pumpkin seeds from Sahiwal, golden flax from Bahawalpur, sunflower kernels from Multan, and unhulled white sesame from Sargodha.
+            </li>
+            <li>
+              <strong className="text-charcoal font-semibold">Three loose herbal teas:</strong> Hand-picked whole chamomile flowers from Gilgit, shade-dried spearmint leaves from northern valleys, and highland whole leaf green tea.
+            </li>
+            <li>
+              <strong className="text-charcoal font-semibold">Curated seed routine boxes:</strong> Complete month-long seed cycling kits with engraved wooden measuring spoons and printed calendars.
+            </li>
+          </ul>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="font-serif text-2xl font-bold text-charcoal">
+            How we source
+          </h2>
+          <p className="text-muted-gray">
+            We don't buy anonymous bulk imports. We partner directly with smallholder growers and cooperatives in Punjab and Gilgit-Baltistan. We pay fair prices for clean harvesting and shade drying, and we test our seeds to ensure they remain raw, unsalted, and unroasted.
           </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="font-serif text-2xl font-bold text-charcoal">
+            How we package
+          </h2>
+          <p className="text-muted-gray">
+            Oxygen, light, and humidity destroy natural seed oils and delicate tea blossoms. We package our seeds in heavy, sealed barrier kraft pouches and our teas in dark amber glass jars. Every package includes a clear batch number, harvest region, and net weight.
+          </p>
+        </section>
+
+        {/* 4. What We Believe / What We Don't Claim */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+          <div className="p-6 rounded-3xl bg-cream border border-border-gray space-y-3">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-800">
+              <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+              <span>What We Promise</span>
+            </div>
+            <ul className="text-xs sm:text-sm text-muted-gray space-y-2">
+              <li>• 100% single ingredients with nothing added</li>
+              <li>• Always raw, unbleached, and chemical-free</li>
+              <li>• Accurate, honest weights and transparent origins</li>
+              <li>• Direct customer support on WhatsApp</li>
+            </ul>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-cream border border-border-gray space-y-3">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-charcoal">
+              <ShieldCheck className="w-4 h-4 text-seedly-primary" />
+              <span>What We Don't Claim</span>
+            </div>
+            <ul className="text-xs sm:text-sm text-muted-gray space-y-2">
+              <li>• We do not promise overnight medical cures</li>
+              <li>• We don't invent pseudo-scientific buzzwords</li>
+              <li>• We don't hide where our ingredients come from</li>
+              <li>• We don't use fake countdown timers or fabricated reviews</li>
+            </ul>
+          </div>
         </div>
       </div>
 
-      {/* Sourcing Pillars */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
-        <div className="bg-white p-6 rounded-2xl border border-border-gray shadow-card space-y-3">
-          <div className="w-10 h-10 rounded-full bg-seedly-light flex items-center justify-center text-seedly-dark">
-            <Leaf className="w-5 h-5 text-seedly-primary" />
-          </div>
-          <h3 className="font-serif font-bold text-lg text-charcoal">Zero Additives</h3>
-          <p className="text-xs text-muted-gray leading-relaxed">
-            No preservatives, no artificial aroma compounds, no artificial glazing. Exactly as harvested.
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl border border-border-gray shadow-card space-y-3">
-          <div className="w-10 h-10 rounded-full bg-seedly-light flex items-center justify-center text-seedly-dark">
-            <ShieldCheck className="w-5 h-5 text-seedly-primary" />
-          </div>
-          <h3 className="font-serif font-bold text-lg text-charcoal">UV Amber Glass</h3>
-          <p className="text-xs text-muted-gray leading-relaxed">
-            We package in dark amber glass jars and sealed oxygen-barrier pouches to protect active phytochemicals.
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl border border-border-gray shadow-card space-y-3">
-          <div className="w-10 h-10 rounded-full bg-seedly-light flex items-center justify-center text-seedly-dark">
-            <HeartHandshake className="w-5 h-5 text-seedly-primary" />
-          </div>
-          <h3 className="font-serif font-bold text-lg text-charcoal">Ethical Trade</h3>
-          <p className="text-xs text-muted-gray leading-relaxed">
-            Direct, above-market payments to Pakistani smallholders who practice regenerative mountain farming.
-          </p>
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="p-8 rounded-3xl bg-cream border border-border-gray text-center space-y-4">
-        <h3 className="font-serif text-2xl font-bold text-charcoal">Experience the Living Difference</h3>
-        <p className="text-sm text-muted-gray max-w-md mx-auto">
-          Explore our initial harvest of raw heirloom seeds, cycle kits, and loose-leaf herbal teas.
+      {/* 5. CTA Section */}
+      <div className="p-8 sm:p-10 rounded-3xl bg-white border border-border-gray text-center space-y-4 shadow-subtle">
+        <h3 className="font-serif text-2xl font-bold text-charcoal">
+          Good ingredients. Simple rituals.
+        </h3>
+        <p className="text-xs sm:text-sm text-muted-gray max-w-md mx-auto">
+          Explore our raw heirloom seeds, cycle kits, and whole blossom teas. Dispatched directly from Lahore across Pakistan.
         </p>
-        <div>
+        <div className="pt-2">
           <Link
             href="/shop"
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-full font-semibold text-xs transition-all shadow-card"
           >
-            <span>Explore Botanical Goods</span>
+            <span>Explore the Catalog</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

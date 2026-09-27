@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { SeedlyLogo } from '../ui/SeedlyLogo';
-import { Mail, CheckCircle2, ShieldCheck, Heart, Sparkles, MapPin, Phone } from 'lucide-react';
+import { Mail, CheckCircle2, MapPin, Phone, ShieldCheck } from 'lucide-react';
 
 export function Footer() {
   const [email, setEmail] = useState('');
@@ -25,17 +25,21 @@ export function Footer() {
           <div className="lg:col-span-2 space-y-4">
             <SeedlyLogo size="lg" textColor="text-white" />
             <p className="text-sm text-seedly-light/80 leading-relaxed max-w-sm">
-              Rooted in nature. Made for modern Pakistani life. We curate heirloom, cold-milled seeds and whole flower mountain teas to nurture daily hormonal balance and grounding wellness rituals.
+              Good ingredients. Simple rituals. Single-origin heirloom seeds and whole blossom mountain teas, sourced directly from Pakistani growers and packaged fresh in amber glass and kraft barrier pouches.
             </p>
 
             <div className="pt-2 space-y-2 text-xs text-seedly-light/70">
               <div className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-seedly-primary" />
-                <span>Dispatched daily from Lahore & Karachi to all cities in Pakistan</span>
+                <MapPin className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
+                <span>Dispatched daily from Lahore &amp; Karachi via TCS / Leopards</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-seedly-primary" />
+                <Phone className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
                 <span>Customer Care: +92 300 1234567 (Mon–Sat, 10am–7pm PKT)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
+                <span>Support: care@seedly.pk</span>
               </div>
             </div>
           </div>
@@ -56,7 +60,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/kits" className="hover:text-white transition-colors">
-                  Curated Seed Kits
+                  Curated Kits
                 </Link>
               </li>
               <li>
@@ -65,41 +69,40 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/find-your-seed" className="hover:text-white transition-colors flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-amber-300" />
-                  <span>Find Your Seed Quiz</span>
+                <Link href="/find-your-seed" className="hover:text-white transition-colors">
+                  Find Your Seed
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Brand & Support */}
+          {/* Customer Support */}
           <div className="space-y-3">
             <h4 className="text-xs uppercase tracking-widest font-semibold text-white/90">Customer Care</h4>
             <ul className="space-y-2 text-sm text-seedly-light/80">
               <li>
                 <Link href="/about" className="hover:text-white transition-colors">
-                  Our Story & Sourcing
+                  Why Seedly Exists
                 </Link>
               </li>
               <li>
                 <Link href="/shipping" className="hover:text-white transition-colors">
-                  Shipping & Delivery Info
+                  Shipping &amp; Delivery Info
                 </Link>
               </li>
               <li>
                 <Link href="/returns" className="hover:text-white transition-colors">
-                  7-Day Return Guarantee
+                  7-Day Freshness Guarantee
                 </Link>
               </li>
               <li>
                 <Link href="/faq" className="hover:text-white transition-colors">
-                  Frequently Asked Questions
+                  Common Questions (FAQ)
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="hover:text-white transition-colors">
-                  Contact & WhatsApp
+                  Contact &amp; WhatsApp
                 </Link>
               </li>
             </ul>
@@ -107,15 +110,15 @@ export function Footer() {
 
           {/* Newsletter Box */}
           <div className="space-y-3">
-            <h4 className="text-xs uppercase tracking-widest font-semibold text-white/90">Stay Close to Nature</h4>
+            <h4 className="text-xs uppercase tracking-widest font-semibold text-white/90">Harvest Updates</h4>
             <p className="text-xs text-seedly-light/80 leading-relaxed">
-              Receive gentle wellness guides, seasonal harvest updates, and natural cycle living inspiration.
+              Seasonal harvest announcements and simple culinary recipes. No spam.
             </p>
 
             {subscribed ? (
               <div className="flex items-center gap-2 p-3 bg-seedly-forest rounded-xl text-xs text-seedly-light">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Thank you! Welcome to the Seedly botanical circle.</span>
+                <span>Thank you. We will keep you updated on new harvests.</span>
               </div>
             ) : (
               <form onSubmit={handleNewsletterSubmit} className="space-y-2">
@@ -124,7 +127,7 @@ export function Footer() {
                   <input
                     type="email"
                     required
-                    placeholder="Enter your email"
+                    placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-9 pr-3 py-2 text-xs bg-seedly-forest/70 border border-seedly-light/20 rounded-xl text-white placeholder:text-seedly-light/50 focus:outline-none focus:border-seedly-primary"
@@ -132,9 +135,9 @@ export function Footer() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-2 bg-seedly-primary hover:bg-seedly-primary/90 text-white rounded-xl text-xs font-medium transition-colors shadow-subtle"
+                  className="w-full py-2 bg-seedly-primary hover:bg-seedly-primary/90 text-white rounded-xl text-xs font-semibold transition-colors shadow-subtle"
                 >
-                  Join the Circle
+                  Join the Newsletter
                 </button>
               </form>
             )}
@@ -153,16 +156,21 @@ export function Footer() {
             </Link>
             <span>•</span>
             <Link href="/product-disclaimer" className="hover:text-white transition-colors">
-              Natural Wellness Disclaimer
+              Product Disclaimer
+            </Link>
+            <span>•</span>
+            <Link href="/admin/login" className="hover:text-white transition-colors opacity-70">
+              Admin Portal
             </Link>
           </div>
 
           {/* Payment Badges in Pakistan */}
           <div className="flex items-center gap-2 text-[11px] text-seedly-light/80">
-            <span>Secure Payments:</span>
+            <span>Payment Options:</span>
             <span className="px-2 py-0.5 bg-white/10 rounded font-medium text-white">JazzCash</span>
             <span className="px-2 py-0.5 bg-white/10 rounded font-medium text-white">Easypaisa</span>
             <span className="px-2 py-0.5 bg-white/10 rounded font-medium text-white">Bank Transfer</span>
+            <span className="px-2 py-0.5 bg-white/10 rounded font-medium text-white">COD</span>
           </div>
 
           <p>© {new Date().getFullYear()} Seedly Naturals Pakistan. All rights reserved.</p>

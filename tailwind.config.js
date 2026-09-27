@@ -10,38 +10,39 @@ module.exports = {
     extend: {
       colors: {
         seedly: {
-          primary: "#829C83",
-          dark: "#506A56",
-          light: "#E9EFEA",
-          forest: "#384B3D",
-          deep: "#243227",
-          soft: "#F2F6F3",
+          primary: "#67826F",     // Sage green
+          dark: "#1F382B",        // Deep botanical green
+          light: "#EAEFEA",       // Whisper sage tint
+          forest: "#16281F",      // Deepest botanical contrast
+          soft: "#F4F7F4",        // Soft tinted surface
+          stone: "#F2EDE4",       // Soft beige / stone
         },
-        cream: "#FAF8F2",
+        cream: "#FAF8F5",         // Warm ivory background
         ivory: "#FFFFFF",
-        charcoal: "#252825",
-        "muted-gray": "#657067",
-        "border-gray": "#D9DED9",
-        sand: "#F4F0E8",
-        terracotta: "#C87D55",
-        honey: "#D99B43",
+        charcoal: "#1B1E1C",      // Deep charcoal text
+        "muted-gray": "#5F6660",  // Refined stone gray
+        "border-gray": "#E5E0D6", // Soft stone border
+        sand: "#F4EFE6",
+        terracotta: "#B86644",
+        honey: "#C88B38",
       },
       fontFamily: {
         serif: ["var(--font-serif)", "Playfair Display", "Georgia", "serif"],
         sans: ["var(--font-sans)", "Plus Jakarta Sans", "Inter", "sans-serif"],
       },
       boxShadow: {
-        subtle: "0 2px 10px rgba(37, 40, 37, 0.04)",
-        card: "0 4px 20px rgba(80, 106, 86, 0.06)",
-        hover: "0 10px 30px rgba(80, 106, 86, 0.12)",
-        dropdown: "0 10px 40px rgba(37, 40, 37, 0.1)",
+        subtle: "0 1px 3px rgba(27, 30, 28, 0.04), 0 4px 12px rgba(27, 30, 28, 0.03)",
+        card: "0 2px 8px rgba(31, 56, 43, 0.04), 0 12px 28px rgba(31, 56, 43, 0.06)",
+        hover: "0 4px 14px rgba(31, 56, 43, 0.08), 0 18px 36px rgba(31, 56, 43, 0.1)",
+        dropdown: "0 12px 36px rgba(27, 30, 28, 0.12)",
       },
       borderRadius: {
+        "3xl": "1.5rem",
         "4xl": "2rem",
       },
       keyframes: {
         fadeIn: {
-          "0%": { opacity: "0", transform: "translateY(6px)" },
+          "0%": { opacity: "0", transform: "translateY(4px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         pulseSubtle: {
@@ -50,7 +51,7 @@ module.exports = {
         },
       },
       animation: {
-        fadeIn: "fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        fadeIn: "fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         pulseSubtle: "pulseSubtle 2.5s infinite ease-in-out",
       },
     },

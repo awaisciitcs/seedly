@@ -73,8 +73,8 @@ export default function AdminProductsPage() {
           usage_instructions: usage,
           storage_instructions: storage,
           image_url: imageUrl || (productType === 'tea'
-            ? 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=800'
-            : 'https://images.unsplash.com/photo-1596797882870-8c33deeac224?auto=format&fit=crop&q=80&w=800'),
+            ? '/images/products/chamomile-tea.svg'
+            : '/images/products/pumpkin-seeds.svg'),
           badge: badge || null,
         }),
       });
@@ -306,8 +306,8 @@ export default function AdminProductsPage() {
                 <div className="sm:col-span-2">
                   <label className="block font-semibold text-charcoal mb-1">Image URL</label>
                   <input
-                    type="url"
-                    placeholder="https://images.unsplash.com/... or public image path"
+                    type="text"
+                    placeholder="/images/products/pumpkin-seeds.svg or custom URL"
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
                     className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm"

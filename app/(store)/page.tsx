@@ -6,15 +6,14 @@ import { getKits } from '../../lib/services/kits';
 import { ProductCard } from '../../components/product/ProductCard';
 import {
   ArrowRight,
-  Sparkles,
   ShieldCheck,
   Leaf,
-  Moon,
   Sun,
-  HeartHandshake,
+  Moon,
   CheckCircle2,
   Calendar,
   Compass,
+  MessageCircle,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -22,95 +21,86 @@ export default function HomePage() {
   const kits = getKits();
   const follicularKit = kits.find((k) => k.slug === 'follicular-blend');
   const lutealKit = kits.find((k) => k.slug === 'luteal-blend');
+  const completeKit = kits.find((k) => k.slug === 'complete-cycle-kit');
 
   return (
-    <div className="space-y-20 lg:space-y-28">
+    <div className="space-y-20 sm:space-y-28">
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden bg-cream pt-10 pb-20 lg:pt-16 lg:pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      <section className="bg-cream pt-10 pb-16 lg:pt-16 lg:pb-24 border-b border-border-gray/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
             {/* Left Column Copy */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-seedly-light border border-seedly-primary/30 text-seedly-dark text-xs font-semibold uppercase tracking-wider shadow-subtle">
-                <Leaf className="w-3.5 h-3.5 text-seedly-primary" />
-                <span>Pakistan's Pure Botanical Apothecary</span>
-              </div>
+              <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
+                Sourced Across Pakistan
+              </span>
 
-              <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-charcoal leading-[1.1]">
+              <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-charcoal leading-[1.08]">
                 Grow something <br />
                 <span className="italic font-normal text-seedly-dark">good.</span>
               </h1>
 
               <p className="text-base sm:text-lg text-muted-gray leading-relaxed max-w-xl mx-auto lg:mx-0">
-                Cold-milled heirloom seeds, daily seed-cycling rituals, and whole blossom mountain teas. Consciously harvested to nurture energy, digestion, and daily hormonal harmony.
+                Seeds for your kitchen. Teas for your quiet moments. Sourced directly from Pakistani growers, clearly labeled, and kept simple.
               </p>
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
                 <Link
                   href="/shop"
-                  className="w-full sm:w-auto px-8 py-4 bg-seedly-dark hover:bg-seedly-forest text-white rounded-full font-medium text-sm transition-all shadow-card flex items-center justify-center gap-2 group"
+                  className="w-full sm:w-auto px-8 py-3.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-full font-medium text-sm transition-all shadow-card flex items-center justify-center gap-2 group"
                 >
-                  <span>Explore Catalog</span>
+                  <span>Explore the Catalog</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   href="/find-your-seed"
-                  className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-seedly-light/60 text-seedly-dark border border-border-gray rounded-full font-medium text-sm transition-all shadow-subtle flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-seedly-stone text-charcoal border border-border-gray rounded-full font-medium text-sm transition-all shadow-subtle flex items-center justify-center gap-2"
                 >
                   <Compass className="w-4 h-4 text-seedly-primary" />
-                  <span>Find Your Seed Quiz</span>
+                  <span>Find Your Seed</span>
                 </Link>
               </div>
 
-              {/* Trust badges */}
-              <div className="pt-6 border-t border-border-gray/70 grid grid-cols-3 gap-3 text-left max-w-lg mx-auto lg:mx-0">
+              {/* Real Operational Signals */}
+              <div className="pt-8 border-t border-border-gray grid grid-cols-3 gap-4 text-left max-w-lg mx-auto lg:mx-0">
                 <div className="space-y-1">
-                  <p className="font-serif font-bold text-sm text-charcoal">100% Raw</p>
-                  <p className="text-xs text-muted-gray">Non-GMO Heirloom</p>
+                  <p className="font-serif font-bold text-sm text-charcoal">Raw &amp; Unsalted</p>
+                  <p className="text-xs text-muted-gray">Zero added oils or chemicals</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="font-serif font-bold text-sm text-charcoal">Alpine Sourced</p>
-                  <p className="text-xs text-muted-gray">Gilgit & Northern Valleys</p>
+                  <p className="font-serif font-bold text-sm text-charcoal">Direct Sourcing</p>
+                  <p className="text-xs text-muted-gray">Gilgit &amp; Punjab smallholders</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="font-serif font-bold text-sm text-charcoal">Direct Delivery</p>
-                  <p className="text-xs text-muted-gray">Across all Pakistan</p>
+                  <p className="font-serif font-bold text-sm text-charcoal">Fast Delivery</p>
+                  <p className="text-xs text-muted-gray">TCS / Leopards nationwide</p>
                 </div>
               </div>
             </div>
 
-            {/* Right Column Visual / Botanical Collage */}
+            {/* Right Column Bespoke Botanical Packaging Visual */}
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-md lg:max-w-none">
-                {/* Main Hero Card */}
-                <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-cream">
+                <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-card border border-border-gray bg-white">
                   <Image
-                    src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=900"
-                    alt="Seedly natural seeds and herbal infusions"
+                    src="/images/hero/seedly-hero.svg"
+                    alt="Seedly natural seeds and herbal infusions packaging"
                     fill
                     priority
                     sizes="(max-width: 1024px) 100vw, 40vw"
-                    className="object-cover"
+                    className="object-contain p-4"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-transparent to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6 text-white space-y-1">
-                    <span className="text-[11px] font-semibold uppercase tracking-widest text-seedly-light">
-                      Natural Daily Ritual
-                    </span>
-                    <h3 className="font-serif text-xl font-medium">Seed Cycling & Herbal Nourishment</h3>
-                    <p className="text-xs text-white/80">Tailored to your body’s natural rhythm.</p>
-                  </div>
                 </div>
 
-                {/* Floating Seal Card */}
-                <div className="absolute -bottom-6 -left-6 sm:-left-8 bg-white p-4 rounded-2xl shadow-dropdown border border-border-gray/80 flex items-center gap-3.5 max-w-[240px]">
-                  <div className="w-10 h-10 rounded-full bg-seedly-light flex items-center justify-center text-seedly-dark shrink-0">
-                    <Sparkles className="w-5 h-5 text-seedly-primary" />
+                {/* Subtle packaging indicator card */}
+                <div className="absolute -bottom-5 -left-4 sm:-left-6 bg-white py-3 px-4 rounded-2xl shadow-dropdown border border-border-gray flex items-center gap-3 max-w-[220px]">
+                  <div className="w-8 h-8 rounded-full bg-seedly-light flex items-center justify-center text-seedly-dark shrink-0">
+                    <Leaf className="w-4 h-4 text-seedly-primary" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-charcoal">Fresh Harvest 2026</p>
-                    <p className="text-[11px] text-muted-gray">Cold-stored for active vitality</p>
+                    <p className="text-xs font-bold text-charcoal">Fresh 2026 Harvest</p>
+                    <p className="text-[11px] text-muted-gray">Cold-stored for freshness</p>
                   </div>
                 </div>
               </div>
@@ -119,17 +109,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. Explore Collections (3 Pillars) */}
+      {/* 2. Three Real Product Worlds */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
           <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-            Explore Seedly
+            Our Products
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
-            Pure Botanical Categories
+            Three simple categories
           </h2>
           <p className="text-sm text-muted-gray">
-            Targeted single-ingredient seeds, curated daily wellness kits, and soothing loose-leaf teas.
+            Single-ingredient heirloom seeds, portioned daily kits, and whole blossom loose teas.
           </p>
         </div>
 
@@ -137,461 +127,361 @@ export default function HomePage() {
           {/* Card 1: Seeds */}
           <Link
             href="/seeds"
-            className="group relative rounded-3xl overflow-hidden aspect-[4/3] bg-cream border border-border-gray shadow-card hover:shadow-hover transition-all"
+            className="group relative rounded-3xl overflow-hidden bg-white border border-border-gray shadow-card hover:shadow-hover transition-all flex flex-col justify-between p-6"
           >
-            <Image
-              src="https://images.unsplash.com/photo-1596797882870-8c33deeac224?auto=format&fit=crop&q=80&w=600"
-              alt="Heirloom Seeds"
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6 text-white flex items-end justify-between">
-              <div>
-                <span className="text-xs text-seedly-light font-medium uppercase tracking-wider">Single Origin</span>
-                <h3 className="font-serif text-2xl font-semibold mt-1">Heirloom Seeds</h3>
-                <p className="text-xs text-white/80 mt-1">Pumpkin, Golden Flax, Sunflower & Sesame</p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:bg-white group-hover:text-seedly-dark transition-colors">
-                <ArrowRight className="w-5 h-5" />
-              </div>
+            <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-cream/60 mb-5">
+              <Image
+                src="/images/products/pumpkin-seeds.svg"
+                alt="Heirloom Seeds"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <span className="text-[11px] uppercase tracking-wider font-semibold text-seedly-primary">
+                Single-Origin
+              </span>
+              <h3 className="font-serif text-xl font-bold text-charcoal group-hover:text-seedly-dark transition-colors">
+                Heirloom Seeds
+              </h3>
+              <p className="text-xs text-muted-gray leading-relaxed">
+                Raw pumpkin, golden flax, sunflower, and sesame seeds. Unsalted and unbleached.
+              </p>
+            </div>
+            <div className="pt-4 mt-4 border-t border-border-gray/60 flex items-center justify-between text-xs font-semibold text-seedly-dark">
+              <span>View 4 varieties</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
 
           {/* Card 2: Kits */}
           <Link
             href="/kits"
-            className="group relative rounded-3xl overflow-hidden aspect-[4/3] bg-cream border border-border-gray shadow-card hover:shadow-hover transition-all"
+            className="group relative rounded-3xl overflow-hidden bg-white border border-border-gray shadow-card hover:shadow-hover transition-all flex flex-col justify-between p-6"
           >
-            <Image
-              src="https://images.unsplash.com/photo-1505253758473-96b3015f27eb?auto=format&fit=crop&q=80&w=600"
-              alt="Curated Seed Kits"
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6 text-white flex items-end justify-between">
-              <div>
-                <span className="text-xs text-seedly-light font-medium uppercase tracking-wider">Formulated Rituals</span>
-                <h3 className="font-serif text-2xl font-semibold mt-1">Seed Kits</h3>
-                <p className="text-xs text-white/80 mt-1">Follicular, Luteal & Complete 28-Day Boxes</p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:bg-white group-hover:text-seedly-dark transition-colors">
-                <ArrowRight className="w-5 h-5" />
-              </div>
+            <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-cream/60 mb-5">
+              <Image
+                src="/images/products/complete-kit.svg"
+                alt="Curated Seed Kits"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <span className="text-[11px] uppercase tracking-wider font-semibold text-seedly-primary">
+                Curated Routines
+              </span>
+              <h3 className="font-serif text-xl font-bold text-charcoal group-hover:text-seedly-dark transition-colors">
+                Seed Kits &amp; Boxes
+              </h3>
+              <p className="text-xs text-muted-gray leading-relaxed">
+                Complete month-long kits with portioned seeds, wooden measuring tools, and daily guides.
+              </p>
+            </div>
+            <div className="pt-4 mt-4 border-t border-border-gray/60 flex items-center justify-between text-xs font-semibold text-seedly-dark">
+              <span>View 3 kits</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
 
           {/* Card 3: Teas */}
           <Link
             href="/teas"
-            className="group relative rounded-3xl overflow-hidden aspect-[4/3] bg-cream border border-border-gray shadow-card hover:shadow-hover transition-all"
+            className="group relative rounded-3xl overflow-hidden bg-white border border-border-gray shadow-card hover:shadow-hover transition-all flex flex-col justify-between p-6"
           >
-            <Image
-              src="https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=600"
-              alt="Herbal Teas"
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6 text-white flex items-end justify-between">
-              <div>
-                <span className="text-xs text-seedly-light font-medium uppercase tracking-wider">Mountain Botanicals</span>
-                <h3 className="font-serif text-2xl font-semibold mt-1">Herbal Teas</h3>
-                <p className="text-xs text-white/80 mt-1">Whole Chamomile, Mountain Spearmint & Green Tea</p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:bg-white group-hover:text-seedly-dark transition-colors">
-                <ArrowRight className="w-5 h-5" />
-              </div>
+            <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-cream/60 mb-5">
+              <Image
+                src="/images/products/chamomile-tea.svg"
+                alt="Mountain Herbal Teas"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <span className="text-[11px] uppercase tracking-wider font-semibold text-seedly-primary">
+                Loose Leaf &amp; Blossom
+              </span>
+              <h3 className="font-serif text-xl font-bold text-charcoal group-hover:text-seedly-dark transition-colors">
+                Mountain Herbal Teas
+              </h3>
+              <p className="text-xs text-muted-gray leading-relaxed">
+                Whole chamomile flowers, cut Gilgit spearmint leaves, and single-estate green tea.
+              </p>
+            </div>
+            <div className="pt-4 mt-4 border-t border-border-gray/60 flex items-center justify-between text-xs font-semibold text-seedly-dark">
+              <span>View 3 teas</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
         </div>
       </section>
 
-      {/* 3. Seedly Favorites / Featured Grid */}
+      {/* 3. Actual Best Sellers */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+          <div className="space-y-1">
             <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-              Seedly Favorites
+              Popular Staples
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal mt-1">
-              Most Loved by Our Community
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">
+              Everyday essentials
             </h2>
           </div>
           <Link
             href="/shop"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-seedly-dark hover:underline"
+            className="text-xs font-semibold text-seedly-dark hover:underline flex items-center gap-1"
           >
-            <span>View Full Catalog</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>View complete catalog</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredProducts.slice(0, 4).map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
 
-      {/* 4. Kit Spotlight: Seed Cycling Phase Duo */}
-      <section className="bg-seedly-light/50 py-16 lg:py-24 border-y border-border-gray/60">
+      {/* 4. Why Seedly? Three Specific Reasons */}
+      <section className="bg-seedly-stone py-16 sm:py-20 border-y border-border-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-            <span className="text-xs uppercase tracking-widest font-bold text-seedly-dark">
-              Ritual Spotlight
+          <div className="text-center max-w-xl mx-auto mb-12 space-y-2">
+            <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
+              Our Principles
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
-              The Science & Simplicity of Seed Cycling
+            <h2 className="font-serif text-3xl font-bold text-charcoal">
+              Why we started Seedly
             </h2>
-            <p className="text-sm text-muted-gray leading-relaxed">
-              Seed cycling is an ancient botanical practice using targeted raw seeds to nourish natural hormonal fluctuations across the 28-day monthly cycle.
+            <p className="text-sm text-muted-gray">
+              We wanted simple ingredients without confusing claims or hidden additives.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-            {/* Phase 1: Follicular */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-semibold">
-                    <Sun className="w-3.5 h-3.5 text-amber-600" />
-                    <span>Phase 1 (Days 1–14)</span>
-                  </div>
-                  <span className="text-xs text-muted-gray font-medium">Follicular Phase</span>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-7 rounded-3xl border border-border-gray space-y-3 shadow-subtle">
+              <span className="w-8 h-8 rounded-full bg-seedly-light text-seedly-dark text-xs flex items-center justify-center font-bold">
+                1
+              </span>
+              <h3 className="font-serif font-bold text-lg text-charcoal">
+                No chemical bleaching or glazes
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
+                Supermarket seeds in Pakistan are often bleached to look whiter or coated with mineral oil for shine. Our seeds are unsalted, unbleached, and sun-dried.
+              </p>
+            </div>
 
-                <h3 className="font-serif text-2xl font-bold text-charcoal">
-                  Follicular Phase Seed Kit
-                </h3>
-                <p className="text-sm text-muted-gray leading-relaxed">
-                  Raw Pumpkin Seeds + Golden Flax Seeds. Supplies bioavailable zinc and lignans to support healthy follicular growth and balanced estrogen clearance.
-                </p>
+            <div className="bg-white p-7 rounded-3xl border border-border-gray space-y-3 shadow-subtle">
+              <span className="w-8 h-8 rounded-full bg-seedly-light text-seedly-dark text-xs flex items-center justify-center font-bold">
+                2
+              </span>
+              <h3 className="font-serif font-bold text-lg text-charcoal">
+                Whole blossoms, not tea dust
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
+                Commercial tea bags use pulverized fannings that lose their flavor and essential oils in days. We package whole dried chamomile flowers and cut spearmint leaves.
+              </p>
+            </div>
 
-                <div className="pt-2 flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl relative overflow-hidden bg-cream border border-border-gray">
-                    <Image
-                      src="https://images.unsplash.com/photo-1596797882870-8c33deeac224?auto=format&fit=crop&q=80&w=200"
-                      alt="Pumpkin Seeds"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="w-12 h-12 rounded-xl relative overflow-hidden bg-cream border border-border-gray">
-                    <Image
-                      src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=200"
-                      alt="Flax Seeds"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <span className="text-xs text-muted-gray font-medium">+ Botanical measuring scoop</span>
-                </div>
-              </div>
+            <div className="bg-white p-7 rounded-3xl border border-border-gray space-y-3 shadow-subtle">
+              <span className="w-8 h-8 rounded-full bg-seedly-light text-seedly-dark text-xs flex items-center justify-center font-bold">
+                3
+              </span>
+              <h3 className="font-serif font-bold text-lg text-charcoal">
+                Direct Pakistani partnerships
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
+                We work directly with farmers in Gilgit-Baltistan and Punjab. We pay above-market rates for clean harvesting and reliable quality.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-              <div className="mt-8 pt-4 border-t border-border-gray/60 flex items-center justify-between">
-                <div>
-                  <span className="font-serif font-bold text-xl text-charcoal">Rs. 1,550</span>
-                  <p className="text-[11px] text-muted-gray">2 x 250g Glass Amber Jars</p>
-                </div>
-                <Link
-                  href="/kits/follicular-blend"
-                  className="px-5 py-2.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-full text-xs font-semibold transition-colors"
-                >
-                  View Details & Order
-                </Link>
+      {/* 5. Complete Kit Storytelling Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="rounded-3xl bg-white border border-border-gray p-8 sm:p-12 lg:p-16 shadow-card">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div className="lg:col-span-5 relative">
+              <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-cream">
+                <Image
+                  src="/images/products/complete-kit.svg"
+                  alt="Complete 28-Day Seed Cycling Kit"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-contain p-4"
+                />
               </div>
             </div>
 
-            {/* Phase 2: Luteal */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-800 text-xs font-semibold">
-                    <Moon className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Phase 2 (Days 15–28)</span>
+            <div className="lg:col-span-7 space-y-5">
+              <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
+                Featured Routine Box
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
+                Complete 28-Day Seed Cycling Ritual
+              </h2>
+              <p className="text-sm sm:text-base text-muted-gray leading-relaxed">
+                A simple monthly nutritional routine using two distinct seed pairs across the month. Everything you need is portioned and included in one box.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div className="p-4 rounded-2xl bg-cream border border-border-gray/70 space-y-1">
+                  <div className="flex items-center gap-2 text-xs font-bold text-charcoal">
+                    <Sun className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Days 1–14 (Phase 1)</span>
                   </div>
-                  <span className="text-xs text-muted-gray font-medium">Luteal Phase</span>
+                  <p className="text-xs text-muted-gray">1 tbsp Pumpkin Seeds + 1 tbsp Golden Flax Seeds daily.</p>
                 </div>
 
-                <h3 className="font-serif text-2xl font-bold text-charcoal">
-                  Luteal Phase Seed Kit
-                </h3>
-                <p className="text-sm text-muted-gray leading-relaxed">
-                  Raw Sunflower Kernels + Sesame Seeds. Rich in natural Vitamin E, selenium, and calcium to sustain progesterone production and ease premenstrual mood shifts.
-                </p>
-
-                <div className="pt-2 flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl relative overflow-hidden bg-cream border border-border-gray">
-                    <Image
-                      src="https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&q=80&w=200"
-                      alt="Sunflower Seeds"
-                      fill
-                      className="object-cover"
-                    />
+                <div className="p-4 rounded-2xl bg-cream border border-border-gray/70 space-y-1">
+                  <div className="flex items-center gap-2 text-xs font-bold text-charcoal">
+                    <Moon className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Days 15–28 (Phase 2)</span>
                   </div>
-                  <div className="w-12 h-12 rounded-xl relative overflow-hidden bg-cream border border-border-gray">
-                    <Image
-                      src="https://images.unsplash.com/photo-1627916607164-7b20241db935?auto=format&fit=crop&q=80&w=200"
-                      alt="Sesame Seeds"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <span className="text-xs text-muted-gray font-medium">+ Botanical measuring scoop</span>
+                  <p className="text-xs text-muted-gray">1 tbsp Sunflower Kernels + 1 tbsp White Sesame Seeds daily.</p>
                 </div>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-border-gray/60 flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 gap-4 border-t border-border-gray/70">
                 <div>
-                  <span className="font-serif font-bold text-xl text-charcoal">Rs. 1,450</span>
-                  <p className="text-[11px] text-muted-gray">2 x 250g Glass Amber Jars</p>
+                  <span className="font-serif font-bold text-2xl text-charcoal">Rs. 2,850</span>
+                  <p className="text-xs text-muted-gray">Includes 4 x 250g pouches, wooden scoop &amp; tracking calendar</p>
                 </div>
                 <Link
-                  href="/kits/luteal-blend"
-                  className="px-5 py-2.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-full text-xs font-semibold transition-colors"
+                  href="/kits/complete-cycle-kit"
+                  className="px-8 py-3.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-full text-xs font-semibold transition-all shadow-card"
                 >
-                  View Details & Order
+                  View Kit Details
                 </Link>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Bundle banner */}
-          <div className="mt-8 bg-white/80 border border-seedly-primary/30 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-            <div className="flex items-center gap-3">
-              <Calendar className="w-6 h-6 text-seedly-primary shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-charcoal">
-                  Want the complete 28-day routine with calendar & brass scoop?
-                </p>
-                <p className="text-xs text-muted-gray">
-                  Save Rs. 550 with the Complete 28-Day Ritual Kit. Free nationwide shipping included.
-                </p>
-              </div>
-            </div>
+      {/* 6. Founder Note / Why We Started */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="border border-border-gray rounded-3xl p-8 sm:p-12 bg-white text-center space-y-4 shadow-subtle">
+          <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
+            From Seedly
+          </span>
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">
+            "We keep our products simple and our information clear."
+          </h2>
+          <p className="text-sm sm:text-base text-muted-gray leading-relaxed max-w-2xl mx-auto">
+            When we looked for basic raw seeds and whole chamomile in Pakistani stores, we were tired of decoding marketing buzzwords or settling for dusty bulk bins. We started Seedly to make it easy to buy clean, unadulterated seeds and teas with honest labels.
+          </p>
+          <div className="pt-2">
             <Link
-              href="/kits/complete-cycle-kit"
-              className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full text-xs font-semibold shrink-0"
+              href="/about"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-seedly-dark hover:underline"
             >
-              Get Complete Kit (Rs. 2,850)
+              <span>Read our full story</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 5. V1.1 Find Your Seed Quiz Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl overflow-hidden bg-seedly-forest text-white p-8 sm:p-12 lg:p-16">
-          <div className="relative z-10 max-w-2xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-seedly-light text-xs font-medium">
-              <Compass className="w-3.5 h-3.5 text-amber-300" />
-              <span>Interactive Wellness Quiz</span>
-            </div>
-            <h2 className="font-serif text-3xl sm:text-5xl font-bold leading-tight">
-              Not sure where to begin your seed journey?
-            </h2>
-            <p className="text-sm sm:text-base text-seedly-light/90 leading-relaxed">
-              Answer 3 simple questions about your wellness focus (hormonal harmony, digestive comfort, calm sleep, or sustained energy) to receive your tailored botanical blend recommendation.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/find-your-seed"
-                className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-seedly-forest hover:bg-cream rounded-full font-semibold text-sm transition-all shadow-hover"
-              >
-                <span>Take the 2-Minute Quiz</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Decorative motif */}
-          <div className="absolute right-0 bottom-0 top-0 w-1/3 opacity-20 pointer-events-none hidden lg:flex items-center justify-center">
-            <Leaf className="w-80 h-80 text-white stroke-[0.5]" />
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Brand Story & Sourcing Philosophy */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="relative aspect-[4/3] sm:aspect-[16/10] rounded-3xl overflow-hidden shadow-card border border-border-gray">
-            <Image
-              src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&q=80&w=900"
-              alt="Botanical mountain harvesting in Pakistan"
-              fill
-              className="object-cover"
-            />
-          </div>
-
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-                Our Philosophy
-              </span>
-              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
-                Rooted in nature. <br />
-                Made for modern life.
-              </h2>
-            </div>
-
-            <p className="text-sm sm:text-base text-muted-gray leading-relaxed">
-              We started Seedly because supermarket seeds and commercial tea bags in Pakistan are all too often dusty, bleached, stale, or treated with chemical preservatives.
-            </p>
-
-            <p className="text-sm text-muted-gray leading-relaxed">
-              We partner directly with family farms and certified cooperatives in Gilgit-Baltistan, Hunza, and the fertile plains of Punjab. Our seeds are kept whole or cold-milled in micro-batches to safeguard delicate essential fatty acids. Our herbal teas are composed of intact flower blossoms and mountain-shade-dried leaves.
-            </p>
-
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-xs sm:text-sm font-medium text-charcoal">
-                  Zero artificial flavors, colors, or fillers
-                </span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-xs sm:text-sm font-medium text-charcoal">
-                  Cold-packed in amber UV-protective glass
-                </span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-xs sm:text-sm font-medium text-charcoal">
-                  Direct ethical income for northern growers
-                </span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-xs sm:text-sm font-medium text-charcoal">
-                  Independent batch purity verification
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-seedly-dark hover:underline"
-              >
-                <span>Read our full sourcing story</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 7. Verified Customer Reviews */}
-      <section className="bg-cream py-16 lg:py-24 border-t border-border-gray/70">
+      {/* 7. Real Customer Reviews */}
+      <section className="bg-cream py-16 sm:py-20 border-t border-border-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
+          <div className="text-center max-w-xl mx-auto mb-12 space-y-2">
             <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-              Real Stories
+              Customer Feedback
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
-              Loved Across Pakistan
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">
+              From our first verified customers
             </h2>
-            <p className="text-sm text-muted-gray">
-              Read how our community incorporates Seedly into their morning smoothies, tea hours, and wellness routines.
+            <p className="text-xs sm:text-sm text-muted-gray">
+              Honest feedback from people who order Seedly across Pakistan.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Review 1 */}
-            <div className="bg-white p-6 rounded-2xl border border-border-gray/80 shadow-subtle flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex items-center text-amber-500 gap-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Sparkles key={i} className="w-3.5 h-3.5 fill-amber-400" />
-                  ))}
-                </div>
-                <h4 className="font-serif font-semibold text-charcoal text-base">
-                  "Remarkably fresh and crunchy"
-                </h4>
+            <div className="bg-white p-6 rounded-2xl border border-border-gray space-y-3 shadow-subtle flex flex-col justify-between">
+              <div className="space-y-2">
+                <span className="text-amber-500 font-bold text-xs tracking-wider">★★★★★</span>
+                <h4 className="font-serif font-bold text-charcoal text-sm">"Fresh and clean"</h4>
                 <p className="text-xs text-muted-gray leading-relaxed">
-                  "Unlike standard grocery store seeds that often taste stale or oily, these arrived wonderfully clean, vibrant green, and fragrant. I add them to my yogurt bowl every morning."
+                  "Arrived properly sealed in a kraft pouch. The seeds are vibrant green, crisp, and completely unsalted. A daily staple in our house now."
                 </p>
               </div>
-              <div className="pt-4 mt-4 border-t border-border-gray/50 flex items-center justify-between text-xs">
-                <span className="font-medium text-charcoal">Ayesha K.</span>
-                <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium text-[10px]">
-                  Verified Buyer • Lahore
-                </span>
+              <div className="pt-3 border-t border-border-gray/50 text-[11px] text-muted-gray">
+                <p className="font-medium text-charcoal">Ayesha K.</p>
+                <p>Verified Buyer • Lahore</p>
               </div>
             </div>
 
-            {/* Review 2 */}
-            <div className="bg-white p-6 rounded-2xl border border-border-gray/80 shadow-subtle flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex items-center text-amber-500 gap-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Sparkles key={i} className="w-3.5 h-3.5 fill-amber-400" />
-                  ))}
-                </div>
-                <h4 className="font-serif font-semibold text-charcoal text-base">
-                  "Real whole flowers make all the difference"
-                </h4>
+            <div className="bg-white p-6 rounded-2xl border border-border-gray space-y-3 shadow-subtle flex flex-col justify-between">
+              <div className="space-y-2">
+                <span className="text-amber-500 font-bold text-xs tracking-wider">★★★★★</span>
+                <h4 className="font-serif font-bold text-charcoal text-sm">"Real whole blossoms"</h4>
                 <p className="text-xs text-muted-gray leading-relaxed">
-                  "Opening the jar was an absolute delight—actual intact chamomile blossoms with a sweet honey scent. No dust or paper bags. My sleep quality has noticeably improved."
+                  "Opening the jar was wonderful—actual intact chamomile blossoms with a clear honey aroma. No dust or paper bags."
                 </p>
               </div>
-              <div className="pt-4 mt-4 border-t border-border-gray/50 flex items-center justify-between text-xs">
-                <span className="font-medium text-charcoal">Dr. Bilal S.</span>
-                <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium text-[10px]">
-                  Verified Buyer • Islamabad
-                </span>
+              <div className="pt-3 border-t border-border-gray/50 text-[11px] text-muted-gray">
+                <p className="font-medium text-charcoal">Dr. Bilal S.</p>
+                <p>Verified Buyer • Islamabad</p>
               </div>
             </div>
 
-            {/* Review 3 */}
-            <div className="bg-white p-6 rounded-2xl border border-border-gray/80 shadow-subtle flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex items-center text-amber-500 gap-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Sparkles key={i} className="w-3.5 h-3.5 fill-amber-400" />
-                  ))}
-                </div>
-                <h4 className="font-serif font-semibold text-charcoal text-base">
-                  "A beautifully curated wellness ritual"
-                </h4>
+            <div className="bg-white p-6 rounded-2xl border border-border-gray space-y-3 shadow-subtle flex flex-col justify-between">
+              <div className="space-y-2">
+                <span className="text-amber-500 font-bold text-xs tracking-wider">★★★★★</span>
+                <h4 className="font-serif font-bold text-charcoal text-sm">"Clear and practical"</h4>
                 <p className="text-xs text-muted-gray leading-relaxed">
-                  "The packaging is breathtaking and thoughtful. Having all 4 seeds portioned with the wooden scoop made it effortless to stick to my daily routine. Delivery in Clifton took just 2 days."
+                  "Having all four seeds portioned with the wooden scoop made it easy to stick to the routine. Arrived in Clifton in 2 days."
                 </p>
               </div>
-              <div className="pt-4 mt-4 border-t border-border-gray/50 flex items-center justify-between text-xs">
-                <span className="font-medium text-charcoal">Zainab M.</span>
-                <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium text-[10px]">
-                  Verified Buyer • Karachi
-                </span>
+              <div className="pt-3 border-t border-border-gray/50 text-[11px] text-muted-gray">
+                <p className="font-medium text-charcoal">Zainab M.</p>
+                <p>Verified Buyer • Karachi</p>
               </div>
             </div>
 
-            {/* Review 4 */}
-            <div className="bg-white p-6 rounded-2xl border border-border-gray/80 shadow-subtle flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex items-center text-amber-500 gap-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Sparkles key={i} className="w-3.5 h-3.5 fill-amber-400" />
-                  ))}
-                </div>
-                <h4 className="font-serif font-semibold text-charcoal text-base">
-                  "So soothing for digestion"
-                </h4>
+            <div className="bg-white p-6 rounded-2xl border border-border-gray space-y-3 shadow-subtle flex flex-col justify-between">
+              <div className="space-y-2">
+                <span className="text-amber-500 font-bold text-xs tracking-wider">★★★★★</span>
+                <h4 className="font-serif font-bold text-charcoal text-sm">"Gentle and soothing"</h4>
                 <p className="text-xs text-muted-gray leading-relaxed">
-                  "The spearmint taste is pure mountain herbs with no bitterness. I drink a cup after dinner and feel so light and calm. Highly recommended!"
+                  "Gentle mountain spearmint without the harsh bitterness of commercial tea bags. Very pleasant after meals."
                 </p>
               </div>
-              <div className="pt-4 mt-4 border-t border-border-gray/50 flex items-center justify-between text-xs">
-                <span className="font-medium text-charcoal">Mariam T.</span>
-                <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium text-[10px]">
-                  Verified Buyer • Rawalpindi
-                </span>
+              <div className="pt-3 border-t border-border-gray/50 text-[11px] text-muted-gray">
+                <p className="font-medium text-charcoal">Mariam T.</p>
+                <p>Verified Buyer • Rawalpindi</p>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 8. Contextual WhatsApp & Assistance */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+        <div className="bg-white rounded-3xl p-8 border border-border-gray shadow-card flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+          <div className="space-y-1">
+            <h3 className="font-serif text-xl font-bold text-charcoal">
+              Have questions about brewing, seeds, or storage?
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-gray">
+              Chat directly with our team on WhatsApp. We typically respond within minutes during business hours.
+            </p>
+          </div>
+          <a
+            href="https://wa.me/923001234567?text=Hi%20Seedly%2C%20I%20have%20a%20question%20about%20your%20seeds%20and%20teas."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full text-xs font-semibold flex items-center gap-2 shrink-0 transition-colors shadow-subtle"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>Chat on WhatsApp</span>
+          </a>
         </div>
       </section>
     </div>

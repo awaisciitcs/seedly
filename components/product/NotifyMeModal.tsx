@@ -9,7 +9,8 @@ interface NotifyMeModalProps {
   productId?: string;
   variantId?: string;
   kitId?: string;
-  sellableTitle: string;
+  sellableTitle?: string;
+  itemTitle?: string;
 }
 
 export function NotifyMeModal({
@@ -19,7 +20,9 @@ export function NotifyMeModal({
   variantId,
   kitId,
   sellableTitle,
+  itemTitle,
 }: NotifyMeModalProps) {
+  const displayTitle = sellableTitle || itemTitle || 'Selected Item';
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -46,7 +49,7 @@ export function NotifyMeModal({
           productId,
           variantId,
           kitId,
-          sellableTitle,
+          sellableTitle: displayTitle,
           email: trimmed,
         }),
       });
@@ -90,7 +93,7 @@ export function NotifyMeModal({
             <div className="space-y-1">
               <h3 className="font-serif text-2xl font-bold text-charcoal">You're On The List!</h3>
               <p className="text-xs text-muted-gray leading-relaxed max-w-xs mx-auto">
-                We'll email <span className="font-semibold text-charcoal">{email}</span> the moment <strong className="text-charcoal font-semibold">{sellableTitle}</strong> is replenished and ready for dispatch.
+                We'll email <span className="font-semibold text-charcoal">{email}</span> the moment <strong className="text-charcoal font-semibold">{displayTitle}</strong> is replenished and ready for dispatch.
               </p>
             </div>
             <div className="pt-2">
@@ -113,7 +116,7 @@ export function NotifyMeModal({
                 Notify Me When Available
               </h3>
               <p className="text-xs text-muted-gray leading-relaxed">
-                <span className="font-semibold text-charcoal">{sellableTitle}</span> is currently out of stock. Leave your email and our Lahore operations desk will notify you immediately once restocked.
+                <span className="font-semibold text-charcoal">{displayTitle}</span> is currently out of stock. Leave your email and our Lahore operations desk will notify you immediately once restocked.
               </p>
             </div>
 

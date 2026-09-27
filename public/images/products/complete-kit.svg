@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#FBF9F5"/>
+      <stop offset="100%" stop-color="#EFE9DE"/>
+    </radialGradient>
+
+    <!-- Presentation Box Gradient (Deep Botanical Green) -->
+    <linearGradient id="boxBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E382B"/>
+      <stop offset="100%" stop-color="#12241B"/>
+    </linearGradient>
+
+    <linearGradient id="kraftMini" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E4D7C4"/>
+      <stop offset="100%" stop-color="#C5B196"/>
+    </linearGradient>
+
+    <filter id="boxShadow" x="-20%" y="-10%" width="140%" height="130%">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#1B1E1C" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="800" fill="url(#bg)"/>
+  <rect x="36" y="36" width="728" height="728" fill="none" stroke="#DCD5C8" stroke-width="1"/>
+  <circle cx="400" cy="420" r="260" fill="none" stroke="#E6DFD2" stroke-width="1" stroke-dasharray="4 6"/>
+
+  <ellipse cx="400" cy="690" rx="250" ry="28" fill="#1C1E1B" opacity="0.14"/>
+
+  <!-- Presentation Box Container -->
+  <g filter="url(#boxShadow)">
+    <rect x="140" y="190" width="520" height="480" rx="18" fill="url(#boxBg)"/>
+    <rect x="148" y="198" width="504" height="464" rx="14" fill="none" stroke="#D8C39D" stroke-width="1" stroke-opacity="0.4"/>
+
+    <text x="400" y="240" text-anchor="middle" font-family="'Georgia', serif" font-size="17" font-weight="bold" fill="#F4E8D2" letter-spacing="4">S E E D L Y</text>
+    <text x="400" y="258" text-anchor="middle" font-family="sans-serif" font-size="8" font-weight="600" fill="#B5C4B9" letter-spacing="2">COMPLETE 28-DAY SEED CYCLING RITUAL BOX</text>
+
+    <!-- 4 Seed Pouches Grid (2x2) -->
+    <!-- Pouch 1: Pumpkin -->
+    <g transform="translate(170, 280)">
+      <rect width="105" height="150" rx="6" fill="url(#kraftMini)" stroke="#B39F83" stroke-width="1"/>
+      <rect x="8" y="10" width="89" height="130" rx="3" fill="#FDFBF7"/>
+      <text x="52" y="32" text-anchor="middle" font-family="'Georgia', serif" font-size="9" font-weight="bold" fill="#1C1E1B">Pumpkin</text>
+      <text x="52" y="44" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#6B786E">250 g</text>
+      <circle cx="52" cy="74" r="14" fill="#E8EFEA"/>
+      <path d="M 52 64 C 57 70, 58 78, 52 84 C 46 78, 47 70, 52 64 Z" fill="#2E4C38"/>
+      <text x="52" y="112" text-anchor="middle" font-family="sans-serif" font-size="6" font-weight="700" fill="#234B37">PHASE 1 (D1-14)</text>
+    </g>
+
+    <!-- Pouch 2: Flax -->
+    <g transform="translate(290, 280)">
+      <rect width="105" height="150" rx="6" fill="url(#kraftMini)" stroke="#B39F83" stroke-width="1"/>
+      <rect x="8" y="10" width="89" height="130" rx="3" fill="#FDFBF7"/>
+      <text x="52" y="32" text-anchor="middle" font-family="'Georgia', serif" font-size="9" font-weight="bold" fill="#1C1E1B">Flax Seeds</text>
+      <text x="52" y="44" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#6B786E">250 g</text>
+      <circle cx="52" cy="74" r="14" fill="#F8F3E6"/>
+      <path d="M 52 64 C 56 70, 56 78, 52 84 C 48 78, 48 70, 52 64 Z" fill="#B38634"/>
+      <text x="52" y="112" text-anchor="middle" font-family="sans-serif" font-size="6" font-weight="700" fill="#234B37">PHASE 1 (D1-14)</text>
+    </g>
+
+    <!-- Pouch 3: Sunflower -->
+    <g transform="translate(410, 280)">
+      <rect width="105" height="150" rx="6" fill="url(#kraftMini)" stroke="#B39F83" stroke-width="1"/>
+      <rect x="8" y="10" width="89" height="130" rx="3" fill="#FDFBF7"/>
+      <text x="52" y="32" text-anchor="middle" font-family="'Georgia', serif" font-size="9" font-weight="bold" fill="#1C1E1B">Sunflower</text>
+      <text x="52" y="44" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#6B786E">250 g</text>
+      <circle cx="52" cy="74" r="14" fill="#FBF4E4"/>
+      <circle cx="52" cy="74" r="5" fill="#5A3F14"/>
+      <text x="52" y="112" text-anchor="middle" font-family="sans-serif" font-size="6" font-weight="700" fill="#1E382B">PHASE 2 (D15-28)</text>
+    </g>
+
+    <!-- Pouch 4: Sesame -->
+    <g transform="translate(530, 280)">
+      <rect width="105" height="150" rx="6" fill="url(#kraftMini)" stroke="#B39F83" stroke-width="1"/>
+      <rect x="8" y="10" width="89" height="130" rx="3" fill="#FDFBF7"/>
+      <text x="52" y="32" text-anchor="middle" font-family="'Georgia', serif" font-size="9" font-weight="bold" fill="#1C1E1B">Sesame</text>
+      <text x="52" y="44" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#6B786E">250 g</text>
+      <circle cx="52" cy="74" r="14" fill="#F4F4F0"/>
+      <path d="M 52 64 Q 56 74 52 84 Q 48 74 52 64 Z" fill="none" stroke="#7A867E" stroke-width="1"/>
+      <text x="52" y="112" text-anchor="middle" font-family="sans-serif" font-size="6" font-weight="700" fill="#1E382B">PHASE 2 (D15-28)</text>
+    </g>
+
+    <!-- Included Accessories Bar -->
+    <g transform="translate(170, 460)">
+      <!-- Cycle Calendar Card -->
+      <rect width="180" height="120" rx="6" fill="#F7F4EB" stroke="#D3C7B2" stroke-width="1"/>
+      <text x="90" y="28" text-anchor="middle" font-family="'Georgia', serif" font-size="10" font-weight="bold" fill="#1C1E1B">Cycle Tracking Guide</text>
+      <text x="90" y="46" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#6B786E">Lunar &amp; Calendar Tracking</text>
+      <!-- Mini calendar grid -->
+      <line x1="20" y1="60" x2="160" y2="60" stroke="#DDD4C2" stroke-width="1"/>
+      <text x="90" y="80" text-anchor="middle" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#234B37">DAILY RITUAL RECIPES INCLUDED</text>
+    </g>
+
+    <!-- Wooden Spoon Visual -->
+    <g transform="translate(370, 500)">
+      <rect x="0" y="12" width="260" height="14" rx="7" fill="#C9A36A"/>
+      <ellipse cx="260" cy="19" rx="22" ry="16" fill="#B08A52"/>
+      <text x="120" y="23" font-family="sans-serif" font-size="8" font-weight="700" fill="#694C24" letter-spacing="1">ENGRAVED NATURAL WOODEN SCOOP</text>
+    </g>
+
+    <!-- Box Ribbon -->
+    <rect x="220" y="618" width="360" height="26" rx="4" fill="#FAF6EE"/>
+    <text x="400" y="635" text-anchor="middle" font-family="'Georgia', serif" font-size="11" font-weight="bold" fill="#12241B" letter-spacing="1.5">COMPLETE 4-SEED BOX • 1,000 G TOTAL NET WEIGHT</text>
+  </g>
+
+  <text x="60" y="70" font-family="sans-serif" font-size="10" font-weight="700" fill="#234B37" letter-spacing="1.5">SEEDLY SIGNATURE RITUAL</text>
+  <text x="740" y="70" text-anchor="end" font-family="sans-serif" font-size="9" font-weight="500" fill="#8B9189" letter-spacing="1">BOX SET NO. 03</text>
+  <text x="400" y="746" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#8B9189" letter-spacing="1.5">4 INDIVIDUAL 250G POUCHES • TRACKING CALENDAR • MEASURING SCOOP</text>
+</svg>
