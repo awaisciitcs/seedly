@@ -28,7 +28,7 @@ module.exports = {
       },
       fontFamily: {
         serif: ["var(--font-serif)", "Playfair Display", "Georgia", "serif"],
-        sans: ["var(--font-sans)", "Plus Jakarta Sans", "Inter", "sans-serif"],
+        sans: ["var(--font-sans)", "Roboto", "sans-serif"],
       },
       boxShadow: {
         subtle: "0 1px 3px rgba(27, 30, 28, 0.04), 0 4px 12px rgba(27, 30, 28, 0.03)",

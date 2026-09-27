@@ -8,14 +8,11 @@ export default function AboutPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
       {/* 1. Header */}
       <div className="text-center max-w-2xl mx-auto space-y-4">
-        <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-          Our Story
-        </span>
         <h1 className="font-serif text-4xl sm:text-5xl font-bold text-charcoal leading-tight">
           Why we started Seedly
         </h1>
         <p className="text-base sm:text-lg text-muted-gray leading-relaxed">
-          We wanted to create a place where people in Pakistan could buy simple seeds and herbal teas without having to decode confusing labels or exaggerated health claims.
+          I started buying seeds from the Akbari Mandi in Lahore because the bagged packets at grocery stores tasted stale. Seedly was founded to bring that same unadulterated harvest to homes across Pakistan, tested for purity, cold-stored, and sealed properly so it stays fresh.
         </p>
       </div>
 

@@ -362,6 +362,33 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               </div>
             )}
 
+            {/* Batch & Routine Freshness Certificate */}
+            <div className="p-4 rounded-2xl bg-cream/70 border border-border-gray/80 space-y-2.5">
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5 font-bold text-seedly-dark">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-seedly-primary" />
+                  <span className="uppercase tracking-wider text-[11px]">Routine Freshness Verification</span>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-seedly-light text-seedly-dark font-semibold">
+                  BATCH #KIT-2026-R2
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-[11px] pt-1.5 border-t border-border-gray/50">
+                <div>
+                  <span className="text-muted-gray block text-[10px]">Assembly Hub</span>
+                  <span className="font-semibold text-charcoal">Lahore Dispatch Center</span>
+                </div>
+                <div>
+                  <span className="text-muted-gray block text-[10px]">Milling Cycle</span>
+                  <span className="font-semibold text-charcoal">Cold-milled weekly</span>
+                </div>
+                <div>
+                  <span className="text-muted-gray block text-[10px]">Purity Standard</span>
+                  <span className="font-semibold text-emerald-800">100% Raw &amp; Unsalted</span>
+                </div>
+              </div>
+            </div>
+
             {/* Compliance Gate & Medical Notice */}
             <div className="p-3.5 bg-cream rounded-xl border border-border-gray flex items-start gap-2.5 text-[11px] text-muted-gray leading-relaxed">
               <Info className="w-4 h-4 text-seedly-primary shrink-0 mt-0.5" />

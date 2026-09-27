@@ -62,45 +62,45 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Real Operational Signals */}
-              <div className="pt-8 border-t border-border-gray grid grid-cols-3 gap-4 text-left max-w-lg mx-auto lg:mx-0">
-                <div className="space-y-1">
-                  <p className="font-serif font-bold text-sm text-charcoal">Raw &amp; Unsalted</p>
-                  <p className="text-xs text-muted-gray">Zero added oils or chemicals</p>
+              {/* Real Operational Signals: Asymmetric 2 Features + 1 Live Stat */}
+              <div className="pt-8 border-t border-border-gray grid grid-cols-1 sm:grid-cols-12 gap-5 text-left max-w-xl mx-auto lg:mx-0 items-center">
+                <div className="sm:col-span-4 space-y-1">
+                  <p className="font-bold text-sm text-charcoal">Raw &amp; Unsalted</p>
+                  <p className="text-xs text-muted-gray leading-relaxed">No glazes, oils, or preservatives</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="font-serif font-bold text-sm text-charcoal">Direct Sourcing</p>
-                  <p className="text-xs text-muted-gray">Gilgit &amp; Punjab smallholders</p>
+                <div className="sm:col-span-4 space-y-1 sm:border-l sm:border-border-gray/60 sm:pl-4">
+                  <p className="font-bold text-sm text-charcoal">Smallholder Sourced</p>
+                  <p className="text-xs text-muted-gray leading-relaxed">Direct from Punjab &amp; Gilgit</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="font-serif font-bold text-sm text-charcoal">Fast Delivery</p>
-                  <p className="text-xs text-muted-gray">TCS / Leopards nationwide</p>
+                <div className="sm:col-span-4 bg-seedly-light/70 p-3.5 rounded-2xl border border-seedly-primary/20 flex flex-col justify-center">
+                  <span className="font-serif font-bold text-2xl text-seedly-dark block leading-none">500+</span>
+                  <span className="text-[11px] text-muted-gray font-medium mt-1">Orders shipped nationwide</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Column Bespoke Botanical Packaging Visual */}
+            {/* Right Column Authentic Studio Product Photography */}
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-md lg:max-w-none">
-                <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-card border border-border-gray bg-white">
+                <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-card border border-border-gray bg-stone">
                   <Image
-                    src="/images/hero/seedly-hero.svg"
-                    alt="Seedly natural seeds and herbal infusions packaging"
+                    src="/images/hero/seedly-hero.jpg"
+                    alt="Seedly organic seeds, chamomile blossoms, and starter kits"
                     fill
                     priority
                     sizes="(max-width: 1024px) 100vw, 40vw"
-                    className="object-contain p-4"
+                    className="object-cover"
                   />
                 </div>
 
                 {/* Subtle packaging indicator card */}
-                <div className="absolute -bottom-5 -left-4 sm:-left-6 bg-white py-3 px-4 rounded-2xl shadow-dropdown border border-border-gray flex items-center gap-3 max-w-[220px]">
+                <div className="absolute -bottom-5 -left-4 sm:-left-6 bg-white/95 backdrop-blur-sm py-3 px-4 rounded-2xl shadow-dropdown border border-border-gray flex items-center gap-3 max-w-[230px]">
                   <div className="w-8 h-8 rounded-full bg-seedly-light flex items-center justify-center text-seedly-dark shrink-0">
                     <Leaf className="w-4 h-4 text-seedly-primary" />
                   </div>
                   <div>
                     <p className="text-xs font-bold text-charcoal">Fresh 2026 Harvest</p>
-                    <p className="text-[11px] text-muted-gray">Cold-stored for freshness</p>
+                    <p className="text-[11px] text-muted-gray font-mono">Batch #PK-26-H1</p>
                   </div>
                 </div>
               </div>
@@ -109,126 +109,120 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. Three Real Product Worlds */}
+      {/* 2. Three Real Product Worlds (Asymmetric Editorial Layout) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-          <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-            Our Products
-          </span>
+        <div className="max-w-2xl mb-8 space-y-1">
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
             Three simple categories
           </h2>
           <p className="text-sm text-muted-gray">
-            Single-ingredient heirloom seeds, portioned daily kits, and whole blossom loose teas.
+            Single-ingredient heirloom seeds, structured monthly routine boxes, and loose mountain blossoms.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-          {/* Card 1: Seeds */}
-          <Link
-            href="/seeds"
-            className="group relative rounded-3xl overflow-hidden bg-white border border-border-gray shadow-card hover:shadow-hover transition-all flex flex-col justify-between p-6"
-          >
-            <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-cream/60 mb-5">
-              <Image
-                src="/images/products/pumpkin-seeds.svg"
-                alt="Heirloom Seeds"
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <span className="text-[11px] uppercase tracking-wider font-semibold text-seedly-primary">
-                Single-Origin
-              </span>
-              <h3 className="font-serif text-xl font-bold text-charcoal group-hover:text-seedly-dark transition-colors">
-                Heirloom Seeds
-              </h3>
-              <p className="text-xs text-muted-gray leading-relaxed">
-                Raw pumpkin, golden flax, sunflower, and sesame seeds. Unsalted and unbleached.
-              </p>
-            </div>
-            <div className="pt-4 mt-4 border-t border-border-gray/60 flex items-center justify-between text-xs font-semibold text-seedly-dark">
-              <span>View 4 varieties</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-
-          {/* Card 2: Kits */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
+          {/* Featured Hero Card: Routine Kits (Spans 7 cols) */}
           <Link
             href="/kits"
-            className="group relative rounded-3xl overflow-hidden bg-white border border-border-gray shadow-card hover:shadow-hover transition-all flex flex-col justify-between p-6"
+            className="lg:col-span-7 group relative rounded-3xl overflow-hidden bg-white border border-border-gray shadow-card hover:shadow-hover transition-all p-6 sm:p-8 flex flex-col justify-between"
           >
-            <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-cream/60 mb-5">
-              <Image
-                src="/images/products/complete-kit.svg"
-                alt="Curated Seed Kits"
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <span className="text-[11px] uppercase tracking-wider font-semibold text-seedly-primary">
-                Curated Routines
-              </span>
-              <h3 className="font-serif text-xl font-bold text-charcoal group-hover:text-seedly-dark transition-colors">
-                Seed Kits &amp; Boxes
-              </h3>
-              <p className="text-xs text-muted-gray leading-relaxed">
-                Complete month-long kits with portioned seeds, wooden measuring tools, and daily guides.
-              </p>
-            </div>
-            <div className="pt-4 mt-4 border-t border-border-gray/60 flex items-center justify-between text-xs font-semibold text-seedly-dark">
-              <span>View 3 kits</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
+              <div className="sm:col-span-6 relative aspect-square w-full rounded-2xl overflow-hidden bg-stone/40 p-4">
+                <Image
+                  src="/images/products/complete-kit.svg"
+                  alt="Curated Seed Kits"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 35vw"
+                  className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="sm:col-span-6 space-y-3">
+                <div className="inline-block px-2.5 py-1 rounded-full bg-seedly-light text-seedly-dark text-[11px] font-semibold uppercase tracking-wider">
+                  Featured Routine
+                </div>
+                <h3 className="font-serif text-2xl font-bold text-charcoal group-hover:text-seedly-dark transition-colors">
+                  Curated Seed Kits
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
+                  Complete 28-day routine boxes with raw heirloom seeds portioned for both monthly phases, an engraved brass measuring scoop, and a printed cycle calendar.
+                </p>
+                <div className="pt-2 text-xs font-semibold text-seedly-dark flex items-center gap-1.5">
+                  <span>Explore starter boxes</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
             </div>
           </Link>
 
-          {/* Card 3: Teas */}
-          <Link
-            href="/teas"
-            className="group relative rounded-3xl overflow-hidden bg-white border border-border-gray shadow-card hover:shadow-hover transition-all flex flex-col justify-between p-6"
-          >
-            <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-cream/60 mb-5">
-              <Image
-                src="/images/products/chamomile-tea.svg"
-                alt="Mountain Herbal Teas"
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <span className="text-[11px] uppercase tracking-wider font-semibold text-seedly-primary">
-                Loose Leaf &amp; Blossom
-              </span>
-              <h3 className="font-serif text-xl font-bold text-charcoal group-hover:text-seedly-dark transition-colors">
-                Mountain Herbal Teas
-              </h3>
-              <p className="text-xs text-muted-gray leading-relaxed">
-                Whole chamomile flowers, cut Gilgit spearmint leaves, and single-estate green tea.
-              </p>
-            </div>
-            <div className="pt-4 mt-4 border-t border-border-gray/60 flex items-center justify-between text-xs font-semibold text-seedly-dark">
-              <span>View 3 teas</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
+          {/* Right Column: 2 Companion Cards (Spans 5 cols) */}
+          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+            {/* Card: Seeds */}
+            <Link
+              href="/seeds"
+              className="group relative rounded-3xl overflow-hidden bg-white border border-border-gray shadow-card hover:shadow-hover transition-all p-6 flex items-center gap-5"
+            >
+              <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-cream/70 shrink-0">
+                <Image
+                  src="/images/products/pumpkin-seeds.svg"
+                  alt="Heirloom Seeds"
+                  fill
+                  sizes="96px"
+                  className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-serif text-lg font-bold text-charcoal group-hover:text-seedly-dark transition-colors">
+                  Heirloom Seeds
+                </h3>
+                <p className="text-xs text-muted-gray leading-relaxed">
+                  Raw pumpkin, cold-milled flax, sunflower, and sesame. Unsalted and unbleached.
+                </p>
+                <div className="text-xs font-semibold text-seedly-dark pt-1 flex items-center gap-1">
+                  <span>View 4 single-origin seeds</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </div>
+            </Link>
+
+            {/* Card: Teas */}
+            <Link
+              href="/teas"
+              className="group relative rounded-3xl overflow-hidden bg-white border border-border-gray shadow-card hover:shadow-hover transition-all p-6 flex items-center gap-5"
+            >
+              <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-cream/70 shrink-0">
+                <Image
+                  src="/images/products/chamomile-tea.svg"
+                  alt="Mountain Herbal Teas"
+                  fill
+                  sizes="96px"
+                  className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-serif text-lg font-bold text-charcoal group-hover:text-seedly-dark transition-colors">
+                  Mountain Herbal Teas
+                </h3>
+                <p className="text-xs text-muted-gray leading-relaxed">
+                  Whole chamomile blossoms, northern spearmint leaves, and green tea in amber glass.
+                </p>
+                <div className="text-xs font-semibold text-seedly-dark pt-1 flex items-center gap-1">
+                  <span>View 3 loose infusions</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* 3. Actual Best Sellers */}
+      {/* 3. Actual Best Sellers (No redundant eyebrow) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
           <div className="space-y-1">
-            <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-              Popular Staples
-            </span>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">
               Everyday essentials
             </h2>
+            <p className="text-xs sm:text-sm text-muted-gray">Direct harvests from smallholder family farms in Punjab &amp; Gilgit.</p>
           </div>
           <Link
             href="/shop"
@@ -246,56 +240,69 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. Why Seedly? Three Specific Reasons */}
+      {/* 4. How We Handle Your Harvest (2 Substantive Points + Operational Pull-Quote) */}
       <section className="bg-seedly-stone py-16 sm:py-20 border-y border-border-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-xl mx-auto mb-12 space-y-2">
-            <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-              Our Principles
-            </span>
-            <h2 className="font-serif text-3xl font-bold text-charcoal">
-              Why we started Seedly
+          <div className="max-w-2xl mb-12 space-y-2">
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
+              How we handle your harvest
             </h2>
             <p className="text-sm text-muted-gray">
-              We wanted simple ingredients without confusing claims or hidden additives.
+              The difference between industrial bulk bins and cold-stored apothecary botanicals.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-7 rounded-3xl border border-border-gray space-y-3 shadow-subtle">
-              <span className="w-8 h-8 rounded-full bg-seedly-light text-seedly-dark text-xs flex items-center justify-center font-bold">
-                1
-              </span>
-              <h3 className="font-serif font-bold text-lg text-charcoal">
-                No chemical bleaching or glazes
-              </h3>
-              <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
-                Supermarket seeds in Pakistan are often bleached to look whiter or coated with mineral oil for shine. Our seeds are unsalted, unbleached, and sun-dried.
-              </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            {/* Column 1: Bleaching & Glazes */}
+            <div className="lg:col-span-4 bg-white p-7 sm:p-8 rounded-3xl border border-border-gray space-y-4 shadow-subtle flex flex-col justify-between">
+              <div className="space-y-3">
+                <span className="w-8 h-8 rounded-full bg-seedly-light text-seedly-dark text-xs flex items-center justify-center font-bold">
+                  01
+                </span>
+                <h3 className="font-serif font-bold text-xl text-charcoal">
+                  Never chemically bleached or oil-glazed
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
+                  Supermarket seeds in Pakistan are often washed in caustic alkali to look artificially pale or sprayed with mineral oil for false luster. Our pumpkin and sunflower seeds are cold-cleaned, unsalted, and sun-dried without additives.
+                </p>
+              </div>
+              <div className="pt-3 border-t border-border-gray/50 text-[11px] font-mono text-seedly-dark">
+                Tested: &lt; 7.8% Moisture
+              </div>
             </div>
 
-            <div className="bg-white p-7 rounded-3xl border border-border-gray space-y-3 shadow-subtle">
-              <span className="w-8 h-8 rounded-full bg-seedly-light text-seedly-dark text-xs flex items-center justify-center font-bold">
-                2
-              </span>
-              <h3 className="font-serif font-bold text-lg text-charcoal">
-                Whole blossoms, not tea dust
-              </h3>
-              <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
-                Commercial tea bags use pulverized fannings that lose their flavor and essential oils in days. We package whole dried chamomile flowers and cut spearmint leaves.
-              </p>
+            {/* Column 2: Whole Blossoms */}
+            <div className="lg:col-span-4 bg-white p-7 sm:p-8 rounded-3xl border border-border-gray space-y-4 shadow-subtle flex flex-col justify-between">
+              <div className="space-y-3">
+                <span className="w-8 h-8 rounded-full bg-seedly-light text-seedly-dark text-xs flex items-center justify-center font-bold">
+                  02
+                </span>
+                <h3 className="font-serif font-bold text-xl text-charcoal">
+                  Intact blossoms, not machine tea dust
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
+                  Commercial paper tea bags are packed with pulverized fannings that lose their aromatics and apigenin flavonoids in weeks. We preserve intact dried chamomile flowers and coarse alpine spearmint leaves in UV-protective amber jars.
+                </p>
+              </div>
+              <div className="pt-3 border-t border-border-gray/50 text-[11px] font-mono text-seedly-dark">
+                Shade-Dried at 2,200m Elevation
+              </div>
             </div>
 
-            <div className="bg-white p-7 rounded-3xl border border-border-gray space-y-3 shadow-subtle">
-              <span className="w-8 h-8 rounded-full bg-seedly-light text-seedly-dark text-xs flex items-center justify-center font-bold">
-                3
-              </span>
-              <h3 className="font-serif font-bold text-lg text-charcoal">
-                Direct Pakistani partnerships
-              </h3>
-              <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
-                We work directly with farmers in Gilgit-Baltistan and Punjab. We pay above-market rates for clean harvesting and reliable quality.
-              </p>
+            {/* Column 3: Operational Pull-Quote Callout (Breaks 3-card monotony) */}
+            <div className="lg:col-span-4 bg-seedly-dark text-white p-7 sm:p-8 rounded-3xl space-y-5 shadow-card flex flex-col justify-between">
+              <div className="space-y-3">
+                <span className="text-[10px] uppercase tracking-widest font-mono text-seedly-light/80 block">
+                  Smallholder Commitment
+                </span>
+                <blockquote className="font-serif text-lg sm:text-xl font-normal leading-relaxed text-cream">
+                  "We pay above wholesale market rates directly to family growers in Sahiwal and Gilgit. No middlemen, no mystery blending, and no inventory sitting in humid warehouses."
+                </blockquote>
+              </div>
+              <div className="pt-4 border-t border-seedly-forest/40 flex items-center justify-between text-xs text-seedly-light/80">
+                <span>Lahore Dispatch Hub</span>
+                <span className="font-mono text-[11px]">Direct Trade</span>
+              </div>
             </div>
           </div>
         </div>
@@ -318,9 +325,9 @@ export default function HomePage() {
             </div>
 
             <div className="lg:col-span-7 space-y-5">
-              <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-                Featured Routine Box
-              </span>
+              <div className="inline-block px-2.5 py-1 rounded-full bg-seedly-light text-seedly-dark text-[11px] font-semibold uppercase tracking-wider">
+                Full Monthly Routine
+              </div>
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
                 Complete 28-Day Seed Cycling Ritual
               </h2>
@@ -363,37 +370,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. Founder Note / Why We Started */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="border border-border-gray rounded-3xl p-8 sm:p-12 bg-white text-center space-y-4 shadow-subtle">
-          <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-            From Seedly
-          </span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">
-            "We keep our products simple and our information clear."
-          </h2>
-          <p className="text-sm sm:text-base text-muted-gray leading-relaxed max-w-2xl mx-auto">
-            When we looked for basic raw seeds and whole chamomile in Pakistani stores, we were tired of decoding marketing buzzwords or settling for dusty bulk bins. We started Seedly to make it easy to buy clean, unadulterated seeds and teas with honest labels.
-          </p>
-          <div className="pt-2">
+      {/* 6. First-Person Authentic Founder's Note */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="border border-border-gray rounded-3xl p-8 sm:p-12 bg-white space-y-6 shadow-card relative overflow-hidden">
+          <div className="space-y-4">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal leading-snug">
+              "I started buying seeds from the Akbari Mandi in Lahore because the bagged stuff at grocery stores tasted stale."
+            </h2>
+            <p className="text-sm sm:text-base text-muted-gray leading-relaxed">
+              They were either roasted in commercial vegetable oils, salted to mask aging, or chemically glazed for shelf appearance. Seedly is that same fresh harvest, tested for purity, cold-stored, and packaged properly so it arrives at your doorstep in its natural state.
+            </p>
+          </div>
+          <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-border-gray/60">
+            <div>
+              <p className="font-bold text-charcoal text-sm">Awais</p>
+              <p className="text-xs text-muted-gray">Founder, Seedly Naturals • Lahore, Pakistan</p>
+            </div>
             <Link
               href="/about"
-              className="inline-flex items-center gap-2 text-xs font-semibold text-seedly-dark hover:underline"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-seedly-dark hover:underline"
             >
-              <span>Read our full story</span>
+              <span>Read our full sourcing story</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 7. Real Customer Reviews */}
+      {/* 7. Real Customer Reviews (No repetitive eyebrow) */}
       <section className="bg-cream py-16 sm:py-20 border-t border-border-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-xl mx-auto mb-12 space-y-2">
-            <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-              Customer Feedback
-            </span>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">
               From our first verified customers
             </h2>

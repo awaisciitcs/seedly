@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google';
+import { Playfair_Display, Roboto } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '../lib/store/cart';
 import { WishlistProvider } from '../lib/store/wishlist';
@@ -11,7 +11,8 @@ const playfair = Playfair_Display({
   display: 'swap',
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const roboto = Roboto({
+  weight: ['300', '400', '500', '700'],
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
@@ -52,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${jakarta.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${roboto.variable}`}>
       <body className="min-h-screen flex flex-col bg-cream text-charcoal">
         <CartProvider>
           <WishlistProvider>
