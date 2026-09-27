@@ -1,7 +1,7 @@
 import { getDatabase } from './index';
 
-export function runSeed(force = false) {
-  const db = getDatabase();
+export function runSeed(targetDb?: any, force = false) {
+  const db = targetDb || getDatabase();
 
   const prodCount = db.prepare('SELECT COUNT(*) as count FROM products').get() as { count: number };
   if (force || !prodCount || prodCount.count === 0) {

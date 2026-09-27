@@ -1,6 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 import { runSeed } from './seed';
 
 let dbInstance: DatabaseSync | null = null;
@@ -10,31 +11,74 @@ export function toPlain<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
+function resolveDbPath(): { dbPath: string; isServerless: boolean } {
+  const isServerless = Boolean(
+    process.env.VERCEL ||
+    process.env.AWS_LAMBDA_FUNCTION_NAME ||
+    process.env.LAMBDA_TASK_ROOT ||
+    (process.env.NODE_ENV === 'production' && !fs.existsSync(path.join(process.cwd(), 'data')))
+  );
+
+  if (isServerless) {
+    const tmpDir = os.tmpdir() || '/tmp';
+    const tmpDbPath = path.join(tmpDir, 'seedly.db');
+
+    // If tmpDbPath doesn't exist, try to copy the source seedly.db if it exists
+    if (!fs.existsSync(tmpDbPath)) {
+      const sourceDbPath = path.join(process.cwd(), 'data', 'seedly.db');
+      if (fs.existsSync(sourceDbPath)) {
+        try {
+          fs.copyFileSync(sourceDbPath, tmpDbPath);
+        } catch (copyErr) {
+          console.warn('Could not copy bundled seedly.db to /tmp:', copyErr);
+        }
+      }
+    }
+    return { dbPath: tmpDbPath, isServerless: true };
+  }
+
+  // Local development
+  const localDir = path.join(process.cwd(), 'data');
+  if (!fs.existsSync(localDir)) {
+    try {
+      fs.mkdirSync(localDir, { recursive: true });
+    } catch {
+      // In case localDir cannot be created, fallback to tmp
+      const tmpDbPath = path.join(os.tmpdir(), 'seedly.db');
+      return { dbPath: tmpDbPath, isServerless: true };
+    }
+  }
+
+  return { dbPath: path.join(localDir, 'seedly.db'), isServerless: false };
+}
+
 export function getDatabase(): DatabaseSync {
   if (dbInstance) {
     return dbInstance;
   }
 
-  const dbDir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
-  }
-
-  const dbPath = path.join(dbDir, 'seedly.db');
+  const { dbPath, isServerless } = resolveDbPath();
   dbInstance = new DatabaseSync(dbPath);
 
-  // Configure SQLite for high concurrency (WAL mode + 10s busy timeout)
-  dbInstance.exec(`
-    PRAGMA journal_mode = WAL;
-    PRAGMA busy_timeout = 10000;
-  `);
+  if (isServerless) {
+    dbInstance.exec(`
+      PRAGMA journal_mode = DELETE;
+      PRAGMA busy_timeout = 5000;
+    `);
+  } else {
+    // Configure SQLite for high concurrency in local dev (WAL mode + 10s busy timeout)
+    dbInstance.exec(`
+      PRAGMA journal_mode = WAL;
+      PRAGMA busy_timeout = 10000;
+    `);
+  }
 
   // Initialize schema
   initSchema(dbInstance);
 
   // Seed default catalog & settings if not present
   try {
-    runSeed();
+    runSeed(dbInstance);
   } catch (err: any) {
     // If another worker thread already seeded, ignore locked error
     if (!err?.message?.includes('locked')) {
