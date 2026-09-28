@@ -21,13 +21,13 @@ export function AnnouncementBar() {
         {/* Right WhatsApp */}
         <div className="hidden md:flex items-center gap-3 text-seedly-light/90 text-[11px]">
           <a
-            href="https://wa.me/923001234567?text=Hi%20Seedly%2C%20I%20have%20a%20question."
+            href="https://wa.me/923041117333?text=Hi%20Seedly%2C%20I%20have%20a%20question."
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 hover:text-white transition-colors"
           >
             <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
-            <span>WhatsApp Helpline: 0300 1234567</span>
+            <span>WhatsApp Helpline: 0304 1117333</span>
           </a>
         </div>
       </div>

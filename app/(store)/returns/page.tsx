@@ -1,6 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { RotateCcw, ShieldCheck, CheckCircle2, Phone } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: '7-Day Return & Replacement Policy | Seedly Pakistan',
+  description:
+    'Our fresh botanical satisfaction guarantee. Easy 7-day returns and prompt replacements via WhatsApp.',
+};
 
 export default function ReturnsPage() {
   return (
@@ -34,7 +41,7 @@ export default function ReturnsPage() {
 
         <h2 className="font-serif text-xl font-bold pt-2">How to Request a Replacement or Refund</h2>
         <p>
-          Simply take a clear photo of the delivered items and share it with your order number via WhatsApp at <strong>+92 300 1234567</strong> or email <strong>care@seedly.pk</strong>. Our team will review within 24 hours and arrange a prompt replacement or refund.
+          Simply take a clear photo of the delivered items and share it with your order number via WhatsApp at <strong>+92 304 1117333</strong> or email <strong>care@seedly.pk</strong>. Our team will review within 24 hours and arrange a prompt replacement or refund.
         </p>
 
         <h2 className="font-serif text-xl font-bold pt-2">Refund Processing</h2>

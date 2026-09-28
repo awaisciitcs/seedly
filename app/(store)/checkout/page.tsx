@@ -15,10 +15,12 @@ import {
   CheckCircle2,
   Lock,
   ArrowRight,
-  Sparkles,
   AlertCircle,
   Copy,
   Check,
+  Banknote,
+  PhoneCall,
+  Clock,
 } from 'lucide-react';
 
 const PAKISTAN_CITIES = [
@@ -102,18 +104,27 @@ const PROVINCES = [
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, subtotalMinor, freeShippingThreshold, clearCart } = useCart();
+  const { items, subtotalMinor, clearCart, freeShippingThreshold, setIsCartOpen } = useCart();
 
-  // Settings for account numbers
-  const [settings, setSettings] = useState<any>({
+  // Ensure cart drawer overlay is closed upon entering checkout
+  useEffect(() => {
+    setIsCartOpen(false);
+  }, [setIsCartOpen]);
+
+  // Stable pre-order reference preview
+  const [pendingOrderRef] = useState(() => `SED-${Math.floor(100000 + Math.random() * 900000)}`);
+
+  // Site settings for bank & wallets
+  const [settings, setSettings] = useState({
     bank_name: 'Meezan Bank Limited',
-    bank_account_title: 'Seedly Naturals Pakistan',
-    bank_account_number: '0102-0104882910',
-    bank_iban: 'PK36MEZN0001020104882910',
-    jazzcash_number: '0300 1234567',
-    jazzcash_title: 'Seedly Naturals Pakistan',
-    easypaisa_number: '0345 1234567',
-    easypaisa_title: 'Seedly Naturals Pakistan',
+    bank_account_title: 'Seedly Organics',
+    bank_account_number: '01020304050607',
+    bank_iban: 'PK12MEZN0001020304050607',
+    jazzcash_title: 'Seedly Care',
+    jazzcash_number: '0304 1117333',
+    easypaisa_title: 'Seedly Care',
+    easypaisa_number: '0345 5557333',
+    whatsapp_number: '+92 304 1117333',
   });
 
   useEffect(() => {
@@ -160,7 +171,7 @@ export default function CheckoutPage() {
         if (!value.trim()) return 'Mobile / WhatsApp phone number is required.';
         const cleanPhone = value.replace(/[\s\-\(\)]/g, '');
         if (!/^((\+92)|(0092)|(92)|0)?(3[0-9]{9})$/.test(cleanPhone)) {
-          return 'Enter a valid Pakistani mobile number (e.g. 0300 1234567).';
+          return 'Enter a valid Pakistani mobile number (e.g. 0304 1117333).';
         }
         return '';
       }
@@ -205,10 +216,8 @@ export default function CheckoutPage() {
     }
   };
 
-  // Payment states
-  const [paymentMethod, setPaymentMethod] = useState<'wallet_aggregator' | 'bank_transfer'>(
-    'wallet_aggregator'
-  );
+  // Payment states: COD, wallet_aggregator, bank_transfer
+  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'wallet_aggregator' | 'bank_transfer'>('COD');
   const [walletProvider, setWalletProvider] = useState<'jazzcash' | 'easypaisa'>('jazzcash');
   const [transactionId, setTransactionId] = useState('');
   const [copiedNumber, setCopiedNumber] = useState(false);
@@ -309,6 +318,8 @@ export default function CheckoutPage() {
       if (paymentMethod === 'wallet_aggregator') {
         const provName = walletProvider === 'jazzcash' ? 'JazzCash' : 'Easypaisa';
         combinedNotes += ` [${provName} TID: ${transactionId || 'Pending verification'}]`;
+      } else if (paymentMethod === 'COD') {
+        combinedNotes += ` [Payment: Cash on Delivery]`;
       }
 
       const orderPayload = {
@@ -344,7 +355,7 @@ export default function CheckoutPage() {
 
       const orderNumber = json.data.order_number;
 
-      // Avoid "Your basket is empty" flash before navigation completes
+      // Avoid empty basket flash before navigation completes
       setIsOrderPlaced(true);
       clearCart();
       router.push(`/order/${orderNumber}`);
@@ -391,13 +402,25 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-      <div className="mb-10 text-center sm:text-left">
-        <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-          Secure Pakistani Checkout
-        </span>
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal mt-1">
-          Complete Your Order
-        </h1>
+      {/* Checkout Header with Pending Order Reference */}
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-gray/70 pb-6">
+        <div>
+          <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
+            Checkout &amp; Delivery
+          </span>
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal mt-1">
+            Complete Your Order
+          </h1>
+        </div>
+        <div className="text-left sm:text-right space-y-1">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sand/60 border border-border-gray text-xs font-mono text-charcoal">
+            <span className="text-muted-gray">Pending Ref:</span>
+            <strong>{pendingOrderRef}</strong>
+          </div>
+          <p className="text-[11px] text-muted-gray">
+            Help line: <a href="https://wa.me/923041117333" target="_blank" rel="noopener noreferrer" className="text-seedly-dark font-semibold hover:underline">0304 1117333</a>
+          </p>
+        </div>
       </div>
 
       {errorMsg && (
@@ -408,9 +431,9 @@ export default function CheckoutPage() {
       )}
 
       <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-        {/* Left Column: Customer, Delivery, and Payment */}
+        {/* Left Column: Form Steps */}
         <div className="lg:col-span-7 space-y-8">
-          {/* Step 1: Customer Identification */}
+          {/* Step 1: Customer Contact */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-border-gray/60">
               <h2 className="font-serif text-xl font-bold text-charcoal flex items-center gap-2">
@@ -419,19 +442,30 @@ export default function CheckoutPage() {
                 </span>
                 <span>Customer Contact</span>
               </h2>
-              <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
-                Guest Checkout (No Account Required)
+              <span className="text-xs text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
+                Guest Checkout (No Account Needed)
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="customerName"
+                  id="customerName-label"
+                  className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5"
+                >
                   Full Name *
                 </label>
                 <input
+                  id="customerName"
+                  name="customerName"
                   type="text"
                   required
+                  autoComplete="name"
+                  aria-required="true"
+                  aria-labelledby="customerName-label"
+                  aria-invalid={!!(touched.customerName && fieldErrors.customerName)}
+                  aria-describedby={touched.customerName && fieldErrors.customerName ? 'customerName-error' : undefined}
                   placeholder="e.g. Fatima Ali"
                   value={customerName}
                   onChange={(e) => handleFieldChange('customerName', e.target.value, setCustomerName)}
@@ -443,7 +477,7 @@ export default function CheckoutPage() {
                   } rounded-xl text-sm focus:outline-none focus:ring-2`}
                 />
                 {touched.customerName && fieldErrors.customerName && (
-                  <p className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                  <p id="customerName-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>{fieldErrors.customerName}</span>
                   </p>
@@ -451,12 +485,23 @@ export default function CheckoutPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="customerEmail"
+                  id="customerEmail-label"
+                  className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5"
+                >
                   Email Address *
                 </label>
                 <input
+                  id="customerEmail"
+                  name="customerEmail"
                   type="email"
                   required
+                  autoComplete="email"
+                  aria-required="true"
+                  aria-labelledby="customerEmail-label"
+                  aria-invalid={!!(touched.customerEmail && fieldErrors.customerEmail)}
+                  aria-describedby={touched.customerEmail && fieldErrors.customerEmail ? 'customerEmail-error' : 'customerEmail-hint'}
                   placeholder="fatima@example.com"
                   value={customerEmail}
                   onChange={(e) => handleFieldChange('customerEmail', e.target.value, setCustomerEmail)}
@@ -468,23 +513,36 @@ export default function CheckoutPage() {
                   } rounded-xl text-sm focus:outline-none focus:ring-2`}
                 />
                 {touched.customerEmail && fieldErrors.customerEmail ? (
-                  <p className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                  <p id="customerEmail-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>{fieldErrors.customerEmail}</span>
                   </p>
                 ) : (
-                  <p className="text-[11px] text-muted-gray mt-1">Invoice & order confirmation will be sent here.</p>
+                  <p id="customerEmail-hint" className="text-[11px] text-muted-gray mt-1">
+                    Invoice &amp; order tracking confirmation sent here.
+                  </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="customerPhone"
+                  id="customerPhone-label"
+                  className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5"
+                >
                   WhatsApp / Mobile Phone *
                 </label>
                 <input
+                  id="customerPhone"
+                  name="customerPhone"
                   type="tel"
                   required
-                  placeholder="0300 1234567"
+                  autoComplete="tel"
+                  aria-required="true"
+                  aria-labelledby="customerPhone-label"
+                  aria-invalid={!!(touched.customerPhone && fieldErrors.customerPhone)}
+                  aria-describedby={touched.customerPhone && fieldErrors.customerPhone ? 'customerPhone-error' : 'customerPhone-hint'}
+                  placeholder="0304 1117333"
                   value={customerPhone}
                   onChange={(e) => handleFieldChange('customerPhone', e.target.value, setCustomerPhone)}
                   onBlur={() => handleBlur('customerPhone', customerPhone)}
@@ -495,12 +553,14 @@ export default function CheckoutPage() {
                   } rounded-xl text-sm focus:outline-none focus:ring-2`}
                 />
                 {touched.customerPhone && fieldErrors.customerPhone ? (
-                  <p className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                  <p id="customerPhone-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>{fieldErrors.customerPhone}</span>
                   </p>
                 ) : (
-                  <p className="text-[11px] text-muted-gray mt-1">For courier updates and delivery coordination (03xx-xxxxxxx).</p>
+                  <p id="customerPhone-hint" className="text-[11px] text-muted-gray mt-1">
+                    For TCS / Leopards courier delivery coordination.
+                  </p>
                 )}
               </div>
             </div>
@@ -517,18 +577,29 @@ export default function CheckoutPage() {
               </h2>
               <span className="text-xs text-muted-gray flex items-center gap-1">
                 <Truck className="w-3.5 h-3.5 text-seedly-primary" />
-                <span>Nationwide TCS/Leopards</span>
+                <span>Nationwide TCS / Leopards</span>
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
-                  Complete Street Address / House / Apartment *
+                <label
+                  htmlFor="shippingAddress"
+                  id="shippingAddress-label"
+                  className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5"
+                >
+                  Complete Delivery Address / House / Street *
                 </label>
                 <input
+                  id="shippingAddress"
+                  name="shippingAddress"
                   type="text"
                   required
+                  autoComplete="street-address"
+                  aria-required="true"
+                  aria-labelledby="shippingAddress-label"
+                  aria-invalid={!!(touched.shippingAddress && fieldErrors.shippingAddress)}
+                  aria-describedby={touched.shippingAddress && fieldErrors.shippingAddress ? 'shippingAddress-error' : undefined}
                   placeholder="House 12, Street 4, Sector F-7/2 or Block 5, Clifton"
                   value={shippingAddress}
                   onChange={(e) => handleFieldChange('shippingAddress', e.target.value, setShippingAddress)}
@@ -540,7 +611,7 @@ export default function CheckoutPage() {
                   } rounded-xl text-sm focus:outline-none focus:ring-2`}
                 />
                 {touched.shippingAddress && fieldErrors.shippingAddress && (
-                  <p className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                  <p id="shippingAddress-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>{fieldErrors.shippingAddress}</span>
                   </p>
@@ -548,10 +619,19 @@ export default function CheckoutPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="shippingCity"
+                  id="shippingCity-label"
+                  className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5"
+                >
                   City *
                 </label>
                 <select
+                  id="shippingCity"
+                  name="shippingCity"
+                  autoComplete="address-level2"
+                  aria-required="true"
+                  aria-labelledby="shippingCity-label"
                   value={shippingCity}
                   onChange={(e) => handleCityChange(e.target.value)}
                   className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-seedly-primary/50"
@@ -565,10 +645,18 @@ export default function CheckoutPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="shippingProvince"
+                  id="shippingProvince-label"
+                  className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5"
+                >
                   Province
                 </label>
                 <select
+                  id="shippingProvince"
+                  name="shippingProvince"
+                  autoComplete="address-level1"
+                  aria-labelledby="shippingProvince-label"
                   value={shippingProvince}
                   onChange={(e) => setShippingProvince(e.target.value)}
                   className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-seedly-primary/50"
@@ -583,12 +671,21 @@ export default function CheckoutPage() {
 
               {shippingCity === 'Other City' && (
                 <div className="sm:col-span-2 animate-fadeIn">
-                  <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                  <label
+                    htmlFor="customCity"
+                    id="customCity-label"
+                    className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5"
+                  >
                     Specify City / Town Name *
                   </label>
                   <input
+                    id="customCity"
+                    name="customCity"
                     type="text"
                     required
+                    autoComplete="address-level2"
+                    aria-required="true"
+                    aria-labelledby="customCity-label"
                     placeholder="Enter your city, town or tehsil name"
                     value={customCity}
                     onChange={(e) => handleFieldChange('customCity', e.target.value, setCustomCity)}
@@ -600,7 +697,7 @@ export default function CheckoutPage() {
                     } rounded-xl text-sm focus:outline-none focus:ring-2`}
                   />
                   {touched.customCity && fieldErrors.customCity && (
-                    <p className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                    <p id="customCity-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                       <span>{fieldErrors.customCity}</span>
                     </p>
@@ -609,11 +706,18 @@ export default function CheckoutPage() {
               )}
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="shippingNotes"
+                  id="shippingNotes-label"
+                  className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5"
+                >
                   Delivery Notes / Landmark (Optional)
                 </label>
                 <input
+                  id="shippingNotes"
+                  name="shippingNotes"
                   type="text"
+                  aria-labelledby="shippingNotes-label"
                   placeholder="Near main commercial market, call before arriving..."
                   value={shippingNotes}
                   onChange={(e) => setShippingNotes(e.target.value)}
@@ -623,10 +727,10 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Step 3: Payment Method */}
+          {/* Step 3: Payment Method Selection */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-border-gray/60">
-              <h2 className="font-serif text-xl font-bold text-charcoal flex items-center gap-2">
+              <h2 id="payment-methods-heading" className="font-serif text-xl font-bold text-charcoal flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-seedly-dark text-white text-xs flex items-center justify-center font-sans">
                   3
                 </span>
@@ -634,74 +738,137 @@ export default function CheckoutPage() {
               </h2>
               <span className="text-xs text-muted-gray flex items-center gap-1">
                 <Lock className="w-3 h-3 text-seedly-primary" />
-                <span>Verified & Secure</span>
+                <span>256-bit Encrypted</span>
               </span>
             </div>
 
-            {/* Payment Method Selector Radio Tabs */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Option 1: Mobile Wallet Transfer (JazzCash / Easypaisa) */}
+            {/* Payment Method Radio Group */}
+            <div role="radiogroup" aria-labelledby="payment-methods-heading" className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Option 1: Cash on Delivery (COD) */}
               <button
                 type="button"
+                role="radio"
+                aria-checked={paymentMethod === 'COD'}
+                onClick={() => setPaymentMethod('COD')}
+                className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                  paymentMethod === 'COD'
+                    ? 'border-seedly-dark bg-seedly-light/60 shadow-subtle'
+                    : 'border-border-gray bg-white hover:bg-cream'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      Pay on Delivery
+                    </span>
+                    <div
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                        paymentMethod === 'COD'
+                          ? 'border-seedly-dark bg-seedly-dark text-white'
+                          : 'border-border-gray'
+                      }`}
+                    >
+                      {paymentMethod === 'COD' && <CheckCircle2 className="w-3.5 h-3.5" />}
+                    </div>
+                  </div>
+                  <h3 className="font-serif font-bold text-charcoal text-sm sm:text-base">Cash on Delivery</h3>
+                  <p className="text-[11px] text-muted-gray mt-1 leading-relaxed">
+                    Pay cash to the courier agent upon doorstep delivery.
+                  </p>
+                </div>
+              </button>
+
+              {/* Option 2: Mobile Wallets (JazzCash / Easypaisa) */}
+              <button
+                type="button"
+                role="radio"
+                aria-checked={paymentMethod === 'wallet_aggregator'}
                 onClick={() => setPaymentMethod('wallet_aggregator')}
-                className={`p-4 rounded-2xl border text-left transition-all ${
+                className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between ${
                   paymentMethod === 'wallet_aggregator'
                     ? 'border-seedly-dark bg-seedly-light/60 shadow-subtle'
                     : 'border-border-gray bg-white hover:bg-cream'
                 }`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full">
-                    Mobile Wallet
-                  </span>
-                  <div
-                    className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                      paymentMethod === 'wallet_aggregator'
-                        ? 'border-seedly-dark bg-seedly-dark text-white'
-                        : 'border-border-gray'
-                    }`}
-                  >
-                    {paymentMethod === 'wallet_aggregator' && <CheckCircle2 className="w-3.5 h-3.5" />}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full">
+                      Mobile Wallet
+                    </span>
+                    <div
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                        paymentMethod === 'wallet_aggregator'
+                          ? 'border-seedly-dark bg-seedly-dark text-white'
+                          : 'border-border-gray'
+                      }`}
+                    >
+                      {paymentMethod === 'wallet_aggregator' && <CheckCircle2 className="w-3.5 h-3.5" />}
+                    </div>
                   </div>
+                  <h3 className="font-serif font-bold text-charcoal text-sm sm:text-base">JazzCash / Easypaisa</h3>
+                  <p className="text-[11px] text-muted-gray mt-1 leading-relaxed">
+                    Send directly to wallet &amp; enter Transaction ID (TID).
+                  </p>
                 </div>
-                <h3 className="font-serif font-bold text-charcoal text-base">JazzCash / Easypaisa</h3>
-                <p className="text-xs text-muted-gray mt-1">
-                  Send directly to our official business wallet and submit your Transaction ID (TID).
-                </p>
               </button>
 
-              {/* Option 2: Bank Transfer Fallback */}
+              {/* Option 3: Meezan Bank Transfer */}
               <button
                 type="button"
+                role="radio"
+                aria-checked={paymentMethod === 'bank_transfer'}
                 onClick={() => setPaymentMethod('bank_transfer')}
-                className={`p-4 rounded-2xl border text-left transition-all ${
+                className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between ${
                   paymentMethod === 'bank_transfer'
                     ? 'border-seedly-dark bg-seedly-light/60 shadow-subtle'
                     : 'border-border-gray bg-white hover:bg-cream'
                 }`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-charcoal bg-sand px-2 py-0.5 rounded-full">
-                    Direct Transfer
-                  </span>
-                  <div
-                    className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                      paymentMethod === 'bank_transfer'
-                        ? 'border-seedly-dark bg-seedly-dark text-white'
-                        : 'border-border-gray'
-                    }`}
-                  >
-                    {paymentMethod === 'bank_transfer' && <CheckCircle2 className="w-3.5 h-3.5" />}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-charcoal bg-sand px-2 py-0.5 rounded-full">
+                      Bank Transfer
+                    </span>
+                    <div
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                        paymentMethod === 'bank_transfer'
+                          ? 'border-seedly-dark bg-seedly-dark text-white'
+                          : 'border-border-gray'
+                      }`}
+                    >
+                      {paymentMethod === 'bank_transfer' && <CheckCircle2 className="w-3.5 h-3.5" />}
+                    </div>
                   </div>
+                  <h3 className="font-serif font-bold text-charcoal text-sm sm:text-base">Meezan Bank</h3>
+                  <p className="text-[11px] text-muted-gray mt-1 leading-relaxed">
+                    Online banking / ATM transfer with receipt upload.
+                  </p>
                 </div>
-                <h3 className="font-serif font-bold text-charcoal text-base">Meezan Bank Transfer</h3>
-                <p className="text-xs text-muted-gray mt-1">
-                  Transfer via online banking or ATM and upload your payment receipt.
-                </p>
               </button>
             </div>
 
-            {/* Wallet Details View (JazzCash / Easypaisa receiving accounts) */}
+            {/* Cash on Delivery Details */}
+            {paymentMethod === 'COD' && (
+              <div className="p-5 rounded-2xl bg-cream/70 border border-border-gray space-y-3 animate-fadeIn">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-800">
+                  <Banknote className="w-4 h-4 text-emerald-700" />
+                  <span>Cash on Delivery Instructions</span>
+                </div>
+                <div className="space-y-2 text-xs text-charcoal leading-relaxed bg-white p-4 rounded-xl border border-border-gray/70">
+                  <p>
+                    • <strong>Exact change:</strong> Please keep cash of <strong>{formatPKR(totalMinor)}</strong> ready for the courier rider.
+                  </p>
+                  <p>
+                    • <strong>Courier dispatch:</strong> Dispatched from our Lahore center via TCS / Leopards within 24 hours.
+                  </p>
+                  <p>
+                    • <strong>Live updates:</strong> You will receive a courier tracking number via SMS and WhatsApp.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Wallet Details View (JazzCash / Easypaisa) */}
             {paymentMethod === 'wallet_aggregator' && (
               <div className="p-5 rounded-2xl bg-cream/50 border border-border-gray space-y-4 animate-fadeIn">
                 {/* Provider switcher */}
@@ -730,7 +897,7 @@ export default function CheckoutPage() {
                   </button>
                 </div>
 
-                {/* Official Receiving Account Card */}
+                {/* Receiving Account Card */}
                 <div className="bg-white p-4 rounded-2xl border border-border-gray space-y-3">
                   <div className="flex items-center justify-between border-b border-border-gray/50 pb-2">
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-gray">
@@ -772,15 +939,17 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* Instructions and Transaction ID (TID) Input */}
+                {/* Transaction ID (TID) Input */}
                 <div className="space-y-3">
                   <div className="space-y-1">
-                    <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider">
-                      Transaction ID (TID / Trx ID) *
+                    <label htmlFor="transactionId" id="transactionId-label" className="block text-xs font-semibold text-charcoal uppercase tracking-wider">
+                      Transaction ID (TID / Trx ID)
                     </label>
                     <input
+                      id="transactionId"
+                      name="transactionId"
                       type="text"
-                      required
+                      aria-labelledby="transactionId-label"
                       placeholder={
                         walletProvider === 'jazzcash'
                           ? 'e.g. 12-digit TID from 8558 SMS (e.g. 982182746192)'
@@ -790,20 +959,24 @@ export default function CheckoutPage() {
                       onChange={(e) => setTransactionId(e.target.value)}
                       className="w-full px-4 py-2.5 bg-white border border-border-gray rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-seedly-primary/50 text-charcoal"
                     />
-                    <p className="text-[11px] text-muted-gray">
-                      Please transfer <strong>{formatPKR(totalMinor)}</strong> via your {walletProvider === 'jazzcash' ? 'JazzCash' : 'Easypaisa'} app, then enter the confirmation Transaction ID here.
-                    </p>
+                    <div className="flex items-center gap-1.5 text-[11px] text-muted-gray pt-1">
+                      <Clock className="w-3.5 h-3.5 text-seedly-primary" />
+                      <span>Wallet payments are verified within 2–4 business hours upon order placement.</span>
+                    </div>
                   </div>
 
                   {/* Optional Screenshot */}
                   <div>
-                    <label className="block text-xs font-semibold text-charcoal mb-1">
+                    <label htmlFor="walletScreenshot" id="walletScreenshot-label" className="block text-xs font-semibold text-charcoal mb-1">
                       Upload Payment Screenshot (Optional)
                     </label>
                     <div className="border border-dashed border-border-gray hover:border-seedly-primary rounded-xl p-3 text-center bg-white cursor-pointer relative">
                       <input
+                        id="walletScreenshot"
+                        name="walletScreenshot"
                         type="file"
                         accept="image/*,.pdf"
+                        aria-labelledby="walletScreenshot-label"
                         onChange={handleReceiptChange}
                         className="absolute inset-0 opacity-0 cursor-pointer"
                       />
@@ -868,13 +1041,16 @@ export default function CheckoutPage() {
 
                 {/* Receipt Upload Input */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-charcoal">
+                  <label htmlFor="bankReceipt" id="bankReceipt-label" className="block text-xs font-semibold text-charcoal">
                     Upload Bank Transfer Receipt / Screenshot *
                   </label>
                   <div className="border-2 border-dashed border-border-gray hover:border-seedly-primary rounded-xl p-4 text-center bg-white cursor-pointer relative">
                     <input
+                      id="bankReceipt"
+                      name="bankReceipt"
                       type="file"
                       accept="image/*,.pdf"
+                      aria-labelledby="bankReceipt-label"
                       onChange={handleReceiptChange}
                       className="absolute inset-0 opacity-0 cursor-pointer"
                     />
@@ -888,10 +1064,14 @@ export default function CheckoutPage() {
                     ) : (
                       <div className="space-y-1">
                         <Upload className="w-5 h-5 text-muted-gray mx-auto" />
-                        <p className="text-xs text-charcoal font-medium">Click to upload payment screenshot</p>
+                        <p className="text-xs text-charcoal font-medium">Click to upload bank transfer receipt</p>
                         <p className="text-[10px] text-muted-gray">JPG, PNG or PDF up to 5MB</p>
                       </div>
                     )}
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[11px] text-muted-gray">
+                    <Clock className="w-3.5 h-3.5 text-seedly-primary" />
+                    <span>Bank transfers are verified within 2–4 business hours.</span>
                   </div>
                 </div>
               </div>
@@ -914,7 +1094,9 @@ export default function CheckoutPage() {
                     </div>
                     <div className="min-w-0">
                       <p className="font-medium text-charcoal truncate">{item.name}</p>
-                      <p className="text-muted-gray">Qty: {item.quantity}</p>
+                      <p className="text-muted-gray">
+                        {item.variant_label || '250g Pouch'} · Qty: {item.quantity}
+                      </p>
                     </div>
                   </div>
                   <span className="font-semibold text-charcoal">
@@ -940,12 +1122,33 @@ export default function CheckoutPage() {
                   )}
                 </span>
               </div>
+              <div className="flex justify-between text-muted-gray">
+                <span>Payment Method</span>
+                <span className="font-semibold text-charcoal">
+                  {paymentMethod === 'COD'
+                    ? 'Cash on Delivery'
+                    : paymentMethod === 'wallet_aggregator'
+                    ? 'Mobile Wallet'
+                    : 'Bank Transfer'}
+                </span>
+              </div>
               <div className="border-t border-border-gray pt-3 flex justify-between items-baseline">
                 <span className="font-serif font-bold text-base text-charcoal">Total Amount</span>
                 <span className="font-serif font-bold text-2xl text-seedly-dark">
                   {formatPKR(totalMinor)}
                 </span>
               </div>
+            </div>
+
+            {/* Delivery Timing Indicator */}
+            <div className="p-3 bg-cream/70 rounded-xl border border-border-gray/70 text-xs text-charcoal space-y-1">
+              <div className="flex items-center gap-1.5 font-semibold">
+                <Truck className="w-3.5 h-3.5 text-seedly-primary" />
+                <span>Estimated Delivery: 2–4 business days</span>
+              </div>
+              <p className="text-[11px] text-muted-gray">
+                Dispatched directly from Lahore via TCS &amp; Leopards Courier.
+              </p>
             </div>
 
             {/* Place Order Button */}
@@ -964,8 +1167,8 @@ export default function CheckoutPage() {
 
             <div className="space-y-2 text-[11px] text-muted-gray text-center pt-2">
               <p className="flex items-center justify-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-seedly-primary" />
-                <span>100% Secure Checkout with End-to-End Encryption</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                <span>256-bit SSL Encrypted Checkout</span>
               </p>
               <p>
                 By placing this order, you agree to Seedly's{' '}

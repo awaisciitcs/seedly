@@ -5,7 +5,7 @@ import { CartItem } from '../types';
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: CartItem) => void;
+  addItem: (item: CartItem, options?: { openDrawer?: boolean }) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -49,7 +49,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items, isLoaded]);
 
-  const addItem = (item: CartItem) => {
+  const addItem = (item: CartItem, options?: { openDrawer?: boolean }) => {
     // Guard: Prevent adding out-of-stock items
     if (item.max_quantity !== undefined && item.max_quantity <= 0) {
       return;
@@ -72,7 +72,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, item];
     });
-    setIsCartOpen(true);
+
+    if (options?.openDrawer !== false) {
+      setIsCartOpen(true);
+    }
   };
 
   const removeItem = (id: string) => {

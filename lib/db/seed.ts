@@ -93,7 +93,7 @@ export function seedCatalog(db: any) {
     'Raw unsalted green pepitas from Sahiwal. Sun-dried and high in elemental zinc and magnesium.',
     'Carefully shelled, triple-cleaned, and sun-dried to keep their natural oils intact. Grown in the fertile soil of Sahiwal, Punjab. A mineral-dense staple for morning bowls, salads, sourdough toasts, or straight from the jar.',
     95000,
-    110000,
+    null,
     250,
     '100% Raw Unsalted Pumpkin Seed Kernels (Cucurbita pepo)',
     'Eat 1 to 2 tablespoons daily. Blend into smoothies, toss over salads, or lightly toast on low heat for 2 minutes.',
@@ -116,8 +116,8 @@ export function seedCatalog(db: any) {
     1
   );
   insertVariant.run('var-pump-100', 'prod-pumpkin', 'SED-PUMP-100', 'Pack Size', '100g', 45000, null, 100, 30);
-  insertVariant.run('var-pump-250', 'prod-pumpkin', 'SED-PUMP-250', 'Pack Size', '250g', 95000, 110000, 250, 45);
-  insertVariant.run('var-pump-500', 'prod-pumpkin', 'SED-PUMP-500', 'Pack Size', '500g', 175000, 195000, 500, 20);
+  insertVariant.run('var-pump-250', 'prod-pumpkin', 'SED-PUMP-250', 'Pack Size', '250g', 95000, null, 250, 45);
+  insertVariant.run('var-pump-500', 'prod-pumpkin', 'SED-PUMP-500', 'Pack Size', '500g', 175000, null, 500, 20);
 
   // Product 2: Cold-Milled Golden Flax Seeds
   insertProd.run(
@@ -131,7 +131,7 @@ export function seedCatalog(db: any) {
     'Golden flax seeds from Bahawalpur, cold-milled in small batches to preserve omega-3 fatty acids.',
     'Sourced from smallholder cooperatives in Bahawalpur. We cold-mill these golden flax seeds slowly to prevent heat friction, protecting delicate alpha-linolenic acid (ALA) and soluble lignan fiber.',
     68000,
-    80000,
+    null,
     250,
     '100% Pure Golden Flax Seeds (Linum usitatissimum)',
     'Take 1 tablespoon daily. Stir into yogurt, porridge, dough, or smoothies.',
@@ -154,8 +154,8 @@ export function seedCatalog(db: any) {
     1
   );
   insertVariant.run('var-flax-100', 'prod-flax', 'SED-FLAX-100', 'Pack Size', '100g', 32000, null, 100, 25);
-  insertVariant.run('var-flax-250', 'prod-flax', 'SED-FLAX-250', 'Pack Size', '250g', 68000, 80000, 250, 40);
-  insertVariant.run('var-flax-500', 'prod-flax', 'SED-FLAX-500', 'Pack Size', '500g', 125000, 140000, 500, 15);
+  insertVariant.run('var-flax-250', 'prod-flax', 'SED-FLAX-250', 'Pack Size', '250g', 68000, null, 250, 40);
+  insertVariant.run('var-flax-500', 'prod-flax', 'SED-FLAX-500', 'Pack Size', '500g', 125000, null, 500, 15);
 
   // Product 3: Organic Raw Sunflower Kernels
   insertProd.run(
@@ -169,7 +169,7 @@ export function seedCatalog(db: any) {
     'Plump raw sunflower kernels from Multan. Rich in natural Vitamin E and dietary selenium.',
     'Shelled clean without heat or chemical solvents. Grown in Multan’s fertile sun-drenched plains, our sunflower kernels have a mild, clean, nutty flavor and a tender crunch.',
     72000,
-    85000,
+    null,
     250,
     '100% Raw Shelled Sunflower Kernels (Helianthus annuus)',
     '1 to 2 tablespoons daily. Eat raw or lightly dry-toasted in a pan. Excellent in baking and homemade seed trail mixes.',
@@ -192,8 +192,8 @@ export function seedCatalog(db: any) {
     0
   );
   insertVariant.run('var-sun-100', 'prod-sunflower', 'SED-SUN-100', 'Pack Size', '100g', 35000, null, 100, 20);
-  insertVariant.run('var-sun-250', 'prod-sunflower', 'SED-SUN-250', 'Pack Size', '250g', 72000, 85000, 250, 35);
-  insertVariant.run('var-sun-500', 'prod-sunflower', 'SED-SUN-500', 'Pack Size', '500g', 135000, 155000, 500, 15);
+  insertVariant.run('var-sun-250', 'prod-sunflower', 'SED-SUN-250', 'Pack Size', '250g', 72000, null, 250, 35);
+  insertVariant.run('var-sun-500', 'prod-sunflower', 'SED-SUN-500', 'Pack Size', '500g', 135000, null, 500, 15);
 
   // Product 4: Natural White Sesame Seeds
   insertProd.run(
@@ -207,7 +207,7 @@ export function seedCatalog(db: any) {
     'Unhulled sun-dried white sesame seeds from Sargodha. Rich in bioavailable calcium and sesamin.',
     'Our sesame seeds retain their nutrient-dense outer hull, making them exceptionally rich in natural plant calcium. Never bleached, chemically washed, or sulfured.',
     62000,
-    75000,
+    null,
     250,
     '100% Natural White Sesame Seeds (Sesamum indicum)',
     '1 tablespoon daily. Lightly toast in a skillet for 2 minutes to bring out the aromatics, or grind into fresh homemade tahini.',
@@ -230,7 +230,7 @@ export function seedCatalog(db: any) {
     0
   );
   insertVariant.run('var-ses-100', 'prod-sesame', 'SED-SES-100', 'Pack Size', '100g', 30000, null, 100, 25);
-  insertVariant.run('var-ses-250', 'prod-sesame', 'SED-SES-250', 'Pack Size', '250g', 62000, 75000, 250, 40);
+  insertVariant.run('var-ses-250', 'prod-sesame', 'SED-SES-250', 'Pack Size', '250g', 62000, null, 250, 40);
 
   // Product 5: Pure Whole Flower Chamomile Tea
   insertProd.run(
@@ -408,7 +408,7 @@ export function seedCatalog(db: any) {
     'The complete 4-seed ritual box: Pumpkin, Flax, Sunflower, and Sesame seeds (250g each) with measuring scoop and calendar guide.',
     'A complete monthly routine in one boxed set. Includes 250g pouches of all four seeds, an engraved wooden measuring scoop, and a printed cycle calendar guide.',
     285000,
-    340000,
+    300000,
     'PKR',
     'ACTIVE',
     '4 x 250g Pouches + Wooden Scoop + Cycle Calendar',
@@ -498,8 +498,11 @@ export function seedSettings(db: any) {
   insertSetting.run('bank_name', 'Meezan Bank Limited');
   insertSetting.run('bank_account_title', 'Seedly Naturals Pakistan');
   insertSetting.run('bank_account_number', '0102-0104882910');
-  insertSetting.run('bank_iban', 'PK36MEZN0001020104882910');
-  insertSetting.run('whatsapp_number', '+92 300 1234567');
+  insertSetting.run('whatsapp_number', '+92 304 1117333');
+  insertSetting.run('jazzcash_number', '0304 1117333');
+  insertSetting.run('jazzcash_title', 'Seedly Care');
+  insertSetting.run('easypaisa_number', '0304 1117333');
+  insertSetting.run('easypaisa_title', 'Seedly Care');
   insertSetting.run('support_email', 'care@seedly.pk');
 }
 

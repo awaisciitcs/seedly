@@ -1,7 +1,7 @@
 import { getDatabase, toPlain } from '../db';
 import { Kit, KitItem } from '../types';
 
-export function getKits(options?: { status?: string }): Kit[] {
+export function getKits(options?: { status?: string; search?: string }): Kit[] {
   const db = getDatabase();
   let query = `SELECT * FROM kits WHERE 1=1`;
   const params: any[] = [];
@@ -11,6 +11,12 @@ export function getKits(options?: { status?: string }): Kit[] {
     params.push(options.status);
   } else {
     query += ` AND status = 'ACTIVE'`;
+  }
+
+  if (options?.search) {
+    query += ` AND (name LIKE ? OR short_description LIKE ? OR ingredients LIKE ?)`;
+    const term = `%${options.search}%`;
+    params.push(term, term, term);
   }
 
   query += ` ORDER BY is_featured DESC, created_at ASC`;

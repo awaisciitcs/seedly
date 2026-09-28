@@ -36,11 +36,11 @@ export default function AdminSettingsPage() {
           setAccountTitle(s.bank_account_title || 'Seedly Naturals Pakistan');
           setAccountNumber(s.bank_account_number || '0102-0104882910');
           setIban(s.bank_iban || 'PK36MEZN0001020104882910');
-          setJazzcashNumber(s.jazzcash_number || '0300 1234567');
-          setJazzcashTitle(s.jazzcash_title || 'Seedly Naturals Pakistan');
-          setEasypaisaNumber(s.easypaisa_number || '0345 1234567');
-          setEasypaisaTitle(s.easypaisa_title || 'Seedly Naturals Pakistan');
-          setWhatsapp(s.whatsapp_number || '+92 300 1234567');
+          setJazzcashNumber(s.jazzcash_number || '0304 1117333');
+          setJazzcashTitle(s.jazzcash_title || 'Seedly Care');
+          setEasypaisaNumber(s.easypaisa_number || '0304 1117333');
+          setEasypaisaTitle(s.easypaisa_title || 'Seedly Care');
+          setWhatsapp(s.whatsapp_number || '+92 304 1117333');
           setEmail(s.support_email || 'care@seedly.pk');
         }
         setLoading(false);

@@ -1,8 +1,15 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { getProducts } from '../../../lib/services/products';
 import { getKits } from '../../../lib/services/kits';
 import { ProductCard } from '../../../components/product/ProductCard';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Complete Catalog — Heirloom Seeds, Routine Kits & Teas | Seedly',
+  description:
+    'Browse our full collection of raw Pakistani heirloom seeds, 28-day seed cycling kits, and whole-blossom mountain herbal teas. Dispatched nationwide.',
+};
 
 export default async function ShopPage(props: {
   searchParams: Promise<{ category?: string; sort?: string; search?: string }>;
@@ -18,10 +25,24 @@ export default async function ShopPage(props: {
     search: currentSearch,
   });
 
-  const kits = (currentCategory === 'all' || currentCategory === 'kits') ? getKits() : [];
+  const kits = (currentCategory === 'all' || currentCategory === 'kits')
+    ? getKits({ search: currentSearch })
+    : [];
 
   // Combine products and kits for 'all' or 'kits'
-  const allItems = [...(currentCategory === 'seeds' || currentCategory === 'teas' ? [] : kits), ...products];
+  let allItems = [...(currentCategory === 'seeds' || currentCategory === 'teas' ? [] : kits), ...products];
+
+  if (currentSearch.trim()) {
+    const term = currentSearch.trim().toLowerCase();
+    allItems.sort((a, b) => {
+      const aExact = a.name.toLowerCase().includes(term) ? 1 : 0;
+      const bExact = b.name.toLowerCase().includes(term) ? 1 : 0;
+      if (aExact !== bExact) {
+        return bExact - aExact; // Prioritize exact product name matches first
+      }
+      return 0;
+    });
+  }
 
   const categories = [
     { label: 'All Catalog', slug: 'all' },

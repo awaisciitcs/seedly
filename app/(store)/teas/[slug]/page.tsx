@@ -1,7 +1,29 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getProductBySlug, getProducts } from '../../../../lib/services/products';
 import { ProductDetailView } from '../../../../components/product/ProductDetailView';
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await props.params;
+  const product = getProductBySlug(slug);
+  if (!product) {
+    return {
+      title: 'Product Not Found | Seedly',
+    };
+  }
+  return {
+    title: `${product.name} | Mountain Herbal Tea | Seedly Pakistan`,
+    description: product.short_description || product.description,
+    openGraph: {
+      title: `${product.name} | Seedly Pakistan`,
+      description: product.short_description || product.description,
+      images: product.image_url ? [product.image_url] : [],
+    },
+  };
+}
 
 export async function generateStaticParams() {
   try {

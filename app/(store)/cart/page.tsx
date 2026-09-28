@@ -1,35 +1,87 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '../../../lib/store/cart';
 import { formatPKR } from '../../../lib/utils';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, Truck, ShieldCheck } from 'lucide-react';
+import { CartItem } from '../../../lib/types';
+import {
+  Trash2,
+  Plus,
+  Minus,
+  ArrowRight,
+  ShoppingBag,
+  Truck,
+  ShieldCheck,
+  RotateCcw,
+  ArrowLeft,
+  Banknote,
+} from 'lucide-react';
 
 export default function CartPage() {
   const {
     items,
+    addItem,
     removeItem,
     updateQuantity,
     subtotalMinor,
     freeShippingThreshold,
   } = useCart();
 
+  const [recentlyRemoved, setRecentlyRemoved] = useState<CartItem | null>(null);
+
   const isFreeShipping = subtotalMinor >= freeShippingThreshold;
   const shippingFee = isFreeShipping ? 0 : 20000;
   const totalMinor = subtotalMinor + shippingFee;
 
+  const handleRemoveItem = (item: CartItem) => {
+    setRecentlyRemoved(item);
+    removeItem(item.id);
+  };
+
+  const handleUndoRemove = () => {
+    if (recentlyRemoved) {
+      addItem(recentlyRemoved, { openDrawer: false });
+      setRecentlyRemoved(null);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-      <div className="mb-10">
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
-          Your Wellness Basket
-        </h1>
-        <p className="text-sm text-muted-gray mt-1">
-          Review your chosen heirloom seeds, cycle kits, and loose-leaf herbal teas.
-        </p>
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
+            Your Wellness Basket
+          </h1>
+          <p className="text-sm text-muted-gray mt-1">
+            Review your chosen heirloom seeds, cycle kits, and loose-leaf herbal teas.
+          </p>
+        </div>
+        <Link
+          href="/shop"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-seedly-dark hover:underline"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Continue Shopping</span>
+        </Link>
       </div>
+
+      {recentlyRemoved && (
+        <div className="mb-6 p-4 bg-cream rounded-2xl border border-border-gray flex items-center justify-between text-xs shadow-subtle animate-fadeIn">
+          <span className="text-charcoal">
+            Removed <strong>{recentlyRemoved.name}</strong> from your basket.
+          </span>
+          <button
+            type="button"
+            onClick={handleUndoRemove}
+            className="text-seedly-dark font-bold hover:underline flex items-center gap-1.5 ml-4"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Undo Removal</span>
+          </button>
+        </div>
+      )}
 
       {items.length === 0 ? (
         <div className="bg-white rounded-3xl p-12 text-center border border-border-gray shadow-card max-w-2xl mx-auto">
@@ -43,7 +95,7 @@ export default function CartPage() {
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/shop"
-              className="px-6 py-3 bg-seedly-dark text-white rounded-full text-xs font-semibold hover:bg-seedly-forest transition-colors"
+              className="px-6 py-3 bg-seedly-dark text-white rounded-full text-xs font-semibold hover:bg-seedly-forest transition-colors shadow-subtle"
             >
               Shop All Products
             </Link>
@@ -59,56 +111,82 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           {/* Items Table */}
           <div className="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card divide-y divide-border-gray/60">
-            {items.map((item) => (
-              <div key={item.id} className="py-6 first:pt-0 last:pb-0 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-                <div className="w-20 h-20 relative rounded-2xl overflow-hidden bg-cream shrink-0 border border-border-gray">
-                  <Image src={item.image_url} alt={item.name} fill className="object-cover" />
-                </div>
+            {items.map((item) => {
+              const itemHref = item.product_type === 'kit'
+                ? `/kits/${item.slug}`
+                : `/${item.product_type === 'tea' ? 'teas' : 'seeds'}/${item.slug}`;
 
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-serif font-bold text-base text-charcoal">{item.name}</h3>
-                  {item.variant_label && (
-                    <p className="text-xs text-muted-gray mt-0.5">{item.variant_label}</p>
-                  )}
-                  <p className="text-sm font-semibold text-seedly-dark mt-1">
-                    {formatPKR(item.price_minor)}
-                  </p>
-                </div>
+              return (
+                <div key={item.id} className="py-6 first:pt-0 last:pb-0 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                  <Link
+                    href={itemHref}
+                    className="w-20 h-20 relative rounded-2xl overflow-hidden bg-cream shrink-0 border border-border-gray hover:opacity-85 transition-opacity"
+                  >
+                    <Image src={item.image_url} alt={item.name} fill className="object-cover" />
+                  </Link>
 
-                {/* Quantity */}
-                <div className="flex items-center gap-3 self-end sm:self-center">
-                  <div className="flex items-center border border-border-gray rounded-xl bg-white px-2 py-1 shadow-subtle">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="p-1 text-muted-gray hover:text-charcoal"
-                      aria-label="Decrease quantity"
-                    >
-                      <Minus className="w-3.5 h-3.5" />
-                    </button>
-                    <span className="w-8 text-center font-semibold text-xs">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="p-1 text-muted-gray hover:text-charcoal"
-                      aria-label="Increase quantity"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                    </button>
+                  <div className="flex-1 min-w-0">
+                    <Link href={itemHref} className="hover:text-seedly-dark transition-colors">
+                      <h3 className="font-serif font-bold text-base text-charcoal hover:underline">
+                        {item.name}
+                      </h3>
+                    </Link>
+                    <p className="text-xs text-muted-gray mt-0.5">
+                      {item.variant_label || (item.product_type === 'kit' ? 'Curated Box Set' : '250g Pouch')}
+                    </p>
+                    <p className="text-sm font-semibold text-seedly-dark mt-1">
+                      {formatPKR(item.price_minor)}
+                    </p>
                   </div>
 
-                  <span className="font-serif font-bold text-base text-charcoal min-w-[80px] text-right">
-                    {formatPKR(item.price_minor * item.quantity)}
-                  </span>
+                  {/* Quantity */}
+                  <div className="flex items-center gap-3 self-end sm:self-center">
+                    <div className="flex items-center border border-border-gray rounded-xl bg-white px-2 py-1 shadow-subtle">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="p-1 text-muted-gray hover:text-charcoal"
+                        aria-label="Decrease quantity"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="w-8 text-center font-semibold text-xs">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="p-1 text-muted-gray hover:text-charcoal"
+                        aria-label="Increase quantity"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
 
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="p-2 text-muted-gray hover:text-rose-600 transition-colors"
-                    aria-label="Remove item"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                    <span className="font-serif font-bold text-base text-charcoal min-w-[80px] text-right">
+                      {formatPKR(item.price_minor * item.quantity)}
+                    </span>
+
+                    <button
+                      onClick={() => handleRemoveItem(item)}
+                      className="p-2 text-muted-gray hover:text-rose-600 transition-colors"
+                      aria-label="Remove item"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+
+            <div className="pt-4 flex justify-between items-center text-xs">
+              <Link
+                href="/shop"
+                className="text-seedly-dark font-semibold hover:underline flex items-center gap-1"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Add more items</span>
+              </Link>
+              <span className="text-muted-gray">
+                Delivery: Rs. 200 (Free for orders over Rs. 2,500)
+              </span>
+            </div>
           </div>
 
           {/* Order Summary Sidebar */}
@@ -121,7 +199,7 @@ export default function CartPage() {
                 <span className="font-semibold text-charcoal">{formatPKR(subtotalMinor)}</span>
               </div>
               <div className="flex items-center justify-between text-muted-gray">
-                <span>Nationwide Shipping</span>
+                <span>Nationwide Delivery</span>
                 <span className="font-semibold text-charcoal">
                   {isFreeShipping ? (
                     <span className="text-emerald-700 font-bold">FREE</span>
@@ -132,7 +210,7 @@ export default function CartPage() {
               </div>
 
               {!isFreeShipping && (
-                <p className="text-xs text-amber-700 bg-amber-50 p-2.5 rounded-xl">
+                <p className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200/60 leading-relaxed">
                   Add <strong>{formatPKR(freeShippingThreshold - subtotalMinor)}</strong> more to qualify for Free Delivery across Pakistan!
                 </p>
               )}
@@ -153,14 +231,18 @@ export default function CartPage() {
               <ArrowRight className="w-4 h-4" />
             </Link>
 
-            <div className="pt-2 border-t border-border-gray/60 space-y-2 text-xs text-muted-gray">
+            <div className="pt-2 border-t border-border-gray/60 space-y-2.5 text-xs text-muted-gray">
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-seedly-primary shrink-0" />
-                <span>Courier tracking link sent via WhatsApp and Email</span>
+                <span>Fast dispatch in 2–4 business days via TCS / Leopards</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Banknote className="w-4 h-4 text-seedly-primary shrink-0" />
+                <span>Cash on Delivery (COD) &amp; Digital Wallets accepted</span>
               </div>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-seedly-primary shrink-0" />
-                <span>Supports JazzCash, Easypaisa & Direct Bank Transfer</span>
+                <span>256-bit SSL Encrypted Secure Checkout</span>
               </div>
             </div>
           </div>

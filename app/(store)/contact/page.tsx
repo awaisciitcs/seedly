@@ -40,7 +40,7 @@ export default function ContactPage() {
 
             <div className="space-y-4">
               <a
-                href="https://wa.me/923001234567"
+                href="https://wa.me/923041117333"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start gap-3 text-emerald-950 hover:bg-emerald-100 transition-colors"
@@ -48,7 +48,7 @@ export default function ContactPage() {
                 <Phone className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-sm">WhatsApp Helpline</h4>
-                  <p className="text-xs text-emerald-800 font-mono mt-0.5">+92 300 1234567</p>
+                  <p className="text-xs text-emerald-800 font-mono mt-0.5">+92 304 1117333</p>
                   <p className="text-[11px] text-emerald-700 mt-1">Instant support for order tracking & bank receipts</p>
                 </div>
               </a>
@@ -137,7 +137,7 @@ export default function ContactPage() {
                     </label>
                     <input
                       type="tel"
-                      placeholder="0300 1234567"
+                      placeholder="0304 1117333"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-seedly-primary/50"

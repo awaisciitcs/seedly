@@ -12,7 +12,11 @@ db.exec(`
     ('bank_account_title', 'Seedly Naturals Pakistan'),
     ('bank_account_number', '0102-0104882910'),
     ('bank_iban', 'PK36MEZN0001020104882910'),
-    ('whatsapp_number', '+92 300 1234567'),
+    ('whatsapp_number', '+92 304 1117333'),
+    ('jazzcash_number', '0304 1117333'),
+    ('jazzcash_title', 'Seedly Care'),
+    ('easypaisa_number', '0304 1117333'),
+    ('easypaisa_title', 'Seedly Care'),
     ('support_email', 'care@seedly.pk');
 
   INSERT OR IGNORE INTO admin_users (id, email, name, role) VALUES

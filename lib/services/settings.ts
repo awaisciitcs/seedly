@@ -12,7 +12,7 @@ export function getSiteSettings(): SiteSettings {
 
   return {
     store_name: map['store_name'] || 'Seedly',
-    tagline: map['tagline'] || 'Grow something good.',
+    tagline: map['tagline'] || 'Raw Seeds & Loose-Leaf Teas',
     currency: map['currency'] || 'PKR',
     delivery_fee_minor: parseInt(map['delivery_fee_minor'] || '20000', 10),
     free_delivery_threshold_minor: parseInt(map['free_delivery_threshold_minor'] || '250000', 10),
@@ -20,11 +20,11 @@ export function getSiteSettings(): SiteSettings {
     bank_account_title: map['bank_account_title'] || 'Seedly Naturals Pakistan',
     bank_account_number: map['bank_account_number'] || '0102-0104882910',
     bank_iban: map['bank_iban'] || 'PK36MEZN0001020104882910',
-    jazzcash_number: map['jazzcash_number'] || '0300 1234567',
-    jazzcash_title: map['jazzcash_title'] || 'Seedly Naturals Pakistan',
-    easypaisa_number: map['easypaisa_number'] || '0345 1234567',
-    easypaisa_title: map['easypaisa_title'] || 'Seedly Naturals Pakistan',
-    whatsapp_number: map['whatsapp_number'] || '+92 300 1234567',
+    jazzcash_number: map['jazzcash_number'] || '0304 1117333',
+    jazzcash_title: map['jazzcash_title'] || 'Seedly Care',
+    easypaisa_number: map['easypaisa_number'] || '0304 1117333',
+    easypaisa_title: map['easypaisa_title'] || 'Seedly Care',
+    whatsapp_number: map['whatsapp_number'] || '+92 304 1117333',
     support_email: map['support_email'] || 'care@seedly.pk',
     serviceable_cities: [
       'Karachi',

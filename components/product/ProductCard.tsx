@@ -132,7 +132,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Product Name */}
           <Link href={href} className="group-hover:text-seedly-dark transition-colors">
-            <h3 className="font-serif font-semibold text-base sm:text-lg text-charcoal leading-snug line-clamp-1">
+            <h3 className="font-serif font-semibold text-base sm:text-lg text-charcoal leading-snug line-clamp-2 min-h-[2.5rem]">
               {product.name}
             </h3>
           </Link>
@@ -158,8 +158,12 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
             <p className="text-[11px] text-muted-gray">
               {isKit
-                ? (product as Kit).package_size || 'Full Kit'
-                : (product as Product).variants?.[0]?.option_value || '250g'}
+                ? (product as Kit).package_size || 'Full Box Set'
+                : !isKit && (product as Product).product_type === 'seed'
+                ? `${(product as Product).variants?.[0]?.option_value || '250g'} · Rs. ${Math.round(
+                    ((product.price_minor / ((product as Product).weight_grams || 250)) * 100) / 100
+                  )}/100g`
+                : (product as Product).variants?.[0]?.option_value || '50g'}
             </p>
           </div>
 

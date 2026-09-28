@@ -34,7 +34,7 @@ interface KitDetailViewProps {
 
 export function KitDetailView({ kit }: KitDetailViewProps) {
   const router = useRouter();
-  const { addItem } = useCart();
+  const { addItem, setIsCartOpen } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const [quantity, setQuantity] = useState(1);
@@ -144,7 +144,27 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
+    if (!inStock) {
+      setIsNotifyModalOpen(true);
+      return;
+    }
+    addItem(
+      {
+        id: `${kit.id}-kit`,
+        product_id: kit.id,
+        kit_id: kit.id,
+        name: kit.name,
+        slug: kit.slug,
+        variant_label: kit.package_size,
+        price_minor: kit.price_minor,
+        image_url: kit.image_url,
+        quantity,
+        product_type: 'kit',
+        max_quantity: currentStock,
+      },
+      { openDrawer: false }
+    );
+    setIsCartOpen(false);
     router.push('/checkout');
   };
 
@@ -185,10 +205,10 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
           <div className="p-4 rounded-2xl bg-white border border-border-gray flex items-center justify-between gap-4 shadow-subtle">
             <div className="space-y-0.5">
               <p className="text-xs font-bold text-charcoal">Questions about how this routine works?</p>
-              <p className="text-[11px] text-muted-gray">Chat with our team on WhatsApp for growing and usage guidance.</p>
+              <p className="text-[11px] text-muted-gray">Chat with our team on WhatsApp for ingredients, preparation and storage guidance.</p>
             </div>
             <a
-              href={`https://wa.me/923001234567?text=${waMessage}`}
+              href={`https://wa.me/923041117333?text=${waMessage}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0 shadow-subtle"
@@ -279,10 +299,33 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                       {item.variant_name ? ` (${item.variant_name})` : ''}
                     </span>
                     <span className="text-muted-gray text-[11px]">
-                      Full size pouch
+                      250g barrier pouch
                     </span>
                   </div>
                 ))}
+                <div className="py-2.5 flex items-center justify-between">
+                  <span className="font-medium text-charcoal">
+                    1x Handcrafted Wooden Measuring Scoop
+                  </span>
+                  <span className="text-muted-gray text-[11px]">
+                    1 tbsp portion tool
+                  </span>
+                </div>
+                <div className="py-2.5 flex items-center justify-between">
+                  <span className="font-medium text-charcoal">
+                    1x 28-Day Cycle Tracking Calendar
+                  </span>
+                  <span className="text-muted-gray text-[11px]">
+                    Printed guide
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-border-gray/40 flex justify-between text-[11px] text-muted-gray">
+                <span>Net seed weight:</span>
+                <strong className="text-charcoal font-semibold">
+                  {kit.slug === 'complete-cycle-kit' ? '1,000g (4x 250g)' : '500g (2x 250g)'}
+                </strong>
               </div>
             </div>
 
@@ -337,7 +380,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                   onClick={handleBuyNow}
                   className="w-full py-3.5 rounded-xl bg-seedly-light text-seedly-dark hover:bg-seedly-primary/20 border border-seedly-primary/30 font-semibold text-sm transition-all shadow-subtle flex items-center justify-center gap-2"
                 >
-                  <span>Proceed to Checkout</span>
+                  <span>Buy now</span>
                 </button>
               </div>
             ) : (
@@ -379,8 +422,14 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                   <span className="font-semibold text-charcoal">Lahore Dispatch Center</span>
                 </div>
                 <div>
-                  <span className="text-muted-gray block text-[10px]">Milling Cycle</span>
-                  <span className="font-semibold text-charcoal">Cold-milled weekly</span>
+                  <span className="text-muted-gray block text-[10px]">Preparation Form</span>
+                  <span className="font-semibold text-charcoal">
+                    {kit.slug === 'luteal-blend'
+                      ? 'Shelled raw & unhulled seeds'
+                      : kit.slug === 'follicular-blend'
+                      ? 'Raw seeds & cold-milled flax'
+                      : 'Raw whole & cold-milled seeds'}
+                  </span>
                 </div>
                 <div>
                   <span className="text-muted-gray block text-[10px]">Purity Standard</span>
@@ -397,15 +446,27 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               </span>
             </div>
 
+            {/* Dedicated Allergen Statement */}
+            <div className="p-3.5 bg-amber-50/70 rounded-xl border border-amber-200/60 flex items-start gap-2.5 text-[11px] text-amber-950 leading-relaxed">
+              <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <span>
+                <strong>Allergen Statement:</strong> {kit.slug === 'luteal-blend' || kit.slug === 'complete-cycle-kit' ? 'Contains Sesame Seeds. ' : ''}Packed in a dedicated food-safe facility that handles edible seeds and culinary botanicals.
+              </span>
+            </div>
+
             {/* Delivery Perks */}
             <div className="pt-2 border-t border-border-gray space-y-2 text-xs text-muted-gray">
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-seedly-primary shrink-0" />
-                <span>Nationwide delivery via TCS &amp; Leopards. Free shipping on this kit.</span>
+                <span>
+                  {kit.price_minor >= 250000
+                    ? 'Nationwide delivery via TCS / Leopards: FREE delivery included on this kit.'
+                    : 'Nationwide delivery via TCS / Leopards: Rs. 200 (Free delivery on orders over Rs. 2,500).'}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-seedly-primary shrink-0" />
-                <span>Includes engraved 1-tablespoon wooden scoop &amp; tracking guide.</span>
+                <span>Includes handcrafted 1-tablespoon wooden scoop &amp; tracking guide.</span>
               </div>
             </div>
           </div>

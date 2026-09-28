@@ -134,8 +134,16 @@ export function createOrder(input: CreateOrderInput): Order {
   const orderNumber = generateOrderNumber();
 
   // Initial statuses based on payment method
-  const initialPaymentStatus: PaymentStatus = input.payment_method === 'wallet_aggregator' ? 'VERIFIED' : 'UNDER_REVIEW';
-  const initialOrderStatus: OrderStatus = input.payment_method === 'wallet_aggregator' ? 'PAID' : 'PAYMENT_REVIEW';
+  let initialPaymentStatus: PaymentStatus = 'UNDER_REVIEW';
+  let initialOrderStatus: OrderStatus = 'PAYMENT_REVIEW';
+
+  if (input.payment_method === 'wallet_aggregator') {
+    initialPaymentStatus = 'VERIFIED';
+    initialOrderStatus = 'PAID';
+  } else if (input.payment_method === 'COD') {
+    initialPaymentStatus = 'PENDING';
+    initialOrderStatus = 'PROCESSING';
+  }
 
   const insertOrder = db.prepare(`
     INSERT INTO orders (

@@ -268,7 +268,7 @@ export default async function OrderConfirmationPage(props: {
       {/* Support & Return to shop CTA */}
       <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
         <a
-          href={`https://wa.me/923001234567?text=${encodeURIComponent(
+          href={`https://wa.me/923041117333?text=${encodeURIComponent(
             `Salam Seedly! I am inquiring about my order #${order.order_number}`
           )}`}
           target="_blank"

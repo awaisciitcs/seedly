@@ -36,12 +36,12 @@ export default function HomePage() {
               </span>
 
               <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-charcoal leading-[1.08]">
-                Grow something <br />
-                <span className="italic font-normal text-seedly-dark">good.</span>
+                Raw Seeds &amp; <br />
+                <span className="italic font-normal text-seedly-dark">Loose-Leaf Teas.</span>
               </h1>
 
               <p className="text-base sm:text-lg text-muted-gray leading-relaxed max-w-xl mx-auto lg:mx-0">
-                Seeds for your kitchen. Teas for your quiet moments. Sourced directly from Pakistani growers, clearly labeled, and kept simple.
+                Single-origin edible seeds and whole mountain botanicals for your daily routine. Sourced directly from family farms across Pakistan, clearly labeled, and kept unadulterated.
               </p>
 
               {/* CTAs */}
@@ -144,7 +144,7 @@ export default function HomePage() {
                   Curated Seed Kits
                 </h3>
                 <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
-                  Complete 28-day routine boxes with raw heirloom seeds portioned for both monthly phases, an engraved brass measuring scoop, and a printed cycle calendar.
+                  Complete 28-day routine boxes with raw heirloom seeds portioned for both monthly phases, a handcrafted wooden measuring scoop, and a printed cycle calendar.
                 </p>
                 <div className="pt-2 text-xs font-semibold text-seedly-dark flex items-center gap-1.5">
                   <span>Explore starter boxes</span>
@@ -481,7 +481,7 @@ export default function HomePage() {
             </p>
           </div>
           <a
-            href="https://wa.me/923001234567?text=Hi%20Seedly%2C%20I%20have%20a%20question%20about%20your%20seeds%20and%20teas."
+            href="https://wa.me/923041117333?text=Hi%20Seedly%2C%20I%20have%20a%20question%20about%20your%20seeds%20and%20teas."
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full text-xs font-semibold flex items-center gap-2 shrink-0 transition-colors shadow-subtle"

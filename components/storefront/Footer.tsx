@@ -35,7 +35,7 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
-                <span>Customer Care: +92 300 1234567 (Mon–Sat, 10am–7pm PKT)</span>
+                <span>Customer Care: +92 304 1117333 (Mon–Sat, 10am–7pm PKT)</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-seedly-primary shrink-0" />

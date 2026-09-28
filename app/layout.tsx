@@ -19,9 +19,10 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://seedly.pk'),
   title: 'Seedly — Pakistan’s Heirloom Seed & Herbal Tea Apothecary',
   description:
-    'Grow something good. Pure, cold-milled heirloom seeds, hormone-nourishing cycle kits, and hand-harvested Himalayan whole flower teas delivered nationwide across Pakistan.',
+    'Single-origin edible heirloom seeds, 28-day routine kits, and whole blossom mountain herbal teas delivered nationwide across Pakistan.',
   keywords: [
     'Seedly',
     'Seed Cycling Pakistan',

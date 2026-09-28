@@ -37,7 +37,7 @@ interface ProductDetailViewProps {
 
 export function ProductDetailView({ product, relatedProducts = [] }: ProductDetailViewProps) {
   const router = useRouter();
-  const { addItem } = useCart();
+  const { addItem, setIsCartOpen } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
@@ -153,7 +153,27 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
+    if (!inStock) {
+      setIsNotifyModalOpen(true);
+      return;
+    }
+    addItem(
+      {
+        id: `${product.id}-${selectedVariant?.id || 'default'}`,
+        product_id: product.id,
+        variant_id: selectedVariant?.id,
+        name: product.name,
+        slug: product.slug,
+        variant_label: selectedVariant?.option_value,
+        price_minor: priceMinor,
+        image_url: product.image_url,
+        quantity,
+        product_type: product.product_type,
+        max_quantity: currentStock,
+      },
+      { openDrawer: false }
+    );
+    setIsCartOpen(false);
     router.push('/checkout');
   };
 
@@ -199,7 +219,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               <p className="text-[11px] text-muted-gray">Chat directly with our sourcing team on WhatsApp.</p>
             </div>
             <a
-              href={`https://wa.me/923001234567?text=${waMessage}`}
+              href={`https://wa.me/923041117333?text=${waMessage}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0 shadow-subtle"
@@ -383,7 +403,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                   onClick={handleBuyNow}
                   className="w-full py-3.5 rounded-xl bg-seedly-light text-seedly-dark hover:bg-seedly-primary/20 border border-seedly-primary/30 font-semibold text-sm transition-all shadow-subtle flex items-center justify-center gap-2"
                 >
-                  <span>Proceed to Checkout</span>
+                  <span>Buy now</span>
                 </button>
               </div>
             ) : (

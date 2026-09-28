@@ -1,15 +1,27 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '../../lib/store/cart';
 import { formatPKR } from '../../lib/utils';
-import { X, Trash2, Plus, Minus, ArrowRight, ShoppingBag, Sparkles, CheckCircle2 } from 'lucide-react';
+import { CartItem } from '../../lib/types';
+import {
+  X,
+  Trash2,
+  Plus,
+  Minus,
+  ArrowRight,
+  ShoppingBag,
+  Sparkles,
+  CheckCircle2,
+  RotateCcw,
+} from 'lucide-react';
 
 export function CartDrawer() {
   const {
     items,
+    addItem,
     removeItem,
     updateQuantity,
     isCartOpen,
@@ -18,10 +30,24 @@ export function CartDrawer() {
     freeShippingThreshold,
   } = useCart();
 
+  const [recentlyRemoved, setRecentlyRemoved] = useState<CartItem | null>(null);
+
   if (!isCartOpen) return null;
 
   const freeShippingDelta = Math.max(0, freeShippingThreshold - subtotalMinor);
   const freeShippingPercent = Math.min(100, Math.round((subtotalMinor / freeShippingThreshold) * 100));
+
+  const handleRemoveItem = (item: CartItem) => {
+    setRecentlyRemoved(item);
+    removeItem(item.id);
+  };
+
+  const handleUndoRemove = () => {
+    if (recentlyRemoved) {
+      addItem(recentlyRemoved, { openDrawer: false });
+      setRecentlyRemoved(null);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
@@ -45,7 +71,7 @@ export function CartDrawer() {
             <button
               onClick={() => setIsCartOpen(false)}
               className="p-2 text-muted-gray hover:text-charcoal rounded-full hover:bg-cream"
-              aria-label="Close cart"
+              aria-label="Close basket"
             >
               <X className="w-5 h-5" />
             </button>
@@ -77,6 +103,23 @@ export function CartDrawer() {
             )}
           </div>
 
+          {/* Undo Removal Banner */}
+          {recentlyRemoved && (
+            <div className="mx-6 mt-3 p-3 bg-cream rounded-xl border border-border-gray flex items-center justify-between text-xs animate-fadeIn shadow-subtle">
+              <span className="text-charcoal truncate max-w-[200px]">
+                Removed <strong>{recentlyRemoved.name}</strong>
+              </span>
+              <button
+                type="button"
+                onClick={handleUndoRemove}
+                className="text-seedly-dark font-bold hover:underline flex items-center gap-1 shrink-0 ml-2"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Undo</span>
+              </button>
+            </div>
+          )}
+
           {/* Items List */}
           <div className="flex-1 overflow-y-auto px-6 py-4 divide-y divide-border-gray/50">
             {items.length === 0 ? (
@@ -97,55 +140,73 @@ export function CartDrawer() {
                 </Link>
               </div>
             ) : (
-              items.map((item) => (
-                <div key={item.id} className="py-4 flex gap-4 items-center">
-                  <div className="w-16 h-16 relative rounded-xl overflow-hidden bg-cream shrink-0 border border-border-gray/70">
-                    <Image
-                      src={item.image_url}
-                      alt={item.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium text-charcoal truncate">{item.name}</h4>
-                    {item.variant_label && (
-                      <p className="text-xs text-muted-gray">{item.variant_label}</p>
-                    )}
-                    <p className="text-sm font-semibold text-seedly-dark mt-1">
-                      {formatPKR(item.price_minor)}
-                    </p>
+              items.map((item) => {
+                const itemHref = item.product_type === 'kit'
+                  ? `/kits/${item.slug}`
+                  : `/${item.product_type === 'tea' ? 'teas' : 'seeds'}/${item.slug}`;
 
-                    {/* Stepper */}
-                    <div className="flex items-center gap-2 mt-2">
-                      <div className="flex items-center border border-border-gray rounded-lg bg-cream/40">
+                return (
+                  <div key={item.id} className="py-4 flex gap-4 items-center">
+                    <Link
+                      href={itemHref}
+                      onClick={() => setIsCartOpen(false)}
+                      className="w-16 h-16 relative rounded-xl overflow-hidden bg-cream shrink-0 border border-border-gray/70 hover:opacity-85 transition-opacity"
+                    >
+                      <Image
+                        src={item.image_url}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </Link>
+                    <div className="flex-1 min-w-0">
+                      <Link
+                        href={itemHref}
+                        onClick={() => setIsCartOpen(false)}
+                        className="hover:text-seedly-dark transition-colors block"
+                      >
+                        <h4 className="text-sm font-medium text-charcoal truncate hover:underline">
+                          {item.name}
+                        </h4>
+                      </Link>
+                      <p className="text-xs text-muted-gray">
+                        {item.variant_label || (item.product_type === 'kit' ? 'Curated Box' : '250g Pouch')}
+                      </p>
+                      <p className="text-sm font-semibold text-seedly-dark mt-1">
+                        {formatPKR(item.price_minor)}
+                      </p>
+
+                      {/* Stepper */}
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="flex items-center border border-border-gray rounded-lg bg-cream/40">
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            className="p-1 hover:text-seedly-dark"
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="w-7 text-center text-xs font-semibold">{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            className="p-1 hover:text-seedly-dark"
+                            aria-label="Increase quantity"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="p-1 hover:text-seedly-dark"
-                          aria-label="Decrease quantity"
+                          onClick={() => handleRemoveItem(item)}
+                          className="text-muted-gray hover:text-red-500 p-1 transition-colors"
+                          aria-label="Remove item"
                         >
-                          <Minus className="w-3.5 h-3.5" />
-                        </button>
-                        <span className="w-7 text-center text-xs font-semibold">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="p-1 hover:text-seedly-dark"
-                          aria-label="Increase quantity"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="text-muted-gray hover:text-red-500 p-1 transition-colors"
-                        aria-label="Remove item"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
@@ -157,7 +218,7 @@ export function CartDrawer() {
                 <span className="text-lg font-serif font-bold text-charcoal">{formatPKR(subtotalMinor)}</span>
               </div>
               <p className="text-xs text-muted-gray">
-                Taxes included. Delivery calculated at checkout (free over Rs. 2,500).
+                Taxes included. Delivery: Rs. 200 (Free nationwide over Rs. 2,500). Cash on Delivery &amp; Wallets accepted.
               </p>
 
               <div className="space-y-2">
@@ -169,13 +230,22 @@ export function CartDrawer() {
                   <span>Proceed to Checkout</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-                <Link
-                  href="/cart"
-                  onClick={() => setIsCartOpen(false)}
-                  className="w-full flex items-center justify-center py-2 text-xs font-medium text-seedly-dark hover:underline"
-                >
-                  View Full Basket Details
-                </Link>
+                <div className="flex items-center justify-between pt-1 text-xs">
+                  <Link
+                    href="/cart"
+                    onClick={() => setIsCartOpen(false)}
+                    className="font-medium text-seedly-dark hover:underline"
+                  >
+                    View Full Basket Details
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setIsCartOpen(false)}
+                    className="text-muted-gray hover:text-charcoal"
+                  >
+                    Continue Shopping
+                  </button>
+                </div>
               </div>
             </div>
           )}
