@@ -165,7 +165,7 @@ export function CartDrawer() {
                         onClick={() => setIsCartOpen(false)}
                         className="hover:text-seedly-dark transition-colors block"
                       >
-                        <h4 className="text-sm font-medium text-charcoal truncate hover:underline">
+                        <h4 className="text-sm font-medium text-charcoal line-clamp-2 leading-snug hover:underline">
                           {item.name}
                         </h4>
                       </Link>

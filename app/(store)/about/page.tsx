@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Leaf, ShieldCheck, ArrowRight, CheckCircle2, MapPin, Scale, HeartHandshake, Sparkles } from 'lucide-react';
 import type { Metadata } from 'next';
 
@@ -71,27 +72,34 @@ export default function AboutPage() {
           <span>Our Origin &amp; Purpose</span>
         </div>
         <h1 className="font-serif text-4xl sm:text-5xl font-bold text-charcoal leading-tight">
-          Why we started Seedly
+          Clean seeds, fresh harvests, and honest weights.
         </h1>
         <p className="text-base sm:text-lg text-muted-gray leading-relaxed">
-          I started buying seeds from the Akbari Mandi in Lahore because standard grocery store packets were stale, over-processed, or sitting in unsealed bins where ambient heat destroyed their natural oils. Seedly was founded to bring that same unadulterated harvest directly to homes across Pakistan.
+          Seedly began in Lahore out of a simple frustration: finding clean, raw seeds that weren't stale, over-salted, or sitting unsealed in open market bins was almost impossible. We work directly with smallholder growers across Punjab and alpine foragers in Gilgit to pack fresh, unadulterated kitchen staples.
         </p>
       </div>
 
-      {/* 2. Founder Note Card */}
-      <div className="p-6 sm:p-8 bg-white rounded-3xl border border-border-gray shadow-card space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-seedly-light flex items-center justify-center text-seedly-dark font-serif font-bold text-lg">
-            S
-          </div>
-          <div>
-            <h3 className="font-serif font-bold text-base text-charcoal">From the Founders</h3>
-            <p className="text-xs text-muted-gray">Lahore, Pakistan · Established 2026</p>
-          </div>
+      {/* 2. Authentic Workshop & Founder Photo */}
+      <div className="relative rounded-3xl overflow-hidden border border-border-gray shadow-card bg-stone">
+        <div className="relative aspect-[16/9] w-full">
+          <Image
+            src="/images/about/founder-packing.jpg"
+            alt="Hand-packing fresh seeds at our Lahore workshop"
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 896px"
+            className="object-cover"
+          />
         </div>
-        <p className="text-sm text-charcoal leading-relaxed">
-          "We aren't a venture-backed tech corporation or a dropshipper. We are a small, dedicated team in Lahore working with smallholder farmers in Punjab and foragers in Gilgit-Baltistan. Our pledge is simple: provide honest, edible seeds and mountain teas that are raw, clearly labeled, and stored in proper oxygen-barrier containers so they stay as fresh as the day they were packed."
-        </p>
+        <div className="p-5 sm:p-6 bg-white border-t border-border-gray/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <p className="font-serif font-bold text-sm text-charcoal">The Lahore Packing Workshop</p>
+            <p className="text-xs text-muted-gray">Every batch is inspected, moisture-checked, and heat-sealed daily.</p>
+          </div>
+          <span className="text-[11px] font-mono text-muted-gray bg-cream px-3 py-1 rounded-full border border-border-gray">
+            Lahore Central Hub · Pakistan
+          </span>
+        </div>
       </div>
 
       {/* 3. Sourcing Truths Table */}
@@ -171,33 +179,31 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* 5. What We Promise vs What We Don't Claim */}
+      {/* 5. Our Pantry & Packaging Standards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
         <div className="p-6 rounded-3xl bg-white border border-border-gray space-y-3 shadow-subtle">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-800">
             <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-            <span>What We Promise</span>
+            <span>Pantry Integrity</span>
           </div>
           <ul className="text-xs sm:text-sm text-muted-gray space-y-2.5">
-            <li>• 100% single ingredients with zero added fillers</li>
-            <li>• No artificial glazes, no chemical bleaching, no added oils or salt</li>
-            <li>• Accurate, honest net weights and transparent harvest regions</li>
-            <li>• Handcrafted wooden measuring scoops in our routine kits</li>
-            <li>• Direct customer support on WhatsApp from Lahore (+92 304 1117333)</li>
+            <li>• 100% pure single ingredients without added fillers or sodium</li>
+            <li>• Raw, unroasted, and unbleached—no synthetic glazes or oils</li>
+            <li>• Cold-milled golden flax prepared weekly in small batches to preserve omega-3s</li>
+            <li>• Whole intact flower heads and tea leaves, never broken floor dust</li>
           </ul>
         </div>
 
         <div className="p-6 rounded-3xl bg-white border border-border-gray space-y-3 shadow-subtle">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-charcoal">
             <ShieldCheck className="w-4 h-4 text-seedly-primary" />
-            <span>What We Don't Claim</span>
+            <span>Packaging &amp; Care</span>
           </div>
           <ul className="text-xs sm:text-sm text-muted-gray space-y-2.5">
-            <li>• We do not promise overnight medical cures or clinical therapies</li>
-            <li>• We don't invent pseudo-scientific buzzwords or inflated claims</li>
-            <li>• We don't hide where our seeds and teas are grown</li>
-            <li>• We don't use fake countdown timers or fabricated reviews</li>
-            <li>• We don't sell pulverized tea dust in bleached plastic tea bags</li>
+            <li>• Heavy-gauge resealable kraft barrier pouches to block light and moisture</li>
+            <li>• Dark amber glass jars for whole chamomile blossoms</li>
+            <li>• Hand-carved wooden measuring scoops included in routine kits</li>
+            <li>• Hand-packed in Lahore and shipped nationwide via TCS and Leopards</li>
           </ul>
         </div>
       </div>

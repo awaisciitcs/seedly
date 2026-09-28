@@ -39,19 +39,19 @@ const faqs: FaqItem[] = [
     category: 'Shipping & Delivery',
     question: 'How fast is delivery within Pakistan?',
     answer:
-      'Orders within Lahore and Karachi typically arrive in 1 to 2 business days. For Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, and other cities nationwide, courier delivery via TCS or Leopards takes 2 to 4 business days.',
+      'All orders are dispatched daily from our Lahore central hub via TCS and Leopards Courier. Packages arrive in 1 to 2 business days within Lahore, and 2 to 4 business days across Islamabad, Karachi, Rawalpindi, Faisalabad, Multan, Peshawar, and all other cities nationwide.',
   },
   {
     category: 'Shipping & Delivery',
     question: 'How does Free Shipping work?',
     answer:
-      'We offer FREE express delivery anywhere in Pakistan on all orders of Rs. 2,500 or above! For orders below Rs. 2,500, a flat nominal delivery fee of Rs. 200 applies.',
+      'We offer FREE courier delivery anywhere in Pakistan on all orders of Rs. 2,500 or above. For orders below Rs. 2,500, a standard delivery fee of Rs. 200 applies.',
   },
   {
     category: 'Payments',
     question: 'What payment methods do you accept?',
     answer:
-      'We accept instant mobile wallet payments via JazzCash and Easypaisa, as well as direct manual bank transfer to our Meezan Bank corporate account. When paying via bank transfer, you can simply upload your transaction receipt screenshot at checkout or via WhatsApp.',
+      'We accept Cash on Delivery (COD) across Pakistan, allowing you to pay the courier in cash when your order arrives. We also accept instant mobile wallet transfers via JazzCash and Easypaisa, as well as direct online bank transfer to our Meezan Bank corporate account.',
   },
 ];
 

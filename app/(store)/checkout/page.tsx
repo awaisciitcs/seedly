@@ -401,7 +401,18 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      {/* Return to Cart Quiet Link */}
+      <div className="mb-6">
+        <Link
+          href="/cart"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-gray hover:text-charcoal transition-colors"
+        >
+          <span>←</span>
+          <span>Return to Cart</span>
+        </Link>
+      </div>
+
       {/* Checkout Header with Pending Order Reference */}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-gray/70 pb-6">
         <div>
@@ -418,7 +429,7 @@ export default function CheckoutPage() {
             <strong>{pendingOrderRef}</strong>
           </div>
           <p className="text-[11px] text-muted-gray">
-            Help line: <a href="https://wa.me/923041117333" target="_blank" rel="noopener noreferrer" className="text-seedly-dark font-semibold hover:underline">0304 1117333</a>
+            Need assistance? <a href="https://wa.me/923041117333" target="_blank" rel="noopener noreferrer" className="text-seedly-dark font-semibold hover:underline">WhatsApp 0304 1117333</a>
           </p>
         </div>
       </div>
@@ -1087,19 +1098,19 @@ export default function CheckoutPage() {
             {/* Items list */}
             <div className="divide-y divide-border-gray/50 max-h-72 overflow-y-auto pr-1">
               {items.map((item) => (
-                <div key={item.id} className="py-3 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-3 min-w-0">
+                <div key={item.id} className="py-3 flex items-start justify-between text-xs gap-3">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
                     <div className="w-12 h-12 relative rounded-xl overflow-hidden bg-cream shrink-0 border border-border-gray">
                       <Image src={item.image_url} alt={item.name} fill className="object-cover" />
                     </div>
-                    <div className="min-w-0">
-                      <p className="font-medium text-charcoal truncate">{item.name}</p>
-                      <p className="text-muted-gray">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-charcoal leading-snug">{item.name}</p>
+                      <p className="text-muted-gray text-[11px] mt-0.5">
                         {item.variant_label || '250g Pouch'} · Qty: {item.quantity}
                       </p>
                     </div>
                   </div>
-                  <span className="font-semibold text-charcoal">
+                  <span className="font-semibold text-charcoal shrink-0 font-mono text-xs pt-0.5">
                     {formatPKR(item.price_minor * item.quantity)}
                   </span>
                 </div>

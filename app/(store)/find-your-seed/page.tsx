@@ -39,31 +39,31 @@ interface Question {
 const questions: Question[] = [
   {
     id: 'goal',
-    title: 'What is your primary wellness focus right now?',
-    subtitle: 'Select the area of daily health your body is asking for most.',
+    title: 'What brings you to Seedly today?',
+    subtitle: 'Select what you would most like to support in your daily routine.',
     options: [
       {
         value: 'cycle_hormones',
-        label: 'Cycle & Hormonal Harmony',
-        description: 'Gentle menstrual rhythm, PMS ease, and balanced dietary fatty acids.',
+        label: 'Cycle & Monthly Balance',
+        description: 'Gentle support for your natural monthly rhythm, easing bloating, and everyday calm.',
         iconName: 'moon',
       },
       {
         value: 'digestion_bloat',
-        label: 'Digestive Ease & Lightness',
-        description: 'Post-meal lightness, easing bloating, and soluble dietary fiber motility.',
+        label: 'Digestive Comfort & Lightness',
+        description: 'Feeling lighter after meals, easing sluggishness, and gentle daily dietary fiber.',
         iconName: 'leaf',
       },
       {
         value: 'sleep_calm',
-        label: 'Restful Sleep & Evening Calm',
-        description: 'Unwinding mental fatigue and soothing nervous tension before bedtime.',
+        label: 'Evening Calm & Better Sleep',
+        description: 'Unwinding after a busy day with a soothing, caffeine-free bedtime ritual.',
         iconName: 'sparkles',
       },
       {
         value: 'energy_vitality',
-        label: 'Natural Energy & Glow',
-        description: 'Plant-based vitamin E, minerals, and healthy fats for daily vitality.',
+        label: 'Daily Energy & Natural Glow',
+        description: 'Nutrient-dense seeds packed with plant protein, minerals, and natural Vitamin E.',
         iconName: 'sun',
       },
     ],
@@ -208,41 +208,48 @@ export default function FindYourSeedPage() {
 
     let formatReason = 'Based on your health focus, here is our recommended routine:';
     if (ritual === 'warm_tea') {
-      formatReason = 'You prefer warm infusions, so we paired this routine with high-mountain botanical tea.';
+      formatReason = 'Because you prefer a comforting warm cup, we selected a pure loose-leaf herbal infusion to lead your daily routine.';
     } else if (ritual === 'spoonful_smoothie') {
-      formatReason = 'You prefer sprinkling botanicals into daily meals, so whole unroasted seeds lead your routine.';
+      formatReason = 'Because you enjoy adding nutrients to meals, whole raw seeds lead your daily routine.';
     } else if (ritual === 'complete_ritual') {
-      formatReason = 'You prefer a structured routine, so our complete month-long box set with measuring scoop is your ideal match.';
+      formatReason = 'Because you prefer a guided monthly rhythm, our complete cycle box set is your ideal match.';
     }
 
     if (goal === 'cycle_hormones') {
+      const isTeaFirst = ritual === 'warm_tea';
+
+      const seedKitItem: RecommendedItem = {
+        id: 'kit-complete',
+        name: 'Complete 28-Day Seed Cycling Ritual Kit',
+        slug: 'complete-cycle-kit',
+        type: 'kits',
+        price: 285000,
+        badge: isTeaFirst ? 'OPTIONAL PAIRING' : 'PRIMARY ROUTINE',
+        image: '/images/products/complete-kit.jpg',
+        reason: 'All 4 raw heirloom seeds portioned for both monthly phases, with handcrafted wooden scoop and tracking calendar.',
+        isPairing: isTeaFirst,
+      };
+
+      const spearmintItem: RecommendedItem = {
+        id: 'prod-spearmint',
+        name: 'Organic Gilgit Spearmint Leaf Tea',
+        slug: 'spearmint-tea',
+        type: 'teas',
+        price: 115000,
+        badge: isTeaFirst ? 'PRIMARY ROUTINE' : 'RECOMMENDED PAIRING',
+        image: '/images/products/spearmint-tea.jpg',
+        reason: 'Crisp high-mountain spearmint, traditionally enjoyed twice daily for soothing digestive comfort and cycle ease.',
+        isPairing: !isTeaFirst,
+      };
+
       return {
-        title: 'Suggested Products: Cycle & Hormonal Routine',
-        explanation: `${formatReason} Seed cycling with raw Pumpkin, Flax, Sunflower, and Sesame seeds synchronizes essential fatty acids with your natural follicular and luteal phases.`,
-        products: [
-          {
-            id: 'kit-complete',
-            name: 'Complete 28-Day Seed Cycling Ritual Kit',
-            slug: 'complete-cycle-kit',
-            type: 'kits',
-            price: 285000,
-            badge: 'PRIMARY RECOMMENDATION',
-            image: '/images/products/complete-kit.svg',
-            reason: 'All 4 heirloom seeds portioned for both phases with handcrafted wooden scoop and tracking guide.',
-            isPairing: false,
-          },
-          {
-            id: 'prod-spearmint',
-            name: 'Organic Gilgit Spearmint Leaf Tea',
-            slug: 'spearmint-tea',
-            type: 'teas',
-            price: 115000,
-            badge: 'RECOMMENDED PAIRING',
-            image: '/images/products/spearmint-tea.svg',
-            reason: 'Naturally soothes androgenic fluctuations and post-meal digestive bloating.',
-            isPairing: true,
-          },
-        ],
+        title: isTeaFirst
+          ? 'Suggested Routine: Herbal Cycle Harmony'
+          : 'Suggested Routine: 28-Day Seed Cycling',
+        explanation: isTeaFirst
+          ? 'Since you prefer warm infusions, we recommend our Organic Gilgit Spearmint Leaf Tea as your lead ritual. Spearmint is a traditional soothing herbal infusion often enjoyed twice daily. You can optionally pair it with our Complete 28-Day Seed Kit to add daily kitchen seeds.'
+          : 'Since you prefer whole food seeds, the Complete 28-Day Kit supplies all 4 raw heirloom seeds portioned for both monthly phases, with an engraved wooden scoop and calendar guide. You can optionally pair it with spearmint tea for a soothing daily cup.',
+        products: isTeaFirst ? [spearmintItem, seedKitItem] : [seedKitItem, spearmintItem],
       };
     }
 
@@ -254,9 +261,9 @@ export default function FindYourSeedPage() {
         slug: 'chamomile-tea',
         type: 'teas',
         price: 125000,
-        badge: isTeaFirst ? 'PRIMARY RECOMMENDATION' : 'RECOMMENDED PAIRING',
-        image: '/images/products/chamomile-tea.svg',
-        reason: 'Hand-picked whole blossoms from Gilgit with natural soothing honey notes.',
+        badge: isTeaFirst ? 'PRIMARY ROUTINE' : 'RECOMMENDED PAIRING',
+        image: '/images/products/chamomile-tea.jpg',
+        reason: 'Whole dried chamomile blossoms that brew into a fragrant, naturally sweet bedtime cup.',
         isPairing: !isTeaFirst,
       };
 
@@ -266,78 +273,82 @@ export default function FindYourSeedPage() {
         slug: 'pumpkin-seeds',
         type: 'seeds',
         price: 95000,
-        badge: isTeaFirst ? 'RECOMMENDED PAIRING' : 'PRIMARY RECOMMENDATION',
-        image: '/images/products/pumpkin-seeds.svg',
-        reason: 'Natural source of tryptophan and elemental magnesium to support evening relaxation.',
+        badge: isTeaFirst ? 'OPTIONAL PAIRING' : 'PRIMARY ROUTINE',
+        image: '/images/products/pumpkin-seeds.jpg',
+        reason: 'Rich in natural dietary magnesium and plant protein for an easy, grounding evening snack.',
         isPairing: isTeaFirst,
       };
 
       return {
-        title: 'Suggested Products: Rest & Evening Routine',
-        explanation: `${formatReason} Bioavailable food magnesium from raw pumpkin seeds paired with calming whole chamomile blossoms gently primes nighttime relaxation.`,
+        title: 'Suggested Routine: Evening Calm & Sleep',
+        explanation: `${formatReason} Unsweetened whole chamomile blossoms steep into a peaceful evening tea, complemented by mineral-rich raw pumpkin seeds to satisfy evening hunger naturally.`,
         products: isTeaFirst ? [teaItem, seedItem] : [seedItem, teaItem],
       };
     }
 
     if (goal === 'digestion_bloat') {
+      const isTeaFirst = ritual === 'warm_tea';
+      const flaxItem: RecommendedItem = {
+        id: 'prod-flax',
+        name: 'Cold-Milled Golden Flax Seeds',
+        slug: 'flax-seeds',
+        type: 'seeds',
+        price: 68000,
+        badge: isTeaFirst ? 'OPTIONAL PAIRING' : 'PRIMARY ROUTINE',
+        image: '/images/products/flax-seeds.jpg',
+        reason: 'Gentle soluble fiber that stirs easily into morning yogurt or oatmeal for natural daily regularity.',
+        isPairing: isTeaFirst,
+      };
+
+      const spearmintItem: RecommendedItem = {
+        id: 'prod-spearmint',
+        name: 'Organic Gilgit Spearmint Leaf Tea',
+        slug: 'spearmint-tea',
+        type: 'teas',
+        price: 115000,
+        badge: isTeaFirst ? 'PRIMARY ROUTINE' : 'RECOMMENDED PAIRING',
+        image: '/images/products/spearmint-tea.jpg',
+        reason: 'Pure alpine spearmint leaves to sip warm after meals for refreshing digestive comfort.',
+        isPairing: !isTeaFirst,
+      };
+
       return {
-        title: 'Suggested Products: Daily Digestive Routine',
-        explanation: `${formatReason} Rich soluble dietary mucilage from cold-milled golden flax combines naturally with mountain spearmint leaves to ease gastrointestinal tension and encourage daily regularity.`,
-        products: [
-          {
-            id: 'prod-flax',
-            name: 'Cold-Milled Golden Flax Seeds',
-            slug: 'flax-seeds',
-            type: 'seeds',
-            price: 68000,
-            badge: 'PRIMARY RECOMMENDATION',
-            image: '/images/products/flax-seeds.svg',
-            reason: 'High soluble prebiotic fiber matrix that supports a healthy gut microbiome.',
-            isPairing: false,
-          },
-          {
-            id: 'prod-spearmint',
-            name: 'Organic Gilgit Spearmint Leaf Tea',
-            slug: 'spearmint-tea',
-            type: 'teas',
-            price: 115000,
-            badge: 'RECOMMENDED PAIRING',
-            image: '/images/products/spearmint-tea.svg',
-            reason: 'Crisp mountain spearmint to relax intestinal muscles and reduce post-meal bloating.',
-            isPairing: true,
-          },
-        ],
+        title: 'Suggested Routine: Daily Digestive Ease',
+        explanation: `${formatReason} Golden flax seeds provide gentle daily fiber for breakfast bowls, while loose spearmint leaves make a light, soothing after-meal cup.`,
+        products: isTeaFirst ? [spearmintItem, flaxItem] : [flaxItem, spearmintItem],
       };
     }
 
     // Default: energy_vitality
+    const isTeaFirst = ritual === 'warm_tea';
+    const sunflowerItem: RecommendedItem = {
+      id: 'prod-sunflower',
+      name: 'Organic Raw Sunflower Kernels',
+      slug: 'sunflower-seeds',
+      type: 'seeds',
+      price: 72000,
+      badge: isTeaFirst ? 'OPTIONAL PAIRING' : 'PRIMARY ROUTINE',
+      image: '/images/products/sunflower-seeds.jpg',
+      reason: 'Crisp raw kernels packed with Vitamin E, healthy plant fats, and minerals for daily vitality.',
+      isPairing: isTeaFirst,
+    };
+
+    const greenTeaItem: RecommendedItem = {
+      id: 'prod-green-tea',
+      name: 'Highland Whole Leaf Green Tea',
+      slug: 'green-tea',
+      type: 'teas',
+      price: 135000,
+      badge: isTeaFirst ? 'PRIMARY ROUTINE' : 'RECOMMENDED PAIRING',
+      image: '/images/products/green-tea.jpg',
+      reason: 'Single-estate high-mountain whole leaves with clean, brisk flavor and gentle morning focus.',
+      isPairing: !isTeaFirst,
+    };
+
     return {
-      title: 'Suggested Products: Morning Vitality Routine',
-      explanation: `${formatReason} A natural nutrient pairing of Vitamin E-rich sunflower kernels and fresh spring-harvest green tea provides clean, jitter-free energy and cellular nourishment.`,
-      products: [
-        {
-          id: 'prod-sunflower',
-          name: 'Organic Raw Sunflower Kernels',
-          slug: 'sunflower-seeds',
-          type: 'seeds',
-          price: 72000,
-          badge: 'PRIMARY RECOMMENDATION',
-          image: '/images/products/sunflower-seeds.svg',
-          reason: 'Concentrated natural d-alpha tocopherol and selenium for cell membrane health.',
-          isPairing: false,
-        },
-        {
-          id: 'prod-green-tea',
-          name: 'Highland Whole Leaf Green Tea',
-          slug: 'green-tea',
-          type: 'teas',
-          price: 135000,
-          badge: 'RECOMMENDED PAIRING',
-          image: '/images/products/green-tea.svg',
-          reason: 'EGCG catechins and natural L-theanine for sustained calm morning alertness.',
-          isPairing: true,
-        },
-      ],
+      title: 'Suggested Routine: Morning Focus & Energy',
+      explanation: `${formatReason} Crisp raw sunflower seeds offer wholesome plant nourishment, paired with high-mountain green tea for a clean, calm morning lift.`,
+      products: isTeaFirst ? [greenTeaItem, sunflowerItem] : [sunflowerItem, greenTeaItem],
     };
   }
 
@@ -398,16 +409,12 @@ export default function FindYourSeedPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
       {/* Header */}
-      <div className="text-center max-w-xl mx-auto mb-10 space-y-3">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-seedly-light text-seedly-dark text-xs font-semibold uppercase tracking-wider">
-          <Compass className="w-3.5 h-3.5 text-seedly-primary" />
-          <span>Botanical Product Finder</span>
-        </div>
-        <h1 className="font-serif text-3xl sm:text-5xl font-bold text-charcoal">
-          Find Your Seed &amp; Tea Ritual
+      <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
+        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
+          Find Your Daily Routine
         </h1>
         <p className="text-sm text-muted-gray">
-          A 2-minute guide to match Pakistan's purest edible heirloom botanicals to your routine.
+          Three quick questions to match our edible kitchen seeds or loose mountain teas to your everyday habits.
         </p>
       </div>
 
@@ -491,9 +498,9 @@ export default function FindYourSeedPage() {
       ) : (
         /* Results View */
         <div className="bg-white rounded-3xl p-6 sm:p-10 border border-border-gray shadow-card animate-fadeIn space-y-8">
-          <div className="text-center max-w-xl mx-auto space-y-3">
-            <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold uppercase tracking-wider">
-              Recommendation Ready
+          <div className="text-center max-w-xl mx-auto space-y-2">
+            <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
+              Your Matched Routine
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
               {recommendations.title}
@@ -519,7 +526,7 @@ export default function FindYourSeedPage() {
                 >
                   <div className="space-y-3">
                     <div className="relative aspect-video rounded-xl overflow-hidden bg-stone/40 border border-border-gray/50 flex items-center justify-center">
-                      <Image src={prod.image} alt={prod.name} fill className="object-contain p-3" />
+                      <Image src={prod.image} alt={prod.name} fill className="object-cover" />
                       <span
                         className={`absolute top-2 left-2 px-2 py-0.5 text-[10px] font-bold rounded-full ${
                           prod.isPairing

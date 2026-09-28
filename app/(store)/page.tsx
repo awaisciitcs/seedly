@@ -127,13 +127,13 @@ export default function HomePage() {
             className="lg:col-span-7 group relative rounded-3xl overflow-hidden bg-white border border-border-gray shadow-card hover:shadow-hover transition-all p-6 sm:p-8 flex flex-col justify-between"
           >
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
-              <div className="sm:col-span-6 relative aspect-square w-full rounded-2xl overflow-hidden bg-stone/40 p-4">
+              <div className="sm:col-span-6 relative aspect-square w-full rounded-2xl overflow-hidden bg-stone/40">
                 <Image
-                  src="/images/products/complete-kit.svg"
+                  src="/images/products/complete-kit.jpg"
                   alt="Curated Seed Kits"
                   fill
                   sizes="(max-width: 1024px) 100vw, 35vw"
-                  className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <div className="sm:col-span-6 space-y-3">
@@ -163,11 +163,11 @@ export default function HomePage() {
             >
               <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-cream/70 shrink-0">
                 <Image
-                  src="/images/products/pumpkin-seeds.svg"
+                  src="/images/products/pumpkin-seeds.jpg"
                   alt="Heirloom Seeds"
                   fill
                   sizes="96px"
-                  className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div className="space-y-1">
@@ -191,11 +191,11 @@ export default function HomePage() {
             >
               <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-cream/70 shrink-0">
                 <Image
-                  src="/images/products/chamomile-tea.svg"
+                  src="/images/products/chamomile-tea.jpg"
                   alt="Mountain Herbal Teas"
                   fill
                   sizes="96px"
-                  className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div className="space-y-1">
@@ -203,7 +203,7 @@ export default function HomePage() {
                   Mountain Herbal Teas
                 </h3>
                 <p className="text-xs text-muted-gray leading-relaxed">
-                  Whole chamomile blossoms, northern spearmint leaves, and green tea in amber glass.
+                  Whole chamomile blossoms in amber glass, and coarse mountain spearmint leaves in airtight barrier pouches.
                 </p>
                 <div className="text-xs font-semibold text-seedly-dark pt-1 flex items-center gap-1">
                   <span>View 3 loose infusions</span>
@@ -281,7 +281,7 @@ export default function HomePage() {
                   Intact blossoms, not machine tea dust
                 </h3>
                 <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
-                  Commercial paper tea bags are packed with pulverized fannings that lose their aromatics and apigenin flavonoids in weeks. We preserve intact dried chamomile flowers and coarse alpine spearmint leaves in UV-protective amber jars.
+                  Commercial paper tea bags are packed with pulverized fannings that lose their aromatics and essential oils in weeks. We preserve intact dried chamomile flowers in UV-protective amber jars, and whole alpine spearmint leaves in resealable oxygen-barrier pouches.
                 </p>
               </div>
               <div className="pt-3 border-t border-border-gray/50 text-[11px] font-mono text-seedly-dark">
@@ -313,13 +313,13 @@ export default function HomePage() {
         <div className="rounded-3xl bg-white border border-border-gray p-8 sm:p-12 lg:p-16 shadow-card">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             <div className="lg:col-span-5 relative">
-              <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-cream">
+              <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-cream shadow-subtle">
                 <Image
-                  src="/images/products/complete-kit.svg"
+                  src="/images/products/complete-kit.jpg"
                   alt="Complete 28-Day Seed Cycling Kit"
                   fill
                   sizes="(max-width: 1024px) 100vw, 40vw"
-                  className="object-contain p-4"
+                  className="object-cover"
                 />
               </div>
             </div>

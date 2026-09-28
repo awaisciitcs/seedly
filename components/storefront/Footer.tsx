@@ -31,7 +31,7 @@ export function Footer() {
             <div className="pt-2 space-y-2 text-xs text-seedly-light/70">
               <div className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
-                <span>Dispatched daily from Lahore &amp; Karachi via TCS / Leopards</span>
+                <span>Dispatched daily from our Lahore central hub via TCS / Leopards</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-seedly-primary shrink-0" />

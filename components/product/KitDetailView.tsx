@@ -25,6 +25,7 @@ import {
   Bell,
   MessageCircle,
   Info,
+  PackageCheck,
 } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
 
@@ -192,7 +193,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-contain p-6"
+              className="object-cover"
             />
             {kit.badge && (
               <span className="absolute top-4 left-4 px-3 py-1 bg-seedly-dark text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-subtle">
@@ -405,68 +406,58 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               </div>
             )}
 
-            {/* Batch & Routine Freshness Certificate */}
-            <div className="p-4 rounded-2xl bg-cream/70 border border-border-gray/80 space-y-2.5">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 font-bold text-seedly-dark">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-seedly-primary" />
-                  <span className="uppercase tracking-wider text-[11px]">Routine Freshness Verification</span>
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-seedly-light text-seedly-dark font-semibold">
-                  BATCH #KIT-2026-R2
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-[11px] pt-1.5 border-t border-border-gray/50">
+            {/* Consolidated Purchasing & Routine Briefing */}
+            <div className="rounded-2xl border border-border-gray bg-cream/40 p-4 space-y-3 text-xs">
+              <div className="flex items-start gap-2.5 text-charcoal">
+                <Truck className="w-4 h-4 text-seedly-primary shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-muted-gray block text-[10px]">Assembly Hub</span>
-                  <span className="font-semibold text-charcoal">Lahore Dispatch Center</span>
-                </div>
-                <div>
-                  <span className="text-muted-gray block text-[10px]">Preparation Form</span>
-                  <span className="font-semibold text-charcoal">
-                    {kit.slug === 'luteal-blend'
-                      ? 'Shelled raw & unhulled seeds'
-                      : kit.slug === 'follicular-blend'
-                      ? 'Raw seeds & cold-milled flax'
-                      : 'Raw whole & cold-milled seeds'}
+                  <span className="font-semibold">Nationwide Delivery: </span>
+                  <span className="text-muted-gray">
+                    {kit.price_minor >= 250000
+                      ? 'FREE express courier delivery included on this kit (TCS / Leopards).'
+                      : 'Rs. 200 flat delivery via TCS / Leopards (Free on orders over Rs. 2,500).'}
                   </span>
                 </div>
+              </div>
+
+              <div className="flex items-start gap-2.5 text-charcoal pt-2.5 border-t border-border-gray/60">
+                <PackageCheck className="w-4 h-4 text-emerald-800 shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-muted-gray block text-[10px]">Purity Standard</span>
-                  <span className="font-semibold text-emerald-800">100% Raw &amp; Unsalted</span>
+                  <span className="font-semibold">Inside the Box: </span>
+                  <span className="text-muted-gray">
+                    {kit.slug === 'complete-cycle-kit'
+                      ? '4x 250g resealable pouches (Pumpkin, Flax, Sunflower, Sesame; 1kg total seeds), handcrafted 1-tbsp wooden scoop, and printed 28-day tracking calendar.'
+                      : kit.slug === 'luteal-blend'
+                      ? '2x 250g resealable pouches (Raw Sunflower Kernels, White Sesame Seeds; 500g total), handcrafted wooden scoop, and cycle guide.'
+                      : '2x 250g resealable pouches (Raw Pumpkin Seeds, Cold-Milled Flax; 500g total), handcrafted wooden scoop, and cycle guide.'}
+                  </span>
                 </div>
               </div>
-            </div>
 
-            {/* Compliance Gate & Medical Notice */}
-            <div className="p-3.5 bg-cream rounded-xl border border-border-gray flex items-start gap-2.5 text-[11px] text-muted-gray leading-relaxed">
-              <Info className="w-4 h-4 text-seedly-primary shrink-0 mt-0.5" />
-              <span>
-                <strong>Nutritional Notice:</strong> Seed cycling is a wholesome food routine designed to support daily dietary nutrient intake. It is not intended to treat, diagnose, or replace medical therapies. Consult your healthcare provider for clinical questions.
-              </span>
-            </div>
+              {(kit.slug === 'luteal-blend' || kit.slug === 'complete-cycle-kit') && (
+                <div className="flex items-start gap-2.5 text-amber-950 pt-2.5 border-t border-border-gray/60">
+                  <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold">Allergen Notice: </span>
+                    <span className="text-amber-900/90">
+                      Contains Sesame Seeds. Packaged in a facility handling edible seeds and tree nuts.
+                    </span>
+                  </div>
+                </div>
+              )}
 
-            {/* Dedicated Allergen Statement */}
-            <div className="p-3.5 bg-amber-50/70 rounded-xl border border-amber-200/60 flex items-start gap-2.5 text-[11px] text-amber-950 leading-relaxed">
-              <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-              <span>
-                <strong>Allergen Statement:</strong> {kit.slug === 'luteal-blend' || kit.slug === 'complete-cycle-kit' ? 'Contains Sesame Seeds. ' : ''}Packed in a dedicated food-safe facility that handles edible seeds and culinary botanicals.
-              </span>
-            </div>
-
-            {/* Delivery Perks */}
-            <div className="pt-2 border-t border-border-gray space-y-2 text-xs text-muted-gray">
-              <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4 text-seedly-primary shrink-0" />
-                <span>
-                  {kit.price_minor >= 250000
-                    ? 'Nationwide delivery via TCS / Leopards: FREE delivery included on this kit.'
-                    : 'Nationwide delivery via TCS / Leopards: Rs. 200 (Free delivery on orders over Rs. 2,500).'}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-seedly-primary shrink-0" />
-                <span>Includes handcrafted 1-tablespoon wooden scoop &amp; tracking guide.</span>
+              <div className="flex items-start gap-2.5 text-charcoal pt-2.5 border-t border-border-gray/60">
+                <CheckCircle2 className="w-4 h-4 text-seedly-primary shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold">Daily Routine &amp; Storage: </span>
+                  <span className="text-muted-gray">
+                    {kit.slug === 'luteal-blend'
+                      ? 'Take 1 tbsp sunflower + 1 tbsp sesame daily on Days 15–28. Keep sealed in a dry pantry.'
+                      : kit.slug === 'follicular-blend'
+                      ? 'Take 1 tbsp pumpkin + 1 tbsp golden flax daily on Days 1–14. Keep sealed in a cool, dark cupboard.'
+                      : 'Eat 2 tbsp daily according to your phase calendar. Dispatched fresh from our Lahore hub.'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

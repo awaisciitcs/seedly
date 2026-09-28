@@ -40,9 +40,9 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
   const { addItem, setIsCartOpen } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
-    product.variants?.[0]
-  );
+  const defaultVar = product.variants?.find((v) => v.weight_grams === (product.weight_grams || 250))
+    || product.variants?.[0];
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(defaultVar);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'dossier' | 'ritual' | 'storage' | 'faqs' | 'reviews'>('dossier');
   const [added, setAdded] = useState(false);
@@ -203,13 +203,17 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-contain p-6"
+              className="object-cover"
             />
             {product.badge && (
               <span className="absolute top-4 left-4 px-3 py-1 bg-seedly-dark text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-subtle">
                 {product.badge}
               </span>
             )}
+            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full border border-border-gray shadow-subtle text-[11px] font-medium text-charcoal flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-seedly-primary"></span>
+              <span>Showing: {selectedVariant?.option_value || '250g Pouch'}</span>
+            </div>
           </div>
 
           {/* Contextual WhatsApp Consultation */}
@@ -316,6 +320,29 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                 <span className="text-xs text-rose-800 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1">
                   <Bell className="w-3 h-3 text-rose-600" />
                   <span>Temporarily Out of Stock</span>
+                </span>
+              )}
+            </div>
+
+            {/* Dynamic Unit Price Indicator */}
+            <div className="text-xs text-muted-gray pt-0.5">
+              {product.product_type === 'seed' ? (
+                <span>
+                  {selectedVariant?.option_value || '250g'} Pouch ·{' '}
+                  <strong className="text-charcoal font-medium">
+                    Rs.{' '}
+                    {Math.round(
+                      ((priceMinor / (selectedVariant?.weight_grams || product.weight_grams || 250)) * 100) / 100
+                    )}
+                    /100g
+                  </strong>
+                </span>
+              ) : (
+                <span>
+                  {selectedVariant?.option_value || '50g'} ·{' '}
+                  <strong className="text-charcoal font-medium">
+                    {product.slug === 'green-tea' ? '~35 cups' : '~25 cups'} of brewed tea
+                  </strong>
                 </span>
               )}
             </div>

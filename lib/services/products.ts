@@ -93,9 +93,11 @@ export function getFeaturedProducts(): Product[] {
 }
 
 function mapRowToProduct(db: any, row: any): Product {
-  // Fetch variants
+  // Fetch variants with standard 250g pantry size first
   const variants = db.prepare(`
-    SELECT * FROM product_variants WHERE product_id = ? ORDER BY weight_grams ASC
+    SELECT * FROM product_variants 
+    WHERE product_id = ? 
+    ORDER BY CASE WHEN weight_grams = 250 THEN 0 ELSE 1 END, weight_grams ASC
   `).all(row.id) as unknown as ProductVariant[];
 
   // Fetch reviews stats

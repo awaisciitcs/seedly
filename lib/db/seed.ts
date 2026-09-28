@@ -111,7 +111,7 @@ export function seedCatalog(db: any) {
     }),
     'Raw Heirloom Pumpkin Seeds (250g) | Seedly Pakistan',
     'Sun-dried, raw heirloom pumpkin seeds grown in Sahiwal. Clean, unsalted, and high in zinc.',
-    '/images/products/pumpkin-seeds.svg',
+    '/images/products/pumpkin-seeds.jpg',
     'BESTSELLER',
     1
   );
@@ -149,7 +149,7 @@ export function seedCatalog(db: any) {
     }),
     'Cold-Milled Golden Flax Seeds (250g) | Seedly Pakistan',
     'Locally sourced golden flax seeds, cold-milled in batches to protect vital omega-3 fatty acids.',
-    '/images/products/flax-seeds.svg',
+    '/images/products/flax-seeds.jpg',
     'POPULAR',
     1
   );
@@ -187,7 +187,7 @@ export function seedCatalog(db: any) {
     }),
     'Raw Sunflower Seed Kernels | Seedly Pakistan',
     'Raw, clean sunflower seed kernels from Multan. High in natural vitamin E and plant protein.',
-    '/images/products/sunflower-seeds.svg',
+    '/images/products/sunflower-seeds.jpg',
     null,
     0
   );
@@ -225,7 +225,7 @@ export function seedCatalog(db: any) {
     }),
     'Natural White Sesame Seeds | Seedly Pakistan',
     'Unhulled, unbleached white sesame seeds from Sargodha. Exceptional natural calcium content.',
-    '/images/products/sesame-seeds.svg',
+    '/images/products/sesame-seeds.jpg',
     null,
     0
   );
@@ -261,7 +261,7 @@ export function seedCatalog(db: any) {
     }),
     'Whole Flower Chamomile Tea | Seedly Pakistan',
     'Intact loose whole chamomile blossoms from Gilgit. Calming, fragrant, and 100% caffeine-free.',
-    '/images/products/chamomile-tea.svg',
+    '/images/products/chamomile-tea.jpg',
     'BESTSELLER',
     1
   );
@@ -295,7 +295,7 @@ export function seedCatalog(db: any) {
     }),
     'Organic Spearmint Leaf Tea | Seedly Pakistan',
     'Mountain spearmint loose leaf tea from Gilgit. Clean cooling taste for daily digestive comfort.',
-    '/images/products/spearmint-tea.svg',
+    '/images/products/spearmint-tea.jpg',
     'POPULAR',
     1
   );
@@ -330,7 +330,7 @@ export function seedCatalog(db: any) {
     }),
     'Highland Whole Leaf Green Tea | Seedly Pakistan',
     'Single-estate green tea whole leaves from northern foothills. Smooth and never bitter.',
-    '/images/products/green-tea.svg',
+    '/images/products/green-tea.jpg',
     null,
     0
   );
@@ -366,7 +366,7 @@ export function seedCatalog(db: any) {
     'Take 1 tablespoon of pumpkin seeds and 1 tablespoon of ground flax seeds daily during days 1 to 14 of your cycle.',
     'Store tightly closed in a cool, dry pantry. Ground flax can be refrigerated.',
     'APPROVED',
-    '/images/products/follicular-kit.svg',
+    '/images/products/follicular-kit.jpg',
     'POPULAR KIT',
     1,
     'Follicular Phase Seed Kit | Seedly Pakistan',
@@ -391,7 +391,7 @@ export function seedCatalog(db: any) {
     'Take 1 tablespoon of sunflower seeds and 1 tablespoon of sesame seeds daily from day 15 until day 28 of your cycle.',
     'Keep sealed in a cool, dark cupboard away from moisture.',
     'APPROVED',
-    '/images/products/luteal-kit.svg',
+    '/images/products/luteal-kit.jpg',
     'CYCLE SUPPORT',
     1,
     'Luteal Phase Seed Kit | Seedly Pakistan',
@@ -416,7 +416,7 @@ export function seedCatalog(db: any) {
     'Days 1–14: 1 tbsp Pumpkin + 1 tbsp Flax daily. Days 15–28: 1 tbsp Sunflower + 1 tbsp Sesame daily.',
     'Keep pouches sealed in a cool pantry or refrigerator.',
     'APPROVED',
-    '/images/products/complete-kit.svg',
+    '/images/products/complete-kit.jpg',
     'BEST VALUE',
     1,
     'Complete 28-Day Seed Cycling Kit | Seedly Pakistan',

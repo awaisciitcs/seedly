@@ -65,9 +65,9 @@ export default function ContactPage() {
               <div className="p-4 rounded-2xl bg-cream/60 border border-border-gray flex items-start gap-3 text-charcoal">
                 <MapPin className="w-5 h-5 text-seedly-primary shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-sm">Apothecary Hubs</h4>
-                  <p className="text-xs text-muted-gray mt-0.5">Lahore & Karachi, Pakistan</p>
-                  <p className="text-[11px] text-muted-gray mt-1">Daily national dispatch via courier</p>
+                  <h4 className="font-bold text-sm">Apothecary Dispatch Hub</h4>
+                  <p className="text-xs text-muted-gray mt-0.5">Lahore, Pakistan</p>
+                  <p className="text-[11px] text-muted-gray mt-1">Daily dispatch nationwide via TCS &amp; Leopards</p>
                 </div>
               </div>
             </div>

@@ -21,9 +21,21 @@ export function ProductCard({ product }: ProductCardProps) {
   const [isNotifyModalOpen, setIsNotifyModalOpen] = React.useState(false);
 
   const isKit = product.product_type === 'kit' || 'items' in product;
+  const seedProduct = !isKit ? (product as Product) : null;
+  // Standard pantry pouch is 250g for seeds; default to 250g variant
+  const defaultVariant = seedProduct?.variants?.find((v) => v.weight_grams === (seedProduct.weight_grams || 250))
+    || seedProduct?.variants?.[0]
+    || null;
+
+  const displayPriceMinor = defaultVariant ? defaultVariant.price_minor : product.price_minor;
+  const displayComparePriceMinor = defaultVariant?.compare_price_minor || product.compare_price_minor;
+  const displayWeight = defaultVariant?.option_value || (seedProduct?.product_type === 'tea' ? '50g' : '250g');
+  const weightGrams = defaultVariant?.weight_grams || seedProduct?.weight_grams || 250;
+  const unitPricePer100g = Math.round(((displayPriceMinor / weightGrams) * 100) / 100);
+
   const stock = isKit
     ? (product as Kit).computed_stock ?? 0
-    : (product as Product).variants?.[0]?.inventory_quantity ?? 50;
+    : defaultVariant?.inventory_quantity ?? (product as Product).variants?.[0]?.inventory_quantity ?? 50;
   const inStock = stock > 0;
   const isLowStock = inStock && stock <= 5;
   const href = isKit ? `/kits/${product.slug}` : `/${product.product_type === 'tea' ? 'teas' : 'seeds'}/${product.slug}`;
@@ -39,13 +51,14 @@ export function ProductCard({ product }: ProductCardProps) {
     }
 
     addItem({
-      id: `${product.id}-${isKit ? 'kit' : 'default'}`,
+      id: `${product.id}-${defaultVariant?.id || (isKit ? 'kit' : 'default')}`,
       product_id: product.id,
       kit_id: isKit ? product.id : undefined,
+      variant_id: defaultVariant?.id,
       name: product.name,
       slug: product.slug,
-      variant_label: isKit ? (product as Kit).package_size : (product as Product).variants?.[0]?.option_value,
-      price_minor: product.price_minor,
+      variant_label: isKit ? (product as Kit).package_size : displayWeight,
+      price_minor: displayPriceMinor,
       image_url: product.image_url,
       quantity: 1,
       product_type: isKit ? 'kit' : (product as Product).product_type,
@@ -71,7 +84,7 @@ export function ProductCard({ product }: ProductCardProps) {
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-contain p-3 group-hover:scale-105 transition-transform duration-300 ease-out"
+          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
         />
 
         {/* Badges */}
@@ -148,22 +161,20 @@ export function ProductCard({ product }: ProductCardProps) {
           <div>
             <div className="flex items-baseline gap-1.5">
               <span className="font-serif font-bold text-base sm:text-lg text-charcoal">
-                {formatPKR(product.price_minor)}
+                {formatPKR(displayPriceMinor)}
               </span>
-              {product.compare_price_minor && (
+              {displayComparePriceMinor && (
                 <span className="text-xs text-muted-gray line-through">
-                  {formatPKR(product.compare_price_minor)}
+                  {formatPKR(displayComparePriceMinor)}
                 </span>
               )}
             </div>
             <p className="text-[11px] text-muted-gray">
               {isKit
-                ? (product as Kit).package_size || 'Full Box Set'
-                : !isKit && (product as Product).product_type === 'seed'
-                ? `${(product as Product).variants?.[0]?.option_value || '250g'} · Rs. ${Math.round(
-                    ((product.price_minor / ((product as Product).weight_grams || 250)) * 100) / 100
-                  )}/100g`
-                : (product as Product).variants?.[0]?.option_value || '50g'}
+                ? (product as Kit).package_size || 'Full Box Set (500g net)'
+                : seedProduct?.product_type === 'seed'
+                ? `${displayWeight} · Rs. ${unitPricePer100g}/100g`
+                : `${displayWeight} · ~25 cups`}
             </p>
           </div>
 
