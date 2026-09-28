@@ -17,6 +17,9 @@ export async function generateMetadata(props: {
   return {
     title: `${product.name} | Mountain Herbal Tea | Seedly Pakistan`,
     description: product.short_description || product.description,
+    alternates: {
+      canonical: `https://seedly.pk/teas/${slug}`,
+    },
     openGraph: {
       title: `${product.name} | Seedly Pakistan`,
       description: product.short_description || product.description,
@@ -53,5 +56,37 @@ export default async function TeaDetailPage(props: {
     (p) => p.id !== product.id
   );
 
-  return <ProductDetailView product={product} relatedProducts={related} />;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: `https://seedly.pk${product.image_url}`,
+    description: product.short_description || product.description,
+    sku: product.sku,
+    brand: {
+      '@type': 'Brand',
+      name: 'Seedly',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://seedly.pk/teas/${product.slug}`,
+      priceCurrency: 'PKR',
+      price: (product.price_minor / 100).toFixed(0),
+      availability:
+        (product.variants?.[0]?.inventory_quantity ?? 50) > 0
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
+      itemCondition: 'https://schema.org/NewCondition',
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ProductDetailView product={product} relatedProducts={related} />
+    </>
+  );
 }

@@ -14,6 +14,7 @@ interface CartContextType {
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   freeShippingThreshold: number;
+  isLoaded: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -123,6 +124,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         isCartOpen,
         setIsCartOpen,
         freeShippingThreshold: FREE_SHIPPING_THRESHOLD_MINOR,
+        isLoaded,
       }}
     >
       {children}

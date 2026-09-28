@@ -21,9 +21,9 @@ export default function PrivacyPage() {
           We only collect personal information necessary to deliver your orders and provide customer care: your name, shipping address, email address, mobile phone number, and transaction references.
         </p>
 
-        <h2 className="font-serif text-xl font-bold pt-2">2. Payment Security</h2>
+        <h2 className="font-serif text-xl font-bold pt-2">2. Payment Processing &amp; Verification</h2>
         <p>
-          Seedly does not store or process sensitive credit card numbers or banking passwords. Digital wallet transactions are processed securely through certified payment aggregators (JazzCash / Easypaisa). Bank transfer receipt screenshots are securely stored and reviewed solely for order verification.
+          Seedly does not collect or store debit/credit card numbers or banking passwords. We operate transparent Pakistani payment methods: Cash on Delivery (COD) collected upon package receipt, and direct manual transfers via JazzCash, Easypaisa, or Meezan Bank. For digital transfers, transaction IDs and optional payment receipts submitted during checkout are reviewed solely by our accounts team to verify your transfer before package dispatch.
         </p>
 
         <h2 className="font-serif text-xl font-bold pt-2">3. Third-Party Courier Sharing</h2>

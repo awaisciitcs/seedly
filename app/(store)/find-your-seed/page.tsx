@@ -172,9 +172,9 @@ export default function FindYourSeedPage() {
       setCurrentStep(currentStep + 1);
     } else {
       setCompleted(true);
-      // Initialize selected items for recommendations
+      // Initialize with ONLY the primary recommended item selected (optional pairing left unchecked by default)
       const rec = computeRecommendations(newAnswers);
-      setSelectedIds(rec.products.map((p) => p.id));
+      setSelectedIds(rec.products.length > 0 ? [rec.products[0].id] : []);
     }
   };
 
@@ -205,15 +205,6 @@ export default function FindYourSeedPage() {
   } {
     const goal = ans.goal || 'cycle_hormones';
     const ritual = ans.ritual || 'complete_ritual';
-
-    let formatReason = 'Based on your health focus, here is our recommended routine:';
-    if (ritual === 'warm_tea') {
-      formatReason = 'Because you prefer a comforting warm cup, we selected a pure loose-leaf herbal infusion to lead your daily routine.';
-    } else if (ritual === 'spoonful_smoothie') {
-      formatReason = 'Because you enjoy adding nutrients to meals, whole raw seeds lead your daily routine.';
-    } else if (ritual === 'complete_ritual') {
-      formatReason = 'Because you prefer a guided monthly rhythm, our complete cycle box set is your ideal match.';
-    }
 
     if (goal === 'cycle_hormones') {
       const isTeaFirst = ritual === 'warm_tea';
@@ -248,13 +239,13 @@ export default function FindYourSeedPage() {
           : 'Suggested Routine: 28-Day Seed Cycling',
         explanation: isTeaFirst
           ? 'Since you prefer warm infusions, we recommend our Organic Gilgit Spearmint Leaf Tea as your lead ritual. Spearmint is a traditional soothing herbal infusion often enjoyed twice daily. You can optionally pair it with our Complete 28-Day Seed Kit to add daily kitchen seeds.'
-          : 'Since you prefer whole food seeds, the Complete 28-Day Kit supplies all 4 raw heirloom seeds portioned for both monthly phases, with an engraved wooden scoop and calendar guide. You can optionally pair it with spearmint tea for a soothing daily cup.',
+          : 'Since you prefer a structured food ritual, the Complete 28-Day Kit supplies all 4 raw heirloom seeds portioned for both monthly phases, with an engraved wooden scoop and calendar guide. You can optionally pair it with spearmint tea for a soothing daily cup.',
         products: isTeaFirst ? [spearmintItem, seedKitItem] : [seedKitItem, spearmintItem],
       };
     }
 
     if (goal === 'sleep_calm') {
-      const isTeaFirst = ritual === 'warm_tea';
+      const isTeaFirst = ritual === 'warm_tea' || ritual === 'complete_ritual';
       const teaItem: RecommendedItem = {
         id: 'prod-chamomile',
         name: 'Pure Whole Flower Chamomile Tea',
@@ -281,7 +272,9 @@ export default function FindYourSeedPage() {
 
       return {
         title: 'Suggested Routine: Evening Calm & Sleep',
-        explanation: `${formatReason} Unsweetened whole chamomile blossoms steep into a peaceful evening tea, complemented by mineral-rich raw pumpkin seeds to satisfy evening hunger naturally.`,
+        explanation: isTeaFirst
+          ? 'Pure whole dried chamomile blossoms steep into an aromatic, peaceful evening cup. You can optionally pair it with mineral-rich raw pumpkin seeds to satisfy evening hunger naturally.'
+          : 'Mineral-rich raw pumpkin seeds provide natural plant protein and dietary magnesium for an easy evening snack. Pair optionally with whole-blossom chamomile tea for a soothing bedtime cup.',
         products: isTeaFirst ? [teaItem, seedItem] : [seedItem, teaItem],
       };
     }
@@ -314,12 +307,46 @@ export default function FindYourSeedPage() {
 
       return {
         title: 'Suggested Routine: Daily Digestive Ease',
-        explanation: `${formatReason} Golden flax seeds provide gentle daily fiber for breakfast bowls, while loose spearmint leaves make a light, soothing after-meal cup.`,
+        explanation: isTeaFirst
+          ? 'Organic Gilgit spearmint leaves brew into a crisp, refreshing post-meal tea. You can optionally pair it with cold-milled golden flax seeds to add gentle soluble fiber to your morning breakfast.'
+          : 'Cold-milled golden flax seeds provide gentle daily soluble fiber for breakfast bowls. You can optionally pair it with loose spearmint leaves for a refreshing post-meal steep.',
         products: isTeaFirst ? [spearmintItem, flaxItem] : [flaxItem, spearmintItem],
       };
     }
 
     // Default: energy_vitality
+    if (ritual === 'complete_ritual') {
+      const kitItem: RecommendedItem = {
+        id: 'kit-complete',
+        name: 'Complete 28-Day Seed Cycling Ritual Kit',
+        slug: 'complete-cycle-kit',
+        type: 'kits',
+        price: 285000,
+        badge: 'PRIMARY ROUTINE',
+        image: '/images/products/complete-kit.jpg',
+        reason: 'Structured all-in-one monthly ritual supplying all 4 raw heirloom seeds with wooden scoop and monthly guide.',
+        isPairing: false,
+      };
+
+      const greenTeaItem: RecommendedItem = {
+        id: 'prod-green-tea',
+        name: 'Highland Whole Leaf Green Tea',
+        slug: 'green-tea',
+        type: 'teas',
+        price: 135000,
+        badge: 'RECOMMENDED PAIRING',
+        image: '/images/products/green-tea.jpg',
+        reason: 'Single-estate high-mountain whole leaves with clean, brisk flavor and gentle morning focus.',
+        isPairing: true,
+      };
+
+      return {
+        title: 'Suggested Routine: Complete Monthly Vitality',
+        explanation: 'Because you prefer a structured monthly routine, our Complete 28-Day Kit supplies all four nutrient-dense raw seeds with a measuring scoop and daily guide. You can optionally pair it with high-mountain green tea for clean morning focus.',
+        products: [kitItem, greenTeaItem],
+      };
+    }
+
     const isTeaFirst = ritual === 'warm_tea';
     const sunflowerItem: RecommendedItem = {
       id: 'prod-sunflower',
@@ -347,7 +374,9 @@ export default function FindYourSeedPage() {
 
     return {
       title: 'Suggested Routine: Morning Focus & Energy',
-      explanation: `${formatReason} Crisp raw sunflower seeds offer wholesome plant nourishment, paired with high-mountain green tea for a clean, calm morning lift.`,
+      explanation: isTeaFirst
+        ? 'Highland whole leaf green tea delivers clean, brisk morning focus without jitters. You can optionally pair it with crisp raw sunflower kernels for wholesome plant nourishment.'
+        : 'Crisp raw sunflower kernels provide Vitamin E and plant protein for an easy daily lift. You can optionally pair them with high-mountain green tea for a clean morning cup.',
       products: isTeaFirst ? [greenTeaItem, sunflowerItem] : [sunflowerItem, greenTeaItem],
     };
   }
@@ -395,13 +424,11 @@ export default function FindYourSeedPage() {
   };
 
   const currentQ = questions[currentStep];
-  // Calculate completed answer progress accurately:
-  // Step 1: 0 answers complete (0%)
-  // Step 2: 1 answer complete (33%)
-  // Step 3: 2 answers complete (67%)
-  // Results: 3 answers complete (100%)
-  const completedAnswersCount = Object.keys(answers).length;
-  const progressPercent = Math.round((completedAnswersCount / questions.length) * 100);
+  // Calculate completed answer progress based on current step:
+  // Step 0: 0/3 = 0%
+  // Step 1: 1/3 = 33%
+  // Step 2: 2/3 = 67%
+  const progressPercent = Math.round((currentStep / questions.length) * 100);
 
   const selectedProducts = recommendations.products.filter((p) => selectedIds.includes(p.id));
   const selectedTotalMinor = selectedProducts.reduce((sum, p) => sum + p.price, 0);
@@ -514,6 +541,7 @@ export default function FindYourSeedPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             {recommendations.products.map((prod) => {
               const isSelected = selectedIds.includes(prod.id);
+              const checkboxId = `rec-prod-${prod.id}`;
               return (
                 <div
                   key={prod.id}
@@ -538,19 +566,23 @@ export default function FindYourSeedPage() {
                       </span>
                     </div>
 
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start justify-between gap-3">
                       <div>
                         <h3 className="font-serif font-bold text-base text-charcoal">{prod.name}</h3>
                         <p className="text-xs text-muted-gray mt-1 leading-relaxed">{prod.reason}</p>
                       </div>
-                      <div
-                        className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-1 transition-colors ${
-                          isSelected
-                            ? 'bg-seedly-dark border-seedly-dark text-white'
-                            : 'border-border-gray bg-white'
-                        }`}
-                      >
-                        {isSelected && <Check className="w-3.5 h-3.5" />}
+                      <div className="shrink-0 mt-1 flex items-center">
+                        <input
+                          id={checkboxId}
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            toggleProductSelection(prod.id);
+                          }}
+                          aria-label={`Include ${prod.name} in basket`}
+                          className="w-5 h-5 rounded border-border-gray text-seedly-dark focus:ring-seedly-primary cursor-pointer accent-seedly-dark"
+                        />
                       </div>
                     </div>
                   </div>
@@ -621,7 +653,7 @@ export default function FindYourSeedPage() {
                   onClick={handleAddPrimaryOnly}
                   className="w-full sm:w-auto px-5 py-3 rounded-full text-xs font-semibold border border-border-gray hover:bg-cream text-charcoal transition-all"
                 >
-                  Add Primary Kit Only ({formatPKR(recommendations.products[0].price)})
+                  Add Primary Item Only ({formatPKR(recommendations.products[0].price)})
                 </button>
               )}
 
@@ -648,7 +680,9 @@ export default function FindYourSeedPage() {
                     <span>
                       {selectedIds.length === 0
                         ? 'Select an Item'
-                        : `Add Selected Items (${formatPKR(selectedTotalMinor)})`}
+                        : selectedIds.length === 1
+                        ? `Add to Basket (${formatPKR(selectedTotalMinor)})`
+                        : `Add Both Items (${formatPKR(selectedTotalMinor)})`}
                     </span>
                   </>
                 )}

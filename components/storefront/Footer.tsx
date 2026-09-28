@@ -35,11 +35,11 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
-                <span>Customer Care: +92 304 1117333 (Mon–Sat, 10am–7pm PKT)</span>
+                <span>Customer Care: <a href="tel:+923041117333" className="hover:text-white transition-colors underline underline-offset-2">+92 304 1117333</a> (Mon–Sat, 10am–7pm PKT)</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
-                <span>Support: care@seedly.pk</span>
+                <span>Support: <a href="mailto:care@seedly.pk" className="hover:text-white transition-colors underline underline-offset-2">care@seedly.pk</a></span>
               </div>
             </div>
           </div>
@@ -122,9 +122,14 @@ export function Footer() {
               </div>
             ) : (
               <form onSubmit={handleNewsletterSubmit} className="space-y-2">
+                <label htmlFor="newsletter-email" className="sr-only">
+                  Email address for harvest updates
+                </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 absolute left-3 top-3 text-seedly-light/60" />
+                  <Mail className="w-4 h-4 absolute left-3 top-3 text-seedly-light/60" aria-hidden="true" />
                   <input
+                    id="newsletter-email"
+                    name="email"
                     type="email"
                     required
                     placeholder="name@example.com"
@@ -157,10 +162,6 @@ export function Footer() {
             <span>•</span>
             <Link href="/product-disclaimer" className="hover:text-white transition-colors">
               Product Disclaimer
-            </Link>
-            <span>•</span>
-            <Link href="/admin/login" className="hover:text-white transition-colors opacity-70">
-              Admin Portal
             </Link>
           </div>
 

@@ -19,9 +19,9 @@ const faqs: FaqItem[] = [
   },
   {
     category: 'Seed Cycling & Usage',
-    question: 'Should I grind flax seeds before eating them?',
+    question: 'Do I need to grind Seedly Flax Seeds at home?',
     answer:
-      'Yes! Flax seeds have a very tough outer husk that the human digestive tract cannot break down whole. For optimal absorption of Omega-3 ALA and lignans, ground flax is ideal. Our golden flax seeds can be ground easily in a small spice grinder or blender, or enjoyed in our pre-portioned kits.',
+      'No grinding required! Whole flax seeds have a tough outer husk that the body cannot break down. To save you time and maximize absorption of Omega-3 ALA and lignans, Seedly Golden Flax is already freshly cold-milled into a coarse meal in small batches. It arrives ready to spoon straight into yogurt, oatmeal, or smoothies.',
   },
   {
     category: 'Botanical Teas',

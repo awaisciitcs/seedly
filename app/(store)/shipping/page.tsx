@@ -13,7 +13,7 @@ export default function ShippingPage() {
           Shipping & Nationwide Delivery
         </h1>
         <p className="text-sm text-muted-gray">
-          Carefully packaged fresh botanicals dispatched daily from Lahore and Karachi across Pakistan.
+          Carefully packaged fresh botanicals dispatched daily from our central Lahore hub across Pakistan.
         </p>
       </div>
 
@@ -22,7 +22,7 @@ export default function ShippingPage() {
           <Truck className="w-6 h-6 text-seedly-primary mb-2" />
           <h3 className="font-serif font-bold text-base text-charcoal">Free Shipping</h3>
           <p className="text-xs text-muted-gray leading-relaxed">
-            Free nationwide courier delivery on all orders of <strong>Rs. 2,500 or more</strong>. For smaller orders, delivery is a flat Rs. 200.
+            Free nationwide courier delivery on all orders of <strong>Rs. 2,500 or more</strong>. For orders under Rs. 2,500, delivery is a flat Rs. 200.
           </p>
         </div>
 
@@ -30,8 +30,9 @@ export default function ShippingPage() {
           <Clock className="w-6 h-6 text-seedly-primary mb-2" />
           <h3 className="font-serif font-bold text-base text-charcoal">Delivery Times</h3>
           <p className="text-xs text-muted-gray leading-relaxed">
-            <strong>Lahore & Karachi:</strong> 1–2 business days.<br />
-            <strong>Islamabad, Rawalpindi & other cities:</strong> 2–4 business days.
+            <strong>Lahore:</strong> 1–2 business days.<br />
+            <strong>Punjab &amp; Islamabad / Rawalpindi:</strong> 2–3 business days.<br />
+            <strong>Sindh (including Karachi), KPK &amp; Nationwide:</strong> 3–4 business days.
           </p>
         </div>
 

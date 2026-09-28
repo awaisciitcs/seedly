@@ -48,7 +48,9 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
   const [added, setAdded] = useState(false);
 
   const priceMinor = selectedVariant ? selectedVariant.price_minor : product.price_minor;
-  const comparePriceMinor = selectedVariant?.compare_price_minor || product.compare_price_minor;
+  const comparePriceMinor = selectedVariant
+    ? selectedVariant.compare_price_minor
+    : product.compare_price_minor;
   const currentStock = selectedVariant?.inventory_quantity ?? 50;
   const inStock = currentStock > 0;
   const isLowStock = inStock && currentStock <= 5;
@@ -240,7 +242,15 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             {/* Category & Verified Review Social Proof */}
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-                {product.product_type === 'tea' ? 'Whole Flower Infusion' : '100% Raw Heirloom'}
+                {product.slug === 'chamomile-tea'
+                  ? 'Whole Flower Botanical'
+                  : product.slug === 'spearmint-tea'
+                  ? 'Single-Origin Mountain Leaf'
+                  : product.slug === 'green-tea'
+                  ? 'Highland Whole Leaf'
+                  : product.slug === 'flax-seeds'
+                  ? 'Cold-Milled Heirloom'
+                  : '100% Raw Heirloom'}
               </span>
 
               {reviews.length > 0 ? (
@@ -341,7 +351,9 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                 <span>
                   {selectedVariant?.option_value || '50g'} ·{' '}
                   <strong className="text-charcoal font-medium">
-                    {product.slug === 'green-tea' ? '~35 cups' : '~25 cups'} of brewed tea
+                    {product.slug === 'green-tea'
+                      ? '~35 cups (2g per serving; re-steepable for 70+ cups)'
+                      : '~25 cups (2g per serving)'}
                   </strong>
                 </span>
               )}
@@ -469,7 +481,9 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-[11px] pt-1.5 border-t border-border-gray/50">
                 <div>
                   <span className="text-muted-gray block text-[10px]">Harvest Period</span>
-                  <span className="font-semibold text-charcoal">Winter 2025–2026</span>
+                  <span className="font-semibold text-charcoal">
+                    {product.slug === 'green-tea' ? 'Spring 2026 Harvest' : 'Winter 2025–2026 Harvest'}
+                  </span>
                 </div>
                 <div>
                   <span className="text-muted-gray block text-[10px]">Best Before</span>
@@ -487,7 +501,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               <div className="flex items-center gap-2.5">
                 <Truck className="w-4 h-4 text-seedly-primary shrink-0" />
                 <span>
-                  <strong>Nationwide Dispatch:</strong> 1–2 days in Punjab; 2–3 days Sindh, KPK &amp; Balochistan. Free delivery over Rs. 2,500.
+                  <strong>Nationwide Dispatch:</strong> 1–2 days in Punjab; 2–3 days Sindh, KPK &amp; Balochistan. Free delivery on orders of Rs. 2,500 or more.
                 </span>
               </div>
               <div className="flex items-center gap-2.5">
@@ -509,8 +523,17 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
 
       {/* Authoritative Substance-First Product Dossier Tabs */}
       <div className="mt-16 sm:mt-24 pt-10 border-t border-border-gray">
-        <div className="flex items-center gap-4 sm:gap-8 border-b border-border-gray pb-4 overflow-x-auto text-sm font-semibold">
+        <div
+          role="tablist"
+          aria-label="Product Information"
+          className="flex items-center gap-4 sm:gap-8 border-b border-border-gray pb-4 overflow-x-auto text-sm font-semibold"
+        >
           <button
+            id="tab-dossier"
+            role="tab"
+            aria-selected={activeTab === 'dossier'}
+            aria-controls="panel-dossier"
+            tabIndex={activeTab === 'dossier' ? 0 : -1}
             onClick={() => setActiveTab('dossier')}
             className={`pb-2 whitespace-nowrap transition-colors relative ${
               activeTab === 'dossier' ? 'text-seedly-dark font-bold' : 'text-muted-gray hover:text-charcoal'
@@ -522,17 +545,27 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             )}
           </button>
           <button
+            id="tab-ritual"
+            role="tab"
+            aria-selected={activeTab === 'ritual'}
+            aria-controls="panel-ritual"
+            tabIndex={activeTab === 'ritual' ? 0 : -1}
             onClick={() => setActiveTab('ritual')}
             className={`pb-2 whitespace-nowrap transition-colors relative ${
               activeTab === 'ritual' ? 'text-seedly-dark font-bold' : 'text-muted-gray hover:text-charcoal'
             }`}
           >
-            Daily Ritual &amp; Use
+            {product.product_type === 'tea' ? 'Steeping & Infusion Ritual' : 'Daily Ritual & Use'}
             {activeTab === 'ritual' && (
               <span className="absolute bottom-[-17px] left-0 right-0 h-0.5 bg-seedly-dark" />
             )}
           </button>
           <button
+            id="tab-storage"
+            role="tab"
+            aria-selected={activeTab === 'storage'}
+            aria-controls="panel-storage"
+            tabIndex={activeTab === 'storage' ? 0 : -1}
             onClick={() => setActiveTab('storage')}
             className={`pb-2 whitespace-nowrap transition-colors relative ${
               activeTab === 'storage' ? 'text-seedly-dark font-bold' : 'text-muted-gray hover:text-charcoal'
@@ -544,6 +577,11 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             )}
           </button>
           <button
+            id="tab-faqs"
+            role="tab"
+            aria-selected={activeTab === 'faqs'}
+            aria-controls="panel-faqs"
+            tabIndex={activeTab === 'faqs' ? 0 : -1}
             onClick={() => setActiveTab('faqs')}
             className={`pb-2 whitespace-nowrap transition-colors relative ${
               activeTab === 'faqs' ? 'text-seedly-dark font-bold' : 'text-muted-gray hover:text-charcoal'
@@ -555,6 +593,11 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             )}
           </button>
           <button
+            id="tab-reviews"
+            role="tab"
+            aria-selected={activeTab === 'reviews'}
+            aria-controls="panel-reviews"
+            tabIndex={activeTab === 'reviews' ? 0 : -1}
             onClick={() => setActiveTab('reviews')}
             className={`pb-2 whitespace-nowrap transition-colors relative ${
               activeTab === 'reviews' ? 'text-seedly-dark font-bold' : 'text-muted-gray hover:text-charcoal'
@@ -570,7 +613,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
         {/* Tab Content */}
         <div className="py-8 max-w-3xl text-sm leading-relaxed text-charcoal space-y-5">
           {activeTab === 'dossier' && (
-            <div className="space-y-4">
+            <div id="panel-dossier" role="tabpanel" aria-labelledby="tab-dossier" className="space-y-4">
               <p>{product.description}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="p-4 bg-white rounded-2xl border border-border-gray space-y-1">
@@ -584,7 +627,13 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                     Packaging Format
                   </span>
                   <p className="font-medium text-charcoal">
-                    {product.product_type === 'tea' ? 'Dark UV Amber Glass Jar' : 'Heavy Oxygen-Barrier Kraft Pouch'}
+                    {product.slug === 'chamomile-tea'
+                      ? '50g UV-Protective Dark Amber Glass Jar'
+                      : product.slug === 'spearmint-tea'
+                      ? '50g Multi-Layer Resealable Kraft Barrier Pouch'
+                      : product.slug === 'green-tea'
+                      ? '75g Multi-Layer Resealable Kraft Barrier Pouch'
+                      : '250g Multi-Layer Resealable Kraft Barrier Pouch'}
                   </p>
                 </div>
               </div>
@@ -608,22 +657,34 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
           )}
 
           {activeTab === 'ritual' && (
-            <div className="space-y-4">
+            <div id="panel-ritual" role="tabpanel" aria-labelledby="tab-ritual" className="space-y-4">
               <div className="space-y-2">
-                <h4 className="font-serif font-bold text-base text-charcoal">How to Use</h4>
+                <h4 className="font-serif font-bold text-base text-charcoal">
+                  {product.product_type === 'tea' ? 'Steeping & Infusion Method' : 'How to Use'}
+                </h4>
                 <p className="text-muted-gray">{product.usage_instructions}</p>
               </div>
               <div className="p-4 bg-white rounded-2xl border border-border-gray space-y-1">
-                <h5 className="font-serif font-bold text-xs text-charcoal">Serving Idea</h5>
+                <h5 className="font-serif font-bold text-xs text-charcoal">
+                  {product.product_type === 'tea' ? 'Preparation Suggestion' : 'Serving Idea'}
+                </h5>
                 <p className="text-xs text-muted-gray">
-                  Mix into morning oats, blend into fruit smoothies, or sprinkle on warm grain dishes right before serving to maintain the raw nutritional enzymes.
+                  {product.slug === 'chamomile-tea'
+                    ? 'Steep 1 rounded tablespoon of intact whole blossoms in 250ml freshly boiled water (95°C) for 5 minutes. Naturally sweet and calming on its own, or pair with a teaspoon of raw honey before bedtime.'
+                    : product.slug === 'spearmint-tea'
+                    ? 'Infuse 1 teaspoon of cut leaves in 250ml hot water (90°C) for 3 to 4 minutes. Enjoy warm after meals for soothing digestive ease, or steep double-strength and pour over ice with fresh lemon.'
+                    : product.slug === 'green-tea'
+                    ? 'Steep 1 teaspoon in 250ml water cooled to 80°C (let boiled water rest for 2 minutes) for 2 minutes. Pour completely into your cup. These tender whole leaves can be re-steeped up to 2 additional times.'
+                    : product.slug === 'flax-seeds'
+                    ? 'Stir 1 tablespoon of freshly cold-milled flax into morning yogurt bowls, warm porridge, paratha dough, or smoothies for natural soluble fiber and active omega-3s.'
+                    : 'Mix 1 tablespoon into morning oats, blend into fruit smoothies, or sprinkle on warm grain dishes right before serving to preserve delicate nutritional enzymes.'}
                 </p>
               </div>
             </div>
           )}
 
           {activeTab === 'storage' && (
-            <div className="space-y-4">
+            <div id="panel-storage" role="tabpanel" aria-labelledby="tab-storage" className="space-y-4">
               <div className="space-y-2">
                 <h4 className="font-serif font-bold text-base text-charcoal">Storage Guidelines</h4>
                 <p className="text-muted-gray">{product.storage_instructions}</p>
@@ -631,39 +692,81 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               <div className="p-4 bg-white rounded-2xl border border-border-gray space-y-2">
                 <h5 className="font-serif font-bold text-xs text-charcoal">Why packaging matters</h5>
                 <p className="text-xs text-muted-gray">
-                  Raw plant fats and whole tea blossoms begin oxidizing when exposed to heat and sunlight. Keeping your container tightly sealed and away from stove heat ensures it stays crisp and fragrant for months.
+                  {product.product_type === 'tea'
+                    ? 'Fragile floral volatile oils and whole tea leaves lose fragrance rapidly when exposed to humidity and light. Our airtight packaging keeps delicate botanicals fresh and fragrant for every cup.'
+                    : 'Raw seed oils oxidize quickly under heat and direct light. Keeping your pouch zipped and stored in a cool, dry cupboard (or refrigerating cold-milled flax) ensures peak crunch and nutrient integrity.'}
                 </p>
               </div>
             </div>
           )}
 
           {activeTab === 'faqs' && (
-            <div className="space-y-3">
+            <div id="panel-faqs" role="tabpanel" aria-labelledby="tab-faqs" className="space-y-3">
+              {product.product_type === 'tea' ? (
+                <>
+                  <div className="p-4 bg-white rounded-2xl border border-border-gray space-y-1">
+                    <h5 className="font-serif font-bold text-sm text-charcoal flex items-center gap-1.5">
+                      <HelpCircle className="w-3.5 h-3.5 text-seedly-primary" />
+                      <span>Can these leaves or blossoms be re-steeped?</span>
+                    </h5>
+                    <p className="text-xs text-muted-gray">
+                      {product.slug === 'green-tea'
+                        ? 'Yes! Our high-mountain whole green tea leaves can be re-steeped up to 3 times. Increase steep time by 30 seconds for consecutive infusions.'
+                        : 'Whole chamomile blossoms and spearmint leaves release their essential oils and brightest aroma during their first 4–5 minute steep.'}
+                    </p>
+                  </div>
+                  <div className="p-4 bg-white rounded-2xl border border-border-gray space-y-1">
+                    <h5 className="font-serif font-bold text-sm text-charcoal flex items-center gap-1.5">
+                      <HelpCircle className="w-3.5 h-3.5 text-seedly-primary" />
+                      <span>Does this tea contain caffeine?</span>
+                    </h5>
+                    <p className="text-xs text-muted-gray">
+                      {product.slug === 'green-tea'
+                        ? 'Highland Green Tea contains approx 20mg caffeine per cup (about 1/5th of standard coffee), delivering smooth morning focus without jitters.'
+                        : 'Pure Whole Chamomile and Gilgit Spearmint are 100% naturally caffeine-free herbal tisanes. Perfect for evening relaxation.'}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="p-4 bg-white rounded-2xl border border-border-gray space-y-1">
+                    <h5 className="font-serif font-bold text-sm text-charcoal flex items-center gap-1.5">
+                      <HelpCircle className="w-3.5 h-3.5 text-seedly-primary" />
+                      <span>Are these seeds salted or roasted?</span>
+                    </h5>
+                    <p className="text-xs text-muted-gray">
+                      No. All our pantry seeds are 100% raw, completely unsalted, and unroasted to keep sensitive fatty acids and enzymes unadulterated.
+                    </p>
+                  </div>
+                  <div className="p-4 bg-white rounded-2xl border border-border-gray space-y-1">
+                    <h5 className="font-serif font-bold text-sm text-charcoal flex items-center gap-1.5">
+                      <HelpCircle className="w-3.5 h-3.5 text-seedly-primary" />
+                      <span>Do I need to grind these seeds?</span>
+                    </h5>
+                    <p className="text-xs text-muted-gray">
+                      {product.slug === 'flax-seeds'
+                        ? 'Our Golden Flax Seeds are already freshly cold-milled in small weekly batches, so you can enjoy them directly without grinding! Whole pumpkin, sunflower, and sesame can be chewed whole or blended.'
+                        : 'Pumpkin and sunflower kernels can be chewed whole or added to bowls directly. White sesame can be enjoyed whole or toasted. Our flax seeds are already pre-milled.'}
+                    </p>
+                  </div>
+                </>
+              )}
               <div className="p-4 bg-white rounded-2xl border border-border-gray space-y-1">
                 <h5 className="font-serif font-bold text-sm text-charcoal flex items-center gap-1.5">
                   <HelpCircle className="w-3.5 h-3.5 text-seedly-primary" />
-                  <span>Are these seeds salted or roasted?</span>
+                  <span>How fast is nationwide delivery?</span>
                 </h5>
                 <p className="text-xs text-muted-gray">
-                  No. All our seeds are 100% raw, completely unsalted, and unroasted. You can lightly dry-toast them at home if you prefer extra crunch.
+                  Orders are dispatched within 24 hours from our Lahore central hub. Delivery takes 1–2 days in Lahore, 2–3 days in Punjab &amp; Islamabad, and 3–4 business days across Karachi and nationwide via TCS &amp; Leopards Courier.
                 </p>
               </div>
               <div className="p-4 bg-white rounded-2xl border border-border-gray space-y-1">
                 <h5 className="font-serif font-bold text-sm text-charcoal flex items-center gap-1.5">
                   <HelpCircle className="w-3.5 h-3.5 text-seedly-primary" />
-                  <span>How long does delivery take?</span>
+                  <span>What payment methods are supported?</span>
                 </h5>
                 <p className="text-xs text-muted-gray">
-                  Orders are dispatched daily from Lahore via TCS and Leopards. Delivery typically takes 1–2 days for Lahore, Rawalpindi, Islamabad, and Faisalabad, and 2–3 days for Karachi, Peshawar, Quetta, and other cities.
-                </p>
-              </div>
-              <div className="p-4 bg-white rounded-2xl border border-border-gray space-y-1">
-                <h5 className="font-serif font-bold text-sm text-charcoal flex items-center gap-1.5">
-                  <HelpCircle className="w-3.5 h-3.5 text-seedly-primary" />
-                  <span>Can I pay via JazzCash or Easypaisa?</span>
-                </h5>
-                <p className="text-xs text-muted-gray">
-                  Yes! We accept direct wallet transfers via JazzCash and Easypaisa, Meezan Bank transfers with instant receipt upload, and Cash on Delivery (COD).
+                  Cash on Delivery (COD), direct mobile wallet transfers (JazzCash and Easypaisa), and direct bank transfer to Meezan Bank.
                 </p>
               </div>
             </div>

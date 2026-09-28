@@ -104,10 +104,12 @@ export default function ContactPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                    <label htmlFor="contact-name" className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
                       Your Name *
                     </label>
                     <input
+                      id="contact-name"
+                      name="name"
                       type="text"
                       required
                       placeholder="e.g. Ayesha Khan"
@@ -118,10 +120,12 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                    <label htmlFor="contact-email" className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
                       Email Address *
                     </label>
                     <input
+                      id="contact-email"
+                      name="email"
                       type="email"
                       required
                       placeholder="ayesha@example.com"
@@ -132,10 +136,12 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                    <label htmlFor="contact-phone" className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
                       Phone Number
                     </label>
                     <input
+                      id="contact-phone"
+                      name="phone"
                       type="tel"
                       placeholder="0304 1117333"
                       value={phone}
@@ -145,10 +151,12 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                    <label htmlFor="contact-order-number" className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
                       Order Number (If applicable)
                     </label>
                     <input
+                      id="contact-order-number"
+                      name="orderNumber"
                       type="text"
                       placeholder="SED-20260928-1029"
                       value={orderNumber}
@@ -159,10 +167,12 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                  <label htmlFor="contact-message" className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
                     Your Message *
                   </label>
                   <textarea
+                    id="contact-message"
+                    name="message"
                     rows={4}
                     required
                     placeholder="How can we assist you with our products or your order?"

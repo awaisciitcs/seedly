@@ -71,7 +71,7 @@ export function SeedlyLogo({
       {/* Wordmark */}
       {!iconOnly && (
         <span
-          className={`font-sans tracking-tight font-medium lowercase text-seedly-dark ${textSizes[size]}`}
+          className={`font-sans tracking-tight font-medium lowercase ${textColor} ${textSizes[size]}`}
           style={{ letterSpacing: '-0.03em' }}
         >
           seedly

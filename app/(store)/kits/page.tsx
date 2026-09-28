@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { getKits } from '../../../lib/services/kits';
 import { ProductCard } from '../../../components/product/ProductCard';
 import { Sparkles, Calendar, PackageCheck, ShieldCheck } from 'lucide-react';
@@ -94,8 +95,35 @@ export default function KitsPage() {
                 <td className="py-3.5 pr-4 font-sans font-bold text-charcoal">Price</td>
                 <td className="py-3.5 px-4 font-bold text-charcoal">Rs. 1,550</td>
                 <td className="py-3.5 px-4 font-bold text-charcoal">Rs. 1,450</td>
-                <td className="py-3.5 pl-4 font-bold text-seedly-dark text-base bg-seedly-light/30 rounded-b-xl">
+                <td className="py-3.5 pl-4 font-bold text-seedly-dark text-base bg-seedly-light/30">
                   Rs. 2,850 <span className="font-sans text-[11px] font-normal text-muted-gray ml-1">(Save Rs. 150)</span>
+                </td>
+              </tr>
+              <tr>
+                <td className="py-4 pr-4 font-sans font-medium text-charcoal">Order Kit</td>
+                <td className="py-4 px-4">
+                  <Link
+                    href="/kits/follicular-blend"
+                    className="inline-block px-4 py-2 bg-seedly-dark hover:bg-seedly-forest text-white rounded-xl text-xs font-semibold transition-colors"
+                  >
+                    View Kit →
+                  </Link>
+                </td>
+                <td className="py-4 px-4">
+                  <Link
+                    href="/kits/luteal-blend"
+                    className="inline-block px-4 py-2 bg-seedly-dark hover:bg-seedly-forest text-white rounded-xl text-xs font-semibold transition-colors"
+                  >
+                    View Kit →
+                  </Link>
+                </td>
+                <td className="py-4 pl-4 bg-seedly-light/30 rounded-b-xl">
+                  <Link
+                    href="/kits/complete-cycle-kit"
+                    className="inline-block px-4 py-2 bg-seedly-primary hover:bg-seedly-primary/90 text-white rounded-xl text-xs font-semibold transition-colors shadow-subtle"
+                  >
+                    View Complete Kit →
+                  </Link>
                 </td>
               </tr>
             </tbody>

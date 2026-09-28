@@ -23,8 +23,42 @@ export default function HomePage() {
   const lutealKit = kits.find((k) => k.slug === 'luteal-blend');
   const completeKit = kits.find((k) => k.slug === 'complete-cycle-kit');
 
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': 'https://seedly.pk/#organization',
+        name: 'Seedly Pakistan',
+        url: 'https://seedly.pk',
+        logo: 'https://seedly.pk/logo/seedly-logo.jpg',
+        description: "Pakistan's heirloom seed & mountain herbal tea apothecary.",
+        contactPoint: {
+          '@type': 'ContactPoint',
+          telephone: '+92-304-1117333',
+          contactType: 'Customer Support',
+          areaServed: 'PK',
+          availableLanguage: ['English', 'Urdu'],
+        },
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://seedly.pk/#website',
+        url: 'https://seedly.pk',
+        name: 'Seedly Pakistan',
+        publisher: {
+          '@id': 'https://seedly.pk/#organization',
+        },
+      },
+    ],
+  };
+
   return (
     <div className="space-y-20 sm:space-y-28">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
       {/* 1. Hero Section */}
       <section className="bg-cream pt-10 pb-16 lg:pt-16 lg:pb-24 border-b border-border-gray/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

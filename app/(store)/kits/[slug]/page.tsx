@@ -17,6 +17,9 @@ export async function generateMetadata(props: {
   return {
     title: `${kit.name} | 28-Day Seed Routine | Seedly Pakistan`,
     description: kit.short_description || kit.description,
+    alternates: {
+      canonical: `https://seedly.pk/kits/${slug}`,
+    },
     openGraph: {
       title: `${kit.name} | Seedly Pakistan`,
       description: kit.short_description || kit.description,
@@ -49,5 +52,37 @@ export default async function KitDetailPage(props: {
     notFound();
   }
 
-  return <KitDetailView kit={kit} />;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: kit.name,
+    image: `https://seedly.pk${kit.image_url}`,
+    description: kit.short_description || kit.description,
+    sku: kit.slug,
+    brand: {
+      '@type': 'Brand',
+      name: 'Seedly',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://seedly.pk/kits/${kit.slug}`,
+      priceCurrency: 'PKR',
+      price: (kit.price_minor / 100).toFixed(0),
+      availability:
+        (kit.computed_stock ?? 0) > 0
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
+      itemCondition: 'https://schema.org/NewCondition',
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <KitDetailView kit={kit} />
+    </>
+  );
 }

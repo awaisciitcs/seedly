@@ -415,7 +415,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                   <span className="text-muted-gray">
                     {kit.price_minor >= 250000
                       ? 'FREE express courier delivery included on this kit (TCS / Leopards).'
-                      : 'Rs. 200 flat delivery via TCS / Leopards (Free on orders over Rs. 2,500).'}
+                      : 'Rs. 200 flat delivery via TCS / Leopards (FREE on orders of Rs. 2,500 or more).'}
                   </span>
                 </div>
               </div>
@@ -423,13 +423,9 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               <div className="flex items-start gap-2.5 text-charcoal pt-2.5 border-t border-border-gray/60">
                 <PackageCheck className="w-4 h-4 text-emerald-800 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-semibold">Inside the Box: </span>
+                  <span className="font-semibold">Packaging &amp; Freshness: </span>
                   <span className="text-muted-gray">
-                    {kit.slug === 'complete-cycle-kit'
-                      ? '4x 250g resealable pouches (Pumpkin, Flax, Sunflower, Sesame; 1kg total seeds), handcrafted 1-tbsp wooden scoop, and printed 28-day tracking calendar.'
-                      : kit.slug === 'luteal-blend'
-                      ? '2x 250g resealable pouches (Raw Sunflower Kernels, White Sesame Seeds; 500g total), handcrafted wooden scoop, and cycle guide.'
-                      : '2x 250g resealable pouches (Raw Pumpkin Seeds, Cold-Milled Flax; 500g total), handcrafted wooden scoop, and cycle guide.'}
+                    Dispatched fresh from our central Lahore hub. Each seed portion is individually sealed in an airtight, moisture-resistant kraft barrier pouch with a tamper-evident tear notch. 9-month pantry shelf life.
                   </span>
                 </div>
               </div>
@@ -528,10 +524,12 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               <h5 className="font-serif font-bold text-sm text-charcoal">Review this kit</h5>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                  <label htmlFor="kit-review-name" className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
                     Your Name *
                   </label>
                   <input
+                    id="kit-review-name"
+                    name="customerName"
                     type="text"
                     required
                     placeholder="e.g. Zainab M. (Karachi)"
@@ -541,10 +539,12 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                  <label htmlFor="kit-review-rating" className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
                     Rating
                   </label>
                   <select
+                    id="kit-review-rating"
+                    name="reviewRating"
                     value={reviewRating}
                     onChange={(e) => setReviewRating(Number(e.target.value))}
                     className="w-full px-3 py-2 bg-cream/40 border border-border-gray rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-seedly-primary"
@@ -558,10 +558,12 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                <label htmlFor="kit-review-title" className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
                   Title
                 </label>
                 <input
+                  id="kit-review-title"
+                  name="reviewTitle"
                   type="text"
                   placeholder="e.g. Beautiful packaging and easy to follow"
                   value={reviewTitle}
@@ -570,10 +572,12 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                <label htmlFor="kit-review-body" className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
                   Review Details *
                 </label>
                 <textarea
+                  id="kit-review-body"
+                  name="reviewBody"
                   required
                   rows={3}
                   placeholder="How was the experience, taste, and daily convenience?"

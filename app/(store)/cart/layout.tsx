@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Your Basket | Seedly Pakistan',
-  description:
-    'Review your selected heirloom seeds, mountain tea infusions, and 28-day routine kits before checkout.',
+  title: 'Your Wellness Basket | Seedly Pakistan',
+  description: 'Review your selected heirloom seeds, mountain teas, and cycle ritual kits.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function CartLayout({

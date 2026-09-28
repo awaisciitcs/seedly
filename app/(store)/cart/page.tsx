@@ -17,6 +17,7 @@ import {
   RotateCcw,
   ArrowLeft,
   Banknote,
+  Loader2,
 } from 'lucide-react';
 
 export default function CartPage() {
@@ -27,6 +28,7 @@ export default function CartPage() {
     updateQuantity,
     subtotalMinor,
     freeShippingThreshold,
+    isLoaded,
   } = useCart();
 
   const [recentlyRemoved, setRecentlyRemoved] = useState<CartItem | null>(null);
@@ -83,7 +85,12 @@ export default function CartPage() {
         </div>
       )}
 
-      {items.length === 0 ? (
+      {!isLoaded ? (
+        <div className="bg-white rounded-3xl p-16 text-center border border-border-gray shadow-card max-w-2xl mx-auto flex flex-col items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-seedly-primary mb-3" />
+          <p className="text-sm text-muted-gray">Loading your wellness basket...</p>
+        </div>
+      ) : items.length === 0 ? (
         <div className="bg-white rounded-3xl p-12 text-center border border-border-gray shadow-card max-w-2xl mx-auto">
           <div className="w-16 h-16 rounded-full bg-cream flex items-center justify-center text-muted-gray mx-auto mb-4">
             <ShoppingBag className="w-8 h-8 text-seedly-primary stroke-1" />
@@ -184,7 +191,7 @@ export default function CartPage() {
                 <span>Add more items</span>
               </Link>
               <span className="text-muted-gray">
-                Delivery: Rs. 200 (Free for orders over Rs. 2,500)
+                Rs. 200 flat nationwide delivery, FREE on orders of Rs. 2,500 or more
               </span>
             </div>
           </div>

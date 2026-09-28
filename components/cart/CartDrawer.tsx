@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '../../lib/store/cart';
@@ -16,6 +16,7 @@ import {
   Sparkles,
   CheckCircle2,
   RotateCcw,
+  Loader2,
 } from 'lucide-react';
 
 export function CartDrawer() {
@@ -28,9 +29,21 @@ export function CartDrawer() {
     setIsCartOpen,
     subtotalMinor,
     freeShippingThreshold,
+    isLoaded,
   } = useCart();
 
   const [recentlyRemoved, setRecentlyRemoved] = useState<CartItem | null>(null);
+
+  useEffect(() => {
+    if (!isCartOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsCartOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isCartOpen, setIsCartOpen]);
 
   if (!isCartOpen) return null;
 
@@ -50,7 +63,12 @@ export function CartDrawer() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div
+      className="fixed inset-0 z-50 overflow-hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Shopping Basket"
+    >
       {/* Backdrop */}
       <div
         onClick={() => setIsCartOpen(false)}
@@ -122,7 +140,12 @@ export function CartDrawer() {
 
           {/* Items List */}
           <div className="flex-1 overflow-y-auto px-6 py-4 divide-y divide-border-gray/50">
-            {items.length === 0 ? (
+            {!isLoaded ? (
+              <div className="h-full flex flex-col items-center justify-center text-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-seedly-primary mb-2" />
+                <p className="text-xs text-muted-gray">Loading basket...</p>
+              </div>
+            ) : items.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-12">
                 <div className="w-16 h-16 rounded-full bg-cream flex items-center justify-center text-muted-gray mb-4">
                   <ShoppingBag className="w-8 h-8 stroke-1 text-seedly-primary" />
@@ -218,7 +241,7 @@ export function CartDrawer() {
                 <span className="text-lg font-serif font-bold text-charcoal">{formatPKR(subtotalMinor)}</span>
               </div>
               <p className="text-xs text-muted-gray">
-                Taxes included. Delivery: Rs. 200 (Free nationwide over Rs. 2,500). Cash on Delivery &amp; Wallets accepted.
+                Taxes included. Rs. 200 flat nationwide delivery, FREE on orders of Rs. 2,500 or more. Cash on Delivery &amp; Wallets accepted.
               </p>
 
               <div className="space-y-2">

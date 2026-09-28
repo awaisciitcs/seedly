@@ -128,18 +128,35 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Content */}
       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
         <div>
-          {/* Authentic Social Proof (No Fabricated Ratings) */}
-          <div className="flex items-center gap-1.5 text-xs text-muted-gray mb-1.5">
-            {product.review_count && product.review_count > 0 ? (
-              <>
-                <div className="flex items-center text-amber-500">
-                  <Star className="w-3.5 h-3.5 fill-amber-400" />
-                </div>
-                <span className="font-semibold text-charcoal">{product.rating || '5.0'}</span>
-                <span className="text-muted-gray/80">({product.review_count} verified)</span>
-              </>
-            ) : (
-              <span className="text-[11px] text-muted-gray font-medium">Single-origin harvest</span>
+          {/* Authentic Social Proof & Category Specific Tag */}
+          <div className="flex items-center justify-between gap-1.5 text-xs text-muted-gray mb-1.5">
+            <div className="flex items-center gap-1.5">
+              {product.review_count && product.review_count > 0 ? (
+                <>
+                  <div className="flex items-center text-amber-500">
+                    <Star className="w-3.5 h-3.5 fill-amber-400" />
+                  </div>
+                  <span className="font-semibold text-charcoal">{product.rating || '5.0'}</span>
+                  <span className="text-muted-gray/80">({product.review_count} verified)</span>
+                </>
+              ) : (
+                <span className="text-[11px] text-muted-gray font-medium">Single-origin harvest</span>
+              )}
+            </div>
+
+            {/* Seed / Tea attribute tag */}
+            {!isKit && (
+              seedProduct?.product_type === 'seed' ? (
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-cream border border-border-gray text-seedly-dark/80">
+                  {product.slug.includes('flax') ? 'Cold-Milled Meal' : 'Whole Raw Seed'}
+                </span>
+              ) : (
+                seedProduct?.caffeine_level && (
+                  <span className="text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-full bg-seedly-light text-seedly-dark">
+                    {seedProduct.caffeine_level}
+                  </span>
+                )
+              )
             )}
           </div>
 
@@ -150,10 +167,22 @@ export function ProductCard({ product }: ProductCardProps) {
             </h3>
           </Link>
 
-          {/* Descriptor */}
-          <p className="text-xs text-muted-gray mt-1 line-clamp-2 leading-relaxed">
-            {product.short_description}
-          </p>
+          {/* Tea details / Descriptor */}
+          {!isKit && seedProduct?.product_type === 'tea' && (seedProduct.steep_time || seedProduct.flavor_profile) ? (
+            <div className="mt-1 space-y-1">
+              <p className="text-[11px] text-seedly-dark font-medium flex items-center gap-1.5">
+                {seedProduct.steep_time && <span>⏱ {seedProduct.steep_time} steep</span>}
+                {seedProduct.water_temp && <span>· {seedProduct.water_temp}</span>}
+              </p>
+              <p className="text-xs text-muted-gray line-clamp-2 leading-relaxed">
+                {product.short_description}
+              </p>
+            </div>
+          ) : (
+            <p className="text-xs text-muted-gray mt-1 line-clamp-2 leading-relaxed">
+              {product.short_description}
+            </p>
+          )}
         </div>
 
         {/* Price & Add to Cart */}
@@ -174,7 +203,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 ? (product as Kit).package_size || 'Full Box Set (500g net)'
                 : seedProduct?.product_type === 'seed'
                 ? `${displayWeight} · Rs. ${unitPricePer100g}/100g`
-                : `${displayWeight} · ~25 cups`}
+                : `${displayWeight} · ~25–35 cups`}
             </p>
           </div>
 
@@ -186,7 +215,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   ? 'bg-emerald-700 text-white'
                   : 'bg-seedly-light text-seedly-dark hover:bg-seedly-dark hover:text-white'
               }`}
-              aria-label="Add to cart"
+              aria-label={isKit ? `Add ${product.name} to cart` : `Add ${displayWeight} to cart`}
             >
               {added ? (
                 <>
@@ -196,7 +225,7 @@ export function ProductCard({ product }: ProductCardProps) {
               ) : (
                 <>
                   <Plus className="w-3.5 h-3.5" />
-                  <span>Add</span>
+                  <span>{isKit ? 'Add Kit' : `Add ${displayWeight}`}</span>
                 </>
               )}
             </button>

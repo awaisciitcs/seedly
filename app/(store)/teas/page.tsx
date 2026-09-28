@@ -26,7 +26,7 @@ export default function TeasPage() {
       </div>
 
       {/* 3-Column Balanced Desktop Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-5xl">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
         {teas.map((tea) => (
           <ProductCard key={tea.id} product={tea} />
         ))}
