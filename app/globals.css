@@ -7,7 +7,7 @@
     --background: 44 43% 97%; /* #FAF8F2 cream */
     --foreground: 120 4% 15%; /* #252825 charcoal */
     --font-serif: 'Playfair Display', Georgia, serif;
-    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Roboto', system-ui, -apple-system, sans-serif;
   }
 
   body {
