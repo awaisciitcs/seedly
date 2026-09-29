@@ -5,9 +5,14 @@ import { Leaf, ShieldCheck, ArrowRight, CheckCircle2, MapPin, Scale, HeartHandsh
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Why We Started Seedly — Sourcing & Freshness Truths',
+  title: 'Why We Started Seedly — Sourcing & Freshness Truths | Seedly Pakistan',
   description:
-    'Sourcing edible heirloom seeds and alpine teas directly from smallholder farms in Punjab and Gilgit-Baltistan. Honest weights, cold-storage, and zero chemical treatments.',
+    'Sourcing pure pantry seeds and alpine teas directly from smallholder farms in Punjab and Gilgit-Baltistan. Honest weights, cold-storage, and zero chemical treatments.',
+  openGraph: {
+    title: 'Why We Started Seedly — Sourcing & Freshness Truths',
+    description: 'Direct sourcing of raw pantry seeds and mountain teas from Pakistani growers. Packed fresh in Lahore.',
+    images: ['/images/about/founder-packing.jpg'],
+  },
 };
 
 const SOURCING_DATA = [
@@ -19,7 +24,7 @@ const SOURCING_DATA = [
     packaging: '250g barrier kraft pouch',
   },
   {
-    ingredient: 'Golden Flax Seeds',
+    ingredient: 'Ground Golden Flaxseed',
     origin: 'Bahawalpur, Punjab',
     partner: 'Smallholder collective',
     process: 'Slow cold-milled weekly in small batches',
@@ -42,14 +47,14 @@ const SOURCING_DATA = [
   {
     ingredient: 'Whole Flower Chamomile',
     origin: 'Gilgit-Baltistan',
-    partner: 'Alpine high-valley foragers',
+    partner: 'High-valley smallholder growers',
     process: 'Hand-picked intact blossoms, shade-dried',
     packaging: '50g dark amber glass jar',
   },
   {
     ingredient: 'Mountain Spearmint Leaf',
     origin: 'Hunza & Gilgit Valleys',
-    partner: 'Terrace garden cooperatives',
+    partner: 'Terrace garden smallholders',
     process: 'Cut whole leaf, alpine solar-dried',
     packaging: '50g resealable barrier pouch',
   },
@@ -136,7 +141,7 @@ export default function AboutPage() {
                     </td>
                     <td className="p-4 sm:p-5 text-muted-gray">
                       <span className="font-medium text-charcoal block">{row.origin}</span>
-                      <span className="text-[11px] text-muted-gray">{row.partner}</span>
+                      <span className="text-[11px] text-muted-gray block">{row.partner}</span>
                     </td>
                     <td className="p-4 sm:p-5 text-muted-gray">{row.process}</td>
                     <td className="p-4 sm:p-5 text-muted-gray whitespace-nowrap">{row.packaging}</td>
@@ -173,7 +178,7 @@ export default function AboutPage() {
           <div className="bg-white p-4 rounded-2xl border border-border-gray/70 space-y-1.5 shadow-subtle">
             <p className="font-bold text-sm">Zero Chemical Bleaching</p>
             <p className="text-muted-gray leading-relaxed">
-              No artificial color glazes, sulfur treatments, chemical whitening, or added sodium and preservatives.
+              No artificial colour glazes, sulfur treatments, chemical whitening, or added sodium and preservatives.
             </p>
           </div>
         </div>
@@ -202,7 +207,7 @@ export default function AboutPage() {
           <ul className="text-xs sm:text-sm text-muted-gray space-y-2.5">
             <li>• Heavy-gauge resealable kraft barrier pouches to block light and moisture</li>
             <li>• Dark amber glass jars for whole chamomile blossoms</li>
-            <li>• Hand-carved wooden measuring scoops included in routine kits</li>
+            <li>• Engraved wooden measuring scoops (1 tbsp) included in routine kits</li>
             <li>• Hand-packed in Lahore and shipped nationwide via TCS and Leopards</li>
           </ul>
         </div>

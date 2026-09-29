@@ -1,6 +1,8 @@
 import React from 'react';
 import { Truck, MessageCircle } from 'lucide-react';
 
+import { siteConfig } from '../../lib/config';
+
 export function AnnouncementBar() {
   return (
     <div className="bg-seedly-dark text-white text-xs py-2 px-4 border-b border-seedly-forest/20">
@@ -14,20 +16,20 @@ export function AnnouncementBar() {
         <div className="flex-1 sm:flex-initial text-center sm:text-left flex items-center justify-center gap-2">
           <Truck className="w-3.5 h-3.5 text-amber-300" />
           <span>
-            <strong>Free nationwide delivery</strong> on all orders over Rs. 2,500
+            <strong>Free nationwide delivery</strong> on all orders of Rs. 2,500 or more
           </span>
         </div>
 
         {/* Right WhatsApp */}
         <div className="hidden md:flex items-center gap-3 text-seedly-light/90 text-[11px]">
           <a
-            href="https://wa.me/923041117333?text=Hi%20Seedly%2C%20I%20have%20a%20question."
+            href={`${siteConfig.contact.whatsappUrl}?text=${encodeURIComponent('Hi Seedly, I have a question.')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 hover:text-white transition-colors"
           >
             <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
-            <span>WhatsApp Helpline: 0304 1117333</span>
+            <span>WhatsApp Helpline: {siteConfig.contact.phone}</span>
           </a>
         </div>
       </div>

@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Find Your Seed — Personalized Routine Quiz | Seedly Pakistan',
+  title: 'Find Your Daily Routine — Seed & Tea Recommendation | Seedly Pakistan',
   description:
-    'Answer 3 quick lifestyle questions to discover the ideal heirloom seed kit or loose-leaf herbal tea routine tailored to your body and day.',
+    'Answer 3 quick questions to discover the ideal raw pantry seed routine or loose-leaf mountain tea tailored to your everyday culinary habits.',
+  openGraph: {
+    title: 'Find Your Daily Routine | Seedly Pakistan',
+    description: '3 quick questions to match our edible kitchen seeds or loose mountain teas to your everyday habits.',
+    images: ['/images/hero/hero-lifestyle.jpg'],
+  },
 };
 
 export default function FindYourSeedLayout({

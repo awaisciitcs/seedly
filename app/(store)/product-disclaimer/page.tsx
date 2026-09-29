@@ -1,5 +1,17 @@
 import React from 'react';
-import { ShieldAlert, Info } from 'lucide-react';
+import type { Metadata } from 'next';
+import { ShieldAlert, Info, AlertTriangle } from 'lucide-react';
+import { siteConfig } from '../../../lib/config';
+
+export const metadata: Metadata = {
+  title: 'Dietary & Natural Product Disclaimer | Seedly Pakistan',
+  description:
+    'Important dietary consumer advisory regarding raw seeds, culinary nutrition, and botanical infusions from Seedly.',
+  openGraph: {
+    title: 'Product Disclaimer | Seedly Pakistan',
+    description: 'Dietary food status, allergen notices, and guidance regarding Seedly culinary staples.',
+  },
+};
 
 export default function ProductDisclaimerPage() {
   return (
@@ -9,35 +21,50 @@ export default function ProductDisclaimerPage() {
           Compliance Notice
         </span>
         <h1 className="font-serif text-3xl sm:text-5xl font-bold text-charcoal">
-          Natural Product Disclaimer
+          Product &amp; Dietary Disclaimer
         </h1>
         <p className="text-sm text-muted-gray">
-          Important consumer clarity regarding dietary seeds and botanical herbal teas.
+          Important consumer clarity regarding raw culinary seeds and botanical herbal teas.
         </p>
       </div>
 
       <div className="bg-white rounded-3xl p-6 sm:p-10 border border-border-gray shadow-card space-y-6 text-sm leading-relaxed text-charcoal">
-        <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900 text-xs">
+        <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-950 text-xs sm:text-sm">
           <ShieldAlert className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
-          <p>
-            The products offered by Seedly Naturals are 100% natural, unadulterated whole foods, seeds, and herbal infusions. They are not intended to diagnose, treat, cure, or prevent any medical condition or disease.
+          <p className="leading-relaxed">
+            <strong>Standard Food Notice: </strong>
+            {siteConfig.disclaimer.standard}
           </p>
         </div>
 
-        <h2 className="font-serif text-xl font-bold pt-2">Scope of Botanical Information</h2>
-        <p>
-          Information provided on our website, packaging, social media channels, and wellness guides is compiled from traditional holistic usage, published dietary nutritional studies, and general food science. It is for educational and self-care routine purposes only.
+        <h2 className="font-serif text-xl font-bold pt-2 text-charcoal">Scope of Culinary &amp; Nutritional Content</h2>
+        <p className="text-muted-gray text-xs sm:text-sm leading-relaxed">
+          Information published on our website, packaging labels, educational routine guides, and WhatsApp consultation channels is presented strictly for educational and wholesome dietary purposes. Seedly seeds (pumpkin, flax, sunflower, sesame) and mountain teas (chamomile, spearmint, green tea) are raw food ingredients, not pharmaceutical drugs or endocrine therapies.
         </p>
 
-        <h2 className="font-serif text-xl font-bold pt-2">Medical Consultation</h2>
-        <p>
-          Always consult with a qualified physician or licensed healthcare provider prior to starting any new dietary protocol, particularly if you are pregnant, nursing, have an existing medical diagnosis (such as thyroid disorders, renal conditions, or hormonal treatments), or are taking prescription medications.
+        <h2 className="font-serif text-xl font-bold pt-2 text-charcoal">Medical Consultation</h2>
+        <p className="text-muted-gray text-xs sm:text-sm leading-relaxed">
+          Always consult a qualified medical physician or certified dietitian before adopting a new nutritional rotation if you are pregnant, nursing, managing an endocrine disorder (such as PCOS, endometriosis, or thyroid conditions), or taking chronic prescription medications.
         </p>
 
-        <h2 className="font-serif text-xl font-bold pt-2">Allergen Notice</h2>
-        <p>
-          Our seeds and teas are processed in clean, dedicated facilities. However, our products include sesame seeds and sunflower kernels, which are known food allergens for certain sensitive individuals. If you experience any allergic reaction, discontinue use immediately and seek medical attention.
-        </p>
+        <h2 className="font-serif text-xl font-bold pt-2 text-charcoal flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 text-amber-700" />
+          <span>Allergen Advisories</span>
+        </h2>
+        <div className="space-y-3 text-xs sm:text-sm">
+          <div className="p-4 bg-cream rounded-xl border border-border-gray space-y-1">
+            <strong className="text-charcoal block">Sesame Seeds (Allergen):</strong>
+            <p className="text-muted-gray leading-relaxed">
+              {siteConfig.disclaimer.sesame}
+            </p>
+          </div>
+          <div className="p-4 bg-cream rounded-xl border border-border-gray space-y-1">
+            <strong className="text-charcoal block">Chamomile Blossoms (Asteraceae Family):</strong>
+            <p className="text-muted-gray leading-relaxed">
+              {siteConfig.disclaimer.chamomile}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

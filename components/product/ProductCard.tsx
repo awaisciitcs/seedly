@@ -140,7 +140,9 @@ export function ProductCard({ product }: ProductCardProps) {
                   <span className="text-muted-gray/80">({product.review_count} verified)</span>
                 </>
               ) : (
-                <span className="text-[11px] text-muted-gray font-medium">Single-origin harvest</span>
+                <span className="text-[11px] text-muted-gray font-medium">
+                  {isKit ? '2-Part Routine' : 'Direct Harvest'}
+                </span>
               )}
             </div>
 
@@ -203,7 +205,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 ? (product as Kit).package_size || 'Full Box Set (500g net)'
                 : seedProduct?.product_type === 'seed'
                 ? `${displayWeight} · Rs. ${unitPricePer100g}/100g`
-                : `${displayWeight} · ~25–35 cups`}
+                : `${displayWeight} · ~25 cups`}
             </p>
           </div>
 

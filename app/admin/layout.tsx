@@ -28,7 +28,15 @@ export default function AdminLayout({
 
   // If on login page, render clean layout without sidebar
   if (pathname === '/admin/login') {
-    return <div className="min-h-screen bg-cream">{children}</div>;
+    return (
+      <div className="min-h-screen bg-cream">
+        <head>
+          <title>Admin Sign In | Seedly Pakistan</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </head>
+        {children}
+      </div>
+    );
   }
 
   const navItems = [

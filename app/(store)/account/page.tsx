@@ -82,8 +82,8 @@ export default function AccountPage() {
                 <Package className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-serif font-bold text-sm text-charcoal">Wellness Quiz</h3>
-                <p className="text-[11px] text-muted-gray">Retake recommendation guide</p>
+                <h3 className="font-serif font-bold text-sm text-charcoal">Routine Finder</h3>
+                <p className="text-[11px] text-muted-gray">Retake routine guide</p>
               </div>
             </Link>
           </div>

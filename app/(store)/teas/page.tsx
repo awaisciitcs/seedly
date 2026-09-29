@@ -5,9 +5,26 @@ import { Coffee, ShieldCheck, Thermometer } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Loose-Leaf & Herbal Teas | Seedly Pakistan',
+  title: 'Mountain Teas & Loose Botanicals | Seedly Pakistan',
   description:
-    'Whole chamomile blossoms, highland green tea, and wild Gilgit spearmint leaves. Free of paper teabag microplastics, with clearly labeled caffeine levels.',
+    'Whole chamomile blossoms, highland green tea, and wild Gilgit spearmint leaves. Free of paper teabag microplastics, with clearly labelled caffeine levels.',
+  openGraph: {
+    title: 'Mountain Teas & Loose Botanicals | Seedly Pakistan',
+    description:
+      'Whole chamomile blossoms, highland green tea, and alpine spearmint leaves from northern valleys. Honest caffeine labelling for every cup.',
+    url: 'https://seedly.pk/teas',
+    siteName: 'Seedly',
+    locale: 'en_PK',
+    type: 'website',
+    images: [
+      {
+        url: '/images/products/chamomile-tea.jpg',
+        width: 800,
+        height: 800,
+        alt: 'Seedly whole flower chamomile tea',
+      },
+    ],
+  },
 };
 
 export default function TeasPage() {
@@ -18,10 +35,10 @@ export default function TeasPage() {
       {/* Category Header */}
       <div className="max-w-2xl">
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
-          Loose-Leaf &amp; Herbal Teas
+          Mountain Teas &amp; Tisanes
         </h1>
         <p className="text-sm text-muted-gray mt-2 leading-relaxed">
-          Intact chamomile blossoms and coarse mountain spearmint leaves from northern valleys, plus high-elevation loose green tea. Free of paper teabag microplastics and machine dust, with honest caffeine labeling for every cup.
+          Our herbal teas (chamomile and spearmint) are naturally caffeine-free tisanes. Highland green tea contains gentle caffeine (approx. 20 mg per cup). All loose whole leaves and blossoms, free of paper teabag microplastics and machine dust, with honest caffeine labelling for every cup.
         </p>
       </div>
 

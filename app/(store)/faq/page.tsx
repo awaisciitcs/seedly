@@ -13,45 +13,45 @@ interface FaqItem {
 const faqs: FaqItem[] = [
   {
     category: 'Seed Cycling & Usage',
-    question: 'What is seed cycling and how does it support hormonal balance?',
+    question: 'What is seed cycling and how does it work?',
     answer:
-      'Seed cycling is an evidence-backed nutritional practice where you consume specific raw seeds during the two phases of your menstrual cycle. During Phase 1 (Days 1–14, Follicular), Pumpkin and Flax seeds supply zinc and lignans to support healthy estrogen metabolism. During Phase 2 (Days 15–28, Luteal), Sunflower and Sesame seeds provide natural Vitamin E and selenium to nurture progesterone production.',
+      'Seed cycling is a traditional whole-food dietary habit where you rotate four nutrient-dense pantry seeds between the two phases of your monthly routine. During Phase 1 (Days 1–14, Follicular), raw pumpkin seeds and cold-milled golden flax supply dietary magnesium, zinc, and plant-based ALA omega-3 fatty acids. During Phase 2 (Days 15–28, Luteal), raw sunflower kernels and unhulled sesame seeds provide natural Vitamin E, selenium, and essential minerals.',
   },
   {
     category: 'Seed Cycling & Usage',
     question: 'Do I need to grind Seedly Flax Seeds at home?',
     answer:
-      'No grinding required! Whole flax seeds have a tough outer husk that the body cannot break down. To save you time and maximize absorption of Omega-3 ALA and lignans, Seedly Golden Flax is already freshly cold-milled into a coarse meal in small batches. It arrives ready to spoon straight into yogurt, oatmeal, or smoothies.',
+      'No grinding required! Whole flax seeds have a tough outer husk that the body cannot easily break down. To save you preparation time and ensure easy digestion, Seedly Golden Flax is already freshly cold-milled into a coarse meal in small batches in Lahore. It arrives ready to spoon straight into yogurt bowls, oatmeal, or smoothies.',
   },
   {
     category: 'Botanical Teas',
     question: 'Why does Seedly use loose whole chamomile flowers instead of teabags?',
     answer:
-      'Commercial tea bags often contain pulverized "tea fannings"—the bitter, dusty leftovers of broken herbs. More importantly, most tea bags contain microplastics or chlorine-bleached paper. Our whole chamomile flowers are intact blossoms harvested in Gilgit valleys, yielding a sweet honey-apple flavor without microplastics.',
+      'Commercial tea bags often contain pulverized "tea fannings"—the bitter, dusty leftovers of broken herbs. More importantly, most commercial tea bags contain microplastics or chlorine-bleached paper. Our whole chamomile flowers are intact blossoms harvested by smallholders in Gilgit valleys, yielding a sweet honey-apple flavour without microplastics.',
   },
   {
     category: 'Botanical Teas',
     question: 'Is your chamomile and spearmint tea caffeine-free?',
     answer:
-      'Yes, 100%! Both our Pure Chamomile Flowers and Gilgit Spearmint Leaf teas are naturally caffeine-free herbal tisanes. They can be enjoyed any time of day or evening without disrupting sleep.',
+      'Yes, 100%! Both our Pure Chamomile Flowers and Gilgit Spearmint Leaf teas are naturally caffeine-free herbal tisanes. They can be enjoyed any time of day or evening without disrupting sleep. Highland Green Tea contains gentle caffeine (approx. 20 mg per cup).',
   },
   {
     category: 'Shipping & Delivery',
     question: 'How fast is delivery within Pakistan?',
     answer:
-      'All orders are dispatched daily from our Lahore central hub via TCS and Leopards Courier. Packages arrive in 1 to 2 business days within Lahore, and 2 to 4 business days across Islamabad, Karachi, Rawalpindi, Faisalabad, Multan, Peshawar, and all other cities nationwide.',
+      'All orders are dispatched daily from our central Lahore hub via TCS and Leopards Courier. Packages arrive in 1–2 business days in Lahore; 2–3 business days across the rest of Punjab and Islamabad / Rawalpindi; 3–4 business days across Sindh (including Karachi), KPK, and Balochistan; and 4–6 business days in Gilgit-Baltistan and Azad Jammu & Kashmir.',
   },
   {
     category: 'Shipping & Delivery',
-    question: 'How does Free Shipping work?',
+    question: 'How does Free Delivery work?',
     answer:
-      'We offer FREE courier delivery anywhere in Pakistan on all orders of Rs. 2,500 or above. For orders below Rs. 2,500, a standard delivery fee of Rs. 200 applies.',
+      'We offer FREE nationwide courier delivery on all orders of Rs. 2,500 or more. For orders below Rs. 2,500, a flat delivery fee of Rs. 200 applies.',
   },
   {
     category: 'Payments',
     question: 'What payment methods do you accept?',
     answer:
-      'We accept Cash on Delivery (COD) across Pakistan, allowing you to pay the courier in cash when your order arrives. We also accept instant mobile wallet transfers via JazzCash and Easypaisa, as well as direct online bank transfer to our Meezan Bank corporate account.',
+      'We accept Cash on Delivery (COD) across Pakistan, allowing you to pay the courier rider in cash upon arrival. We also accept instant digital wallet transfers via JazzCash and Easypaisa, as well as direct online bank transfer (IBFT).',
   },
 ];
 

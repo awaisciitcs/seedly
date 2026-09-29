@@ -20,31 +20,32 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://seedly.pk'),
-  title: 'Seedly — Pakistan’s Heirloom Seed & Herbal Tea Apothecary',
+  title: {
+    default: 'Seedly — Pakistan’s Raw Seeds & Mountain Teas',
+    template: '%s | Seedly',
+  },
   description:
-    'Single-origin edible heirloom seeds, 28-day routine kits, and whole blossom mountain herbal teas delivered nationwide across Pakistan.',
-  keywords: [
-    'Seedly',
-    'Seed Cycling Pakistan',
-    'Pumpkin Seeds Pakistan',
-    'Flax Seeds',
-    'Sunflower Seeds',
-    'Chamomile Tea Pakistan',
-    'Spearmint Tea',
-    'Hormonal Balance',
-    'Organic Wellness Pakistan',
-  ],
+    'Pure whole raw pantry seeds, 14-day & 28-day routine kits, and high-altitude mountain teas delivered nationwide across Pakistan. Packed fresh in Lahore.',
   icons: {
     icon: '/logo/seedly-logo.jpg',
     apple: '/logo/seedly-logo.jpg',
   },
   openGraph: {
-    title: 'Seedly — Pakistan’s Heirloom Seed & Herbal Tea Apothecary',
-    description: 'Grow something good. Pure heirloom seeds and herbal botanical teas.',
+    title: 'Seedly — Pakistan’s Raw Seeds & Mountain Teas',
+    description:
+      'Raw seeds and herbal teas for eating and brewing, packed fresh in Lahore from growers in Gilgit-Baltistan, KP and Punjab.',
     url: 'https://seedly.pk',
     siteName: 'Seedly',
     locale: 'en_PK',
     type: 'website',
+    images: [
+      {
+        url: '/images/lifestyle/seedly_hero_lifestyle.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Seedly raw seeds and whole blossom mountain teas',
+      },
+    ],
   },
 };
 

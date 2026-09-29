@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
 import { ProductCard } from './ProductCard';
+import { siteConfig } from '../../lib/config';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -214,7 +215,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             )}
             <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full border border-border-gray shadow-subtle text-[11px] font-medium text-charcoal flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-seedly-primary"></span>
-              <span>Showing: {selectedVariant?.option_value || '250g Pouch'}</span>
+              <span>{selectedVariant?.option_value || (product.product_type === 'tea' ? '50g Pack' : '250g Pouch')}</span>
             </div>
           </div>
 
@@ -225,7 +226,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               <p className="text-[11px] text-muted-gray">Chat directly with our sourcing team on WhatsApp.</p>
             </div>
             <a
-              href={`https://wa.me/923041117333?text=${waMessage}`}
+              href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0 shadow-subtle"
@@ -243,14 +244,14 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
                 {product.slug === 'chamomile-tea'
-                  ? 'Whole Flower Botanical'
+                  ? 'Whole Flower Tisane'
                   : product.slug === 'spearmint-tea'
-                  ? 'Single-Origin Mountain Leaf'
+                  ? 'Mountain Leaf Tisane'
                   : product.slug === 'green-tea'
-                  ? 'Highland Whole Leaf'
+                  ? 'Highland Green Tea'
                   : product.slug === 'flax-seeds'
-                  ? 'Cold-Milled Heirloom'
-                  : '100% Raw Heirloom'}
+                  ? 'Cold-Milled Golden Flax'
+                  : 'Raw Whole Seeds'}
               </span>
 
               {reviews.length > 0 ? (
@@ -262,7 +263,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                   <span className="text-muted-gray">({reviews.length} verified {reviews.length === 1 ? 'review' : 'reviews'})</span>
                 </div>
               ) : (
-                <span className="text-xs text-muted-gray font-medium">Newly introduced harvest</span>
+                <span className="text-xs text-muted-gray font-medium">Fresh Seasonal Harvest</span>
               )}
             </div>
 
@@ -482,40 +483,82 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                 <div>
                   <span className="text-muted-gray block text-[10px]">Harvest Period</span>
                   <span className="font-semibold text-charcoal">
-                    {product.slug === 'green-tea' ? 'Spring 2026 Harvest' : 'Winter 2025–2026 Harvest'}
+                    {product.slug === 'green-tea'
+                      ? 'Spring 2026 Harvest (KP)'
+                      : product.product_type === 'tea'
+                      ? 'Summer 2026 Harvest (Gilgit)'
+                      : 'Autumn 2025 Harvest (Punjab)'}
                   </span>
                 </div>
                 <div>
                   <span className="text-muted-gray block text-[10px]">Best Before</span>
-                  <span className="font-semibold text-charcoal">Dec 2026 (12 Months)</span>
+                  <span className="font-semibold text-charcoal">12 Months (Cold-stored)</span>
                 </div>
                 <div>
-                  <span className="text-muted-gray block text-[10px]">Moisture Verified</span>
-                  <span className="font-semibold text-emerald-800">&lt; 7.8% (Cold Stored)</span>
+                  <span className="text-muted-gray block text-[10px]">Quality Standard</span>
+                  <span className="font-semibold text-emerald-800">
+                    {product.product_type === 'tea' ? 'Whole Flower / Leaf Pure' : 'Triple-Cleaned (<8% Moisture)'}
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Delivery & Guarantees */}
             <div className="pt-4 border-t border-border-gray space-y-2.5 text-xs text-muted-gray">
-              <div className="flex items-center gap-2.5">
-                <Truck className="w-4 h-4 text-seedly-primary shrink-0" />
+              <div className="flex items-start gap-2.5">
+                <Truck className="w-4 h-4 text-seedly-primary shrink-0 mt-0.5" />
                 <span>
-                  <strong>Nationwide Dispatch:</strong> 1–2 days in Punjab; 2–3 days Sindh, KPK &amp; Balochistan. Free delivery on orders of Rs. 2,500 or more.
+                  <strong>Nationwide Dispatch:</strong> 1–2 days Lahore; 2–3 days Punjab &amp; Islamabad; 3–4 days Sindh, KPK &amp; Balochistan; 4–6 days GB &amp; AJK. FREE delivery on orders of Rs. 2,500 or more (flat Rs. 200 fee below threshold).
                 </span>
               </div>
-              <div className="flex items-center gap-2.5">
-                <RotateCcw className="w-4 h-4 text-seedly-primary shrink-0" />
+              <div className="flex items-start gap-2.5">
+                <RotateCcw className="w-4 h-4 text-seedly-primary shrink-0 mt-0.5" />
                 <span>
-                  <strong>Freshness Guarantee:</strong> 7-day replacement if your order arrives damaged or unsealed.
+                  <strong>Replacement Guarantee:</strong> 7-day free replacement if your order arrives damaged, leaking, or unsealed.
                 </span>
               </div>
-              <div className="flex items-center gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-seedly-primary shrink-0" />
+              <div className="flex items-start gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-seedly-primary shrink-0 mt-0.5" />
                 <span>
-                  <strong>100% Raw &amp; Unsalted:</strong> Zero artificial glazes, preservatives, or chemical bleaching.
+                  {product.product_type === 'tea' ? (
+                    <>
+                      <strong>Pure Whole Botanicals:</strong> Zero artificial flavourings, paper teabag microplastics, or machine dust fannings.
+                    </>
+                  ) : (
+                    <>
+                      <strong>100% Raw &amp; Unsalted:</strong> Zero artificial glazes, vegetable oils, sodium, or chemical bleaching.
+                    </>
+                  )}
                 </span>
               </div>
+              {product.slug === 'chamomile-tea' && (
+                <div className="flex items-start gap-2.5 text-emerald-900 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200/60">
+                  <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                  <span>
+                    <strong>Amber Glass Protection:</strong> Whole blossoms are packaged in UV-protective amber glass, bubble-wrapped, and shipped in rigid shock-proof cardboard for safe transit.
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Prominent Allergen Notice */}
+            {product.slug === 'sesame-seeds' && (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 font-semibold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
+                <span>Allergen Notice: Contains Sesame Seeds. Packed in a facility handling edible seeds.</span>
+              </div>
+            )}
+            {product.slug === 'chamomile-tea' && (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 font-semibold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
+                <span>Allergy Caution: Chamomile belongs to the Asteraceae (daisy) plant family. Avoid if you have known allergies to daisy-family plants.</span>
+              </div>
+            )}
+
+            {/* Standard Dietary Disclaimer */}
+            <div className="p-3.5 bg-stone/50 border border-border-gray rounded-xl text-[11px] text-muted-gray leading-relaxed">
+              <strong className="text-charcoal font-semibold">Dietary Notice: </strong>
+              {siteConfig.disclaimer.standard}
             </div>
           </div>
         </div>
@@ -555,7 +598,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               activeTab === 'ritual' ? 'text-seedly-dark font-bold' : 'text-muted-gray hover:text-charcoal'
             }`}
           >
-            {product.product_type === 'tea' ? 'Steeping & Infusion Ritual' : 'Daily Ritual & Use'}
+            {product.product_type === 'tea' ? 'How to Brew' : 'Daily Routine & Use'}
             {activeTab === 'ritual' && (
               <span className="absolute bottom-[-17px] left-0 right-0 h-0.5 bg-seedly-dark" />
             )}
@@ -603,7 +646,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               activeTab === 'reviews' ? 'text-seedly-dark font-bold' : 'text-muted-gray hover:text-charcoal'
             }`}
           >
-            Customer Reviews ({reviews.length})
+            Customer Reviews {reviews.length > 0 ? `(${reviews.length})` : ''}
             {activeTab === 'reviews' && (
               <span className="absolute bottom-[-17px] left-0 right-0 h-0.5 bg-seedly-dark" />
             )}
@@ -640,7 +683,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
 
               {product.nutrition_information && (
                 <div className="space-y-2 pt-2">
-                  <h4 className="font-serif font-bold text-base text-charcoal">Factual Profile</h4>
+                  <h4 className="font-serif font-bold text-base text-charcoal">Nutrition per 28 g (typical values)</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {Object.entries(product.nutrition_information).map(([key, val]) => (
                       <div key={key} className="bg-white p-3 rounded-xl border border-border-gray">
@@ -660,7 +703,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             <div id="panel-ritual" role="tabpanel" aria-labelledby="tab-ritual" className="space-y-4">
               <div className="space-y-2">
                 <h4 className="font-serif font-bold text-base text-charcoal">
-                  {product.product_type === 'tea' ? 'Steeping & Infusion Method' : 'How to Use'}
+                  {product.product_type === 'tea' ? 'How to Brew' : 'How to Use'}
                 </h4>
                 <p className="text-muted-gray">{product.usage_instructions}</p>
               </div>

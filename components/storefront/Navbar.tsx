@@ -17,11 +17,12 @@ export function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const navLinks = [
+    { label: 'Shop', href: '/shop' },
     { label: 'Seeds', href: '/seeds' },
     { label: 'Kits', href: '/kits' },
-    { label: 'Herbal Teas', href: '/teas' },
-    { label: 'Find Your Seed', href: '/find-your-seed', icon: Compass },
-    { label: 'Why Seedly', href: '/about' },
+    { label: 'Mountain Teas', href: '/teas' },
+    { label: 'Routine Finder', href: '/find-your-seed', icon: Compass },
+    { label: 'Our Story', href: '/about' },
   ];
 
   const handleSearchSubmit = (e: React.FormEvent) => {

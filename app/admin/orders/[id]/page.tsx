@@ -288,7 +288,7 @@ export default function AdminOrderDetailPage() {
             </label>
             <input
               type="text"
-              placeholder="e.g. TCS Express / Leopards / Trax"
+              placeholder="e.g. TCS / Leopards Courier"
               value={courier}
               onChange={(e) => setCourier(e.target.value)}
               className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-seedly-primary/50"

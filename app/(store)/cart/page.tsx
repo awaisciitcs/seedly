@@ -54,10 +54,10 @@ export default function CartPage() {
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
-            Your Wellness Basket
+            Your Basket
           </h1>
           <p className="text-sm text-muted-gray mt-1">
-            Review your chosen heirloom seeds, cycle kits, and loose-leaf herbal teas.
+            Review your selected pantry seeds, seed cycling kits, and loose-leaf herbal teas.
           </p>
         </div>
         <Link
@@ -88,7 +88,7 @@ export default function CartPage() {
       {!isLoaded ? (
         <div className="bg-white rounded-3xl p-16 text-center border border-border-gray shadow-card max-w-2xl mx-auto flex flex-col items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-seedly-primary mb-3" />
-          <p className="text-sm text-muted-gray">Loading your wellness basket...</p>
+          <p className="text-sm text-muted-gray">Loading your basket...</p>
         </div>
       ) : items.length === 0 ? (
         <div className="bg-white rounded-3xl p-12 text-center border border-border-gray shadow-card max-w-2xl mx-auto">
@@ -97,7 +97,7 @@ export default function CartPage() {
           </div>
           <h2 className="font-serif text-2xl font-bold text-charcoal">Your basket is currently empty</h2>
           <p className="text-sm text-muted-gray mt-2 max-w-sm mx-auto">
-            Discover our cold-milled seeds, whole flower chamomile, and 28-day cycle ritual kits.
+            Discover our cold-milled seeds, whole flower chamomile, and 28-day routine kits.
           </p>
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
@@ -110,7 +110,7 @@ export default function CartPage() {
               href="/find-your-seed"
               className="px-6 py-3 bg-seedly-light text-seedly-dark rounded-full text-xs font-semibold hover:bg-seedly-primary/20 transition-colors"
             >
-              Take the Wellness Quiz
+              Find Your Routine
             </Link>
           </div>
         </div>
@@ -218,7 +218,7 @@ export default function CartPage() {
 
               {!isFreeShipping && (
                 <p className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200/60 leading-relaxed">
-                  Add <strong>{formatPKR(freeShippingThreshold - subtotalMinor)}</strong> more to qualify for Free Delivery across Pakistan!
+                  Add <strong>{formatPKR(freeShippingThreshold - subtotalMinor)}</strong> more to qualify for FREE Delivery across Pakistan (Orders Rs. 2,500+)!
                 </p>
               )}
 
@@ -241,7 +241,7 @@ export default function CartPage() {
             <div className="pt-2 border-t border-border-gray/60 space-y-2.5 text-xs text-muted-gray">
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-seedly-primary shrink-0" />
-                <span>Fast dispatch in 2–4 business days via TCS / Leopards</span>
+                <span>Fast dispatch in 1–4 business days via TCS / Leopards</span>
               </div>
               <div className="flex items-center gap-2">
                 <Banknote className="w-4 h-4 text-seedly-primary shrink-0" />

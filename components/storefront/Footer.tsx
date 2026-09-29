@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { SeedlyLogo } from '../ui/SeedlyLogo';
 import { Mail, CheckCircle2, MapPin, Phone, ShieldCheck } from 'lucide-react';
 
+import { siteConfig } from '../../lib/config';
+
 export function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -25,21 +27,21 @@ export function Footer() {
           <div className="lg:col-span-2 space-y-4">
             <SeedlyLogo size="lg" textColor="text-white" />
             <p className="text-sm text-seedly-light/80 leading-relaxed max-w-sm">
-              Good ingredients. Simple rituals. Single-origin heirloom seeds and whole blossom mountain teas, sourced directly from Pakistani growers and packaged fresh in amber glass and kraft barrier pouches.
+              Pure raw seeds and whole mountain teas, sourced directly from smallholder growers across Pakistan and packaged fresh in Lahore in amber glass and airtight barrier pouches.
             </p>
 
             <div className="pt-2 space-y-2 text-xs text-seedly-light/70">
               <div className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
-                <span>Dispatched daily from our Lahore central hub via TCS / Leopards</span>
+                <span>Dispatched daily from our {siteConfig.contact.dispatchHub} via TCS &amp; Leopards</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
-                <span>Customer Care: <a href="tel:+923041117333" className="hover:text-white transition-colors underline underline-offset-2">+92 304 1117333</a> (Mon–Sat, 10am–7pm PKT)</span>
+                <span>Customer Care: <a href={`tel:${siteConfig.contact.phoneRaw}`} className="hover:text-white transition-colors underline underline-offset-2">{siteConfig.contact.phoneInternational}</a> ({siteConfig.contact.hours})</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
-                <span>Support: <a href="mailto:care@seedly.pk" className="hover:text-white transition-colors underline underline-offset-2">care@seedly.pk</a></span>
+                <span>Support: <a href={`mailto:${siteConfig.contact.email}`} className="hover:text-white transition-colors underline underline-offset-2">{siteConfig.contact.email}</a></span>
               </div>
             </div>
           </div>
@@ -55,22 +57,22 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/seeds" className="hover:text-white transition-colors">
-                  Heirloom Seeds
+                  Raw Pantry Seeds
                 </Link>
               </li>
               <li>
                 <Link href="/kits" className="hover:text-white transition-colors">
-                  Curated Kits
+                  Cycle Routine Kits
                 </Link>
               </li>
               <li>
                 <Link href="/teas" className="hover:text-white transition-colors">
-                  Mountain Herbal Teas
+                  Mountain Teas &amp; Tisanes
                 </Link>
               </li>
               <li>
                 <Link href="/find-your-seed" className="hover:text-white transition-colors">
-                  Find Your Seed
+                  Routine Finder
                 </Link>
               </li>
             </ul>
@@ -82,17 +84,17 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-seedly-light/80">
               <li>
                 <Link href="/about" className="hover:text-white transition-colors">
-                  Why Seedly Exists
+                  Our Sourcing Story
                 </Link>
               </li>
               <li>
                 <Link href="/shipping" className="hover:text-white transition-colors">
-                  Shipping &amp; Delivery Info
+                  Shipping &amp; Delivery
                 </Link>
               </li>
               <li>
                 <Link href="/returns" className="hover:text-white transition-colors">
-                  7-Day Freshness Guarantee
+                  7-Day Replacement Policy
                 </Link>
               </li>
               <li>
@@ -112,7 +114,7 @@ export function Footer() {
           <div className="space-y-3">
             <h4 className="text-xs uppercase tracking-widest font-semibold text-white/90">Harvest Updates</h4>
             <p className="text-xs text-seedly-light/80 leading-relaxed">
-              Seasonal harvest announcements and simple culinary recipes. No spam.
+              Seasonal harvest announcements and pantry updates. No spam.
             </p>
 
             {subscribed ? (

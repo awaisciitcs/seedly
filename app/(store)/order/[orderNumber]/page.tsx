@@ -96,7 +96,7 @@ export default async function OrderConfirmationPage(props: {
             <Truck className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
             <div className="space-y-1 text-xs text-emerald-900">
               <strong className="block text-sm font-semibold">
-                Dispatched with {order.tracking_courier || 'TCS Express'}
+                Dispatched with {order.tracking_courier || 'TCS Courier'}
               </strong>
               <p>
                 Tracking Number:{' '}

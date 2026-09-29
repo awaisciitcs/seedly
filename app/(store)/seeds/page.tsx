@@ -5,9 +5,26 @@ import { Leaf, ShieldCheck, Scale } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Raw Heirloom Seeds | Seedly Pakistan',
+  title: 'Raw Pantry Seeds | Seedly Pakistan',
   description:
     'Single-origin edible seeds from Punjab family farms. Sun-dried pumpkin seeds, cold-milled golden flax, raw sunflower kernels, and unhulled white sesame.',
+  openGraph: {
+    title: 'Raw Pantry Seeds | Seedly Pakistan',
+    description:
+      'Single-origin raw seeds from Punjab family farms. Unsalted, unglazed, and packed in standard 250g resealable barrier pouches.',
+    url: 'https://seedly.pk/seeds',
+    siteName: 'Seedly',
+    locale: 'en_PK',
+    type: 'website',
+    images: [
+      {
+        url: '/images/products/pumpkin-seeds.jpg',
+        width: 800,
+        height: 800,
+        alt: 'Seedly raw pumpkin seeds',
+      },
+    ],
+  },
 };
 
 export default function SeedsPage() {

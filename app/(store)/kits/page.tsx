@@ -6,9 +6,26 @@ import { Sparkles, Calendar, PackageCheck, ShieldCheck } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Seed Cycling Ritual Kits | Seedly Pakistan',
+  title: 'Seed Cycling Kits (14-Day & 28-Day Routines) | Seedly Pakistan',
   description:
-    'Full 250g resealable seed pouches with handcrafted wooden measuring scoop and printed calendar. Wholesome monthly food routines for follicular and luteal phases.',
+    'Full 250g resealable seed pouches with engraved wooden measuring scoop and printed calendar. Wholesome monthly food routines for follicular and luteal phases.',
+  openGraph: {
+    title: 'Seed Cycling Kits | Seedly Pakistan',
+    description:
+      'Portioned 14-day and full 28-day seed routines with standard 250g pouches, wooden measuring scoop, and tracking calendar.',
+    url: 'https://seedly.pk/kits',
+    siteName: 'Seedly',
+    locale: 'en_PK',
+    type: 'website',
+    images: [
+      {
+        url: '/images/products/complete-kit.jpg',
+        width: 800,
+        height: 800,
+        alt: 'Seedly complete seed cycling kit',
+      },
+    ],
+  },
 };
 
 export default function KitsPage() {
@@ -22,7 +39,7 @@ export default function KitsPage() {
           Seed Cycling Kits
         </h1>
         <p className="text-sm text-muted-gray mt-2 leading-relaxed">
-          Structured 28-day routines with standard 250g resealable seed pouches, a handcrafted wooden measuring scoop, and a printed calendar. Wholesome kitchen nutrition designed for each phase of your monthly cycle.
+          Structured 14-day and full 28-day routines with standard 250g resealable seed pouches, an engraved wooden measuring scoop, and a printed calendar. Wholesome kitchen nutrition designed for each phase of your monthly cycle.
         </p>
       </div>
 
@@ -40,7 +57,7 @@ export default function KitsPage() {
             Comparing the 3 Kits
           </h2>
           <p className="text-xs sm:text-sm text-muted-gray">
-            Choose individual phases or get the full 28-day routine in one box.
+            Choose individual 14-day phases or get the full 28-day routine in one box.
           </p>
         </div>
 
@@ -49,17 +66,17 @@ export default function KitsPage() {
             <thead>
               <tr className="border-b border-border-gray text-charcoal">
                 <th className="py-3 pr-4 font-semibold text-muted-gray uppercase tracking-wider text-[11px]">Details</th>
-                <th className="py-3 px-4 font-bold text-charcoal">Follicular Blend</th>
-                <th className="py-3 px-4 font-bold text-charcoal">Luteal Blend</th>
+                <th className="py-3 px-4 font-bold text-charcoal">Follicular (Phase 1)</th>
+                <th className="py-3 px-4 font-bold text-charcoal">Luteal (Phase 2)</th>
                 <th className="py-3 pl-4 font-bold text-seedly-dark bg-seedly-light/30 rounded-t-xl">Complete 28-Day Kit</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border-gray/60 text-muted-gray">
               <tr>
-                <td className="py-3 pr-4 font-medium text-charcoal">Monthly Window</td>
-                <td className="py-3 px-4">Days 1–14 (Phase 1)</td>
-                <td className="py-3 px-4">Days 15–28 (Phase 2)</td>
-                <td className="py-3 pl-4 font-semibold text-charcoal bg-seedly-light/30">Days 1–28 (Full Month)</td>
+                <td className="py-3 pr-4 font-medium text-charcoal">Routine Duration</td>
+                <td className="py-3 px-4">Days 1–14 (14-Day Routine)</td>
+                <td className="py-3 px-4">Days 15–28 (14-Day Routine)</td>
+                <td className="py-3 pl-4 font-semibold text-charcoal bg-seedly-light/30">Days 1–28 (Full Month Routine)</td>
               </tr>
               <tr>
                 <td className="py-3 pr-4 font-medium text-charcoal">Seeds Included</td>
@@ -74,7 +91,7 @@ export default function KitsPage() {
                 <td className="py-3 pl-4 font-semibold text-charcoal bg-seedly-light/30">1,000g (4x 250g pouches)</td>
               </tr>
               <tr>
-                <td className="py-3 pr-4 font-medium text-charcoal">Wooden Measuring Scoop</td>
+                <td className="py-3 pr-4 font-medium text-charcoal">Engraved Wooden Scoop</td>
                 <td className="py-3 px-4 text-emerald-800 font-semibold">Included (1 tbsp)</td>
                 <td className="py-3 px-4 text-emerald-800 font-semibold">Included (1 tbsp)</td>
                 <td className="py-3 pl-4 text-emerald-800 font-bold bg-seedly-light/30">Included (1 tbsp)</td>
@@ -89,14 +106,18 @@ export default function KitsPage() {
                 <td className="py-3 pr-4 font-medium text-charcoal">Nationwide Delivery</td>
                 <td className="py-3 px-4">Rs. 200 (TCS / Leopards)</td>
                 <td className="py-3 px-4">Rs. 200 (TCS / Leopards)</td>
-                <td className="py-3 pl-4 font-bold text-emerald-800 bg-seedly-light/30">FREE Delivery Included</td>
+                <td className="py-3 pl-4 font-bold text-emerald-800 bg-seedly-light/30">FREE Courier Delivery Included</td>
               </tr>
               <tr className="font-serif text-sm">
                 <td className="py-3.5 pr-4 font-sans font-bold text-charcoal">Price</td>
-                <td className="py-3.5 px-4 font-bold text-charcoal">Rs. 1,550</td>
-                <td className="py-3.5 px-4 font-bold text-charcoal">Rs. 1,450</td>
+                <td className="py-3.5 px-4 font-bold text-charcoal">
+                  Rs. 1,550 <span className="font-sans text-[11px] font-normal text-muted-gray ml-1">(Save Rs. 80)</span>
+                </td>
+                <td className="py-3.5 px-4 font-bold text-charcoal">
+                  Rs. 1,290 <span className="font-sans text-[11px] font-normal text-muted-gray ml-1">(Save Rs. 50)</span>
+                </td>
                 <td className="py-3.5 pl-4 font-bold text-seedly-dark text-base bg-seedly-light/30">
-                  Rs. 2,850 <span className="font-sans text-[11px] font-normal text-muted-gray ml-1">(Save Rs. 150)</span>
+                  Rs. 2,850 <span className="font-sans text-[11px] font-normal text-muted-gray ml-1">(Save Rs. 120)</span>
                 </td>
               </tr>
               <tr>

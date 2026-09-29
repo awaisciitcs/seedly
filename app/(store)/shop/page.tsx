@@ -6,9 +6,26 @@ import { ProductCard } from '../../../components/product/ProductCard';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Complete Catalog — Heirloom Seeds, Routine Kits & Teas | Seedly',
+  title: 'Raw Seeds, Cycle Kits & Mountain Teas | Seedly Pakistan',
   description:
-    'Browse our full collection of raw Pakistani heirloom seeds, 28-day seed cycling kits, and whole-blossom mountain herbal teas. Dispatched nationwide.',
+    'Browse our full collection of raw pantry seeds, 14-day & 28-day routine kits, and high-altitude teas. Dispatched nationwide across Pakistan from Lahore.',
+  openGraph: {
+    title: 'Raw Seeds, Cycle Kits & Mountain Teas | Seedly Pakistan',
+    description:
+      'Pure whole raw pantry seeds, monthly routine kits, and whole blossom teas dispatched nationwide.',
+    url: 'https://seedly.pk/shop',
+    siteName: 'Seedly',
+    locale: 'en_PK',
+    type: 'website',
+    images: [
+      {
+        url: '/images/lifestyle/seedly_hero_lifestyle.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Seedly shop catalog',
+      },
+    ],
+  },
 };
 
 export default async function ShopPage(props: {
@@ -45,10 +62,10 @@ export default async function ShopPage(props: {
   }
 
   const categories = [
-    { label: 'All Catalog', slug: 'all' },
-    { label: 'Heirloom Seeds', slug: 'seeds' },
-    { label: 'Curated Kits', slug: 'kits' },
-    { label: 'Herbal Teas', slug: 'teas' },
+    { label: 'All Products', slug: 'all' },
+    { label: 'Raw Seeds', slug: 'seeds' },
+    { label: 'Cycle Kits', slug: 'kits' },
+    { label: 'Mountain Teas', slug: 'teas' },
   ];
 
   return (
@@ -56,13 +73,13 @@ export default async function ShopPage(props: {
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
         <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
-          Apothecary Collection
+          All Products
         </span>
         <h1 className="font-serif text-3xl sm:text-5xl font-bold text-charcoal">
-          Pure Botanical Goods
+          Raw Seeds &amp; Mountain Teas
         </h1>
         <p className="text-sm text-muted-gray">
-          Cold-milled heirloom seeds, daily seed-cycling rituals, and high-altitude whole blossom teas.
+          Whole raw seeds for eating, portioned monthly cycle kits, and loose-leaf herbal teas for daily brewing.
         </p>
       </div>
 

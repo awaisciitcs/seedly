@@ -81,7 +81,7 @@ export function CartDrawer() {
           <div className="px-6 py-5 border-b border-border-gray flex items-center justify-between bg-cream/50">
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-seedly-dark" />
-              <h2 className="text-lg font-serif font-semibold text-charcoal">Your Wellness Basket</h2>
+              <h2 className="text-lg font-serif font-semibold text-charcoal">Your Basket</h2>
               <span className="text-xs bg-seedly-light text-seedly-dark px-2 py-0.5 rounded-full font-medium">
                 {items.length} {items.length === 1 ? 'item' : 'items'}
               </span>
@@ -107,7 +107,7 @@ export function CartDrawer() {
                 <div className="flex items-center justify-between text-xs text-charcoal">
                   <span className="flex items-center gap-1 font-medium">
                     <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                    Add <strong>{formatPKR(freeShippingDelta)}</strong> for Free Delivery
+                    Add <strong>{formatPKR(freeShippingDelta)}</strong> for FREE Delivery (Orders Rs. 2,500+)
                   </span>
                   <span className="font-semibold text-seedly-dark">{freeShippingPercent}%</span>
                 </div>
@@ -152,7 +152,7 @@ export function CartDrawer() {
                 </div>
                 <h3 className="font-serif text-lg font-medium text-charcoal mb-1">Your basket is empty</h3>
                 <p className="text-sm text-muted-gray max-w-xs mb-6">
-                  Explore our cold-milled seeds, whole flower teas, and hormone-friendly cycle kits.
+                  Explore our fresh-milled pantry seeds, mountain teas, and phase seed routine kits.
                 </p>
                 <Link
                   href="/shop"

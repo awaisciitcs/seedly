@@ -28,6 +28,7 @@ import {
   PackageCheck,
 } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
+import { siteConfig } from '../../lib/config';
 
 interface KitDetailViewProps {
   kit: Kit;
@@ -209,7 +210,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               <p className="text-[11px] text-muted-gray">Chat with our team on WhatsApp for ingredients, preparation and storage guidance.</p>
             </div>
             <a
-              href={`https://wa.me/923041117333?text=${waMessage}`}
+              href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0 shadow-subtle"
@@ -238,7 +239,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                   <span className="text-muted-gray">({reviews.length} verified {reviews.length === 1 ? 'review' : 'reviews'})</span>
                 </div>
               ) : (
-                <span className="text-xs text-muted-gray font-medium">Verified Seedly Box Set</span>
+                <span className="text-xs text-muted-gray font-medium">Seedly Box Set</span>
               )}
             </div>
 
@@ -306,7 +307,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                 ))}
                 <div className="py-2.5 flex items-center justify-between">
                   <span className="font-medium text-charcoal">
-                    1x Handcrafted Wooden Measuring Scoop
+                    1x Engraved Wooden Measuring Scoop (1 tbsp)
                   </span>
                   <span className="text-muted-gray text-[11px]">
                     1 tbsp portion tool
@@ -413,9 +414,16 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                 <div>
                   <span className="font-semibold">Nationwide Delivery: </span>
                   <span className="text-muted-gray">
-                    {kit.price_minor >= 250000
-                      ? 'FREE express courier delivery included on this kit (TCS / Leopards).'
-                      : 'Rs. 200 flat delivery via TCS / Leopards (FREE on orders of Rs. 2,500 or more).'}
+                    {kit.price_minor >= 250000 ? (
+                      'FREE courier delivery included on this kit (TCS / Leopards).'
+                    ) : (
+                      <>
+                        Rs. 200 flat delivery via TCS / Leopards (FREE on orders of Rs. 2,500 or more).{' '}
+                        <span className="text-seedly-dark font-medium block mt-0.5">
+                          Add Rs. {Math.round((250000 - kit.price_minor) / 100).toLocaleString()} more to your basket to unlock FREE delivery.
+                        </span>
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
@@ -454,6 +462,26 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                       : 'Eat 2 tbsp daily according to your phase calendar. Dispatched fresh from our Lahore hub.'}
                   </span>
                 </div>
+              </div>
+
+              {/* Cycle Timing Note for irregular cycles */}
+              <div className="flex items-start gap-2.5 text-charcoal pt-2.5 border-t border-border-gray/60">
+                <Calendar className="w-4 h-4 text-muted-gray shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold">Cycle Timing &amp; Irregular Cycles: </span>
+                  <span className="text-muted-gray">
+                    Designed for standard 28-day rhythms. If your cycle is shorter, longer, or irregular, align your rotation with the lunar phases (New Moon to Full Moon for Follicular; Full Moon to New Moon for Luteal), or shift phases when ovulation occurs.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Standard Dietary Disclaimer Box */}
+            <div className="p-3.5 bg-warm-white rounded-xl border border-border-gray/70 text-[11px] text-muted-gray leading-relaxed flex items-start gap-2.5">
+              <Info className="w-4 h-4 text-muted-gray shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-charcoal font-medium">Dietary Food Notice: </strong>
+                {siteConfig.disclaimer.standard}
               </div>
             </div>
           </div>

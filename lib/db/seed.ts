@@ -81,16 +81,16 @@ export function seedCatalog(db: any) {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  // Product 1: Raw Heirloom Pumpkin Seeds
+  // Product 1: Raw Pumpkin Seeds
   insertProd.run(
     'prod-pumpkin',
     'cat-seeds',
-    'Raw Heirloom Pumpkin Seeds',
+    'Raw Pumpkin Seeds (Pepitas)',
     'pumpkin-seeds',
     'SED-PUMP-RAW',
     'seed',
     'ACTIVE',
-    'Raw unsalted green pepitas from Sahiwal. Sun-dried and high in elemental zinc and magnesium.',
+    'Raw unsalted green pepitas from Sahiwal. Sun-dried and a natural source of zinc and magnesium.',
     'Carefully shelled, triple-cleaned, and sun-dried to keep their natural oils intact. Grown in the fertile soil of Sahiwal, Punjab. A mineral-dense staple for morning bowls, salads, sourdough toasts, or straight from the jar.',
     95000,
     null,
@@ -109,8 +109,8 @@ export function seedCatalog(db: any) {
       zinc: '2.2mg (20% DV)',
       origin: 'Sahiwal, Punjab',
     }),
-    'Raw Heirloom Pumpkin Seeds (250g) | Seedly Pakistan',
-    'Sun-dried, raw heirloom pumpkin seeds grown in Sahiwal. Clean, unsalted, and high in zinc.',
+    'Raw Pumpkin Seeds (250g) | Seedly Pakistan',
+    'Sun-dried, raw pumpkin seeds grown in Sahiwal. Clean, unsalted, and a natural source of zinc.',
     '/images/products/pumpkin-seeds.jpg',
     'BESTSELLER',
     1
@@ -119,21 +119,21 @@ export function seedCatalog(db: any) {
   insertVariant.run('var-pump-250', 'prod-pumpkin', 'SED-PUMP-250', 'Pack Size', '250g', 95000, null, 250, 45);
   insertVariant.run('var-pump-500', 'prod-pumpkin', 'SED-PUMP-500', 'Pack Size', '500g', 175000, null, 500, 20);
 
-  // Product 2: Cold-Milled Golden Flax Seeds
+  // Product 2: Ground Golden Flaxseed (Cold-Milled)
   insertProd.run(
     'prod-flax',
     'cat-seeds',
-    'Cold-Milled Golden Flax Seeds',
+    'Ground Golden Flaxseed (Cold-Milled)',
     'flax-seeds',
     'SED-FLAX-GLD',
     'seed',
     'ACTIVE',
-    'Golden flax seeds from Bahawalpur, cold-milled in small batches to preserve omega-3 fatty acids.',
-    'Sourced from smallholder cooperatives in Bahawalpur. We cold-mill these golden flax seeds slowly to prevent heat friction, protecting delicate alpha-linolenic acid (ALA) and soluble lignan fiber.',
+    'Golden flaxseed from Bahawalpur, cold-milled in small batches to preserve vital ALA omega-3 fatty acids.',
+    'Sourced from smallholder cooperatives in Bahawalpur. We cold-mill these golden flax seeds slowly to prevent heat friction, protecting delicate alpha-linolenic acid (ALA) and soluble fiber. Packed fresh with milled-on lot tracking.',
     68000,
     null,
     250,
-    '100% Pure Golden Flax Seeds (Linum usitatissimum)',
+    '100% Pure Cold-Milled Golden Flaxseed (Linum usitatissimum)',
     'Take 1 tablespoon daily. Stir into yogurt, porridge, dough, or smoothies.',
     'Keep sealed in a cool, dark cupboard. After opening, refrigeration is recommended to preserve delicate omega-3s.',
     null,
@@ -147,27 +147,27 @@ export function seedCatalog(db: any) {
       protein: '5g',
       origin: 'Bahawalpur, Punjab',
     }),
-    'Cold-Milled Golden Flax Seeds (250g) | Seedly Pakistan',
-    'Locally sourced golden flax seeds, cold-milled in batches to protect vital omega-3 fatty acids.',
+    'Ground Golden Flaxseed (250g) | Seedly Pakistan',
+    'Locally sourced golden flaxseed, cold-milled in batches to protect vital omega-3 fatty acids.',
     '/images/products/flax-seeds.jpg',
-    'POPULAR',
+    null,
     1
   );
   insertVariant.run('var-flax-100', 'prod-flax', 'SED-FLAX-100', 'Pack Size', '100g', 32000, null, 100, 25);
   insertVariant.run('var-flax-250', 'prod-flax', 'SED-FLAX-250', 'Pack Size', '250g', 68000, null, 250, 40);
   insertVariant.run('var-flax-500', 'prod-flax', 'SED-FLAX-500', 'Pack Size', '500g', 125000, null, 500, 15);
 
-  // Product 3: Organic Raw Sunflower Kernels
+  // Product 3: Raw Sunflower Seed Kernels
   insertProd.run(
     'prod-sunflower',
     'cat-seeds',
-    'Organic Raw Sunflower Kernels',
+    'Raw Sunflower Seed Kernels',
     'sunflower-seeds',
     'SED-SUN-RAW',
     'seed',
     'ACTIVE',
     'Plump raw sunflower kernels from Multan. Rich in natural Vitamin E and dietary selenium.',
-    'Shelled clean without heat or chemical solvents. Grown in Multan’s fertile sun-drenched plains, our sunflower kernels have a mild, clean, nutty flavor and a tender crunch.',
+    'Shelled clean without heat or chemical solvents. Grown in Multan’s fertile sun-drenched plains, our sunflower kernels have a mild, clean, nutty flavour and a tender crunch.',
     72000,
     null,
     250,
@@ -204,7 +204,7 @@ export function seedCatalog(db: any) {
     'SED-SES-WHT',
     'seed',
     'ACTIVE',
-    'Unhulled sun-dried white sesame seeds from Sargodha. Rich in bioavailable calcium and sesamin.',
+    'Unhulled sun-dried white sesame seeds from Sargodha. Naturally rich in dietary calcium and minerals.',
     'Our sesame seeds retain their nutrient-dense outer hull, making them exceptionally rich in natural plant calcium. Never bleached, chemically washed, or sulfured.',
     62000,
     null,
@@ -241,10 +241,10 @@ export function seedCatalog(db: any) {
     'SED-TEA-CHAM',
     'tea',
     'ACTIVE',
-    'Hand-gathered whole chamomile flowers from Gilgit valleys. Naturally caffeine-free with honey-apple notes.',
+    'Hand-gathered whole chamomile flowers from Gilgit valleys. Naturally caffeine-free herbal tisane with honey-apple notes.',
     'Only intact, aromatic whole flower heads—never broken fannings or bleached tea bags. Harvested at high elevation in Gilgit-Baltistan and shade-dried to protect fragile volatile oils. Brews into a gentle golden cup.',
     125000,
-    145000,
+    null,
     50,
     '100% Whole Dried German Chamomile Blossoms (Matricaria chamomilla)',
     'Steep 1 tablespoon of whole flower heads in 250ml of freshly boiled water (95°C) for 5 minutes. Strain and enjoy warm.',
@@ -255,33 +255,33 @@ export function seedCatalog(db: any) {
     '95°C',
     JSON.stringify({
       calories: '0',
-      caffeine: '0mg',
+      caffeine: '0mg (Caffeine-Free Tisane)',
       flavonoids: 'Rich in apigenin',
       origin: 'Gilgit-Baltistan',
     }),
     'Whole Flower Chamomile Tea | Seedly Pakistan',
     'Intact loose whole chamomile blossoms from Gilgit. Calming, fragrant, and 100% caffeine-free.',
     '/images/products/chamomile-tea.jpg',
-    'BESTSELLER',
+    null,
     1
   );
-  insertVariant.run('var-cham-50', 'prod-chamomile', 'SED-TEA-CHAM-50', 'Weight', '50g Loose Blossom', 125000, 145000, 50, 35);
+  insertVariant.run('var-cham-50', 'prod-chamomile', 'SED-TEA-CHAM-50', 'Weight', '50g Loose Blossom', 125000, null, 50, 35);
 
-  // Product 6: Organic Gilgit Spearmint Leaf Tea
+  // Product 6: Highland Spearmint Leaf Tea
   insertProd.run(
     'prod-spearmint',
     'cat-teas',
-    'Organic Gilgit Spearmint Leaf Tea',
+    'Highland Spearmint Leaf Tea',
     'spearmint-tea',
     'SED-TEA-SPEAR',
     'tea',
     'ACTIVE',
-    'Mountain-grown cut spearmint leaves from northern valleys. Naturally soothing and refreshing.',
-    'Unlike harsh commercial peppermint, northern spearmint is naturally sweet and gentle on the stomach. Harvested by hand, air-dried in alpine shade, and cut into loose leaf pieces.',
+    'Mountain-grown cut spearmint leaves from northern valleys. Naturally caffeine-free herbal tisane, soothing and refreshing.',
+    'Unlike harsh commercial peppermint, northern spearmint is naturally sweet and gentle on the stomach. Harvested by hand from terrace gardens, air-dried in alpine shade, and cut into loose leaf pieces.',
     115000,
-    130000,
+    null,
     50,
-    '100% Organically Grown Spearmint Leaves (Mentha spicata)',
+    '100% Whole Cut Mountain Spearmint Leaves (Mentha spicata)',
     'Infuse 1 teaspoon in 250ml of hot water (90°C) for 3 to 4 minutes. Enjoy warm after dinner or poured over ice.',
     'Store sealed in a dry cupboard away from heat and moisture.',
     'Cooling Sweet Mint, Soft Mountain Herb',
@@ -290,36 +290,36 @@ export function seedCatalog(db: any) {
     '90°C',
     JSON.stringify({
       calories: '0',
-      caffeine: '0mg',
+      caffeine: '0mg (Caffeine-Free Tisane)',
       origin: 'Hunza & Gilgit Valleys',
     }),
-    'Organic Spearmint Leaf Tea | Seedly Pakistan',
+    'Highland Spearmint Leaf Tea | Seedly Pakistan',
     'Mountain spearmint loose leaf tea from Gilgit. Clean cooling taste for daily digestive comfort.',
     '/images/products/spearmint-tea.jpg',
-    'POPULAR',
+    null,
     1
   );
-  insertVariant.run('var-spear-50', 'prod-spearmint', 'SED-TEA-SPEAR-50', 'Weight', '50g Loose Leaf', 115000, 130000, 50, 30);
+  insertVariant.run('var-spear-50', 'prod-spearmint', 'SED-TEA-SPEAR-50', 'Weight', '50g Loose Leaf', 115000, null, 50, 30);
 
-  // Product 7: Highland Whole Leaf Green Tea
+  // Product 7: Pan-Fired Highland Green Tea
   insertProd.run(
     'prod-green-tea',
     'cat-teas',
-    'Highland Whole Leaf Green Tea',
+    'Pan-Fired Highland Green Tea',
     'green-tea',
     'SED-TEA-GRN',
     'tea',
     'ACTIVE',
-    'Spring-harvested whole leaf green tea from Khyber Pakhtunkhwa foothills. Delicate, sweet, and low in caffeine.',
+    'Spring-harvested whole leaf green tea from Khyber Pakhtunkhwa foothills. Pan-fired, delicate, and low in caffeine (~20mg/cup).',
     'Hand-plucked whole leaves from highland slopes. Pan-fired gently to prevent oxidation without creating the bitter astringency common in commercial tea bags. Can be steeped multiple times.',
     135000,
-    155000,
+    null,
     75,
-    '100% Highland Green Tea Whole Leaves (Camellia sinensis)',
+    '100% Pan-Fired Highland Green Tea Whole Leaves (Camellia sinensis)',
     'Steep 1 teaspoon in 250ml water cooled to 80°C (let boiled water sit for 2 minutes) for 2 minutes. Re-steep leaves up to 3 times.',
     'Keep sealed in an airtight tin away from spices or strong aromas.',
     'Fresh Meadow Grass, Spring Orchid, Toasted Rice',
-    'Low Caffeine (~20mg/cup)',
+    'Gentle Caffeine (~20mg/cup)',
     '2–3 mins',
     '80°C',
     JSON.stringify({
@@ -328,13 +328,13 @@ export function seedCatalog(db: any) {
       polyphenols: 'High EGCG',
       origin: 'Mansehra Foothills, KP',
     }),
-    'Highland Whole Leaf Green Tea | Seedly Pakistan',
+    'Pan-Fired Highland Green Tea | Seedly Pakistan',
     'Single-estate green tea whole leaves from northern foothills. Smooth and never bitter.',
     '/images/products/green-tea.jpg',
     null,
     0
   );
-  insertVariant.run('var-grn-75', 'prod-green-tea', 'SED-TEA-GRN-75', 'Weight', '75g Loose Leaf', 135000, 155000, 75, 40);
+  insertVariant.run('var-grn-75', 'prod-green-tea', 'SED-TEA-GRN-75', 'Weight', '75g Loose Leaf', 135000, null, 75, 40);
 
   // 3. Kits
   const insertKit = db.prepare(`
@@ -353,37 +353,37 @@ export function seedCatalog(db: any) {
   // Kit 1: Follicular Blend (Phase 1)
   insertKit.run(
     'kit-follicular',
-    'Follicular Phase Seed Kit',
+    'Follicular Phase Seed Kit (14-Day Routine)',
     'follicular-blend',
-    'Curated pairing of raw Pumpkin and Golden Flax seeds (250g each) with an engraved wooden measuring scoop.',
-    'Formulated to supply essential fatty acids and minerals during the first half of your monthly cycle (Days 1–14). Pumpkin seeds supply elemental zinc, while golden flax seeds provide gentle plant lignans.',
+    'Curated pairing of raw Pumpkin and Ground Flaxseed (250g each) with an engraved wooden measuring scoop.',
+    'Formulated to supply essential fatty acids, zinc, and magnesium during the first half of your monthly cycle (Days 1–14). Pumpkin seeds supply plant zinc, while golden flax seeds provide gentle soluble fiber and ALA omega-3s.',
     155000,
-    175000,
+    null,
     'PKR',
     'ACTIVE',
     '2 x 250g Pouches + Wooden Measuring Scoop',
-    'Raw Pumpkin Seeds (250g) + Cold-Milled Golden Flax Seeds (250g)',
+    'Raw Pumpkin Seeds (250g) + Cold-Milled Golden Flaxseed (250g)',
     'Take 1 tablespoon of pumpkin seeds and 1 tablespoon of ground flax seeds daily during days 1 to 14 of your cycle.',
     'Store tightly closed in a cool, dry pantry. Ground flax can be refrigerated.',
     'APPROVED',
     '/images/products/follicular-kit.jpg',
-    'POPULAR KIT',
+    null,
     1,
-    'Follicular Phase Seed Kit | Seedly Pakistan',
-    'Curated Phase 1 seed kit with raw pumpkin and golden flax seeds plus measuring scoop.'
+    'Follicular Phase Seed Kit (14-Day Routine) | Seedly Pakistan',
+    'Curated Phase 1 seed kit with raw pumpkin and golden flaxseed plus engraved measuring scoop.'
   );
   insertKitItem.run('ki-foll-1', 'kit-follicular', 'prod-pumpkin', 'var-pump-250', 1, 1);
   insertKitItem.run('ki-foll-2', 'kit-follicular', 'prod-flax', 'var-flax-250', 1, 2);
 
-  // Kit 2: Luteal Blend (Phase 2)
+  // Kit 2: Luteal Blend (Phase 2) - Repriced to Rs. 1,290 (parts = 1,340, saves Rs. 50!)
   insertKit.run(
     'kit-luteal',
-    'Luteal Phase Seed Kit',
+    'Luteal Phase Seed Kit (14-Day Routine)',
     'luteal-blend',
-    'Synergistic pair of raw Sunflower Kernels and White Sesame seeds (250g each) with an engraved wooden measuring scoop.',
-    'Supplies Vitamin E and bioavailable calcium during the second half of your cycle (Days 15–28). Raw sunflower kernels provide natural tocopherols, while white sesame seeds supply plant calcium.',
-    145000,
-    165000,
+    'Pairing of raw Sunflower Kernels and White Sesame seeds (250g each) with an engraved wooden measuring scoop.',
+    'Supplies natural Vitamin E, selenium, and plant calcium during the second half of your cycle (Days 15–28). Raw sunflower kernels provide natural tocopherols, while white sesame seeds supply bioavailable calcium.',
+    129000,
+    null,
     'PKR',
     'ACTIVE',
     '2 x 250g Pouches + Wooden Measuring Scoop',
@@ -392,10 +392,10 @@ export function seedCatalog(db: any) {
     'Keep sealed in a cool, dark cupboard away from moisture.',
     'APPROVED',
     '/images/products/luteal-kit.jpg',
-    'CYCLE SUPPORT',
+    null,
     1,
-    'Luteal Phase Seed Kit | Seedly Pakistan',
-    'Sunflower and sesame seed kit for luteal cycle nutrition with measuring scoop.'
+    'Luteal Phase Seed Kit (14-Day Routine) | Seedly Pakistan',
+    'Sunflower and sesame seed kit for luteal cycle nutrition with engraved wooden measuring scoop.'
   );
   insertKitItem.run('ki-lut-1', 'kit-luteal', 'prod-sunflower', 'var-sun-250', 1, 1);
   insertKitItem.run('ki-lut-2', 'kit-luteal', 'prod-sesame', 'var-ses-250', 1, 2);
@@ -408,7 +408,7 @@ export function seedCatalog(db: any) {
     'The complete 4-seed ritual box: Pumpkin, Flax, Sunflower, and Sesame seeds (250g each) with measuring scoop and calendar guide.',
     'A complete monthly routine in one boxed set. Includes 250g pouches of all four seeds, an engraved wooden measuring scoop, and a printed cycle calendar guide.',
     285000,
-    300000,
+    null,
     'PKR',
     'ACTIVE',
     '4 x 250g Pouches + Wooden Scoop + Cycle Calendar',
@@ -420,7 +420,7 @@ export function seedCatalog(db: any) {
     'BEST VALUE',
     1,
     'Complete 28-Day Seed Cycling Kit | Seedly Pakistan',
-    'Full month seed cycling routine with 4 heirloom seeds, measuring scoop, and tracking guide.'
+    'Full month seed cycling routine with 4 raw seeds, measuring scoop, and tracking guide.'
   );
   insertKitItem.run('ki-comp-1', 'kit-complete', 'prod-pumpkin', 'var-pump-250', 1, 1);
   insertKitItem.run('ki-comp-2', 'kit-complete', 'prod-flax', 'var-flax-250', 1, 2);

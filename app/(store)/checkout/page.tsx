@@ -117,7 +117,7 @@ export default function CheckoutPage() {
   // Site settings for bank & wallets
   const [settings, setSettings] = useState({
     bank_name: 'Meezan Bank Limited',
-    bank_account_title: 'Seedly Organics',
+    bank_account_title: 'Seedly',
     bank_account_number: '01020304050607',
     bank_iban: 'PK12MEZN0001020304050607',
     jazzcash_title: 'Seedly Care',

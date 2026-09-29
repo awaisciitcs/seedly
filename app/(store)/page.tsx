@@ -32,7 +32,7 @@ export default function HomePage() {
         name: 'Seedly Pakistan',
         url: 'https://seedly.pk',
         logo: 'https://seedly.pk/logo/seedly-logo.jpg',
-        description: "Pakistan's heirloom seed & mountain herbal tea apothecary.",
+        description: "Pakistan's pure raw seeds & mountain teas.",
         contactPoint: {
           '@type': 'ContactPoint',
           telephone: '+92-304-1117333',
@@ -71,20 +71,20 @@ export default function HomePage() {
 
               <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-charcoal leading-[1.08]">
                 Raw Seeds &amp; <br />
-                <span className="italic font-normal text-seedly-dark">Loose-Leaf Teas.</span>
+                <span className="italic font-normal text-seedly-dark">Mountain Teas.</span>
               </h1>
 
               <p className="text-base sm:text-lg text-muted-gray leading-relaxed max-w-xl mx-auto lg:mx-0">
-                Single-origin edible seeds and whole mountain botanicals for your daily routine. Sourced directly from family farms across Pakistan, clearly labeled, and kept unadulterated.
+                Raw seeds and herbal teas for eating and brewing, packed fresh in Lahore from growers in Gilgit-Baltistan, KP and Punjab. Single-origin edible harvests, clearly labelled, and kept unadulterated.
               </p>
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
                 <Link
-                  href="/shop"
+                  href="/kits"
                   className="w-full sm:w-auto px-8 py-3.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-full font-medium text-sm transition-all shadow-card flex items-center justify-center gap-2 group"
                 >
-                  <span>Explore the Catalog</span>
+                  <span>Explore Cycle Kits</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
@@ -92,7 +92,7 @@ export default function HomePage() {
                   className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-seedly-stone text-charcoal border border-border-gray rounded-full font-medium text-sm transition-all shadow-subtle flex items-center justify-center gap-2"
                 >
                   <Compass className="w-4 h-4 text-seedly-primary" />
-                  <span>Find Your Seed</span>
+                  <span>Routine Finder</span>
                 </Link>
               </div>
 
@@ -119,7 +119,7 @@ export default function HomePage() {
                 <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-card border border-border-gray bg-stone">
                   <Image
                     src="/images/hero/seedly-hero.jpg"
-                    alt="Seedly organic seeds, chamomile blossoms, and starter kits"
+                    alt="Seedly raw edible pumpkin and flax seeds alongside whole chamomile blossoms"
                     fill
                     priority
                     sizes="(max-width: 1024px) 100vw, 40vw"
@@ -128,13 +128,13 @@ export default function HomePage() {
                 </div>
 
                 {/* Subtle packaging indicator card */}
-                <div className="absolute -bottom-5 -left-4 sm:-left-6 bg-white/95 backdrop-blur-sm py-3 px-4 rounded-2xl shadow-dropdown border border-border-gray flex items-center gap-3 max-w-[230px]">
+                <div className="absolute -bottom-5 -left-4 sm:-left-6 bg-white/95 backdrop-blur-sm py-3 px-4 rounded-2xl shadow-dropdown border border-border-gray flex items-center gap-3 max-w-[240px]">
                   <div className="w-8 h-8 rounded-full bg-seedly-light flex items-center justify-center text-seedly-dark shrink-0">
                     <Leaf className="w-4 h-4 text-seedly-primary" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-charcoal">Fresh 2026 Harvest</p>
-                    <p className="text-[11px] text-muted-gray font-mono">Batch #PK-26-H1</p>
+                    <p className="text-xs font-bold text-charcoal">Packed in Lahore</p>
+                    <p className="text-[11px] text-muted-gray font-mono">Autumn 2025 / Summer 2026</p>
                   </div>
                 </div>
               </div>
@@ -282,7 +282,7 @@ export default function HomePage() {
               How we handle your harvest
             </h2>
             <p className="text-sm text-muted-gray">
-              The difference between industrial bulk bins and cold-stored apothecary botanicals.
+              The difference between industrial bulk bins and cold-stored pantry seeds and botanicals.
             </p>
           </div>
 
@@ -301,7 +301,7 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="pt-3 border-t border-border-gray/50 text-[11px] font-mono text-seedly-dark">
-                Tested: &lt; 7.8% Moisture
+                Tested: Crisp &amp; Dry (&lt; 8% Moisture)
               </div>
             </div>
 

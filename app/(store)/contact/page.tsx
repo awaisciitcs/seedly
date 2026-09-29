@@ -65,15 +65,15 @@ export default function ContactPage() {
               <div className="p-4 rounded-2xl bg-cream/60 border border-border-gray flex items-start gap-3 text-charcoal">
                 <MapPin className="w-5 h-5 text-seedly-primary shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-sm">Apothecary Dispatch Hub</h4>
-                  <p className="text-xs text-muted-gray mt-0.5">Lahore, Pakistan</p>
+                  <h4 className="font-bold text-sm">Lahore Dispatch Hub</h4>
+                  <p className="text-xs text-muted-gray mt-0.5">Plot 42, Block C-2, Gulberg III, Lahore</p>
                   <p className="text-[11px] text-muted-gray mt-1">Daily dispatch nationwide via TCS &amp; Leopards</p>
                 </div>
               </div>
             </div>
 
             <div className="pt-4 border-t border-border-gray text-xs text-muted-gray">
-              <strong>Support Hours:</strong> Monday through Saturday, 10:00 AM – 7:00 PM PKT.
+              <strong>Support Hours:</strong> Monday through Saturday, 9:00 AM – 7:00 PM PKT.
             </div>
           </div>
         </div>
