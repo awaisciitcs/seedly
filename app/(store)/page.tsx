@@ -150,7 +150,7 @@ export default function HomePage() {
             Three simple categories
           </h2>
           <p className="text-sm text-muted-gray">
-            Single-ingredient heirloom seeds, structured monthly routine boxes, and loose mountain blossoms.
+            Single-ingredient raw pantry seeds, structured monthly routine boxes, and loose mountain blossoms.
           </p>
         </div>
 
@@ -178,7 +178,7 @@ export default function HomePage() {
                   Curated Seed Kits
                 </h3>
                 <p className="text-xs sm:text-sm text-muted-gray leading-relaxed">
-                  Complete 28-day routine boxes with raw heirloom seeds portioned for both monthly phases, a handcrafted wooden measuring scoop, and a printed cycle calendar.
+                  Complete 28-day routine boxes with raw pantry seeds portioned for both monthly phases, an engraved wooden measuring scoop, and a printed cycle calendar.
                 </p>
                 <div className="pt-2 text-xs font-semibold text-seedly-dark flex items-center gap-1.5">
                   <span>Explore starter boxes</span>
@@ -198,7 +198,7 @@ export default function HomePage() {
               <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-cream/70 shrink-0">
                 <Image
                   src="/images/products/pumpkin-seeds.jpg"
-                  alt="Heirloom Seeds"
+                  alt="Raw Pantry Seeds"
                   fill
                   sizes="96px"
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -206,7 +206,7 @@ export default function HomePage() {
               </div>
               <div className="space-y-1">
                 <h3 className="font-serif text-lg font-bold text-charcoal group-hover:text-seedly-dark transition-colors">
-                  Heirloom Seeds
+                  Raw Pantry Seeds
                 </h3>
                 <p className="text-xs text-muted-gray leading-relaxed">
                   Raw pumpkin, cold-milled flax, sunflower, and sesame. Unsalted and unbleached.

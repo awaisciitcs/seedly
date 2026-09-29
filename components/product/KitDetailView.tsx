@@ -281,6 +281,17 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               )}
             </div>
 
+            {/* Dynamic Unit Price & Lasts About Indicator */}
+            <div className="text-xs text-muted-gray pt-0.5">
+              <span>
+                {kit.slug === 'complete-cycle-kit'
+                  ? '1,000g Net (4x 250g) · Rs. 285/100g · Lasts 2 full 28-day cycles (approx. 56 days)'
+                  : kit.slug === 'follicular-blend'
+                  ? '500g Net (2x 250g) · Rs. 310/100g · Lasts 2 follicular phases (approx. 28–35 servings)'
+                  : '500g Net (2x 250g) · Rs. 258/100g · Lasts 2 luteal phases (approx. 28–35 servings)'}
+              </span>
+            </div>
+
             {/* Included Items in this Box */}
             <div className="p-5 bg-white rounded-2xl border border-border-gray shadow-subtle space-y-3">
               <div className="flex items-center justify-between">

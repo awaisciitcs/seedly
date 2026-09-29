@@ -91,7 +91,7 @@ export default function WishlistPage() {
           Your Wishlist ({wishlistIds.length})
         </h1>
         <p className="text-sm text-muted-gray mt-1">
-          Save your favorite heirloom seeds, cycle kits, and loose-leaf teas for future daily rituals.
+          Save your favourite raw pantry seeds, cycle kits, and loose-leaf teas for future daily rituals.
         </p>
       </div>
 
@@ -172,7 +172,7 @@ export default function WishlistPage() {
                     {/* Information */}
                     <div className="space-y-1">
                       <span className="text-[10px] uppercase tracking-wider font-semibold text-seedly-primary">
-                        {isKit ? 'Curated Routine Box' : item.product_type === 'tea' ? 'Loose Mountain Tea' : 'Heirloom Seed'}
+                        {isKit ? 'Curated Routine Box' : item.product_type === 'tea' ? 'Loose Mountain Tea' : 'Raw Pantry Seed'}
                       </span>
                       <Link href={productHref} className="block group-hover:text-seedly-dark transition-colors">
                         <h3 className="font-serif font-bold text-base text-charcoal leading-snug">

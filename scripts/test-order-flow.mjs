@@ -55,7 +55,7 @@ db.prepare(`
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?)
 `).run(
   `oi-1-${Date.now()}`, orderId, 'kit-follicular', 'kit-follicular', 'Follicular Phase Seed Kit', 'KIT-FOLLICULAR-BLEND', 1, 155000, 155000,
-  `oi-2-${Date.now()}`, orderId, 'prod-pumpkin', null, 'Raw Heirloom Pumpkin Seeds (250g)', 'SED-PUMP-250', 1, 95000, 95000
+  `oi-2-${Date.now()}`, orderId, 'prod-pumpkin', null, 'Raw Pumpkin Seeds (250g)', 'SED-PUMP-250', 1, 95000, 95000
 );
 
 // Decrement stock: kit uses 1 pumpkin + 1 flax; extra 1 pumpkin purchased.

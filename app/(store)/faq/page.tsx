@@ -72,7 +72,7 @@ export default function FaqPage() {
           Frequently Asked Questions
         </h1>
         <p className="text-sm text-muted-gray">
-          Learn more about our heirloom harvesting, brewing instructions, and nationwide delivery.
+          Learn more about our smallholder sourcing, brewing instructions, and nationwide delivery.
         </p>
       </div>
 

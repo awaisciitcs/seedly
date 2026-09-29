@@ -1,16 +1,16 @@
-# Seedly Naturals - Premium Organic Seeds & Herbal Teas (Pakistan)
+# Seedly - Pure Raw Pantry Seeds & Mountain Teas (Pakistan)
 
-A modern, high-performance e-commerce platform built for **Seedly Naturals**, offering heirloom seeds, wellness herbal teas, gardening kits, and holistic apothecary products tailored for Pakistani gardeners and wellness enthusiasts.
+A modern, high-performance e-commerce platform built for **Seedly**, offering single-origin raw pantry seeds, whole mountain blossom teas, and nutritional cycle kits tailored for Pakistani homes. Dispatched directly from Lahore across Pakistan via TCS & Leopards.
 
 ---
 
 ## 🌟 Key Features
 
 ### 🛍️ Storefront & Customer Experience
-- **Interactive Catalog**: Heirloom vegetable, herb, and flower seeds with germination rates, sunlight requirements, sowing months, and difficulty ratings.
-- **Herbal Infusions & Teas**: Wellness blends with organic certifications, brewing instructions, and health benefits.
-- **Gardening & Starter Kits**: Beginner-friendly combo kits with bundled seed varieties, soil mix, and coir pots.
-- **Interactive "Find Your Seed" Quiz**: Recommends the ideal seeds based on city, sunlight, garden space, and gardening experience.
+- **Interactive Catalogue**: Raw pantry seeds (pumpkin, cold-milled flax, sunflower, sesame) with full nutritional breakdown, mineral profiles, and per-100g unit pricing.
+- **Whole Mountain Teas**: Gilgit spearmint, Hunza chamomile blossoms, and Swat highland green tea with precise brewing guidelines, water temperatures, and caffeine details.
+- **Curated Cycle Kits**: Follicular, Luteal, and Complete 28-day routine boxes with engraved wooden measuring scoop and calendar guide.
+- **Interactive "Find Your Routine" Quiz**: Recommends the ideal pantry seeds and mountain teas based on daily wellness habits.
 - **Dynamic Cart & Checkout**:
   - Live subtotal calculation with free nationwide shipping threshold progress bar.
   - Multi-step checkout with real-time Pakistani validation (email, phone numbers matching `03xx-xxxxxxx` / `+923xxxxxxxxx`, street address).

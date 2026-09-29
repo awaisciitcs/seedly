@@ -14,7 +14,7 @@ export default function AdminKitsPage() {
         <div>
           <h1 className="font-serif text-3xl font-bold text-charcoal">Curated Seed Kits</h1>
           <p className="text-xs text-muted-gray mt-1">
-            Nutritional cycle kits formulated from component heirloom seed SKUs.
+            Nutritional cycle kits formulated from component raw pantry seed SKUs.
           </p>
         </div>
       </div>

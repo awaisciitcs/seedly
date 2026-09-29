@@ -54,26 +54,53 @@ export default async function KitDetailPage(props: {
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: kit.name,
-    image: `https://seedly.pk${kit.image_url}`,
-    description: kit.short_description || kit.description,
-    sku: kit.slug,
-    brand: {
-      '@type': 'Brand',
-      name: 'Seedly',
-    },
-    offers: {
-      '@type': 'Offer',
-      url: `https://seedly.pk/kits/${kit.slug}`,
-      priceCurrency: 'PKR',
-      price: (kit.price_minor / 100).toFixed(0),
-      availability:
-        (kit.computed_stock ?? 0) > 0
-          ? 'https://schema.org/InStock'
-          : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
-    },
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://seedly.pk',
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Cycle Kits',
+            item: 'https://seedly.pk/kits',
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: kit.name,
+            item: `https://seedly.pk/kits/${kit.slug}`,
+          },
+        ],
+      },
+      {
+        '@type': 'Product',
+        name: kit.name,
+        image: `https://seedly.pk${kit.image_url}`,
+        description: kit.short_description || kit.description,
+        sku: kit.slug,
+        brand: {
+          '@type': 'Brand',
+          name: 'Seedly',
+        },
+        offers: {
+          '@type': 'Offer',
+          url: `https://seedly.pk/kits/${kit.slug}`,
+          priceCurrency: 'PKR',
+          price: (kit.price_minor / 100).toFixed(0),
+          availability:
+            (kit.computed_stock ?? 0) > 0
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/OutOfStock',
+          itemCondition: 'https://schema.org/NewCondition',
+        },
+      },
+    ],
   };
 
   return (

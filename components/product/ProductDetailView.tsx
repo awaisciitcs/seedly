@@ -26,6 +26,7 @@ import {
   Bell,
   MessageCircle,
   HelpCircle,
+  Thermometer,
 } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
 import { ProductCard } from './ProductCard';
@@ -189,7 +190,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
         <Link href="/" className="hover:text-charcoal">Home</Link>
         <span>/</span>
         <Link href={`/${product.product_type === 'tea' ? 'teas' : 'seeds'}`} className="capitalize hover:text-charcoal">
-          {product.product_type === 'tea' ? 'Herbal Teas' : 'Heirloom Seeds'}
+          {product.product_type === 'tea' ? 'Mountain Teas' : 'Raw Pantry Seeds'}
         </Link>
         <span>/</span>
         <span className="text-charcoal font-medium truncate">{product.name}</span>
@@ -279,7 +280,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
 
             {/* Tea specific quick attributes */}
             {product.product_type === 'tea' && (
-              <div className="grid grid-cols-3 gap-2 py-3 px-4 bg-seedly-stone rounded-2xl border border-border-gray text-xs text-charcoal">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 py-3 px-4 bg-seedly-stone rounded-2xl border border-border-gray text-xs text-charcoal">
                 {product.flavor_profile && (
                   <div className="space-y-0.5">
                     <span className="font-semibold flex items-center gap-1 text-seedly-dark">
@@ -288,22 +289,24 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                     <p className="text-[11px] text-muted-gray truncate">{product.flavor_profile}</p>
                   </div>
                 )}
-                {product.steep_time && (
-                  <div className="space-y-0.5">
-                    <span className="font-semibold flex items-center gap-1 text-seedly-dark">
-                      <Clock className="w-3.5 h-3.5" /> Brew Time
-                    </span>
-                    <p className="text-[11px] text-muted-gray">{product.steep_time}</p>
-                  </div>
-                )}
-                {product.caffeine_level && (
-                  <div className="space-y-0.5">
-                    <span className="font-semibold flex items-center gap-1 text-seedly-dark">
-                      <Coffee className="w-3.5 h-3.5" /> Caffeine
-                    </span>
-                    <p className="text-[11px] text-muted-gray">{product.caffeine_level}</p>
-                  </div>
-                )}
+                <div className="space-y-0.5">
+                  <span className="font-semibold flex items-center gap-1 text-seedly-dark">
+                    <Clock className="w-3.5 h-3.5" /> Brew Time
+                  </span>
+                  <p className="text-[11px] text-muted-gray">{product.steep_time || '3–4 mins'}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="font-semibold flex items-center gap-1 text-seedly-dark">
+                    <Thermometer className="w-3.5 h-3.5" /> Water Temp
+                  </span>
+                  <p className="text-[11px] text-muted-gray">{product.water_temp || (product.slug === 'green-tea' ? '80°C' : '90°C–95°C')}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="font-semibold flex items-center gap-1 text-seedly-dark">
+                    <Coffee className="w-3.5 h-3.5" /> Caffeine
+                  </span>
+                  <p className="text-[11px] text-muted-gray">{product.caffeine_level || 'Caffeine-free'}</p>
+                </div>
               </div>
             )}
 
@@ -347,15 +350,29 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                     )}
                     /100g
                   </strong>
+                  {' · '}
+                  <span>
+                    {product.slug === 'flax-seeds'
+                      ? 'Lasts approx. 35 days (1 tbsp daily)'
+                      : 'Lasts approx. 25–30 servings'}
+                  </span>
                 </span>
               ) : (
                 <span>
                   {selectedVariant?.option_value || '50g'} ·{' '}
                   <strong className="text-charcoal font-medium">
-                    {product.slug === 'green-tea'
-                      ? '~35 cups (2g per serving; re-steepable for 70+ cups)'
-                      : '~25 cups (2g per serving)'}
+                    Rs.{' '}
+                    {Math.round(
+                      ((priceMinor / (selectedVariant?.weight_grams || product.weight_grams || 50)) * 100) / 100
+                    )}
+                    /100g
                   </strong>
+                  {' · '}
+                  <span>
+                    {product.slug === 'green-tea'
+                      ? '~35 cups (lasts approx. 5 weeks)'
+                      : '~25 cups (lasts approx. 3–4 weeks)'}
+                  </span>
                 </span>
               )}
             </div>
@@ -492,7 +509,13 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                 </div>
                 <div>
                   <span className="text-muted-gray block text-[10px]">Best Before</span>
-                  <span className="font-semibold text-charcoal">12 Months (Cold-stored)</span>
+                  <span className="font-semibold text-charcoal">
+                    {product.slug === 'flax-seeds'
+                      ? '4 Months (Cold-milled weekly)'
+                      : product.product_type === 'tea'
+                      ? '12 Months (Airtight storage)'
+                      : '9 Months (Pantry barrier-sealed)'}
+                  </span>
                 </div>
                 <div>
                   <span className="text-muted-gray block text-[10px]">Quality Standard</span>

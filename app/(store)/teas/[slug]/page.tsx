@@ -58,26 +58,53 @@ export default async function TeaDetailPage(props: {
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    image: `https://seedly.pk${product.image_url}`,
-    description: product.short_description || product.description,
-    sku: product.sku,
-    brand: {
-      '@type': 'Brand',
-      name: 'Seedly',
-    },
-    offers: {
-      '@type': 'Offer',
-      url: `https://seedly.pk/teas/${product.slug}`,
-      priceCurrency: 'PKR',
-      price: (product.price_minor / 100).toFixed(0),
-      availability:
-        (product.variants?.[0]?.inventory_quantity ?? 50) > 0
-          ? 'https://schema.org/InStock'
-          : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
-    },
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://seedly.pk',
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Mountain Teas',
+            item: 'https://seedly.pk/teas',
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: product.name,
+            item: `https://seedly.pk/teas/${product.slug}`,
+          },
+        ],
+      },
+      {
+        '@type': 'Product',
+        name: product.name,
+        image: `https://seedly.pk${product.image_url}`,
+        description: product.short_description || product.description,
+        sku: product.sku,
+        brand: {
+          '@type': 'Brand',
+          name: 'Seedly',
+        },
+        offers: {
+          '@type': 'Offer',
+          url: `https://seedly.pk/teas/${product.slug}`,
+          priceCurrency: 'PKR',
+          price: (product.price_minor / 100).toFixed(0),
+          availability:
+            (product.variants?.[0]?.inventory_quantity ?? 50) > 0
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/OutOfStock',
+          itemCondition: 'https://schema.org/NewCondition',
+        },
+      },
+    ],
   };
 
   return (

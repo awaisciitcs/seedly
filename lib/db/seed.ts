@@ -41,7 +41,7 @@ export function seedCatalog(db: any) {
   `);
   insertCat.run(
     'cat-seeds',
-    'Heirloom Seeds',
+    'Raw Pantry Seeds',
     'seeds',
     'seed',
     'Whole, raw, single-origin seeds from family farms across Punjab. Tested for purity and cold-stored.',
@@ -439,7 +439,7 @@ export function seedReviews(db: any) {
   insertRev.run(
     'rev-1',
     'prod-pumpkin',
-    'Raw Heirloom Pumpkin Seeds',
+    'Raw Pumpkin Seeds',
     'Ayesha K. (Lahore)',
     5,
     'Fresh and clean',

@@ -217,7 +217,7 @@ export default function FindYourSeedPage() {
         price: 285000,
         badge: isTeaFirst ? 'OPTIONAL PAIRING' : 'PRIMARY ROUTINE',
         image: '/images/products/complete-kit.jpg',
-        reason: 'All 4 raw heirloom seeds portioned for both monthly phases, with handcrafted wooden scoop and tracking calendar.',
+        reason: 'All 4 raw pantry seeds portioned for both monthly phases, with engraved wooden measuring scoop and tracking calendar.',
         isPairing: isTeaFirst,
       };
 
@@ -239,7 +239,7 @@ export default function FindYourSeedPage() {
           : 'Suggested Routine: 28-Day Seed Cycling',
         explanation: isTeaFirst
           ? 'Since you prefer warm infusions, we recommend our Organic Gilgit Spearmint Leaf Tea as your lead ritual. Spearmint is a traditional soothing herbal infusion often enjoyed twice daily. You can optionally pair it with our Complete 28-Day Seed Kit to add daily kitchen seeds.'
-          : 'Since you prefer a structured food ritual, the Complete 28-Day Kit supplies all 4 raw heirloom seeds portioned for both monthly phases, with an engraved wooden scoop and calendar guide. You can optionally pair it with spearmint tea for a soothing daily cup.',
+          : 'Since you prefer a structured food ritual, the Complete 28-Day Kit supplies all 4 raw pantry seeds portioned for both monthly phases, with an engraved wooden measuring scoop and calendar guide. You can optionally pair it with spearmint tea for a soothing daily cup.',
         products: isTeaFirst ? [spearmintItem, seedKitItem] : [seedKitItem, spearmintItem],
       };
     }
@@ -260,7 +260,7 @@ export default function FindYourSeedPage() {
 
       const seedItem: RecommendedItem = {
         id: 'prod-pumpkin',
-        name: 'Raw Heirloom Pumpkin Seeds',
+        name: 'Raw Pumpkin Seeds',
         slug: 'pumpkin-seeds',
         type: 'seeds',
         price: 95000,
@@ -324,7 +324,7 @@ export default function FindYourSeedPage() {
         price: 285000,
         badge: 'PRIMARY ROUTINE',
         image: '/images/products/complete-kit.jpg',
-        reason: 'Structured all-in-one monthly ritual supplying all 4 raw heirloom seeds with wooden scoop and monthly guide.',
+        reason: 'Structured all-in-one monthly ritual supplying all 4 raw pantry seeds with engraved wooden measuring scoop and monthly guide.',
         isPairing: false,
       };
 

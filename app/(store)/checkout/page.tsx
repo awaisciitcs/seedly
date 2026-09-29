@@ -388,7 +388,7 @@ export default function CheckoutPage() {
       <div className="max-w-3xl mx-auto px-4 py-20 text-center">
         <h2 className="font-serif text-2xl font-bold text-charcoal">Your basket is empty</h2>
         <p className="text-sm text-muted-gray mt-2 mb-6">
-          Add fresh heirloom seeds or herbal teas before proceeding to checkout.
+          Add fresh raw pantry seeds or herbal teas before proceeding to checkout.
         </p>
         <Link
           href="/shop"

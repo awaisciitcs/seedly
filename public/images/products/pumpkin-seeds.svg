@@ -74,7 +74,7 @@
       </g>
 
       <!-- Product Title -->
-      <text x="115" y="180" text-anchor="middle" font-family="'Georgia', serif" font-size="17" font-weight="bold" fill="#1C1E1B">Raw Heirloom</text>
+      <text x="115" y="180" text-anchor="middle" font-family="'Georgia', serif" font-size="17" font-weight="bold" fill="#1C1E1B">Raw Pantry</text>
       <text x="115" y="202" text-anchor="middle" font-family="'Georgia', serif" font-size="16" font-style="italic" fill="#234B37">Pumpkin Seeds</text>
 
       <line x1="75" y1="218" x2="155" y2="218" stroke="#234B37" stroke-width="1" stroke-opacity="0.4"/>
@@ -82,7 +82,7 @@
       <!-- Product Specifications -->
       <text x="115" y="238" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#3D453E" letter-spacing="1">NET WEIGHT 250 G</text>
       <text x="115" y="254" text-anchor="middle" font-family="sans-serif" font-size="7.5" fill="#6B786E">SINGLE-ORIGIN • SUN-DRIED</text>
-      <text x="115" y="268" text-anchor="middle" font-family="sans-serif" font-size="7.5" fill="#6B786E">HIGH IN ELEMENTAL ZINC &amp; MAGNESIUM</text>
+      <text x="115" y="268" text-anchor="middle" font-family="sans-serif" font-size="7.5" fill="#6B786E">NATURAL SOURCE OF ZINC &amp; MAGNESIUM</text>
 
       <!-- Authenticity Seal Bottom -->
       <g transform="translate(115, 302)">

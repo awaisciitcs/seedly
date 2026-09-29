@@ -179,7 +179,7 @@ export default function AdminProductsPage() {
         <div>
           <h1 className="font-serif text-3xl font-bold text-charcoal">Catalog & Inventory</h1>
           <p className="text-xs text-muted-gray mt-1">
-            Create, edit, remove, and manage all heirloom seed and tea SKUs and warehouse stock.
+            Create, edit, remove, and manage all raw pantry seed and tea SKUs and warehouse stock.
           </p>
         </div>
 
@@ -241,7 +241,7 @@ export default function AdminProductsPage() {
                     onChange={(e) => setProductType(e.target.value as any)}
                     className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm"
                   >
-                    <option value="seed">Heirloom Seed</option>
+                    <option value="seed">Raw Pantry Seed</option>
                     <option value="tea">Mountain Herbal Tea</option>
                   </select>
                 </div>

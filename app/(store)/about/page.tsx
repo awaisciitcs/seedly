@@ -216,17 +216,17 @@ export default function AboutPage() {
       {/* 6. CTA Section */}
       <div className="p-8 sm:p-10 rounded-3xl bg-white border border-border-gray text-center space-y-4 shadow-subtle">
         <h3 className="font-serif text-2xl font-bold text-charcoal">
-          Good ingredients. Simple rituals.
+          Pure pantry staples for daily nourishment.
         </h3>
         <p className="text-xs sm:text-sm text-muted-gray max-w-md mx-auto">
-          Explore our raw heirloom seeds, cycle kits, and whole blossom teas. Dispatched directly from Lahore across Pakistan via TCS &amp; Leopards.
+          Explore our raw pantry seeds, cycle kits, and whole blossom teas. Dispatched directly from Lahore across Pakistan via TCS &amp; Leopards.
         </p>
         <div className="pt-2">
           <Link
             href="/shop"
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-full font-semibold text-xs transition-all shadow-card"
           >
-            <span>Explore the Catalog</span>
+            <span>Explore the Catalogue</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
