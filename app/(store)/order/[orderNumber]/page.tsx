@@ -66,7 +66,18 @@ export default async function OrderConfirmationPage(props: {
       {/* Top Header Card */}
       <div className="bg-white rounded-3xl p-6 sm:p-10 border border-border-gray shadow-card text-center space-y-4 mb-8">
         <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto shadow-subtle">
-          <CheckCircle2 className="w-10 h-10" />
+          <svg
+            className="w-9 h-9 text-emerald-700"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="20 6 9 17 4 12" className="motion-draw-check" />
+          </svg>
         </div>
 
         <span className="text-xs uppercase tracking-widest font-bold text-seedly-dark bg-seedly-light px-3 py-1 rounded-full">

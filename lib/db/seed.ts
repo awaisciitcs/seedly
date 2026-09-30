@@ -498,10 +498,10 @@ export function seedSettings(db: any) {
   insertSetting.run('bank_name', 'Meezan Bank Limited');
   insertSetting.run('bank_account_title', 'Seedly Naturals Pakistan');
   insertSetting.run('bank_account_number', '0102-0104882910');
-  insertSetting.run('whatsapp_number', '+92 304 1117333');
-  insertSetting.run('jazzcash_number', '0304 1117333');
+  insertSetting.run('whatsapp_number', '+92 371 9055758');
+  insertSetting.run('jazzcash_number', '0371 9055758');
   insertSetting.run('jazzcash_title', 'Seedly Care');
-  insertSetting.run('easypaisa_number', '0304 1117333');
+  insertSetting.run('easypaisa_number', '0371 9055758');
   insertSetting.run('easypaisa_title', 'Seedly Care');
   insertSetting.run('support_email', 'care@seedly.pk');
 }

@@ -1,11 +1,12 @@
 'use client';
 
-import { ArrowRight, Check, Heart, Minus, Plus, ShoppingBag } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, Heart, Loader2, Minus, Plus, ShoppingBag } from 'lucide-react';
 
 interface PurchaseActionsProps {
   quantity: number;
   maxQuantity: number;
-  added: boolean;
+  added?: boolean;
   wishlisted: boolean;
   onQuantityChange: (quantity: number) => void;
   onAdd: () => void;
@@ -13,7 +14,21 @@ interface PurchaseActionsProps {
   onWishlist: () => void;
 }
 
-export function PurchaseActions({ quantity, maxQuantity, added, wishlisted, onQuantityChange, onAdd, onBuy, onWishlist }: PurchaseActionsProps) {
+export function PurchaseActions({ quantity, maxQuantity, wishlisted, onQuantityChange, onAdd, onBuy, onWishlist }: PurchaseActionsProps) {
+  const [btnState, setBtnState] = useState<'idle' | 'pending' | 'added'>('idle');
+
+  const handleAddClick = () => {
+    if (btnState !== 'idle') return;
+    setBtnState('pending');
+    setTimeout(() => {
+      onAdd();
+      setBtnState('added');
+      setTimeout(() => {
+        setBtnState('idle');
+      }, 1500);
+    }, 150);
+  };
+
   return (
     <div className="space-y-3 pt-4">
       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3">
@@ -41,11 +56,32 @@ export function PurchaseActions({ quantity, maxQuantity, added, wishlisted, onQu
 
         <button
           type="button"
-          onClick={onAdd}
+          onClick={handleAddClick}
+          disabled={btnState === 'pending'}
+          aria-busy={btnState === 'pending'}
           className="motion-button order-3 col-span-3 flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-seedly-dark px-5 py-3 text-sm font-medium text-white shadow-[0_4px_12px_rgba(31,56,43,0.1)] transition-[background-color,box-shadow,transform] duration-200 hover:bg-seedly-forest hover:shadow-[0_6px_18px_rgba(31,56,43,0.16)] motion-safe:active:scale-[0.98] sm:order-none sm:col-span-1"
         >
-          {added ? <Check className="motion-pop h-[18px] w-[18px]" aria-hidden="true" /> : <ShoppingBag className="h-[18px] w-[18px]" aria-hidden="true" />}
-          <span aria-live="polite">{added ? 'Added' : 'Add to basket'}</span>
+          {btnState === 'pending' ? (
+            <Loader2 className="h-[18px] w-[18px] animate-spin text-white" aria-hidden="true" />
+          ) : btnState === 'added' ? (
+            <svg
+              className="h-[18px] w-[18px] text-white"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="20 6 9 17 4 12" className="motion-draw-check" />
+            </svg>
+          ) : (
+            <ShoppingBag className="h-[18px] w-[18px]" aria-hidden="true" />
+          )}
+          <span aria-live="polite">
+            {btnState === 'pending' ? 'Adding...' : btnState === 'added' ? 'Added' : 'Add to basket'}
+          </span>
         </button>
 
         <button

@@ -104,7 +104,7 @@ export default function AccountPage() {
                 rel="noopener noreferrer"
                 className="w-full py-3 px-4 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-semibold flex items-center justify-center gap-2"
               >
-                <span>WhatsApp Helpline: +92 304 1117333</span>
+                <span>WhatsApp Helpline: +92 371 9055758</span>
               </a>
               <p className="text-[11px] text-muted-gray text-center">
                 Operational Mon–Sat from 10:00 AM to 7:00 PM PKT

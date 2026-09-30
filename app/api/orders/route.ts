@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const phoneRegex = /^((\+92)|(0092)|(92)|0)?(3[0-9]{9})$/;
     if (!phoneRegex.test(cleanPhone)) {
       return NextResponse.json(
-        { error: { message: 'Please enter a valid Pakistani mobile number (e.g. 0304 1117333).' } },
+        { error: { message: 'Please enter a valid Pakistani mobile number (e.g. 0371 9055758).' } },
         { status: 400 }
       );
     }

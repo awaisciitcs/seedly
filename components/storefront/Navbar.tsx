@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -20,10 +20,13 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { itemCount, setIsCartOpen } = useCart();
+  const { itemCount, setIsCartOpen, cartBump } = useCart();
   const { wishlistCount } = useWishlist();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
   const menuButton = useRef<HTMLButtonElement>(null);
   const searchButton = useRef<HTMLButtonElement>(null);
 
@@ -31,6 +34,27 @@ export function Navbar() {
     setMobileMenuOpen(false);
     setSearchOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 20);
+
+      if (window.innerWidth < 1024) {
+        if (currentScrollY > 80 && currentScrollY > lastScrollY.current + 8) {
+          setHidden(true);
+        } else if (currentScrollY < lastScrollY.current - 8) {
+          setHidden(false);
+        }
+      } else {
+        setHidden(false);
+      }
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (!mobileMenuOpen) return;
@@ -45,9 +69,10 @@ export function Navbar() {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [mobileMenuOpen]);
 
+  const isHeaderHidden = hidden && !mobileMenuOpen && !searchOpen;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border-gray bg-cream">
+    <header className={`sticky top-0 z-40 bg-cream transition-[transform,box-shadow,border-color] duration-300 motion-reduce:transition-none ${isHeaderHidden ? '-translate-y-full' : 'translate-y-0'} ${scrolled ? 'shadow-[0_1px_3px_rgba(0,0,0,0.06)] border-b border-border-gray/80' : 'border-b border-border-gray'}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:flex lg:h-20 lg:justify-between lg:gap-8">
           <button
@@ -117,7 +142,17 @@ export function Navbar() {
               aria-label={`Open basket, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`}
             >
               <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-              {itemCount > 0 && <span key={itemCount} className="motion-pop absolute right-0.5 top-0 min-w-3 text-center text-[10px] font-semibold" aria-hidden="true">{itemCount}</span>}
+              {itemCount > 0 && (
+                <span
+                  key={itemCount}
+                  className={`absolute right-0.5 top-0 min-w-3 text-center text-[10px] font-semibold ${
+                    cartBump ? 'motion-bump text-seedly-forest font-bold' : 'motion-pop'
+                  }`}
+                  aria-hidden="true"
+                >
+                  {itemCount}
+                </span>
+              )}
             </button>
           </div>
         </div>

@@ -18,6 +18,7 @@ import {
   ArrowLeft,
   Banknote,
   Loader2,
+  CheckCircle2,
 } from 'lucide-react';
 
 export default function CartPage() {
@@ -216,11 +217,34 @@ export default function CartPage() {
                 </span>
               </div>
 
-              {!isFreeShipping && (
-                <p className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200/60 leading-relaxed">
-                  Add <strong>{formatPKR(freeShippingThreshold - subtotalMinor)}</strong> more to qualify for FREE Delivery across Pakistan (Orders Rs. 2,500+)!
-                </p>
-              )}
+              <div className={`p-3 rounded-xl border transition-colors duration-300 ${
+                isFreeShipping ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900' : 'bg-seedly-light/60 border-seedly-primary/20 text-charcoal'
+              }`}>
+                {isFreeShipping ? (
+                  <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 motion-pop" />
+                    <span>Free delivery unlocked!</span>
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-medium">
+                        Add <strong>{formatPKR(freeShippingThreshold - subtotalMinor)}</strong> for FREE Delivery
+                      </span>
+                      <span className="font-semibold text-seedly-dark">
+                        {Math.min(100, Math.round((subtotalMinor / freeShippingThreshold) * 100))}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-white h-2 rounded-full overflow-hidden border border-seedly-primary/20">
+                      <div
+                        className="bg-seedly-primary h-full progress-scale-x rounded-full"
+                        style={{ transform: `scaleX(${Math.min(1, subtotalMinor / freeShippingThreshold)})` }}
+                      />
+                    </div>
+                    <p className="text-[11px] text-muted-gray">Orders Rs. 2,500+ qualify for free delivery nationwide</p>
+                  </div>
+                )}
+              </div>
 
               <div className="border-t border-border-gray pt-4 flex items-center justify-between">
                 <span className="font-serif font-bold text-lg text-charcoal">Estimated Total</span>

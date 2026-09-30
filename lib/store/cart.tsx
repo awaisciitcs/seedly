@@ -15,6 +15,10 @@ interface CartContextType {
   setIsCartOpen: (open: boolean) => void;
   freeShippingThreshold: number;
   isLoaded: boolean;
+  cartBump: boolean;
+  toastItem: CartItem | null;
+  dismissToast: () => void;
+  announcement: string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -25,6 +29,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [cartBump, setCartBump] = useState(false);
+  const [toastItem, setToastItem] = useState<CartItem | null>(null);
+  const [announcement, setAnnouncement] = useState('');
+
+  const dismissToast = React.useCallback(() => {
+    setToastItem(null);
+  }, []);
 
   // Load from localStorage
   useEffect(() => {
@@ -74,9 +85,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return [...prev, item];
     });
 
-    if (options?.openDrawer !== false) {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    if (options?.openDrawer === false || isMobile) {
+      if (isMobile) {
+        setToastItem(item);
+      }
+    } else {
       setIsCartOpen(true);
     }
+
+    setCartBump(true);
+    setTimeout(() => setCartBump(false), 260);
+    setAnnouncement(`Added ${item.name} to basket`);
   };
 
   const removeItem = (id: string) => {
@@ -125,9 +145,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsCartOpen,
         freeShippingThreshold: FREE_SHIPPING_THRESHOLD_MINOR,
         isLoaded,
+        cartBump,
+        toastItem,
+        dismissToast,
+        announcement,
       }}
     >
       {children}
+      <div className="sr-only" role="status" aria-live="polite">
+        {announcement}
+      </div>
     </CartContext.Provider>
   );
 }

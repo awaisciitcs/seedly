@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -7,7 +7,7 @@ import { Product, Kit } from '../../lib/types';
 import { formatPKR } from '../../lib/utils';
 import { useCart } from '../../lib/store/cart';
 import { useWishlist } from '../../lib/store/wishlist';
-import { Heart, Plus, Star, Check, Bell } from 'lucide-react';
+import { Heart, Plus, Star, Bell, Loader2 } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
 import { Reveal } from '../ui/Reveal';
 
@@ -18,7 +18,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const [added, setAdded] = React.useState(false);
+  const [btnState, setBtnState] = React.useState<'idle' | 'pending' | 'added'>('idle');
   const [isNotifyModalOpen, setIsNotifyModalOpen] = React.useState(false);
   const addedTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -50,37 +50,41 @@ export function ProductCard({ product }: ProductCardProps) {
       setIsNotifyModalOpen(true);
       return;
     }
+    if (btnState !== 'idle') return;
 
-    addItem({
-      id: `${product.id}-${defaultVariant?.id || (isKit ? 'kit' : 'default')}`,
-      product_id: product.id,
-      kit_id: isKit ? product.id : undefined,
-      variant_id: defaultVariant?.id,
-      name: product.name,
-      slug: product.slug,
-      variant_label: packageLabel,
-      price_minor: displayPriceMinor,
-      image_url: product.image_url,
-      quantity: 1,
-      product_type: isKit ? 'kit' : (product as Product).product_type,
-      max_quantity: stock,
-    });
+    setBtnState('pending');
+    setTimeout(() => {
+      addItem({
+        id: `${product.id}-${defaultVariant?.id || (isKit ? 'kit' : 'default')}`,
+        product_id: product.id,
+        kit_id: isKit ? product.id : undefined,
+        variant_id: defaultVariant?.id,
+        name: product.name,
+        slug: product.slug,
+        variant_label: packageLabel,
+        price_minor: displayPriceMinor,
+        image_url: product.image_url,
+        quantity: 1,
+        product_type: isKit ? 'kit' : (product as Product).product_type,
+        max_quantity: stock,
+      });
 
-    setAdded(true);
-    if (addedTimeout.current) clearTimeout(addedTimeout.current);
-    addedTimeout.current = setTimeout(() => setAdded(false), 1500);
+      setBtnState('added');
+      if (addedTimeout.current) clearTimeout(addedTimeout.current);
+      addedTimeout.current = setTimeout(() => setBtnState('idle'), 1500);
+    }, 150);
   };
 
   return (
-    <Reveal as="article" stagger className="group relative flex h-full flex-col">
+    <Reveal as="article" stagger className="group card-active-press relative flex h-full flex-col">
       <div className="relative">
-        <Link href={href} className="relative block aspect-square overflow-hidden rounded-sm bg-cream">
+        <Link href={href} className="card-image-wrap relative block aspect-square overflow-hidden rounded-sm bg-cream">
           <Image
             src={product.image_url}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.025]"
+            className="object-cover"
           />
         </Link>
 
@@ -136,15 +140,36 @@ export function ProductCard({ product }: ProductCardProps) {
             <button
               type="button"
               onClick={handleAddToCart}
-              className={`motion-button mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-sm border px-3 py-2.5 text-sm font-medium transition-colors ${
-                added
+              disabled={btnState === 'pending'}
+              aria-busy={btnState === 'pending'}
+              className={`motion-button mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-sm border px-3 py-2.5 text-sm font-medium transition-[background-color,border-color,color,transform] duration-150 motion-safe:active:scale-[0.98] ${
+                btnState === 'added'
                   ? 'border-seedly-dark bg-seedly-dark text-white'
                   : 'border-seedly-dark/25 text-seedly-dark hover:border-seedly-dark hover:bg-seedly-dark hover:text-white'
               }`}
               aria-label={`Add ${product.name}${packageLabel ? `, ${packageLabel}` : ''} to basket`}
             >
-              {added ? <Check aria-hidden="true" className="motion-pop h-4 w-4" /> : <Plus aria-hidden="true" className="h-4 w-4" />}
-              <span aria-live="polite">{added ? 'Added' : 'Add to basket'}</span>
+              {btnState === 'pending' ? (
+                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+              ) : btnState === 'added' ? (
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="20 6 9 17 4 12" className="motion-draw-check" />
+                </svg>
+              ) : (
+                <Plus aria-hidden="true" className="h-4 w-4" />
+              )}
+              <span aria-live="polite">
+                {btnState === 'pending' ? 'Adding...' : btnState === 'added' ? 'Added' : 'Add to basket'}
+              </span>
             </button>
           ) : (
             <button

@@ -4,6 +4,8 @@ import './globals.css';
 import { CartProvider } from '../lib/store/cart';
 import { WishlistProvider } from '../lib/store/wishlist';
 import { CartDrawer } from '../components/cart/CartDrawer';
+import { CartToast } from '../components/cart/CartToast';
+import { RouteProgressBar } from '../components/ui/RouteProgressBar';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -65,8 +67,10 @@ export default function RootLayout({
         </a>
         <CartProvider>
           <WishlistProvider>
+            <RouteProgressBar />
             {children}
             <CartDrawer />
+            <CartToast />
           </WishlistProvider>
         </CartProvider>
       </body>

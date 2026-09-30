@@ -121,10 +121,10 @@ export default function CheckoutPage() {
     bank_account_number: '01020304050607',
     bank_iban: 'PK12MEZN0001020304050607',
     jazzcash_title: 'Seedly Care',
-    jazzcash_number: '0304 1117333',
+    jazzcash_number: '0371 9055758',
     easypaisa_title: 'Seedly Care',
-    easypaisa_number: '0345 5557333',
-    whatsapp_number: '+92 304 1117333',
+    easypaisa_number: '0371 9055758',
+    whatsapp_number: '+92 371 9055758',
   });
 
   useEffect(() => {
@@ -171,7 +171,7 @@ export default function CheckoutPage() {
         if (!value.trim()) return 'Mobile / WhatsApp phone number is required.';
         const cleanPhone = value.replace(/[\s\-\(\)]/g, '');
         if (!/^((\+92)|(0092)|(92)|0)?(3[0-9]{9})$/.test(cleanPhone)) {
-          return 'Enter a valid Pakistani mobile number (e.g. 0304 1117333).';
+          return 'Enter a valid Pakistani mobile number (e.g. 0371 9055758).';
         }
         return '';
       }
@@ -429,7 +429,7 @@ export default function CheckoutPage() {
             <strong>{pendingOrderRef}</strong>
           </div>
           <p className="text-[11px] text-muted-gray">
-            Need assistance? <a href="https://wa.me/923719055758" target="_blank" rel="noopener noreferrer" className="text-seedly-dark font-semibold hover:underline">WhatsApp 0304 1117333</a>
+            Need assistance? <a href="https://wa.me/923719055758" target="_blank" rel="noopener noreferrer" className="text-seedly-dark font-semibold hover:underline">WhatsApp 0371 9055758</a>
           </p>
         </div>
       </div>
@@ -488,7 +488,7 @@ export default function CheckoutPage() {
                   } rounded-xl text-sm focus:outline-none focus:ring-2`}
                 />
                 {touched.customerName && fieldErrors.customerName && (
-                  <p id="customerName-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                  <p id="customerName-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1 inline-error-enter">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>{fieldErrors.customerName}</span>
                   </p>
@@ -524,7 +524,7 @@ export default function CheckoutPage() {
                   } rounded-xl text-sm focus:outline-none focus:ring-2`}
                 />
                 {touched.customerEmail && fieldErrors.customerEmail ? (
-                  <p id="customerEmail-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                  <p id="customerEmail-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1 inline-error-enter">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>{fieldErrors.customerEmail}</span>
                   </p>
@@ -553,7 +553,7 @@ export default function CheckoutPage() {
                   aria-labelledby="customerPhone-label"
                   aria-invalid={!!(touched.customerPhone && fieldErrors.customerPhone)}
                   aria-describedby={touched.customerPhone && fieldErrors.customerPhone ? 'customerPhone-error' : 'customerPhone-hint'}
-                  placeholder="0304 1117333"
+                  placeholder="0371 9055758"
                   value={customerPhone}
                   onChange={(e) => handleFieldChange('customerPhone', e.target.value, setCustomerPhone)}
                   onBlur={() => handleBlur('customerPhone', customerPhone)}
@@ -564,7 +564,7 @@ export default function CheckoutPage() {
                   } rounded-xl text-sm focus:outline-none focus:ring-2`}
                 />
                 {touched.customerPhone && fieldErrors.customerPhone ? (
-                  <p id="customerPhone-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                  <p id="customerPhone-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1 inline-error-enter">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>{fieldErrors.customerPhone}</span>
                   </p>
@@ -622,7 +622,7 @@ export default function CheckoutPage() {
                   } rounded-xl text-sm focus:outline-none focus:ring-2`}
                 />
                 {touched.shippingAddress && fieldErrors.shippingAddress && (
-                  <p id="shippingAddress-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                  <p id="shippingAddress-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1 inline-error-enter">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>{fieldErrors.shippingAddress}</span>
                   </p>
@@ -708,7 +708,7 @@ export default function CheckoutPage() {
                     } rounded-xl text-sm focus:outline-none focus:ring-2`}
                   />
                   {touched.customCity && fieldErrors.customCity && (
-                    <p id="customCity-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                    <p id="customCity-error" role="alert" className="text-xs text-rose-600 mt-1 flex items-center gap-1 inline-error-enter">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                       <span>{fieldErrors.customCity}</span>
                     </p>

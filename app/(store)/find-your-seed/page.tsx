@@ -162,20 +162,34 @@ export default function FindYourSeedPage() {
   const [completed, setCompleted] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [addedStatus, setAddedStatus] = useState(false);
+  const [isFading, setIsFading] = useState(false);
 
   const handleSelectOption = (value: string) => {
     const q = questions[currentStep];
     const newAnswers = { ...answers, [q.id]: value };
     setAnswers(newAnswers);
 
-    if (currentStep < questions.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      setCompleted(true);
-      // Initialize with ONLY the primary recommended item selected (optional pairing left unchecked by default)
-      const rec = computeRecommendations(newAnswers);
-      setSelectedIds(rec.products.length > 0 ? [rec.products[0].id] : []);
-    }
+    setIsFading(true);
+    setTimeout(() => {
+      if (currentStep < questions.length - 1) {
+        setCurrentStep((prev) => prev + 1);
+      } else {
+        setCompleted(true);
+        // Initialize with ONLY the primary recommended item selected (optional pairing left unchecked by default)
+        const rec = computeRecommendations(newAnswers);
+        setSelectedIds(rec.products.length > 0 ? [rec.products[0].id] : []);
+      }
+      setIsFading(false);
+    }, 200);
+  };
+
+  const handlePrevQuestion = () => {
+    if (currentStep <= 0) return;
+    setIsFading(true);
+    setTimeout(() => {
+      setCurrentStep((prev) => prev - 1);
+      setIsFading(false);
+    }, 200);
   };
 
   const handleReset = () => {
@@ -184,6 +198,7 @@ export default function FindYourSeedPage() {
     setCompleted(false);
     setSelectedIds([]);
     setAddedStatus(false);
+    setIsFading(false);
   };
 
   const handleEditAnswers = () => {
@@ -457,56 +472,70 @@ export default function FindYourSeedPage() {
             </div>
             <div className="w-full bg-cream h-2 rounded-full overflow-hidden border border-border-gray/50">
               <div
-                className="bg-seedly-primary h-full transition-all duration-300 rounded-full"
-                style={{ width: `${progressPercent}%` }}
+                className="bg-seedly-primary h-full progress-scale-x rounded-full"
+                style={{ transform: `scaleX(${progressPercent / 100})` }}
               />
             </div>
           </div>
 
-          {/* Current Question */}
-          <div className="space-y-2 mb-8">
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">
-              {currentQ.title}
-            </h2>
-            <p className="text-sm text-muted-gray">{currentQ.subtitle}</p>
-          </div>
+          {/* Current Question with slide-and-fade */}
+          <div className={`transition-all duration-200 ease-out ${isFading ? 'opacity-0 translate-x-3' : 'opacity-100 translate-x-0'}`}>
+            <div className="space-y-2 mb-8">
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">
+                {currentQ.title}
+              </h2>
+              <p className="text-sm text-muted-gray">{currentQ.subtitle}</p>
+            </div>
 
-          {/* Options Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {currentQ.options.map((opt) => {
-              const selected = answers[currentQ.id] === opt.value;
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => handleSelectOption(opt.value)}
-                  className={`p-5 rounded-2xl border text-left transition-all flex flex-col justify-between hover:shadow-hover ${
-                    selected
-                      ? 'border-seedly-dark bg-seedly-light/60 shadow-subtle'
-                      : 'border-border-gray bg-cream/30 hover:border-seedly-primary hover:bg-cream'
-                  }`}
-                >
-                  <div className="space-y-3">
-                    <div className="w-10 h-10 rounded-xl bg-white border border-border-gray/80 flex items-center justify-center shadow-subtle">
-                      {renderOptionIcon(opt.iconName)}
+            {/* Options Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {currentQ.options.map((opt) => {
+                const selected = answers[currentQ.id] === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => handleSelectOption(opt.value)}
+                    className={`p-5 rounded-2xl border text-left transition-all duration-150 flex flex-col justify-between motion-safe:active:scale-[0.98] hover:shadow-hover ${
+                      selected
+                        ? 'border-seedly-dark bg-seedly-light/60 shadow-subtle'
+                        : 'border-border-gray bg-cream/30 hover:border-seedly-primary hover:bg-cream'
+                    }`}
+                  >
+                    <div className="space-y-3">
+                      <div className="w-10 h-10 rounded-xl bg-white border border-border-gray/80 flex items-center justify-center shadow-subtle">
+                        {renderOptionIcon(opt.iconName)}
+                      </div>
+                      <h3 className="font-serif font-bold text-base text-charcoal">{opt.label}</h3>
+                      <p className="text-xs text-muted-gray leading-relaxed">{opt.description}</p>
                     </div>
-                    <h3 className="font-serif font-bold text-base text-charcoal">{opt.label}</h3>
-                    <p className="text-xs text-muted-gray leading-relaxed">{opt.description}</p>
-                  </div>
-                  <div className="pt-4 flex items-center justify-end">
-                    <div
-                      className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
-                        selected
-                          ? 'border-seedly-dark bg-seedly-dark text-white'
-                          : 'border-border-gray bg-white'
-                      }`}
-                    >
-                      {selected && <Check className="w-3.5 h-3.5" />}
+                    <div className="pt-4 flex items-center justify-end">
+                      <div
+                        className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
+                          selected
+                            ? 'border-seedly-dark bg-seedly-dark text-white'
+                            : 'border-border-gray bg-white'
+                        }`}
+                      >
+                        {selected && (
+                          <svg
+                            className="w-3.5 h-3.5 text-white"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <polyline points="20 6 9 17 4 12" className="motion-draw-check" />
+                          </svg>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </button>
-              );
-            })}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Step Navigation & Escape Link on Step 1 */}
@@ -514,7 +543,7 @@ export default function FindYourSeedPage() {
             {currentStep > 0 ? (
               <button
                 type="button"
-                onClick={() => setCurrentStep(currentStep - 1)}
+                onClick={handlePrevQuestion}
                 className="text-xs font-semibold text-muted-gray hover:text-charcoal"
               >
                 ← Back to previous question
@@ -548,14 +577,15 @@ export default function FindYourSeedPage() {
 
           {/* Recommended Products with Explicit Inclusion Checkboxes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-            {recommendations.products.map((prod) => {
+            {recommendations.products.map((prod, index) => {
               const isSelected = selectedIds.includes(prod.id);
               const checkboxId = `rec-prod-${prod.id}`;
               return (
                 <div
                   key={prod.id}
                   onClick={() => toggleProductSelection(prod.id)}
-                  className={`rounded-2xl border p-5 flex flex-col justify-between space-y-4 cursor-pointer transition-all ${
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  className={`animate-slideUp rounded-2xl border p-5 flex flex-col justify-between space-y-4 cursor-pointer transition-all ${
                     isSelected
                       ? 'border-seedly-dark bg-seedly-light/20 shadow-subtle'
                       : 'border-border-gray bg-cream/20 opacity-75'

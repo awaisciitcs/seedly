@@ -96,11 +96,13 @@ export function CartDrawer() {
           </div>
 
           {/* Free Shipping Progress Indicator */}
-          <div className="px-6 py-3 bg-seedly-light/60 border-b border-seedly-primary/20">
+          <div className={`px-6 py-3 border-b transition-colors duration-300 ${
+            freeShippingDelta === 0 ? 'bg-emerald-50/80 border-emerald-200' : 'bg-seedly-light/60 border-seedly-primary/20'
+          }`}>
             {freeShippingDelta === 0 ? (
-              <div className="flex items-center gap-2 text-xs font-semibold text-seedly-forest">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>You unlocked <strong>FREE Nationwide Delivery</strong>!</span>
+              <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 motion-pop" />
+                <span>Free delivery unlocked!</span>
               </div>
             ) : (
               <div className="space-y-1.5">
@@ -113,8 +115,8 @@ export function CartDrawer() {
                 </div>
                 <div className="w-full bg-white h-2 rounded-full overflow-hidden border border-seedly-primary/20">
                   <div
-                    className="bg-seedly-primary h-full transition-all duration-500 rounded-full"
-                    style={{ width: `${freeShippingPercent}%` }}
+                    className="bg-seedly-primary h-full progress-scale-x rounded-full"
+                    style={{ transform: `scaleX(${freeShippingPercent / 100})` }}
                   />
                 </div>
               </div>

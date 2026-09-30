@@ -130,7 +130,7 @@ export default function FaqPage() {
             className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full text-xs font-semibold flex items-center gap-2"
           >
             <Phone className="w-3.5 h-3.5" />
-            <span>Chat on WhatsApp (+92 304 1117333)</span>
+            <span>Chat on WhatsApp (+92 371 9055758)</span>
           </a>
           <Link
             href="/contact"

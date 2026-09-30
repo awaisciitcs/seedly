@@ -11,6 +11,7 @@ import { useWishlist } from '../../lib/store/wishlist';
 import { Star, Box, PenLine, Bell, MessageCircle, Info } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
 import { PurchaseActions } from './PurchaseActions';
+import { StickyPurchaseBar } from './StickyPurchaseBar';
 import { siteConfig } from '../../lib/config';
 
 interface KitDetailViewProps {
@@ -24,6 +25,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
 
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const mainActionsRef = React.useRef<HTMLDivElement>(null);
 
   // Reviews State
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -270,38 +272,40 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
             </section>
 
             {/* In Stock vs Out of Stock Action Controls */}
-            {inStock ? (
-              <PurchaseActions
-                quantity={quantity}
-                maxQuantity={currentStock}
-                added={added}
-                wishlisted={wishlisted}
-                onQuantityChange={setQuantity}
-                onAdd={handleAddToCart}
-                onBuy={handleBuyNow}
-                onWishlist={() => toggleWishlist(kit.id)}
-              />
-            ) : (
-              <div className="space-y-3 pt-2">
-                <div className="p-4 bg-amber-50/80 border border-amber-200/80 rounded-sm text-sm text-amber-900 space-y-1">
-                  <p className="font-bold flex items-center gap-1.5">
-                    <Bell className="w-4 h-4 text-amber-700" />
-                    <span>Kit currently out of stock</span>
-                  </p>
-                  <p className="text-amber-800">
-                    Leave your email and we will let you know when this kit is available.
-                  </p>
-                </div>
+            <div ref={mainActionsRef}>
+              {inStock ? (
+                <PurchaseActions
+                  quantity={quantity}
+                  maxQuantity={currentStock}
+                  added={added}
+                  wishlisted={wishlisted}
+                  onQuantityChange={setQuantity}
+                  onAdd={handleAddToCart}
+                  onBuy={handleBuyNow}
+                  onWishlist={() => toggleWishlist(kit.id)}
+                />
+              ) : (
+                <div className="space-y-3 pt-2">
+                  <div className="p-4 bg-amber-50/80 border border-amber-200/80 rounded-sm text-sm text-amber-900 space-y-1">
+                    <p className="font-bold flex items-center gap-1.5">
+                      <Bell className="w-4 h-4 text-amber-700" />
+                      <span>Kit currently out of stock</span>
+                    </p>
+                    <p className="text-amber-800">
+                      Leave your email and we will let you know when this kit is available.
+                    </p>
+                  </div>
 
-                <button
-                  onClick={() => setIsNotifyModalOpen(true)}
-                  className="min-h-14 w-full py-3.5 px-6 rounded-full font-medium text-sm bg-seedly-dark hover:bg-seedly-forest text-white transition-all flex items-center justify-center gap-2"
-                >
-                  <Bell className="w-4 h-4" />
-                  <span>Notify Me When Kit Returns</span>
-                </button>
-              </div>
-            )}
+                  <button
+                    onClick={() => setIsNotifyModalOpen(true)}
+                    className="min-h-14 w-full py-3.5 px-6 rounded-full font-medium text-sm bg-seedly-dark hover:bg-seedly-forest text-white transition-all flex items-center justify-center gap-2"
+                  >
+                    <Bell className="w-4 h-4" />
+                    <span>Notify Me When Kit Returns</span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             <div className="border-t border-border-gray pt-5 space-y-3 text-sm leading-6 text-muted-gray">
               <p>Delivery across Pakistan. <Link href="/shipping" className="underline underline-offset-4 text-seedly-dark">See delivery times and charges</Link>.</p>
@@ -501,6 +505,18 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
         onClose={() => setIsNotifyModalOpen(false)}
         itemTitle={kit.name}
         kitId={kit.id}
+      />
+
+      {/* Sticky Mobile Purchase Bar */}
+      <StickyPurchaseBar
+        name={kit.name}
+        priceMinor={kit.price_minor}
+        imageUrl={kit.image_url}
+        variantLabel={kit.package_size}
+        inStock={inStock}
+        targetRef={mainActionsRef}
+        onAddToCart={handleAddToCart}
+        onNotifyMe={() => setIsNotifyModalOpen(true)}
       />
     </div>
   );

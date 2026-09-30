@@ -8,10 +8,11 @@ import { Product, ProductVariant, Review } from '../../lib/types';
 import { formatPKR, formatDate } from '../../lib/utils';
 import { useCart } from '../../lib/store/cart';
 import { useWishlist } from '../../lib/store/wishlist';
-import { Star, Leaf, Clock, Coffee, CheckCircle2, PenLine, AlertCircle, Bell, MessageCircle, Thermometer } from 'lucide-react';
+import { Star, Leaf, Clock, Coffee, CheckCircle2, PenLine, AlertCircle, Bell, MessageCircle, Thermometer, ChevronDown } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
 import { ProductCard } from './ProductCard';
 import { PurchaseActions } from './PurchaseActions';
+import { StickyPurchaseBar } from './StickyPurchaseBar';
 import { siteConfig } from '../../lib/config';
 
 interface ProductDetailViewProps {
@@ -29,8 +30,18 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
     || activeVariants[0];
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(defaultVar);
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState<'details' | 'usage' | 'storage' | 'faqs' | 'reviews'>('details');
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    details: true,
+    usage: false,
+    storage: false,
+    faqs: false,
+  });
   const [added, setAdded] = useState(false);
+  const mainActionsRef = React.useRef<HTMLDivElement>(null);
+
+  const toggleSection = (key: string) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const priceMinor = selectedVariant ? selectedVariant.price_minor : product.price_minor;
   const comparePriceMinor = selectedVariant
@@ -288,11 +299,11 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
 
             {/* Price & Real Inventory State */}
             <div className="flex flex-wrap items-baseline gap-3 pt-2">
-              <span className="font-serif text-3xl font-medium text-charcoal">
+              <span key={priceMinor} className="font-serif text-3xl font-medium text-charcoal price-crossfade motion-count">
                 {formatPKR(priceMinor)}
               </span>
               {comparePriceMinor && (
-                <span className="text-base text-muted-gray line-through">
+                <span key={comparePriceMinor} className="text-base text-muted-gray line-through price-crossfade">
                   {formatPKR(comparePriceMinor)}
                 </span>
               )}
@@ -342,7 +353,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                       >
                         <span className="text-sm font-semibold">{v.option_value}</span>
                         <span className="text-xs text-muted-gray sm:text-sm">{formatPKR(v.price_minor)}</span>
-                        {isSelected && <CheckCircle2 className="absolute right-2 top-2 h-3.5 w-3.5 text-seedly-dark" aria-hidden="true" />}
+                        {isSelected && <CheckCircle2 className="absolute right-2 top-2 h-3.5 w-3.5 text-seedly-dark motion-pop" aria-hidden="true" />}
                         {!vInStock && (
                           <span className="text-xs text-amber-800">Sold out</span>
                         )}
@@ -354,38 +365,40 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             )}
 
             {/* Action Controls */}
-            {inStock ? (
-              <PurchaseActions
-                quantity={quantity}
-                maxQuantity={currentStock}
-                added={added}
-                wishlisted={wishlisted}
-                onQuantityChange={setQuantity}
-                onAdd={handleAddToCart}
-                onBuy={handleBuyNow}
-                onWishlist={() => toggleWishlist(product.id)}
-              />
-            ) : (
-              <div className="space-y-3 pt-4">
-                <div className="p-4 bg-amber-50/80 border border-amber-200/80 rounded-sm text-sm text-amber-900 space-y-1">
-                  <p className="font-bold flex items-center gap-1.5">
-                    <Bell className="w-4 h-4 text-amber-700" />
-                    <span>Currently out of stock</span>
-                  </p>
-                  <p className="text-amber-800">
-                    Leave your email and we will let you know when this product is available.
-                  </p>
-                </div>
+            <div ref={mainActionsRef}>
+              {inStock ? (
+                <PurchaseActions
+                  quantity={quantity}
+                  maxQuantity={currentStock}
+                  added={added}
+                  wishlisted={wishlisted}
+                  onQuantityChange={setQuantity}
+                  onAdd={handleAddToCart}
+                  onBuy={handleBuyNow}
+                  onWishlist={() => toggleWishlist(product.id)}
+                />
+              ) : (
+                <div className="space-y-3 pt-4">
+                  <div className="p-4 bg-amber-50/80 border border-amber-200/80 rounded-sm text-sm text-amber-900 space-y-1">
+                    <p className="font-bold flex items-center gap-1.5">
+                      <Bell className="w-4 h-4 text-amber-700" />
+                      <span>Currently out of stock</span>
+                    </p>
+                    <p className="text-amber-800">
+                      Leave your email and we will let you know when this product is available.
+                    </p>
+                  </div>
 
-                <button
-                  onClick={() => setIsNotifyModalOpen(true)}
-                  className="min-h-14 w-full py-3.5 px-6 rounded-full font-medium text-sm bg-seedly-dark hover:bg-seedly-forest text-white transition-all flex items-center justify-center gap-2"
-                >
-                  <Bell className="w-4 h-4" />
-                  <span>Notify Me When Available</span>
-                </button>
-              </div>
-            )}
+                  <button
+                    onClick={() => setIsNotifyModalOpen(true)}
+                    className="min-h-14 w-full py-3.5 px-6 rounded-full font-medium text-sm bg-seedly-dark hover:bg-seedly-forest text-white transition-all flex items-center justify-center gap-2"
+                  >
+                    <Bell className="w-4 h-4" />
+                    <span>Notify Me When Available</span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             <div className="border-t border-border-gray pt-5 space-y-3 text-sm leading-6 text-muted-gray">
               <p>Delivery across Pakistan. <Link href="/shipping" className="underline underline-offset-4 text-seedly-dark">See delivery times and charges</Link>.</p>
@@ -417,258 +430,322 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
       </div>
 
       <div className="mt-16 sm:mt-24 pt-10 border-t border-border-gray">
-        <div role="tablist" aria-label="Product information" className="flex gap-6 sm:gap-8 border-b border-border-gray overflow-x-auto">
-          {([
-            { id: 'details', label: 'Details' },
-            { id: 'usage', label: product.product_type === 'tea' ? 'How to brew' : 'How to use' },
-            { id: 'storage', label: 'Storage' },
-            { id: 'faqs', label: 'Questions' },
-            { id: 'reviews', label: 'Reviews' },
-          ] as const).map((tab, index, tabs) => (
+        <h2 className="font-serif text-2xl font-medium text-charcoal mb-6">Product Information</h2>
+        
+        <div className="max-w-3xl divide-y divide-border-gray border-y border-border-gray">
+          {/* Ingredients & Details Accordion */}
+          <div>
             <button
-              key={tab.id}
-              id={'tab-' + tab.id}
-              role="tab"
               type="button"
-              aria-selected={activeTab === tab.id}
-              aria-controls={'panel-' + tab.id}
-              tabIndex={activeTab === tab.id ? 0 : -1}
-              onClick={() => setActiveTab(tab.id)}
-              onKeyDown={(event) => {
-                let next = index;
-                if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
-                else if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
-                else if (event.key === 'Home') next = 0;
-                else if (event.key === 'End') next = tabs.length - 1;
-                else return;
-                event.preventDefault();
-                setActiveTab(tabs[next].id);
-                event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
-              }}
-              className={'min-h-12 whitespace-nowrap border-b-2 py-3 text-sm transition-colors ' + (activeTab === tab.id ? 'border-seedly-dark font-medium text-seedly-dark' : 'border-transparent text-muted-gray hover:text-charcoal')}
+              onClick={() => toggleSection('details')}
+              aria-expanded={openSections.details}
+              aria-controls="accordion-details"
+              className="flex w-full items-center justify-between py-4 text-left font-serif text-lg font-medium text-charcoal hover:text-seedly-dark transition-colors"
             >
-              {tab.label}{tab.id === 'reviews' && reviews.length > 0 ? ' (' + reviews.length + ')' : ''}
+              <span>Ingredients & Details</span>
+              <ChevronDown
+                className={`h-5 w-5 text-muted-gray transition-transform duration-200 ease-out ${
+                  openSections.details ? 'rotate-180 text-seedly-dark' : 'rotate-0'
+                }`}
+                aria-hidden="true"
+              />
             </button>
-          ))}
+            <div
+              id="accordion-details"
+              role="region"
+              className="accordion-grid"
+              data-open={openSections.details}
+            >
+              <div className="accordion-inner">
+                <div className="pb-6 pt-1 text-sm leading-relaxed text-charcoal space-y-4">
+                  <p>{product.description}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div className="p-4 bg-white rounded-sm border border-border-gray space-y-1">
+                      <span className="text-xs uppercase tracking-wider font-semibold text-muted-gray block">
+                        Ingredients
+                      </span>
+                      <p className="font-medium text-charcoal">{product.ingredients}</p>
+                    </div>
+                    <div className="p-4 bg-white rounded-sm border border-border-gray space-y-1">
+                      <span className="text-xs uppercase tracking-wider font-semibold text-muted-gray block">
+                        Pack size
+                      </span>
+                      <p className="font-medium text-charcoal">
+                        {selectedVariant?.option_value || (product.weight_grams ? product.weight_grams + "g" : "See product label")}
+                      </p>
+                    </div>
+                  </div>
+
+                  {product.nutrition_information && (
+                    <div className="space-y-2 pt-2">
+                      <h4 className="font-serif font-medium text-base text-charcoal">Nutrition per 28 g (typical values)</h4>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {Object.entries(product.nutrition_information).map(([key, val]) => (
+                          <div key={key} className="bg-white p-3 rounded-sm border border-border-gray">
+                            <span className="text-xs uppercase tracking-wider text-muted-gray font-semibold block capitalize">
+                              {key.replace('_', ' ')}
+                            </span>
+                            <span className="text-sm font-bold text-charcoal">{String(val)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* How to use / brew Accordion */}
+          <div>
+            <button
+              type="button"
+              onClick={() => toggleSection('usage')}
+              aria-expanded={openSections.usage}
+              aria-controls="accordion-usage"
+              className="flex w-full items-center justify-between py-4 text-left font-serif text-lg font-medium text-charcoal hover:text-seedly-dark transition-colors"
+            >
+              <span>{product.product_type === 'tea' ? 'How to brew' : 'How to use'}</span>
+              <ChevronDown
+                className={`h-5 w-5 text-muted-gray transition-transform duration-200 ease-out ${
+                  openSections.usage ? 'rotate-180 text-seedly-dark' : 'rotate-0'
+                }`}
+                aria-hidden="true"
+              />
+            </button>
+            <div
+              id="accordion-usage"
+              role="region"
+              className="accordion-grid"
+              data-open={openSections.usage}
+            >
+              <div className="accordion-inner">
+                <div className="pb-6 pt-1 text-sm leading-relaxed text-muted-gray space-y-3">
+                  <p>{product.usage_instructions}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Storage Accordion */}
+          <div>
+            <button
+              type="button"
+              onClick={() => toggleSection('storage')}
+              aria-expanded={openSections.storage}
+              aria-controls="accordion-storage"
+              className="flex w-full items-center justify-between py-4 text-left font-serif text-lg font-medium text-charcoal hover:text-seedly-dark transition-colors"
+            >
+              <span>Keeping it fresh & Storage</span>
+              <ChevronDown
+                className={`h-5 w-5 text-muted-gray transition-transform duration-200 ease-out ${
+                  openSections.storage ? 'rotate-180 text-seedly-dark' : 'rotate-0'
+                }`}
+                aria-hidden="true"
+              />
+            </button>
+            <div
+              id="accordion-storage"
+              role="region"
+              className="accordion-grid"
+              data-open={openSections.storage}
+            >
+              <div className="accordion-inner">
+                <div className="pb-6 pt-1 text-sm leading-relaxed text-muted-gray space-y-3">
+                  <p>{product.storage_instructions}</p>
+                  <p>Check your pack for its best-before date and reseal it after each use.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* FAQs Accordion */}
+          <div>
+            <button
+              type="button"
+              onClick={() => toggleSection('faqs')}
+              aria-expanded={openSections.faqs}
+              aria-controls="accordion-faqs"
+              className="flex w-full items-center justify-between py-4 text-left font-serif text-lg font-medium text-charcoal hover:text-seedly-dark transition-colors"
+            >
+              <span>Common Questions</span>
+              <ChevronDown
+                className={`h-5 w-5 text-muted-gray transition-transform duration-200 ease-out ${
+                  openSections.faqs ? 'rotate-180 text-seedly-dark' : 'rotate-0'
+                }`}
+                aria-hidden="true"
+              />
+            </button>
+            <div
+              id="accordion-faqs"
+              role="region"
+              className="accordion-grid"
+              data-open={openSections.faqs}
+            >
+              <div className="accordion-inner">
+                <div className="pb-6 pt-1 text-sm leading-relaxed divide-y divide-border-gray/50">
+                  {product.product_type === 'tea' && product.caffeine_level && (
+                    <div className="pb-4">
+                      <h4 className="font-serif text-base font-medium text-charcoal">Does it contain caffeine?</h4>
+                      <p className="mt-1 text-muted-gray">Caffeine level: {product.caffeine_level}.</p>
+                    </div>
+                  )}
+                  <div className="py-4">
+                    <h4 className="font-serif text-base font-medium text-charcoal">Which pack sizes are available?</h4>
+                    <p className="mt-1 text-muted-gray">{product.variants?.filter((variant) => variant.status === 'ACTIVE').map((variant) => variant.option_value).join(', ') || 'See the product label for the pack size.'}</p>
+                  </div>
+                  <div className="py-4">
+                    <h4 className="font-serif text-base font-medium text-charcoal">When will my order arrive?</h4>
+                    <p className="mt-1 text-muted-gray">Timings depend on your delivery address. <Link href="/shipping" className="underline underline-offset-4 text-seedly-dark">See our delivery estimates</Link>.</p>
+                  </div>
+                  <div className="pt-4">
+                    <h4 className="font-serif text-base font-medium text-charcoal">Have another question?</h4>
+                    <p className="mt-1 text-muted-gray"><Link href="/contact" className="underline underline-offset-4 text-seedly-dark">Contact the Seedly team</Link> for help with this product or your order.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Tab Content */}
-        <div className="py-8 max-w-3xl text-sm leading-relaxed text-charcoal space-y-5">
-          {activeTab === 'details' && (
-            <div id="panel-details" role="tabpanel" aria-labelledby="tab-details" className="space-y-4">
-              <p>{product.description}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div className="p-4 bg-white rounded-sm border border-border-gray space-y-1">
-                  <span className="text-sm uppercase tracking-wider font-semibold text-muted-gray block">
-                    Ingredients
-                  </span>
-                  <p className="font-medium text-charcoal">{product.ingredients}</p>
-                </div>
-                <div className="p-4 bg-white rounded-sm border border-border-gray space-y-1">
-                  <span className="text-sm uppercase tracking-wider font-semibold text-muted-gray block">
-                    Pack size
-                  </span>
-                  <p className="font-medium text-charcoal">
-                    {selectedVariant?.option_value || (product.weight_grams ? product.weight_grams + "g" : "See product label")}
-                  </p>
-                </div>
-              </div>
+        {/* Customer Reviews Section */}
+        <div className="mt-12 max-w-3xl space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-border-gray">
+            <div>
+              <h3 className="font-serif font-medium text-xl text-charcoal">Customer Reviews</h3>
+              <p className="text-sm text-muted-gray">
+                {reviews.length > 0
+                  ? `${reviews.length} verified review${reviews.length > 1 ? 's' : ''}`
+                  : 'Be the first to share your experience.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowReviewForm(!showReviewForm)}
+              className="px-4 py-2 bg-seedly-dark hover:bg-seedly-forest text-white rounded-sm text-sm font-semibold flex items-center gap-1.5 transition-colors"
+            >
+              <PenLine className="w-3.5 h-3.5" />
+              <span>Write a Review</span>
+            </button>
+          </div>
 
-              {product.nutrition_information && (
-                <div className="space-y-2 pt-2">
-                  <h4 className="font-serif font-medium text-base text-charcoal">Nutrition per 28 g (typical values)</h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {Object.entries(product.nutrition_information).map(([key, val]) => (
-                      <div key={key} className="bg-white p-3 rounded-sm border border-border-gray">
-                        <span className="text-sm uppercase tracking-wider text-muted-gray font-semibold block capitalize">
-                          {key.replace('_', ' ')}
-                        </span>
-                        <span className="text-sm font-bold text-charcoal">{String(val)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+          {/* Success / Error Messages */}
+          {reviewSuccessMessage && (
+            <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-sm text-sm flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+              <span>{reviewSuccessMessage}</span>
+            </div>
+          )}
+          {reviewErrorMessage && (
+            <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-sm text-sm flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <span>{reviewErrorMessage}</span>
             </div>
           )}
 
-          {activeTab === 'usage' && (
-            <div id="panel-usage" role="tabpanel" aria-labelledby="tab-usage" className="space-y-4">
-              <h3 className="font-serif text-2xl font-normal">{product.product_type === 'tea' ? 'How to brew' : 'How to use'}</h3>
-              <p className="text-muted-gray">{product.usage_instructions}</p>
-            </div>
-          )}
-
-          {activeTab === 'storage' && (
-            <div id="panel-storage" role="tabpanel" aria-labelledby="tab-storage" className="space-y-4">
-              <h3 className="font-serif text-2xl font-normal">Keeping it fresh</h3>
-              <p className="text-muted-gray">{product.storage_instructions}</p>
-              <p className="text-muted-gray">Check your pack for its best-before date and reseal it after each use.</p>
-            </div>
-          )}
-
-          {activeTab === 'faqs' && (
-            <div id="panel-faqs" role="tabpanel" aria-labelledby="tab-faqs" className="divide-y divide-border-gray">
-              {product.product_type === 'tea' && product.caffeine_level && (
-                <div className="pb-5">
-                  <h3 className="font-serif text-xl">Does it contain caffeine?</h3>
-                  <p className="mt-2 text-muted-gray">Caffeine level: {product.caffeine_level}.</p>
-                </div>
-              )}
-              <div className="py-5">
-                <h3 className="font-serif text-xl">Which pack sizes are available?</h3>
-                <p className="mt-2 text-muted-gray">{product.variants?.filter((variant) => variant.status === 'ACTIVE').map((variant) => variant.option_value).join(', ') || 'See the product label for the pack size.'}</p>
-              </div>
-              <div className="py-5">
-                <h3 className="font-serif text-xl">When will my order arrive?</h3>
-                <p className="mt-2 text-muted-gray">Timings depend on your delivery address. <Link href="/shipping" className="underline underline-offset-4 text-seedly-dark">See our delivery estimates</Link>.</p>
-              </div>
-              <div className="py-5">
-                <h3 className="font-serif text-xl">Have another question?</h3>
-                <p className="mt-2 text-muted-gray"><Link href="/contact" className="underline underline-offset-4 text-seedly-dark">Contact the Seedly team</Link> for help with this product or your order.</p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'reviews' && (
-            <div id="panel-reviews" role="tabpanel" aria-labelledby="tab-reviews" className="space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-border-gray">
+          {/* Review Submission Form */}
+          {showReviewForm && (
+            <form onSubmit={handleReviewSubmit} className="p-5 bg-white rounded-sm border border-border-gray space-y-4">
+              <h5 className="font-serif font-medium text-sm text-charcoal">Submit your review</h5>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="font-serif font-medium text-lg text-charcoal">Customer Reviews</h4>
-                  <p className="text-sm text-muted-gray">
-                    {reviews.length > 0
-                      ? `${reviews.length} review${reviews.length > 1 ? 's' : ''}`
-                      : 'Be the first to share your experience.'}
-                  </p>
+                  <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                    Your Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Fatima Ali (Lahore)"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="w-full px-3 py-2 bg-cream/40 border border-border-gray rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-seedly-primary"
+                  />
                 </div>
+                <div>
+                  <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                    Rating
+                  </label>
+                  <select
+                    value={reviewRating}
+                    onChange={(e) => setReviewRating(Number(e.target.value))}
+                    className="w-full px-3 py-2 bg-cream/40 border border-border-gray rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-seedly-primary"
+                  >
+                    <option value={5}>★★★★★ (5 - Excellent)</option>
+                    <option value={4}>★★★★☆ (4 - Good)</option>
+                    <option value={3}>★★★☆☆ (3 - Average)</option>
+                    <option value={2}>★★☆☆☆ (2 - Poor)</option>
+                    <option value={1}>★☆☆☆☆ (1 - Very Bad)</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Very clean and fresh seeds"
+                  value={reviewTitle}
+                  onChange={(e) => setReviewTitle(e.target.value)}
+                  className="w-full px-3 py-2 bg-cream/40 border border-border-gray rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-seedly-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+                  Review Comments *
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Share your thoughts on freshness, taste, and packaging..."
+                  value={reviewBody}
+                  onChange={(e) => setReviewBody(e.target.value)}
+                  className="w-full px-3 py-2 bg-cream/40 border border-border-gray rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-seedly-primary"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
                 <button
-                  onClick={() => setShowReviewForm(!showReviewForm)}
-                  className="px-4 py-2 bg-seedly-dark hover:bg-seedly-forest text-white rounded-sm text-sm font-semibold flex items-center gap-1.5 transition-colors"
+                  type="button"
+                  onClick={() => setShowReviewForm(false)}
+                  className="px-4 py-2 border border-border-gray rounded-sm text-sm text-muted-gray hover:text-charcoal"
                 >
-                  <PenLine className="w-3.5 h-3.5" />
-                  <span>Write a Review</span>
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingReview}
+                  className="px-5 py-2 bg-seedly-dark text-white rounded-sm text-sm font-semibold hover:bg-seedly-forest disabled:opacity-50"
+                >
+                  {submittingReview ? 'Submitting...' : 'Submit review'}
                 </button>
               </div>
-
-              {/* Success / Error Messages */}
-              {reviewSuccessMessage && (
-                <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-sm text-sm flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-                  <span>{reviewSuccessMessage}</span>
-                </div>
-              )}
-              {reviewErrorMessage && (
-                <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-sm text-sm flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-                  <span>{reviewErrorMessage}</span>
-                </div>
-              )}
-
-              {/* Review Submission Form */}
-              {showReviewForm && (
-                <form onSubmit={handleReviewSubmit} className="p-5 bg-white rounded-sm border border-border-gray space-y-4">
-                  <h5 className="font-serif font-medium text-sm text-charcoal">Submit your review</h5>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-charcoal uppercase tracking-wider mb-1">
-                        Your Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Fatima Ali (Lahore)"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        className="w-full px-3 py-2 bg-cream/40 border border-border-gray rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-seedly-primary"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-charcoal uppercase tracking-wider mb-1">
-                        Rating
-                      </label>
-                      <select
-                        value={reviewRating}
-                        onChange={(e) => setReviewRating(Number(e.target.value))}
-                        className="w-full px-3 py-2 bg-cream/40 border border-border-gray rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-seedly-primary"
-                      >
-                        <option value={5}>★★★★★ (5 - Excellent)</option>
-                        <option value={4}>★★★★☆ (4 - Good)</option>
-                        <option value={3}>★★★☆☆ (3 - Average)</option>
-                        <option value={2}>★★☆☆☆ (2 - Poor)</option>
-                        <option value={1}>★☆☆☆☆ (1 - Very Bad)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-charcoal uppercase tracking-wider mb-1">
-                      Title
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Very clean and fresh seeds"
-                      value={reviewTitle}
-                      onChange={(e) => setReviewTitle(e.target.value)}
-                      className="w-full px-3 py-2 bg-cream/40 border border-border-gray rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-seedly-primary"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-charcoal uppercase tracking-wider mb-1">
-                      Review Comments *
-                    </label>
-                    <textarea
-                      required
-                      rows={3}
-                      placeholder="Share your thoughts on freshness, taste, and packaging..."
-                      value={reviewBody}
-                      onChange={(e) => setReviewBody(e.target.value)}
-                      className="w-full px-3 py-2 bg-cream/40 border border-border-gray rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-seedly-primary"
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowReviewForm(false)}
-                      className="px-4 py-2 border border-border-gray rounded-sm text-sm text-muted-gray hover:text-charcoal"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={submittingReview}
-                      className="px-5 py-2 bg-seedly-dark text-white rounded-sm text-sm font-semibold hover:bg-seedly-forest disabled:opacity-50"
-                    >
-                      {submittingReview ? 'Submitting...' : 'Submit review'}
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {/* Reviews List */}
-              <div className="space-y-4">
-                {reviews.map((rev) => (
-                  <div key={rev.id} className="p-5 bg-white rounded-sm border border-border-gray space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-charcoal">{rev.customer_name}</span>
-                        {rev.verified_purchase && (
-                          <span className="text-sm bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded-full font-medium">
-                            Verified Buyer
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-muted-gray text-sm">{formatDate(rev.created_at)}</span>
-                    </div>
-                    <div className="flex text-amber-500 text-sm">
-                      {'★'.repeat(rev.rating)}
-                      {'☆'.repeat(5 - rev.rating)}
-                    </div>
-                    {rev.title && <h5 className="font-bold text-sm text-charcoal">{rev.title}</h5>}
-                    <p className="text-sm text-muted-gray leading-relaxed">{rev.body}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            </form>
           )}
+
+          {/* Reviews List */}
+          <div className="space-y-4">
+            {reviews.map((rev) => (
+              <div key={rev.id} className="p-5 bg-white rounded-sm border border-border-gray space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-charcoal">{rev.customer_name}</span>
+                    {rev.verified_purchase && (
+                      <span className="text-xs bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded-full font-medium">
+                        Verified Buyer
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-muted-gray text-xs">{formatDate(rev.created_at)}</span>
+                </div>
+                <div className="flex text-amber-500 text-sm">
+                  {'★'.repeat(rev.rating)}
+                  {'☆'.repeat(5 - rev.rating)}
+                </div>
+                {rev.title && <h5 className="font-bold text-sm text-charcoal">{rev.title}</h5>}
+                <p className="text-sm text-muted-gray leading-relaxed">{rev.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -691,6 +768,18 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
         itemTitle={product.name}
         productId={product.id}
         variantId={selectedVariant?.id}
+      />
+
+      {/* Sticky Mobile Purchase Bar */}
+      <StickyPurchaseBar
+        name={product.name}
+        priceMinor={priceMinor}
+        imageUrl={product.image_url}
+        variantLabel={selectedVariant?.option_value}
+        inStock={inStock}
+        targetRef={mainActionsRef}
+        onAddToCart={handleAddToCart}
+        onNotifyMe={() => setIsNotifyModalOpen(true)}
       />
     </div>
   );

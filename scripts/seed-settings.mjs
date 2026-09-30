@@ -12,10 +12,10 @@ db.exec(`
     ('bank_account_title', 'Seedly Naturals Pakistan'),
     ('bank_account_number', '0102-0104882910'),
     ('bank_iban', 'PK36MEZN0001020104882910'),
-    ('whatsapp_number', '+92 304 1117333'),
-    ('jazzcash_number', '0304 1117333'),
+    ('whatsapp_number', '+92 371 9055758'),
+    ('jazzcash_number', '0371 9055758'),
     ('jazzcash_title', 'Seedly Care'),
-    ('easypaisa_number', '0304 1117333'),
+    ('easypaisa_number', '0371 9055758'),
     ('easypaisa_title', 'Seedly Care'),
     ('support_email', 'care@seedly.pk');
 

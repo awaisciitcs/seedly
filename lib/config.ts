@@ -4,8 +4,8 @@ export const siteConfig = {
   description: 'Pure whole raw pantry seeds and high-altitude teas from Pakistan, packed fresh in Lahore. Direct sourcing from Gilgit-Baltistan, Khyber Pakhtunkhwa, and Punjab.',
   url: 'https://seedly.pk',
   contact: {
-    phone: '0304 1117333',
-    phoneInternational: '+92 304 1117333',
+    phone: '0371 9055758',
+    phoneInternational: '+92 371 9055758',
     phoneRaw: '923719055758',
     whatsappUrl: 'https://wa.me/923719055758',
     email: 'care@seedly.pk',
@@ -34,6 +34,6 @@ export const siteConfig = {
     chamomile: 'Allergy Caution: Chamomile belongs to the Asteraceae (daisy) plant family. Avoid if you have known allergies to daisies, ragweed, or chrysanthemums.',
     sesame: 'Allergen Notice: Contains Sesame Seeds. Packed in a facility that also handles flax, sunflower, and pumpkin seeds.',
     returnsChangeOfMind: 'For food safety and hygiene reasons, opened food pouches cannot be returned for change of mind.',
-    returnsDamaged: 'If your parcel arrives damaged or unsealed, send a photo or unboxing video to care@seedly.pk or WhatsApp 0304 1117333 within 7 days. We will dispatch a free replacement immediately at our expense, or issue a full refund.',
+    returnsDamaged: 'If your parcel arrives damaged or unsealed, send a photo or unboxing video to care@seedly.pk or WhatsApp 0371 9055758 within 7 days. We will dispatch a free replacement immediately at our expense, or issue a full refund.',
   },
 };
