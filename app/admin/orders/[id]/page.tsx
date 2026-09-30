@@ -32,6 +32,7 @@ export default function AdminOrderDetailPage() {
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/admin/orders/${orderId}`)
@@ -42,6 +43,19 @@ export default function AdminOrderDetailPage() {
           setStatus(json.data.order_status);
           setCourier(json.data.tracking_courier || 'TCS Express');
           setTrackingNumber(json.data.tracking_number || '');
+
+          if (json.data.receipt_path) {
+            if (json.data.receipt_path.startsWith('/')) {
+              setReceiptUrl(json.data.receipt_path);
+            } else {
+              fetch(`/api/admin/receipts?path=${encodeURIComponent(json.data.receipt_path)}`)
+                .then((r) => r.json())
+                .then((res) => {
+                  if (res.url) setReceiptUrl(res.url);
+                })
+                .catch(console.error);
+            }
+          }
         }
       })
       .catch((err) => console.error(err))
@@ -208,8 +222,34 @@ export default function AdminOrderDetailPage() {
                 Uploaded Receipt Screenshot
               </span>
               {order.receipt_path ? (
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border-gray bg-cream">
-                  <Image src={order.receipt_path} alt="Customer Bank Receipt" fill className="object-contain" />
+                <div className="space-y-2">
+                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border-gray bg-cream">
+                    {receiptUrl ? (
+                      order.receipt_path.endsWith('.pdf') ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
+                          <ExternalLink className="w-8 h-8 text-seedly-dark mb-2" />
+                          <span className="text-xs font-semibold text-charcoal">PDF Receipt Document</span>
+                        </div>
+                      ) : (
+                        <img src={receiptUrl} alt="Customer Bank Receipt" className="w-full h-full object-contain" />
+                      )
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-xs text-muted-gray">
+                        Loading secure receipt...
+                      </div>
+                    )}
+                  </div>
+                  {receiptUrl && (
+                    <a
+                      href={receiptUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-seedly-dark hover:underline"
+                    >
+                      <span>Open Full Receipt</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  )}
                 </div>
               ) : (
                 <div className="p-8 text-center bg-cream/40 rounded-2xl border border-dashed border-border-gray text-xs text-muted-gray">

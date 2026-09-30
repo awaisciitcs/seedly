@@ -3,8 +3,8 @@ import { getOrders } from '../../../lib/services/orders';
 import { formatPKR, formatDate } from '../../../lib/utils';
 import { Users, Mail, Phone, ShoppingBag } from 'lucide-react';
 
-export default function AdminCustomersPage() {
-  const orders = getOrders();
+export default async function AdminCustomersPage() {
+  const orders = await getOrders();
 
   // Aggregate customers from orders
   const customerMap = new Map<string, {

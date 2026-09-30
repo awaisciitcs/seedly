@@ -10,7 +10,11 @@ export async function GET(request: Request) {
 
   try {
     const options = { search: query || undefined };
-    const matches = [...getProducts(options), ...getKits(options)];
+    const [products, kits] = await Promise.all([
+      getProducts(options),
+      getKits(options),
+    ]);
+    const matches = [...products, ...kits];
 
     if (query) {
       const term = query.toLowerCase();

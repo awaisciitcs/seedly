@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { subscribeToStockAlert } from '@/lib/services/stockAlerts';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -13,7 +15,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = subscribeToStockAlert({
+    const result = await subscribeToStockAlert({
       productId,
       variantId,
       kitId,

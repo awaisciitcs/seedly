@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { getFeaturedProducts } from '../../lib/services/products';
@@ -32,9 +32,13 @@ const collections = [
   },
 ];
 
-export default function HomePage() {
-  const featuredProducts = getFeaturedProducts().slice(0, 4);
-  const completeKit = getKits().find((kit) => kit.slug === 'complete-cycle-kit');
+export default async function HomePage() {
+  const [featuredProductsList, kitsList] = await Promise.all([
+    getFeaturedProducts(),
+    getKits(),
+  ]);
+  const featuredProducts = featuredProductsList.slice(0, 4);
+  const completeKit = kitsList.find((kit) => kit.slug === 'complete-cycle-kit' || kit.id === 'kit-complete');
 
   const organizationJsonLd = {
     '@context': 'https://schema.org',

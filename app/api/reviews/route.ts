@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { getApprovedReviews, createReview } from '@/lib/services/reviews';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const productId = searchParams.get('productId') || undefined;
-    const reviews = getApprovedReviews(productId);
+    const reviews = await getApprovedReviews(productId);
     return NextResponse.json({ data: reviews });
   } catch (err: any) {
     return NextResponse.json(
@@ -35,7 +37,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const review = createReview({
+    const review = await createReview({
       product_id,
       product_name: product_name || 'Seedly product',
       customer_name: customer_name.trim(),

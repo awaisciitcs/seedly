@@ -13,7 +13,7 @@ export default async function AdminOrdersPage(props: {
   const status = searchParams.status;
   const search = searchParams.search;
 
-  const orders = getOrders({
+  const orders = await getOrders({
     paymentStatus,
     status,
     search,
@@ -98,7 +98,7 @@ export default async function AdminOrdersPage(props: {
                     </td>
                     <td className="py-4 px-6 text-charcoal">{o.shipping_city}</td>
                     <td className="py-4 px-6 capitalize">
-                      {PAYMENT_METHOD_LABELS[o.payment_method]}
+                      {PAYMENT_METHOD_LABELS[o.payment_method as keyof typeof PAYMENT_METHOD_LABELS] || o.payment_method}
                     </td>
                     <td className="py-4 px-6">
                       <span

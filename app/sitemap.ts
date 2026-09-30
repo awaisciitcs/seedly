@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getProducts } from '../lib/services/products';
 import { getKits } from '../lib/services/kits';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://seedly.pk';
 
   const staticRoutes = [
@@ -27,7 +27,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '' ? 1.0 : 0.8,
   }));
 
-  const products = getProducts();
+  const [products, kits] = await Promise.all([
+    getProducts(),
+    getKits(),
+  ]);
+
   const productRoutes = products.map((p) => ({
     url: `${baseUrl}/${p.product_type === 'tea' ? 'teas' : 'seeds'}/${p.slug}`,
     lastModified: new Date(),
@@ -35,7 +39,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  const kits = getKits();
   const kitRoutes = kits.map((k) => ({
     url: `${baseUrl}/kits/${k.slug}`,
     lastModified: new Date(),

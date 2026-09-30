@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { SeedlyLogo } from '../../components/ui/SeedlyLogo';
+import { createClient } from '@/lib/supabase/browser';
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -16,7 +17,16 @@ import {
   ShieldCheck,
   Bell,
   Clock,
+  LogOut,
+  Loader2,
 } from 'lucide-react';
+
+interface AdminInfo {
+  id: string;
+  email: string;
+  name: string;
+  role: 'OWNER' | 'STAFF' | string;
+}
 
 export default function AdminLayout({
   children,
@@ -24,7 +34,55 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [currentRole, setCurrentRole] = useState<'Owner' | 'Staff'>('Owner');
+  const router = useRouter();
+  const [admin, setAdmin] = useState<AdminInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [signingOut, setSigningOut] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadAdmin() {
+      if (pathname === '/admin/login') {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch('/api/admin/me');
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data?.data?.admin) {
+            setAdmin(data.data.admin);
+          }
+        } else if (res.status === 401 || res.status === 403) {
+          if (isMounted) {
+            router.push('/admin/login');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load admin profile:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadAdmin();
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname, router]);
+
+  const handleSignOut = async () => {
+    setSigningOut(true);
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push('/admin/login');
+      router.refresh();
+    } catch (err) {
+      console.error('Error signing out:', err);
+      router.push('/admin/login');
+    }
+  };
 
   // If on login page, render clean layout without sidebar
   if (pathname === '/admin/login') {
@@ -38,6 +96,8 @@ export default function AdminLayout({
       </div>
     );
   }
+
+  const isOwner = admin?.role?.toUpperCase() === 'OWNER';
 
   const navItems = [
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -71,7 +131,7 @@ export default function AdminLayout({
               const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
               const Icon = item.icon;
 
-              if (item.ownerOnly && currentRole !== 'Owner') {
+              if (item.ownerOnly && !isOwner) {
                 return null;
               }
 
@@ -103,31 +163,39 @@ export default function AdminLayout({
         {/* Footer / Role & Storefront Link */}
         <div className="p-4 border-t border-seedly-forest/60 space-y-3">
           {/* Active Role Selector */}
-          <div className="p-2.5 rounded-xl bg-seedly-forest/60 text-xs space-y-1">
+          <div className="p-2.5 rounded-xl bg-seedly-forest/60 text-xs space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-seedly-light/70 text-[11px]">Active Role:</span>
-              <button
-                type="button"
-                onClick={() => setCurrentRole(currentRole === 'Owner' ? 'Staff' : 'Owner')}
-                className="text-[10px] uppercase font-bold text-amber-300 underline"
-              >
-                Switch
-              </button>
+              <span className="text-seedly-light/70 text-[11px]">Authenticated Role:</span>
+              <span className="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                {admin?.role?.toUpperCase() || (loading ? 'Checking...' : 'STAFF')}
+              </span>
             </div>
-            <div className="flex items-center gap-1.5 font-semibold text-white">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{currentRole} ({currentRole === 'Owner' ? 'owner@seedly.pk' : 'staff@seedly.pk'})</span>
+            <div className="flex items-center gap-1.5 font-semibold text-white truncate text-[11px]">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span className="truncate">{admin?.email || (loading ? 'Loading...' : 'Staff Member')}</span>
             </div>
           </div>
 
-          <Link
-            href="/"
-            target="_blank"
-            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-seedly-light text-xs font-medium transition-colors"
-          >
-            <span>View Public Storefront</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              target="_blank"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-seedly-light text-xs font-medium transition-colors"
+            >
+              <span>Storefront</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleSignOut}
+              disabled={signingOut}
+              title="Sign Out of Operations Desk"
+              className="flex items-center justify-center p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {signingOut ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LogOut className="w-3.5 h-3.5" />}
+            </button>
+          </div>
         </div>
       </aside>
 

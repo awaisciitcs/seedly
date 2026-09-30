@@ -355,10 +355,10 @@ export default function CheckoutPage() {
 
       const orderNumber = json.data.order_number;
 
-      // Avoid empty basket flash before navigation completes
+      const token = json.tracking_token;
       setIsOrderPlaced(true);
       clearCart();
-      router.push(`/order/${orderNumber}`);
+      router.push(token ? `/order/${orderNumber}?token=${encodeURIComponent(token)}` : `/order/${orderNumber}`);
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || 'Something went wrong while placing your order.');

@@ -8,7 +8,7 @@ export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await props.params;
-  const kit = getKitBySlug(slug);
+  const kit = await getKitBySlug(slug);
   if (!kit) {
     return {
       title: 'Kit Not Found | Seedly',
@@ -30,7 +30,7 @@ export async function generateMetadata(props: {
 
 export async function generateStaticParams() {
   try {
-    const kits = getKits();
+    const kits = await getKits();
     return kits.map((kit) => ({
       slug: kit.slug,
     }));
@@ -46,7 +46,7 @@ export default async function KitDetailPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await props.params;
-  const kit = getKitBySlug(slug);
+  const kit = await getKitBySlug(slug);
 
   if (!kit) {
     notFound();

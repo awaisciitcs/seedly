@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { unsubscribeFromStockAlert } from '@/lib/services/stockAlerts';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const token = searchParams.get('token');
@@ -9,9 +11,9 @@ export async function GET(request: Request) {
     return new NextResponse('Invalid or missing unsubscribe token', { status: 400 });
   }
 
-  const success = unsubscribeFromStockAlert(token);
+  const success = await unsubscribeFromStockAlert(token);
 
-  // Return a nice HTML confirmation page
+  // Return HTML confirmation page
   return new NextResponse(
     `<!DOCTYPE html>
     <html lang="en">
@@ -50,7 +52,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: { message: 'Token is required' } }, { status: 400 });
     }
 
-    const success = unsubscribeFromStockAlert(token);
+    const success = await unsubscribeFromStockAlert(token);
     return NextResponse.json({
       success,
       message: success ? 'Unsubscribed successfully' : 'Subscription not found or already inactive',

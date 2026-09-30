@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import type { Metadata } from 'next';
 import { getProducts } from '../../../lib/services/products';
 import { getKits } from '../../../lib/services/kits';
@@ -57,14 +57,16 @@ export default async function ShopPage(props: {
     : 'featured';
   const currentSearch = firstParam(searchParams.search);
 
-  const products = getProducts({
-    categorySlug: currentCategory,
-    sort: currentSort,
-    search: currentSearch,
-  });
-  const kits = currentCategory === 'all' || currentCategory === 'kits'
-    ? getKits({ search: currentSearch })
-    : [];
+  const [products, kits] = await Promise.all([
+    getProducts({
+      categorySlug: currentCategory,
+      sort: currentSort,
+      search: currentSearch,
+    }),
+    currentCategory === 'all' || currentCategory === 'kits'
+      ? getKits({ search: currentSearch })
+      : Promise.resolve([]),
+  ]);
   const allItems = [...kits, ...products];
 
   if (currentSort === 'price-asc' || currentSort === 'price-desc') {

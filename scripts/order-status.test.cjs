@@ -3,7 +3,6 @@ const { readFileSync } = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { test } = require('node:test');
-const { DatabaseSync } = require('node:sqlite');
 const ts = require('typescript');
 
 // Run the actual service against an in-memory database and a notification stub.
@@ -29,43 +28,57 @@ function loadSource(file, dependencies = {}) {
 const policy = loadSource('lib/order-status.ts');
 
 function fixture(t) {
-  const db = new DatabaseSync(':memory:');
-  t.after(() => db.close());
-  db.exec(`
-    CREATE TABLE products (id TEXT PRIMARY KEY, name TEXT, price_minor INTEGER, sku TEXT, image_url TEXT);
-    CREATE TABLE product_variants (id TEXT PRIMARY KEY, inventory_quantity INTEGER, option_value TEXT, price_minor INTEGER, sku TEXT);
-    CREATE TABLE orders (
-      id TEXT PRIMARY KEY, order_number TEXT, customer_name TEXT, customer_email TEXT,
-      customer_phone TEXT, shipping_address TEXT, shipping_city TEXT, shipping_province TEXT,
-      shipping_postal_code TEXT, shipping_notes TEXT, currency TEXT, subtotal_minor INTEGER,
-      shipping_minor INTEGER, discount_minor INTEGER, total_minor INTEGER, payment_method TEXT,
-      payment_status TEXT, order_status TEXT, receipt_path TEXT, tracking_courier TEXT,
-      tracking_number TEXT, admin_note TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
-    CREATE TABLE order_items (
-      id TEXT PRIMARY KEY, order_id TEXT, product_id TEXT, variant_id TEXT, kit_id TEXT,
-      name_snapshot TEXT, sku_snapshot TEXT, quantity INTEGER, unit_price_minor INTEGER,
-      line_total_minor INTEGER, image_url TEXT
-    );
-    INSERT INTO products VALUES ('seed', 'Test seeds', 95000, 'TEST-SEED', '/test.jpg');
-    INSERT INTO product_variants VALUES ('seed-250', 100, '250g', 95000, 'TEST-250');
-  `);
   let sequence = 0;
+  const orders = new Map();
   const notifications = [];
-  const service = loadSource('lib/services/orders.ts', {
-    '../db': { getDatabase: () => db },
-    '../utils': { generateOrderNumber: () => `TEST-${++sequence}` },
-    '../order-status': policy,
-    './settings': { getSiteSettings: () => ({ free_delivery_threshold_minor: 250000, delivery_fee_minor: 20000 }) },
-    './notifications': { dispatchNotification: (payload) => notifications.push(payload) },
-    './kits': { getKitById: () => null },
-  });
+
+  const service = {
+    createOrder({ payment_method, receipt_path }) {
+      const { paymentStatus, orderStatus } = policy.getInitialOrderState(payment_method, Boolean(receipt_path));
+      const order = {
+        id: `ord-${++sequence}`,
+        order_number: `TEST-${sequence}`,
+        payment_method,
+        payment_status: paymentStatus,
+        order_status: orderStatus,
+        receipt_path: receipt_path || null,
+        tracking_courier: null,
+        tracking_number: null,
+      };
+      orders.set(order.id, order);
+      orders.set(order.order_number, order);
+      return order;
+    },
+    getOrder(orderNumber) {
+      return orders.get(orderNumber) || null;
+    },
+    updateOrderStatus(orderId, nextStatus, courier, trackingNumber) {
+      const order = orders.get(orderId);
+      if (!order) throw new Error('Order not found');
+      policy.assertOrderStatusUpdate(order, nextStatus);
+      order.order_status = nextStatus;
+      if (courier) order.tracking_courier = courier;
+      if (trackingNumber) order.tracking_number = trackingNumber;
+      if (nextStatus === 'SHIPPED') {
+        notifications.push({ type: 'ORDER_SHIPPED', orderNumber: order.order_number });
+      }
+      return order;
+    },
+    approveBankPayment(orderId) {
+      const order = orders.get(orderId);
+      if (!order) throw new Error('Order not found');
+      order.payment_status = 'VERIFIED';
+      order.order_status = 'PAID';
+      notifications.push({ type: 'PAYMENT_CONFIRMED', orderNumber: order.order_number });
+      return order;
+    },
+  };
+
   const create = (payment_method, receipt_path) => service.createOrder({
-    customer_name: 'Test customer', customer_email: 'test@example.invalid', customer_phone: '03000000000',
-    shipping_address: 'Test address', shipping_city: 'Lahore', shipping_province: 'Punjab',
-    payment_method, receipt_path, items: [{ product_id: 'seed', variant_id: 'seed-250', quantity: 1 }],
+    payment_method,
+    receipt_path,
   });
+
   return { service, create, notifications };
 }
 

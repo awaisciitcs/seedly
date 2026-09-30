@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
-import { createOrder, validateAndQuote } from '../../../lib/services/orders';
+import { createOrder } from '../../../lib/services/orders';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const idempotencyHeader = request.headers.get('Idempotency-Key');
 
     const {
       customer_name,
@@ -16,6 +19,7 @@ export async function POST(request: Request) {
       shipping_notes,
       payment_method,
       receipt_path,
+      idempotency_key,
       items,
     } = body;
 
@@ -61,7 +65,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: { message: 'Please select a valid payment method.' } }, { status: 400 });
     }
 
-    const order = createOrder({
+    const result = await createOrder({
       customer_name,
       customer_email,
       customer_phone,
@@ -72,10 +76,15 @@ export async function POST(request: Request) {
       shipping_notes,
       payment_method,
       receipt_path,
+      idempotency_key: idempotencyHeader || idempotency_key,
       items,
     });
 
-    return NextResponse.json({ data: order });
+    return NextResponse.json({
+      data: result.order,
+      tracking_token: result.trackingToken,
+      is_idempotent_replay: result.isIdempotentReplay,
+    });
   } catch (error: any) {
     console.error('Order creation error:', error);
     return NextResponse.json(

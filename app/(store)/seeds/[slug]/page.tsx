@@ -8,7 +8,7 @@ export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await props.params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product) {
     return {
       title: 'Product Not Found | Seedly',
@@ -30,7 +30,7 @@ export async function generateMetadata(props: {
 
 export async function generateStaticParams() {
   try {
-    const products = getProducts({ productType: 'seed' });
+    const products = await getProducts({ productType: 'seed' });
     return products.map((p) => ({
       slug: p.slug,
     }));
@@ -46,13 +46,13 @@ export default async function SeedDetailPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await props.params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const related = getProducts({ productType: 'seed', limit: 4 }).filter(
+  const related = (await getProducts({ productType: 'seed', limit: 4 })).filter(
     (p) => p.id !== product.id
   );
 

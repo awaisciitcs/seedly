@@ -1,119 +1,45 @@
-import { getDatabase, toPlain } from '../db';
+import { createPublicClient } from '../supabase/public';
+import { createAdminClient } from '../supabase/admin';
 import { Product, ProductVariant } from '../types';
-import { PUBLIC_REVIEW_FILTER } from '../review-visibility';
 
-export function getProducts(options?: {
-  categorySlug?: string;
-  productType?: string;
-  status?: string;
-  search?: string;
-  sort?: string; // 'price-asc' | 'price-desc' | 'newest' | 'rating'
-  limit?: number;
-}): Product[] {
-  const db = getDatabase();
-  let query = `
-    SELECT p.*, c.slug as category_slug, c.name as category_name
-    FROM products p
-    JOIN categories c ON p.category_id = c.id
-    WHERE 1=1
-  `;
-  const params: any[] = [];
-
-  if (options?.status) {
-    query += ` AND p.status = ?`;
-    params.push(options.status);
-  } else {
-    query += ` AND p.status = 'ACTIVE'`;
-  }
-
-  if (options?.categorySlug && options.categorySlug !== 'all') {
-    query += ` AND c.slug = ?`;
-    params.push(options.categorySlug);
-  }
-
-  if (options?.productType) {
-    query += ` AND p.product_type = ?`;
-    params.push(options.productType);
-  }
-
-  if (options?.search) {
-    query += ` AND (p.name LIKE ? OR p.short_description LIKE ? OR p.ingredients LIKE ?)`;
-    const term = `%${options.search}%`;
-    params.push(term, term, term);
-  }
-
-  // Sorting
-  if (options?.sort === 'price-asc') {
-    query += ` ORDER BY p.price_minor ASC`;
-  } else if (options?.sort === 'price-desc') {
-    query += ` ORDER BY p.price_minor DESC`;
-  } else if (options?.sort === 'newest') {
-    query += ` ORDER BY p.created_at DESC`;
-  } else {
-    query += ` ORDER BY p.is_featured DESC, p.created_at DESC`;
-  }
-
-  if (options?.limit) {
-    query += ` LIMIT ?`;
-    params.push(options.limit);
-  }
-
-  const rows = db.prepare(query).all(...params) as any[];
-
-  return toPlain(rows.map((row) => mapRowToProduct(db, row)));
+function sortVariants(variants: any[]): ProductVariant[] {
+  return [...variants].sort((a, b) => {
+    const aIs250 = a.weight_grams === 250 ? 0 : 1;
+    const bIs250 = b.weight_grams === 250 ? 0 : 1;
+    if (aIs250 !== bIs250) return aIs250 - bIs250;
+    return (a.weight_grams || 0) - (b.weight_grams || 0);
+  });
 }
 
-export function getProductBySlug(slug: string): Product | null {
-  const db = getDatabase();
-  const row = db.prepare(`
-    SELECT p.*, c.slug as category_slug, c.name as category_name
-    FROM products p
-    JOIN categories c ON p.category_id = c.id
-    WHERE p.slug = ?
-  `).get(slug) as any;
-
-  if (!row) return null;
-  return toPlain(mapRowToProduct(db, row));
-}
-
-export function getProductById(id: string): Product | null {
-  const db = getDatabase();
-  const row = db.prepare(`
-    SELECT p.*, c.slug as category_slug, c.name as category_name
-    FROM products p
-    JOIN categories c ON p.category_id = c.id
-    WHERE p.id = ?
-  `).get(id) as any;
-
-  if (!row) return null;
-  return toPlain(mapRowToProduct(db, row));
-}
-
-export function getFeaturedProducts(): Product[] {
-  return getProducts({ limit: 8 });
-}
-
-function mapRowToProduct(db: any, row: any): Product {
-  // Fetch variants with standard 250g pantry size first
-  const variants = db.prepare(`
-    SELECT * FROM product_variants 
-    WHERE product_id = ? 
-    ORDER BY CASE WHEN weight_grams = 250 THEN 0 ELSE 1 END, weight_grams ASC
-  `).all(row.id) as unknown as ProductVariant[];
-
-  // Fetch reviews stats
-  const reviewStats = db.prepare(`
-    SELECT COUNT(*) as count, AVG(rating) as avg_rating
-    FROM reviews
-    WHERE product_id = ? AND ${PUBLIC_REVIEW_FILTER}
-  `).get(row.id) as any;
+function mapRowToProduct(row: any, reviewStats?: { count: number; avg_rating: number }): Product {
+  const rawVariants = (row.product_variants || []).filter(
+    (v: any) => v.status === 'ACTIVE' || row.status !== 'ACTIVE'
+  );
+  const variants = sortVariants(rawVariants);
 
   let nutrition = undefined;
   if (row.nutrition_information) {
-    try {
-      nutrition = JSON.parse(row.nutrition_information);
-    } catch {
-      nutrition = undefined;
+    if (typeof row.nutrition_information === 'object') {
+      nutrition = row.nutrition_information;
+    } else {
+      try {
+        nutrition = JSON.parse(row.nutrition_information);
+      } catch {
+        nutrition = undefined;
+      }
+    }
+  }
+
+  let gallery = undefined;
+  if (row.gallery_images) {
+    if (Array.isArray(row.gallery_images)) {
+      gallery = row.gallery_images;
+    } else {
+      try {
+        gallery = JSON.parse(row.gallery_images);
+      } catch {
+        gallery = undefined;
+      }
     }
   }
 
@@ -123,14 +49,14 @@ function mapRowToProduct(db: any, row: any): Product {
     name: row.name,
     slug: row.slug,
     sku: row.sku,
-    product_type: row.product_type,
+    product_type: row.product_type || 'seed',
     status: row.status,
     short_description: row.short_description || '',
     description: row.description || '',
-    price_minor: row.price_minor,
-    compare_price_minor: row.compare_price_minor || undefined,
+    price_minor: Number(row.price_minor),
+    compare_price_minor: row.compare_price_minor ? Number(row.compare_price_minor) : undefined,
     currency: row.currency || 'PKR',
-    weight_grams: row.weight_grams,
+    weight_grams: row.weight_grams ? Number(row.weight_grams) : undefined,
     ingredients: row.ingredients || '',
     usage_instructions: row.usage_instructions || '',
     storage_instructions: row.storage_instructions || '',
@@ -139,13 +65,166 @@ function mapRowToProduct(db: any, row: any): Product {
     steep_time: row.steep_time || undefined,
     water_temp: row.water_temp || undefined,
     nutrition_information: nutrition,
-    seo_title: row.seo_title,
-    seo_description: row.seo_description,
+    seo_title: row.seo_title || undefined,
+    seo_description: row.seo_description || undefined,
     image_url: row.image_url,
+    gallery_images: gallery,
     badge: row.badge || undefined,
     is_featured: Boolean(row.is_featured),
     variants,
-    rating: reviewStats?.count > 0 ? Math.round(reviewStats.avg_rating * 10) / 10 : undefined,
+    rating: reviewStats && reviewStats.count > 0 ? Math.round(reviewStats.avg_rating * 10) / 10 : undefined,
     review_count: reviewStats?.count || 0,
   };
+}
+
+export async function getProducts(options?: {
+  categorySlug?: string;
+  productType?: string;
+  status?: string;
+  search?: string;
+  sort?: string; // 'price-asc' | 'price-desc' | 'newest' | 'rating'
+  limit?: number;
+}): Promise<Product[]> {
+  const supabase = createPublicClient();
+
+  let query = supabase.from('products').select(`
+    *,
+    categories!inner ( slug, name ),
+    product_variants ( * )
+  `);
+
+  if (options?.status !== undefined) {
+    if (options.status !== '') {
+      query = query.eq('status', options.status);
+    }
+  } else {
+    query = query.eq('status', 'ACTIVE');
+  }
+
+  if (options?.categorySlug && options.categorySlug !== 'all') {
+    query = query.eq('categories.slug', options.categorySlug);
+  }
+
+  if (options?.productType) {
+    query = query.eq('product_type', options.productType);
+  }
+
+  if (options?.search) {
+    const s = options.search;
+    query = query.or(`name.ilike.%${s}%,short_description.ilike.%${s}%,ingredients.ilike.%${s}%`);
+  }
+
+  // Sorting
+  if (options?.sort === 'price-asc') {
+    query = query.order('price_minor', { ascending: true });
+  } else if (options?.sort === 'price-desc') {
+    query = query.order('price_minor', { ascending: false });
+  } else if (options?.sort === 'newest') {
+    query = query.order('created_at', { ascending: false });
+  } else {
+    query = query.order('is_featured', { ascending: false }).order('created_at', { ascending: false });
+  }
+
+  if (options?.limit) {
+    query = query.limit(options.limit);
+  }
+
+  const { data: rows, error } = await query;
+
+  if (error || !rows) {
+    console.error('Failed to fetch products from Supabase:', error);
+    return [];
+  }
+
+  // Fetch approved non-demo review statistics
+  const { data: revRows } = await supabase
+    .from('reviews')
+    .select('product_id, rating')
+    .eq('status', 'APPROVED')
+    .eq('is_demo', false)
+    .not('product_id', 'is', null);
+
+  const statsMap: Record<string, { count: number; sum: number }> = {};
+  for (const r of revRows || []) {
+    if (!r.product_id) continue;
+    if (!statsMap[r.product_id]) {
+      statsMap[r.product_id] = { count: 0, sum: 0 };
+    }
+    statsMap[r.product_id].count++;
+    statsMap[r.product_id].sum += Number(r.rating) || 5;
+  }
+
+  return rows.map((row) => {
+    const st = statsMap[row.id];
+    const reviewStats = st && st.count > 0 ? { count: st.count, avg_rating: st.sum / st.count } : undefined;
+    return mapRowToProduct(row, reviewStats);
+  });
+}
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const supabase = createPublicClient();
+  const { data: row, error } = await supabase
+    .from('products')
+    .select(`
+      *,
+      categories ( slug, name ),
+      product_variants ( * )
+    `)
+    .eq('slug', slug)
+    .single();
+
+  if (error || !row) {
+    return null;
+  }
+
+  const { data: revRows } = await supabase
+    .from('reviews')
+    .select('rating')
+    .eq('product_id', row.id)
+    .eq('status', 'APPROVED')
+    .eq('is_demo', false);
+
+  let reviewStats: { count: number; avg_rating: number } | undefined = undefined;
+  if (revRows && revRows.length > 0) {
+    const sum = revRows.reduce((acc, r) => acc + (Number(r.rating) || 5), 0);
+    reviewStats = { count: revRows.length, avg_rating: sum / revRows.length };
+  }
+
+  return mapRowToProduct(row, reviewStats);
+}
+
+export async function getProductById(id: string): Promise<Product | null> {
+  const supabase = createPublicClient();
+  const { data: row, error } = await supabase
+    .from('products')
+    .select(`
+      *,
+      categories ( slug, name ),
+      product_variants ( * )
+    `)
+    .eq('id', id)
+    .single();
+
+  if (error || !row) {
+    return null;
+  }
+
+  const { data: revRows } = await supabase
+    .from('reviews')
+    .select('rating')
+    .eq('product_id', row.id)
+    .eq('status', 'APPROVED')
+    .eq('is_demo', false);
+
+  let reviewStats: { count: number; avg_rating: number } | undefined = undefined;
+  if (revRows && revRows.length > 0) {
+    const sum = revRows.reduce((acc, r) => acc + (Number(r.rating) || 5), 0);
+    reviewStats = { count: revRows.length, avg_rating: sum / revRows.length };
+  }
+
+  return mapRowToProduct(row, reviewStats);
+}
+
+export async function getFeaturedProducts(): Promise<Product[]> {
+  return getProducts({ limit: 8 });
 }

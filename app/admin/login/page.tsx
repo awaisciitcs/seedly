@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { SeedlyLogo } from '../../../components/ui/SeedlyLogo';
-import { Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import { Lock, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/browser';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -13,21 +14,49 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!email.trim() || !password.trim()) {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
+    if (!cleanEmail || !cleanPassword) {
       setError('Please provide your admin email and password.');
       return;
     }
 
     setLoading(true);
-    // Authenticate
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      const supabase = createClient();
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password: cleanPassword,
+      });
+
+      if (authError || !data.user) {
+        setError(authError?.message || 'Invalid administrator credentials. Access restricted.');
+        setLoading(false);
+        return;
+      }
+
+      // Check admin status via /api/admin/me
+      const res = await fetch('/api/admin/me');
+      if (!res.ok) {
+        const errorJson = await res.json().catch(() => null);
+        await supabase.auth.signOut();
+        setError(errorJson?.error?.message || 'Access denied: account is not an authorized active administrator.');
+        setLoading(false);
+        return;
+      }
+
       router.push('/admin');
-    }, 400);
+      router.refresh();
+    } catch (err: any) {
+      setError(err?.message || 'An unexpected error occurred during sign-in.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,7 +104,7 @@ export default function AdminLoginPage() {
               </label>
               <button
                 type="button"
-                onClick={() => alert('Password reset link has been dispatched to the registered system administrator email.')}
+                onClick={() => alert('Password reset requests must be processed by the system owner or via Supabase Admin.')}
                 className="text-[11px] text-seedly-dark hover:underline font-medium"
               >
                 Forgot password?
@@ -94,10 +123,19 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-seedly-dark hover:bg-seedly-forest disabled:opacity-50 text-white rounded-xl font-semibold text-xs transition-all shadow-card flex items-center justify-center gap-2"
+            className="w-full py-3 bg-seedly-dark hover:bg-seedly-forest disabled:opacity-50 text-white rounded-xl font-semibold text-xs transition-all shadow-card flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>{loading ? 'Authenticating...' : 'Sign In to Dashboard'}</span>
-            <ArrowRight className="w-4 h-4" />
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Authenticating...</span>
+              </>
+            ) : (
+              <>
+                <span>Sign In to Dashboard</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </form>
 

@@ -5,8 +5,8 @@ import { getKits } from '../../../lib/services/kits';
 import { formatPKR } from '../../../lib/utils';
 import { Layers, Box, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
 
-export default function AdminKitsPage() {
-  const kits = getKits();
+export default async function AdminKitsPage() {
+  const kits = await getKits();
 
   return (
     <div className="space-y-6">

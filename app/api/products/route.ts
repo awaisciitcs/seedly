@@ -2,14 +2,16 @@ import { NextResponse } from 'next/server';
 import { getProducts } from '../../../lib/services/products';
 import { getKits } from '../../../lib/services/kits';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const idsParam = searchParams.get('ids');
     const typeParam = searchParams.get('type');
 
-    const products = getProducts();
-    const kits = getKits();
+    const products = await getProducts();
+    const kits = await getKits();
 
     let combined: any[] = [...products, ...kits];
 

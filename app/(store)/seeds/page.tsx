@@ -26,8 +26,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SeedsPage() {
-  const seeds = getProducts({ productType: 'seed' });
+export default async function SeedsPage() {
+  const seeds = await getProducts({ productType: 'seed' });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">

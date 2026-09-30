@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { getKits } from '../../../lib/services/kits';
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function KitsPage() {
-  const kits = getKits();
+export default async function KitsPage() {
+  const kits = await getKits();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12 sm:space-y-16">

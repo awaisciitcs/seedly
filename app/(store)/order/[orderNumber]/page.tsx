@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { getOrder } from '../../../../lib/services/orders';
+import { getOrder, lookupOrderWithCapability } from '../../../../lib/services/orders';
 import { formatPKR, formatDate } from '../../../../lib/utils';
 import { getOrderProgress, PAYMENT_METHOD_LABELS } from '../../../../lib/order-status';
 import {
@@ -17,17 +17,45 @@ import {
   ShieldCheck,
   AlertCircle,
   FileText,
+  Lock,
+  Unlock,
 } from 'lucide-react';
+
+function maskName(name: string): string {
+  if (!name) return 'Customer';
+  const parts = name.trim().split(/\s+/);
+  return parts.map(p => (p.length > 1 ? p[0] + '***' : p)).join(' ');
+}
+
+function maskPhone(phone: string): string {
+  if (!phone) return '03*********';
+  const clean = phone.replace(/[\s\-\(\)]/g, '');
+  if (clean.length < 8) return '03*********';
+  return clean.slice(0, 4) + '****' + clean.slice(-3);
+}
+
+function maskEmail(email: string): string {
+  if (!email || !email.includes('@')) return 'customer@***.com';
+  const [user, domain] = email.split('@');
+  return (user[0] || 'c') + '***@' + domain;
+}
 
 export default async function OrderConfirmationPage(props: {
   params: Promise<{ orderNumber: string }>;
+  searchParams: Promise<{ token?: string; verify?: string }>;
 }) {
   const { orderNumber } = await props.params;
-  const order = getOrder(orderNumber);
+  const searchParams = await props.searchParams;
 
-  if (!order) {
+  const token = searchParams.token || '';
+  const verifyInput = searchParams.verify?.trim().toLowerCase() || '';
+
+  const lookup = await lookupOrderWithCapability(orderNumber, token, verifyInput);
+  if (!lookup) {
     notFound();
   }
+
+  const { order, isAuthorized } = lookup;
 
   const progress = getOrderProgress(order);
   const steps = [
@@ -85,11 +113,16 @@ export default async function OrderConfirmationPage(props: {
         </span>
 
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
-          Thank You, {order.customer_name}!
+          {isAuthorized ? `Thank You, ${order.customer_name}!` : 'Order Status & Tracking'}
         </h1>
 
         <p className="text-sm text-muted-gray max-w-lg mx-auto">
-          We have received your order <strong className="text-charcoal font-mono">#{order.order_number}</strong>. A confirmation has been dispatched to <strong>{order.customer_email}</strong> and WhatsApp <strong>{order.customer_phone}</strong>.
+          Order reference: <strong className="text-charcoal font-mono">#{order.order_number}</strong>.
+          {isAuthorized ? (
+            <> Confirmation dispatched to <strong>{order.customer_email}</strong> and WhatsApp <strong>{order.customer_phone}</strong>.</>
+          ) : (
+            <> General status and package tracking are shown below.</>
+          )}
         </p>
 
         {/* Bank Review Notification Banner if applicable */}
@@ -99,7 +132,7 @@ export default async function OrderConfirmationPage(props: {
             <div className="space-y-1 text-xs text-amber-900">
               <strong className="block text-sm font-semibold">Payment under review</strong>
               <p>
-                Our team will verify your payment. Preparation and packing will appear here only after our team updates your order status.
+                Our team is verifying your payment. Preparation and packing will appear here once verified.
               </p>
             </div>
           </div>
@@ -127,7 +160,7 @@ export default async function OrderConfirmationPage(props: {
         <h2 className="font-serif text-xl font-bold text-charcoal mb-6">Fulfillment Timeline</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 relative">
-          {steps.map((step, idx) => {
+          {steps.map((step) => {
             const Icon = step.icon;
             return (
               <div
@@ -163,6 +196,40 @@ export default async function OrderConfirmationPage(props: {
         </div>
       </div>
 
+      {/* Privacy Protection Gate for Non-Authorized Views */}
+      {!isAuthorized && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card mb-8 text-left space-y-4">
+          <div className="flex items-center gap-3 text-charcoal">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+              <Lock className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-serif font-bold text-base">Personal Delivery Details Protected</h3>
+              <p className="text-xs text-muted-gray">
+                To prevent unauthorized enumeration of personal contact details, street addresses and phone numbers are hidden.
+              </p>
+            </div>
+          </div>
+
+          <form method="GET" className="flex flex-col sm:flex-row gap-3 pt-2">
+            <input
+              type="text"
+              name="verify"
+              placeholder="Enter customer email or phone to view full details"
+              defaultValue={searchParams.verify || ''}
+              className="flex-1 px-4 py-2.5 bg-cream/40 border border-border-gray rounded-xl text-xs text-charcoal focus:outline-none focus:ring-2 focus:ring-seedly-primary/50"
+            />
+            <button
+              type="submit"
+              className="px-5 py-2.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-colors"
+            >
+              <Unlock className="w-3.5 h-3.5" />
+              <span>Unlock Details</span>
+            </button>
+          </form>
+        </div>
+      )}
+
       {/* Order Details & Items Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         {/* Shipping & Delivery Address */}
@@ -172,17 +239,21 @@ export default async function OrderConfirmationPage(props: {
             <span>Delivery Destination</span>
           </h3>
           <div className="text-xs space-y-1.5 text-muted-gray">
-            <p className="font-semibold text-charcoal text-sm">{order.customer_name}</p>
-            <p>{order.shipping_address}</p>
+            <p className="font-semibold text-charcoal text-sm">
+              {isAuthorized ? order.customer_name : maskName(order.customer_name)}
+            </p>
+            <p>{isAuthorized ? order.shipping_address : `Street Address Protected`}</p>
             <p>
               {order.shipping_city}, {order.shipping_province}
             </p>
-            {order.shipping_notes && (
+            {isAuthorized && order.shipping_notes && (
               <p className="italic bg-cream p-2.5 rounded-xl border border-border-gray mt-2">
                 Note: {order.shipping_notes}
               </p>
             )}
-            <p className="pt-2 font-medium text-charcoal">Phone: {order.customer_phone}</p>
+            <p className="pt-2 font-medium text-charcoal">
+              Phone: {isAuthorized ? order.customer_phone : maskPhone(order.customer_phone)}
+            </p>
           </div>
         </div>
 
@@ -215,19 +286,6 @@ export default async function OrderConfirmationPage(props: {
               <span>Order Date:</span>
               <strong className="text-charcoal">{formatDate(order.created_at)}</strong>
             </div>
-            {order.receipt_path && (
-              <div className="pt-2 border-t border-border-gray flex items-center justify-between">
-                <span>Bank Receipt Attached:</span>
-                <a
-                  href={order.receipt_path}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-seedly-dark underline font-medium"
-                >
-                  View Receipt
-                </a>
-              </div>
-            )}
           </div>
         </div>
       </div>

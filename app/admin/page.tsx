@@ -18,12 +18,14 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 
-export default function AdminDashboardPage() {
-  const orders = getOrders();
-  const products = getProducts();
-  const kits = getKits();
+export default async function AdminDashboardPage() {
+  const [orders, products, kits, stockAlerts] = await Promise.all([
+    getOrders(),
+    getProducts(),
+    getKits(),
+    getAllStockSubscriptions(),
+  ]);
   const notifications = getDispatchedNotifications();
-  const stockAlerts = getAllStockSubscriptions();
   const activeStockAlerts = stockAlerts.filter((s) => s.status === 'ACTIVE');
 
   // Metrics
