@@ -1,5 +1,5 @@
 import { createPublicClient } from '../supabase/public';
-import { createAdminClient } from '../supabase/admin';
+import { getScopedClient } from '../supabase/admin';
 import { Review } from '../types';
 
 function mapRowToReview(row: any): Review {
@@ -40,7 +40,7 @@ export async function getApprovedReviews(productId?: string): Promise<Review[]> 
 }
 
 export async function getAllReviews(options?: { status?: string; productId?: string }): Promise<Review[]> {
-  const supabase = createAdminClient();
+  const supabase = await getScopedClient();
   let query = supabase.from('reviews').select('*');
 
   if (options?.status && options.status !== 'ALL') {
@@ -110,7 +110,7 @@ export async function updateReviewStatus(
   id: string,
   status: 'APPROVED' | 'REJECTED' | 'PENDING'
 ): Promise<boolean> {
-  const supabase = createAdminClient();
+  const supabase = await getScopedClient();
   const { data, error } = await supabase
     .from('reviews')
     .update({ status, updated_at: new Date().toISOString() })
@@ -126,7 +126,7 @@ export async function updateReviewStatus(
 }
 
 export async function deleteReview(id: string): Promise<boolean> {
-  const supabase = createAdminClient();
+  const supabase = await getScopedClient();
   const { data, error } = await supabase
     .from('reviews')
     .delete()

@@ -211,7 +211,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
   const effectiveOrderNumber = (rpcResult as any)?.order_number || orderNumber;
   const isReplay = Boolean((rpcResult as any)?.is_idempotent_replay);
 
-  const createdOrder = await getOrder(effectiveOrderNumber);
+  const createdOrder = await getOrder(effectiveOrderNumber, trackingToken);
   if (!createdOrder) {
     throw new Error('Failed to retrieve order after creation');
   }
@@ -305,9 +305,12 @@ export async function lookupOrderWithCapability(
   };
 }
 
-export async function getOrder(orderNumber: string): Promise<Order | null> {
-  const lookup = await lookupOrderWithCapability(orderNumber);
-  if (lookup) return lookup.order;
+export async function getOrder(orderNumber: string, token?: string): Promise<Order | null> {
+  if (token) {
+    const lookup = await lookupOrderWithCapability(orderNumber, token);
+    if (lookup) return lookup.order;
+  }
+
   const supabase = await getScopedClient();
   const { data: row, error } = await supabase
     .from('orders')
@@ -315,28 +318,31 @@ export async function getOrder(orderNumber: string): Promise<Order | null> {
     .eq('order_number', orderNumber)
     .single();
 
-  if (error || !row) return null;
+  if (!error && row) {
+    const { data: itemRows } = await supabase
+      .from('order_items')
+      .select('*')
+      .eq('order_id', row.id);
 
-  const { data: itemRows } = await supabase
-    .from('order_items')
-    .select('*')
-    .eq('order_id', row.id);
+    const items: OrderItem[] = (itemRows || []).map((it: any) => ({
+      id: it.id,
+      order_id: it.order_id,
+      product_id: it.product_id || it.kit_id || '',
+      variant_id: it.variant_id || undefined,
+      kit_id: it.kit_id || undefined,
+      name_snapshot: it.name_snapshot || it.product_name || 'Botanical Harvest',
+      sku_snapshot: it.sku_snapshot || '',
+      quantity: Number(it.quantity),
+      unit_price_minor: Number(it.unit_price_minor || it.price_minor || 0),
+      line_total_minor: Number(it.line_total_minor || 0),
+      image_url: it.image_url || undefined,
+    }));
 
-  const items: OrderItem[] = (itemRows || []).map((it: any) => ({
-    id: it.id,
-    order_id: it.order_id,
-    product_id: it.product_id || it.kit_id || '',
-    variant_id: it.variant_id || undefined,
-    kit_id: it.kit_id || undefined,
-    name_snapshot: it.name_snapshot || it.product_name || 'Botanical Harvest',
-    sku_snapshot: it.sku_snapshot || '',
-    quantity: Number(it.quantity),
-    unit_price_minor: Number(it.unit_price_minor || it.price_minor || 0),
-    line_total_minor: Number(it.line_total_minor || 0),
-    image_url: it.image_url || undefined,
-  }));
+    return mapRowToOrder(row, items);
+  }
 
-  return mapRowToOrder(row, items);
+  const publicLookup = await lookupOrderWithCapability(orderNumber);
+  return publicLookup ? publicLookup.order : null;
 }
 
 export async function getOrderById(id: string): Promise<Order | null> {

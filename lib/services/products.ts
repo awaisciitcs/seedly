@@ -1,5 +1,4 @@
 import { createPublicClient } from '../supabase/public';
-import { createAdminClient } from '../supabase/admin';
 import { Product, ProductVariant } from '../types';
 
 function sortVariants(variants: any[]): ProductVariant[] {

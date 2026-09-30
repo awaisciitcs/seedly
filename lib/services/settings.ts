@@ -1,5 +1,5 @@
 import { createPublicClient } from '../supabase/public';
-import { createAdminClient } from '../supabase/admin';
+import { getScopedClient } from '../supabase/admin';
 import { SiteSettings } from '../types';
 
 const DEFAULT_SETTINGS: SiteSettings = {
@@ -72,7 +72,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 }
 
 export async function updateSiteSettings(settings: Partial<SiteSettings>): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await getScopedClient();
   const upserts: { key: string; value: string; updated_at: string }[] = [];
 
   for (const [key, value] of Object.entries(settings)) {

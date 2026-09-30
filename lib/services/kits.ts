@@ -1,5 +1,4 @@
 import { createPublicClient } from '../supabase/public';
-import { createAdminClient } from '../supabase/admin';
 import { Kit, KitItem } from '../types';
 
 function mapRowToKit(row: any, reviewStats?: { count: number; avg_rating: number }): Kit {

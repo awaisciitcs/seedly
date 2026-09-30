@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin, AdminAuthError } from '@/lib/auth/require-admin';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { getScopedClient } from '@/lib/supabase/admin';
 import { getProducts } from '@/lib/services/products';
 import { handleAvailabilityTransition } from '@/lib/services/stockAlerts';
 
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: { message: 'Product name and price are required' } }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
+    const supabase = await getScopedClient();
     const id = `prod-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const slug = name
       .toLowerCase()
@@ -125,7 +125,7 @@ export async function PATCH(request: Request) {
     await requireAdmin();
     const body = await request.json();
     const { id, name, price_minor, short_description, description, image_url, variant_id, inventory_quantity, status } = body;
-    const supabase = createAdminClient();
+    const supabase = await getScopedClient();
 
     if (variant_id && inventory_quantity !== undefined) {
       const { data: currentVar } = await supabase
@@ -197,7 +197,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: { message: 'Product ID is required' } }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
+    const supabase = await getScopedClient();
     // Delete variants first
     await supabase.from('product_variants').delete().eq('product_id', id);
     // Delete product

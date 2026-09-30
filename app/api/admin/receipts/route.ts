@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin, AdminAuthError } from '@/lib/auth/require-admin';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { getScopedClient } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const supabase = createAdminClient();
+    const supabase = await getScopedClient();
     const { data, error } = await supabase.storage
       .from('payment-receipts')
       .createSignedUrl(cleanPath, 300); // 5-minute signed URL

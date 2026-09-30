@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { createPublicClient } from '../supabase/public';
-import { createAdminClient } from '../supabase/admin';
+import { createAdminClient, getScopedClient } from '../supabase/admin';
 import { StockAlertSubscription, StockAlertDelivery } from '../types';
 import { dispatchStockAlertNotification } from './notifications';
 import { getKitById } from './kits';
@@ -274,7 +274,7 @@ export async function getAllStockSubscriptions(options?: {
   status?: string;
   search?: string;
 }): Promise<StockAlertSubscription[]> {
-  const supabase = createAdminClient();
+  const supabase = await getScopedClient();
   let query = supabase.from('stock_alert_subscriptions').select('*');
 
   if (options?.status && options.status !== 'ALL') {
@@ -299,7 +299,7 @@ export async function getAllStockSubscriptions(options?: {
  * Admin: Manually trigger / simulate restock broadcast
  */
 export async function triggerManualRestockAlert(subscriptionId: string): Promise<boolean> {
-  const supabase = createAdminClient();
+  const supabase = await getScopedClient();
   const { data: sub, error } = await supabase
     .from('stock_alert_subscriptions')
     .select('*')
@@ -340,7 +340,7 @@ export async function triggerManualRestockAlert(subscriptionId: string): Promise
  * Admin: Delete or cancel subscription
  */
 export async function deleteStockSubscription(id: string): Promise<boolean> {
-  const supabase = createAdminClient();
+  const supabase = await getScopedClient();
   const { data, error } = await supabase
     .from('stock_alert_subscriptions')
     .delete()
