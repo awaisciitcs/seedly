@@ -6,20 +6,63 @@
   :root {
     --background: 44 43% 97%; /* #FAF8F2 cream */
     --foreground: 120 4% 15%; /* #252825 charcoal */
-    --font-serif: 'Playfair Display', Georgia, serif;
-    --font-sans: 'Roboto', system-ui, -apple-system, sans-serif;
   }
 
   body {
-    background-color: #FAF8F2;
-    color: #252825;
-    font-family: var(--font-sans);
+    background-color: #FAF8F5;
+    color: #1B1E1C;
+    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, .font-serif {
-    font-family: var(--font-serif);
+    font-family: var(--font-serif), Georgia, serif;
+  }
+
+  ::selection {
+    background: #dbe5d9;
+    color: #1F382B;
+  }
+
+  :focus-visible {
+    outline: 2px solid #67826F;
+    outline-offset: 4px;
+  }
+
+  html {
+    scroll-padding-top: 6rem;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-xs font-medium uppercase tracking-[0.16em] text-seedly-dark;
+  }
+
+  .section-heading {
+    @apply font-serif text-3xl sm:text-4xl font-normal leading-tight tracking-[-0.025em] text-seedly-dark;
+  }
+
+  .button-primary {
+    @apply inline-flex min-h-12 items-center justify-center gap-3 rounded-sm bg-seedly-dark px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-seedly-forest;
+  }
+
+  .text-link {
+    @apply py-2 text-sm font-medium text-seedly-dark underline underline-offset-[6px] decoration-seedly-dark/30 transition-colors hover:decoration-seedly-dark;
+  }
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -56,4 +99,90 @@
 
 .animate-slideUp {
   animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Brief storefront entrances and feedback, with no animation dependency. */
+.motion-nav { position: relative; }
+.motion-nav::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.motion-nav[aria-current="page"]::after,
+.motion-nav:hover::after,
+.motion-nav:focus-visible::after { transform: scaleX(1); }
+
+@keyframes seedly-enter {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes seedly-image {
+  from { transform: scale(1.025); }
+  to { transform: none; }
+}
+@keyframes seedly-pop {
+  0% { transform: scale(0.8); }
+  60% { transform: scale(1.12); }
+  100% { transform: none; }
+}
+@keyframes seedly-count {
+  from { opacity: 0.4; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes seedly-dialog {
+  from { opacity: 0; transform: translateY(-8px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes seedly-drawer {
+  from { transform: translateX(100%); }
+  to { transform: none; }
+}
+@keyframes seedly-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal[data-reveal="pending"] { opacity: 0; transform: translateY(14px); }
+  .reveal[data-reveal="visible"] {
+    animation: seedly-enter 480ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0ms) both;
+  }
+  .reveal[data-reveal="pending"]:focus-within { opacity: 1; transform: none; }
+  .motion-enter { animation: seedly-enter 480ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .motion-hero { animation: seedly-image 1000ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .motion-pop { animation: seedly-pop 280ms ease-out; }
+  .motion-count { animation: seedly-count 180ms ease-out; }
+  .motion-panel, .motion-result { animation: seedly-enter 220ms ease-out both; }
+  .motion-search[open] { animation: seedly-dialog 240ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .motion-search[open]::backdrop, .motion-backdrop { animation: seedly-fade 200ms ease-out; }
+  .motion-drawer { animation: seedly-drawer 320ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .motion-nav::after { transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+  .button-primary, .motion-button, .motion-icon {
+    transition-property: transform, background-color, border-color, color, box-shadow;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+  }
+  .button-primary:active,
+  .motion-button:active:not(:disabled),
+  .motion-icon:active:not(:disabled) { transform: scale(0.97); }
+  .button-primary > svg, .text-link > svg, .motion-collection svg {
+    transition: transform 240ms ease-out;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .button-primary:hover, .motion-button:hover:not(:disabled) { transform: translateY(-2px); }
+    .button-primary:active, .motion-button:active:not(:disabled) { transform: translateY(0) scale(0.97); }
+    .motion-icon:hover:not(:disabled) { transform: scale(1.08); }
+    .button-primary:hover > svg, .text-link:hover > svg { transform: translateX(3px); }
+    .motion-collection:hover svg { transform: translate(2px, -2px); }
+  }
+}
+
+@media print {
+  .reveal[data-reveal] { opacity: 1 !important; transform: none !important; animation: none !important; }
 }

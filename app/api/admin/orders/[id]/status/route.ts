@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { updateOrderStatus } from '@/lib/services/orders';
+import { OrderStatusError } from '@/lib/order-status';
 
 export async function POST(
   request: Request,
@@ -17,6 +18,6 @@ export async function POST(
     const updated = updateOrderStatus(id, status, courier, tracking_number, note);
     return NextResponse.json({ data: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: { message: error.message } }, { status: 500 });
+    return NextResponse.json({ error: { message: error.message } }, { status: error instanceof OrderStatusError ? 400 : 500 });
   }
 }

@@ -1,18 +1,19 @@
-import React from 'react';
+﻿import React from 'react';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { getKits } from '../../../lib/services/kits';
 import { ProductCard } from '../../../components/product/ProductCard';
-import { Sparkles, Calendar, PackageCheck, ShieldCheck } from 'lucide-react';
+import { formatPKR } from '../../../lib/utils';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Seed Cycling Kits (14-Day & 28-Day Routines) | Seedly Pakistan',
+  title: 'Seed Cycling Kits | Seedly Pakistan',
   description:
-    'Full 250g resealable seed pouches with engraved wooden measuring scoop and printed calendar. Wholesome monthly food routines for follicular and luteal phases.',
+    'Compare Seedly seed cycling kits. Choose a two-seed pairing or the complete four-seed set, and see the contents and current prices before you order.',
   openGraph: {
     title: 'Seed Cycling Kits | Seedly Pakistan',
     description:
-      'Portioned 14-day and full 28-day seed routines with standard 250g pouches, wooden measuring scoop, and tracking calendar.',
+      'Two-seed pairings and a complete four-seed set. Compare the contents and prices of our seed cycling kits.',
     url: 'https://seedly.pk/kits',
     siteName: 'Seedly',
     locale: 'en_PK',
@@ -32,125 +33,72 @@ export default function KitsPage() {
   const kits = getKits();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 space-y-12">
-      {/* Category Header */}
-      <div className="max-w-2xl">
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
-          Seed Cycling Kits
-        </h1>
-        <p className="text-sm text-muted-gray mt-2 leading-relaxed">
-          Structured 14-day and full 28-day routines with standard 250g resealable seed pouches, an engraved wooden measuring scoop, and a printed calendar. Wholesome kitchen nutrition designed for each phase of your monthly cycle.
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12 sm:space-y-16">
+      <div className="motion-enter max-w-2xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-seedly-primary mb-4">The seed collection</p>
+        <h1 className="font-serif text-4xl sm:text-5xl font-medium text-charcoal">Seed cycling kits.</h1>
+        <p className="text-base text-muted-gray mt-4 leading-relaxed">
+          Choose a pumpkin and flax pairing, sunflower and sesame, or all four seeds in one box. Compare the contents below to find the kit that suits your routine.
         </p>
       </div>
 
-      {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {kits.map((kit) => (
-          <ProductCard key={kit.id} product={kit as any} />
+          <ProductCard key={kit.id} product={kit} />
         ))}
       </div>
 
-      {/* Compact Kit Comparison Matrix */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card space-y-5">
-        <div className="space-y-1">
-          <h2 className="font-serif text-xl sm:text-2xl font-bold text-charcoal">
-            Comparing the 3 Kits
-          </h2>
-          <p className="text-xs sm:text-sm text-muted-gray">
-            Choose individual 14-day phases or get the full 28-day routine in one box.
-          </p>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="border-b border-border-gray text-charcoal">
-                <th className="py-3 pr-4 font-semibold text-muted-gray uppercase tracking-wider text-[11px]">Details</th>
-                <th className="py-3 px-4 font-bold text-charcoal">Follicular (Phase 1)</th>
-                <th className="py-3 px-4 font-bold text-charcoal">Luteal (Phase 2)</th>
-                <th className="py-3 pl-4 font-bold text-seedly-dark bg-seedly-light/30 rounded-t-xl">Complete 28-Day Kit</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-gray/60 text-muted-gray">
-              <tr>
-                <td className="py-3 pr-4 font-medium text-charcoal">Routine Duration</td>
-                <td className="py-3 px-4">Days 1–14 (14-Day Routine)</td>
-                <td className="py-3 px-4">Days 15–28 (14-Day Routine)</td>
-                <td className="py-3 pl-4 font-semibold text-charcoal bg-seedly-light/30">Days 1–28 (Full Month Routine)</td>
-              </tr>
-              <tr>
-                <td className="py-3 pr-4 font-medium text-charcoal">Seeds Included</td>
-                <td className="py-3 px-4">Raw Pumpkin + Cold-Milled Flax</td>
-                <td className="py-3 px-4">Raw Sunflower + White Sesame</td>
-                <td className="py-3 pl-4 font-semibold text-charcoal bg-seedly-light/30">All 4 Seeds (4 Separate Pouches)</td>
-              </tr>
-              <tr>
-                <td className="py-3 pr-4 font-medium text-charcoal">Net Seed Weight</td>
-                <td className="py-3 px-4">500g (2x 250g pouches)</td>
-                <td className="py-3 px-4">500g (2x 250g pouches)</td>
-                <td className="py-3 pl-4 font-semibold text-charcoal bg-seedly-light/30">1,000g (4x 250g pouches)</td>
-              </tr>
-              <tr>
-                <td className="py-3 pr-4 font-medium text-charcoal">Engraved Wooden Scoop</td>
-                <td className="py-3 px-4 text-emerald-800 font-semibold">Included (1 tbsp)</td>
-                <td className="py-3 px-4 text-emerald-800 font-semibold">Included (1 tbsp)</td>
-                <td className="py-3 pl-4 text-emerald-800 font-bold bg-seedly-light/30">Included (1 tbsp)</td>
-              </tr>
-              <tr>
-                <td className="py-3 pr-4 font-medium text-charcoal">Cycle Tracking Calendar</td>
-                <td className="py-3 px-4 text-emerald-800 font-semibold">Included</td>
-                <td className="py-3 px-4 text-emerald-800 font-semibold">Included</td>
-                <td className="py-3 pl-4 text-emerald-800 font-bold bg-seedly-light/30">Included</td>
-              </tr>
-              <tr>
-                <td className="py-3 pr-4 font-medium text-charcoal">Nationwide Delivery</td>
-                <td className="py-3 px-4">Rs. 200 (TCS / Leopards)</td>
-                <td className="py-3 px-4">Rs. 200 (TCS / Leopards)</td>
-                <td className="py-3 pl-4 font-bold text-emerald-800 bg-seedly-light/30">FREE Courier Delivery Included</td>
-              </tr>
-              <tr className="font-serif text-sm">
-                <td className="py-3.5 pr-4 font-sans font-bold text-charcoal">Price</td>
-                <td className="py-3.5 px-4 font-bold text-charcoal">
-                  Rs. 1,550 <span className="font-sans text-[11px] font-normal text-muted-gray ml-1">(Save Rs. 80)</span>
-                </td>
-                <td className="py-3.5 px-4 font-bold text-charcoal">
-                  Rs. 1,290 <span className="font-sans text-[11px] font-normal text-muted-gray ml-1">(Save Rs. 50)</span>
-                </td>
-                <td className="py-3.5 pl-4 font-bold text-seedly-dark text-base bg-seedly-light/30">
-                  Rs. 2,850 <span className="font-sans text-[11px] font-normal text-muted-gray ml-1">(Save Rs. 120)</span>
-                </td>
-              </tr>
-              <tr>
-                <td className="py-4 pr-4 font-sans font-medium text-charcoal">Order Kit</td>
-                <td className="py-4 px-4">
-                  <Link
-                    href="/kits/follicular-blend"
-                    className="inline-block px-4 py-2 bg-seedly-dark hover:bg-seedly-forest text-white rounded-xl text-xs font-semibold transition-colors"
-                  >
-                    View Kit →
-                  </Link>
-                </td>
-                <td className="py-4 px-4">
-                  <Link
-                    href="/kits/luteal-blend"
-                    className="inline-block px-4 py-2 bg-seedly-dark hover:bg-seedly-forest text-white rounded-xl text-xs font-semibold transition-colors"
-                  >
-                    View Kit →
-                  </Link>
-                </td>
-                <td className="py-4 pl-4 bg-seedly-light/30 rounded-b-xl">
-                  <Link
-                    href="/kits/complete-cycle-kit"
-                    className="inline-block px-4 py-2 bg-seedly-primary hover:bg-seedly-primary/90 text-white rounded-xl text-xs font-semibold transition-colors shadow-subtle"
-                  >
-                    View Complete Kit →
-                  </Link>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {kits.length > 0 && (
+        <section className="border-t border-border-gray pt-9 sm:pt-12">
+          <div className="mb-6">
+            <h2 className="font-serif text-3xl font-medium text-charcoal">What is in each kit?</h2>
+            <p className="text-sm sm:text-base text-muted-gray mt-3">The contents and price, side by side.</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-left text-sm border-collapse">
+              <caption className="sr-only">Compare seed kit ingredients, package contents and prices</caption>
+              <thead>
+                <tr className="border-b border-border-gray">
+                  <th scope="col" className="py-4 pr-6 w-36 font-medium text-muted-gray">Kit</th>
+                  {kits.map((kit) => (
+                    <th key={kit.id} scope="col" className="px-5 py-4 font-medium text-charcoal align-top">{kit.name}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border-gray text-muted-gray">
+                <tr>
+                  <th scope="row" className="py-5 pr-6 font-medium text-charcoal align-top">Seeds included</th>
+                  {kits.map((kit) => (
+                    <td key={kit.id} className="px-5 py-5 leading-relaxed align-top">
+                      <ul className="space-y-1">
+                        {kit.items.map((item) => <li key={item.id}>{item.product_name}{item.variant_name ? ` (${item.variant_name})` : ''}{item.quantity > 1 ? ` × ${item.quantity}` : ''}</li>)}
+                      </ul>
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <th scope="row" className="py-5 pr-6 font-medium text-charcoal align-top">In the box</th>
+                  {kits.map((kit) => <td key={kit.id} className="px-5 py-5 leading-relaxed align-top">{kit.package_size}</td>)}
+                </tr>
+                <tr>
+                  <th scope="row" className="py-5 pr-6 font-medium text-charcoal">Price</th>
+                  {kits.map((kit) => <td key={kit.id} className="px-5 py-5 font-semibold text-charcoal">{formatPKR(kit.price_minor)}</td>)}
+                </tr>
+                <tr>
+                  <th scope="row" className="py-5 pr-6 font-medium text-charcoal"><span className="sr-only">Product details</span></th>
+                  {kits.map((kit) => (
+                    <td key={kit.id} className="px-5 py-5">
+                      <Link href={`/kits/${kit.slug}`} className="inline-flex items-center gap-2 text-sm font-semibold text-seedly-dark hover:text-seedly-primary transition-colors" aria-label={`View ${kit.name}`}>
+                        View kit <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

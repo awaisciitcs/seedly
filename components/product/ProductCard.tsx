@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import { useCart } from '../../lib/store/cart';
 import { useWishlist } from '../../lib/store/wishlist';
 import { Heart, Plus, Star, Check, Bell } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
+import { Reveal } from '../ui/Reveal';
 
 interface ProductCardProps {
   product: Product | (Kit & { product_type?: 'kit' });
@@ -19,32 +20,32 @@ export function ProductCard({ product }: ProductCardProps) {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [added, setAdded] = React.useState(false);
   const [isNotifyModalOpen, setIsNotifyModalOpen] = React.useState(false);
+  const addedTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => () => {
+    if (addedTimeout.current) clearTimeout(addedTimeout.current);
+  }, []);
 
   const isKit = product.product_type === 'kit' || 'items' in product;
   const seedProduct = !isKit ? (product as Product) : null;
-  // Standard pantry pouch is 250g for seeds; default to 250g variant
-  const defaultVariant = seedProduct?.variants?.find((v) => v.weight_grams === (seedProduct.weight_grams || 250))
-    || seedProduct?.variants?.[0]
+  const activeVariants = seedProduct?.variants?.filter((variant) => variant.status === 'ACTIVE') || [];
+  const defaultVariant = activeVariants.find((variant) => variant.weight_grams === seedProduct?.weight_grams)
+    || activeVariants[0]
     || null;
 
-  const displayPriceMinor = defaultVariant ? defaultVariant.price_minor : product.price_minor;
-  const displayComparePriceMinor = defaultVariant?.compare_price_minor || product.compare_price_minor;
-  const displayWeight = defaultVariant?.option_value || (seedProduct?.product_type === 'tea' ? '50g' : '250g');
-  const weightGrams = defaultVariant?.weight_grams || seedProduct?.weight_grams || 250;
-  const unitPricePer100g = Math.round(((displayPriceMinor / weightGrams) * 100) / 100);
-
-  const stock = isKit
-    ? (product as Kit).computed_stock ?? 0
-    : defaultVariant?.inventory_quantity ?? (product as Product).variants?.[0]?.inventory_quantity ?? 50;
+  const displayPriceMinor = defaultVariant?.price_minor ?? product.price_minor;
+  const displayComparePriceMinor = defaultVariant?.compare_price_minor ?? product.compare_price_minor;
+  const weightGrams = defaultVariant?.weight_grams ?? seedProduct?.weight_grams;
+  const displayWeight = defaultVariant?.option_value || (weightGrams ? `${weightGrams}g` : '');
+  const packageLabel = isKit ? (product as Kit).package_size : displayWeight;
+  const stock = isKit ? (product as Kit).computed_stock ?? 0 : defaultVariant?.inventory_quantity ?? 0;
   const inStock = stock > 0;
   const isLowStock = inStock && stock <= 5;
   const href = isKit ? `/kits/${product.slug}` : `/${product.product_type === 'tea' ? 'teas' : 'seeds'}/${product.slug}`;
   const wishlisted = isInWishlist(product.id);
+  const hasReviews = (product.review_count ?? 0) > 0 && typeof product.rating === 'number';
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
+  const handleAddToCart = () => {
     if (!inStock) {
       setIsNotifyModalOpen(true);
       return;
@@ -57,7 +58,7 @@ export function ProductCard({ product }: ProductCardProps) {
       variant_id: defaultVariant?.id,
       name: product.name,
       slug: product.slug,
-      variant_label: isKit ? (product as Kit).package_size : displayWeight,
+      variant_label: packageLabel,
       price_minor: displayPriceMinor,
       image_url: product.image_url,
       quantity: 1,
@@ -66,197 +67,107 @@ export function ProductCard({ product }: ProductCardProps) {
     });
 
     setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
-  };
-
-  const handleWishlistClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleWishlist(product.id);
+    if (addedTimeout.current) clearTimeout(addedTimeout.current);
+    addedTimeout.current = setTimeout(() => setAdded(false), 1500);
   };
 
   return (
-    <div className="group relative bg-white rounded-2xl border border-border-gray overflow-hidden shadow-subtle hover:shadow-card transition-all duration-300 flex flex-col">
-      {/* Packaging Image container */}
-      <Link href={href} className="relative aspect-square w-full bg-cream overflow-hidden block">
-        <Image
-          src={product.image_url}
-          alt={product.name}
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-        />
-
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-          {!inStock ? (
-            <span className="px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase bg-amber-800/90 backdrop-blur-sm text-white rounded-full">
-              Sold Out
-            </span>
-          ) : isLowStock ? (
-            <span className="px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase bg-amber-700/90 backdrop-blur-sm text-white rounded-full">
-              Only {stock} Left
-            </span>
-          ) : (
-            product.badge && (
-              <span className="px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase bg-seedly-dark/90 backdrop-blur-sm text-white rounded-full shadow-subtle">
-                {product.badge}
-              </span>
-            )
-          )}
-          {isKit && inStock && !isLowStock && (
-            <span className="px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase bg-emerald-800/90 backdrop-blur-sm text-white rounded-full">
-              Curated Box
-            </span>
-          )}
-        </div>
-
-        {/* Wishlist Button */}
-        <button
-          onClick={handleWishlistClick}
-          aria-label="Save to wishlist"
-          className="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-md text-charcoal hover:text-seedly-dark hover:bg-white shadow-subtle transition-all z-10"
-        >
-          <Heart
-            className={`w-4 h-4 ${
-              wishlisted ? 'fill-rose-500 text-rose-500' : 'text-charcoal/70'
-            }`}
+    <Reveal as="article" stagger className="group relative flex h-full flex-col">
+      <div className="relative">
+        <Link href={href} className="relative block aspect-square overflow-hidden rounded-sm bg-cream">
+          <Image
+            src={product.image_url}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.025]"
           />
+        </Link>
+
+        {(!inStock || isLowStock) && (
+          <span className="pointer-events-none absolute left-2 top-2 bg-white px-2.5 py-1.5 text-xs font-medium text-charcoal sm:left-3 sm:top-3">
+            {!inStock ? 'Sold out' : `${stock} left`}
+          </span>
+        )}
+
+        <button
+          type="button"
+          onClick={() => toggleWishlist(product.id)}
+          aria-label={`${wishlisted ? 'Remove' : 'Save'} ${product.name} ${wishlisted ? 'from' : 'to'} wishlist`}
+          aria-pressed={wishlisted}
+          className="motion-icon absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-charcoal transition-colors hover:bg-white hover:text-seedly-dark sm:right-3 sm:top-3"
+        >
+          <Heart key={String(wishlisted)} aria-hidden="true" className={`${wishlisted ? 'motion-pop' : ''} h-[18px] w-[18px] ${wishlisted ? 'fill-seedly-dark text-seedly-dark' : ''}`} />
         </button>
-      </Link>
+      </div>
 
-      {/* Content */}
-      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-        <div>
-          {/* Authentic Social Proof & Category Specific Tag */}
-          <div className="flex items-center justify-between gap-1.5 text-xs text-muted-gray mb-1.5">
-            <div className="flex items-center gap-1.5">
-              {product.review_count && product.review_count > 0 ? (
-                <>
-                  <div className="flex items-center text-amber-500">
-                    <Star className="w-3.5 h-3.5 fill-amber-400" />
-                  </div>
-                  <span className="font-semibold text-charcoal">{product.rating || '5.0'}</span>
-                  <span className="text-muted-gray/80">({product.review_count} verified)</span>
-                </>
-              ) : (
-                <span className="text-[11px] text-muted-gray font-medium">
-                  {isKit ? '2-Part Routine' : 'Direct Harvest'}
-                </span>
-              )}
-            </div>
+      <div className="flex flex-1 flex-col pt-4">
+        <Link href={href} className="transition-colors hover:text-seedly-dark">
+          <h3 className="min-h-[2.75rem] font-serif text-base font-semibold leading-snug text-charcoal line-clamp-2 sm:text-xl">
+            {product.name}
+          </h3>
+        </Link>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-gray line-clamp-2">
+          {product.short_description}
+        </p>
 
-            {/* Seed / Tea attribute tag */}
-            {!isKit && (
-              seedProduct?.product_type === 'seed' ? (
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-cream border border-border-gray text-seedly-dark/80">
-                  {product.slug.includes('flax') ? 'Cold-Milled Meal' : 'Whole Raw Seed'}
-                </span>
-              ) : (
-                seedProduct?.caffeine_level && (
-                  <span className="text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-full bg-seedly-light text-seedly-dark">
-                    {seedProduct.caffeine_level}
-                  </span>
-                )
-              )
+        {hasReviews && (
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-gray" aria-label={`${product.rating} out of 5 from ${product.review_count} reviews`}>
+            <Star aria-hidden="true" className="h-3.5 w-3.5 fill-seedly-dark text-seedly-dark" />
+            <span className="font-medium text-charcoal">{product.rating?.toFixed(1)}</span>
+            <span>({product.review_count})</span>
+          </div>
+        )}
+
+        <div className="mt-auto pt-4">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="text-base font-semibold tabular-nums text-charcoal sm:text-lg">
+              {formatPKR(displayPriceMinor)}
+            </span>
+            {displayComparePriceMinor != null && displayComparePriceMinor > displayPriceMinor && (
+              <span className="text-sm text-muted-gray line-through">
+                {formatPKR(displayComparePriceMinor)}
+              </span>
             )}
           </div>
-
-          {/* Product Name */}
-          <Link href={href} className="group-hover:text-seedly-dark transition-colors">
-            <h3 className="font-serif font-semibold text-base sm:text-lg text-charcoal leading-snug line-clamp-2 min-h-[2.5rem]">
-              {product.name}
-            </h3>
-          </Link>
-
-          {/* Tea details / Descriptor */}
-          {!isKit && seedProduct?.product_type === 'tea' && (seedProduct.steep_time || seedProduct.flavor_profile) ? (
-            <div className="mt-1 space-y-1">
-              <p className="text-[11px] text-seedly-dark font-medium flex items-center gap-1.5">
-                {seedProduct.steep_time && <span>⏱ {seedProduct.steep_time} steep</span>}
-                {seedProduct.water_temp && <span>· {seedProduct.water_temp}</span>}
-              </p>
-              <p className="text-xs text-muted-gray line-clamp-2 leading-relaxed">
-                {product.short_description}
-              </p>
-            </div>
-          ) : (
-            <p className="text-xs text-muted-gray mt-1 line-clamp-2 leading-relaxed">
-              {product.short_description}
-            </p>
-          )}
-        </div>
-
-        {/* Price & Add to Cart */}
-        <div className="mt-4 pt-3 border-t border-border-gray/50 flex items-center justify-between">
-          <div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-serif font-bold text-base sm:text-lg text-charcoal">
-                {formatPKR(displayPriceMinor)}
-              </span>
-              {displayComparePriceMinor && (
-                <span className="text-xs text-muted-gray line-through">
-                  {formatPKR(displayComparePriceMinor)}
-                </span>
-              )}
-            </div>
-            <p className="text-[11px] text-muted-gray">
-              {isKit
-                ? (product as Kit).package_size || 'Full Box Set (500g net)'
-                : seedProduct?.product_type === 'seed'
-                ? `${displayWeight} · Rs. ${unitPricePer100g}/100g`
-                : `${displayWeight} · ~25 cups`}
-            </p>
-          </div>
+          <p className="mt-1 min-h-5 text-xs leading-5 text-muted-gray sm:text-sm">{packageLabel}</p>
 
           {inStock ? (
             <button
+              type="button"
               onClick={handleAddToCart}
-              className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`motion-button mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-sm border px-3 py-2.5 text-sm font-medium transition-colors ${
                 added
-                  ? 'bg-emerald-700 text-white'
-                  : 'bg-seedly-light text-seedly-dark hover:bg-seedly-dark hover:text-white'
+                  ? 'border-seedly-dark bg-seedly-dark text-white'
+                  : 'border-seedly-dark/25 text-seedly-dark hover:border-seedly-dark hover:bg-seedly-dark hover:text-white'
               }`}
-              aria-label={isKit ? `Add ${product.name} to cart` : `Add ${displayWeight} to cart`}
+              aria-label={`Add ${product.name}${packageLabel ? `, ${packageLabel}` : ''} to basket`}
             >
-              {added ? (
-                <>
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Added</span>
-                </>
-              ) : (
-                <>
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>{isKit ? 'Add Kit' : `Add ${displayWeight}`}</span>
-                </>
-              )}
+              {added ? <Check aria-hidden="true" className="motion-pop h-4 w-4" /> : <Plus aria-hidden="true" className="h-4 w-4" />}
+              <span aria-live="polite">{added ? 'Added' : 'Add to basket'}</span>
             </button>
           ) : (
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsNotifyModalOpen(true);
-              }}
-              className="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100 transition-colors"
-              aria-label="Notify me when available"
+              type="button"
+              onClick={() => setIsNotifyModalOpen(true)}
+              className="motion-button mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-sm border border-border-gray px-3 py-2.5 text-sm font-medium text-charcoal transition-colors hover:border-charcoal hover:bg-cream"
+              aria-label={`Notify me when ${product.name} is available`}
             >
-              <Bell className="w-3.5 h-3.5 text-amber-700" />
-              <span>Notify</span>
+              <Bell aria-hidden="true" className="h-4 w-4" />
+              <span>Notify me</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Notify Me Modal */}
       <NotifyMeModal
         isOpen={isNotifyModalOpen}
         onClose={() => setIsNotifyModalOpen(false)}
         itemTitle={product.name}
         productId={isKit ? undefined : product.id}
-        variantId={isKit ? undefined : (product as Product).variants?.[0]?.id}
+        variantId={isKit ? undefined : defaultVariant?.id}
         kitId={isKit ? product.id : undefined}
       />
-    </div>
+    </Reveal>
   );
 }

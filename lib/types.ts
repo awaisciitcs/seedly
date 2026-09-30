@@ -1,6 +1,6 @@
 export type ProductType = 'seed' | 'kit' | 'tea';
 export type ProductStatus = 'ACTIVE' | 'DRAFT' | 'ARCHIVED';
-export type OrderStatus = 'PENDING_PAYMENT' | 'PAYMENT_REVIEW' | 'PAID' | 'PROCESSING' | 'PACKED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
+export type OrderStatus = 'RECEIVED' | 'PENDING_PAYMENT' | 'PAYMENT_REVIEW' | 'PAID' | 'PROCESSING' | 'PACKED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
 export type PaymentStatus = 'PENDING' | 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED' | 'FAILED';
 export type PaymentMethod = 'wallet_aggregator' | 'bank_transfer' | 'COD';
 export type AdminRole = 'Owner' | 'Staff';

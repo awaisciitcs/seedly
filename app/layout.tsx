@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/images/lifestyle/seedly_hero_lifestyle.jpg',
+        url: '/images/hero/seedly-hero.jpg',
         width: 1200,
         height: 630,
         alt: 'Seedly raw seeds and whole blossom mountain teas',

@@ -707,7 +707,7 @@ export default function FindYourSeedPage() {
                 <span className="text-emerald-800">Chat directly with our team in Lahore for preparation tips and cycle guidance.</span>
               </div>
               <a
-                href="https://wa.me/923041117333?text=Hello%20Seedly%20team,%20I%20just%20completed%20the%20Routine%20Finder%20and%20would%20like%20guidance."
+                href="https://wa.me/923719055758?text=Hello%20Seedly%20team,%20I%20just%20completed%20the%20Routine%20Finder%20and%20would%20like%20guidance."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full font-semibold transition-colors shrink-0 shadow-subtle"

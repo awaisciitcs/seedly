@@ -1,5 +1,6 @@
 import { getDatabase, toPlain } from '../db';
 import { Product, ProductVariant } from '../types';
+import { PUBLIC_REVIEW_FILTER } from '../review-visibility';
 
 export function getProducts(options?: {
   categorySlug?: string;
@@ -104,7 +105,7 @@ function mapRowToProduct(db: any, row: any): Product {
   const reviewStats = db.prepare(`
     SELECT COUNT(*) as count, AVG(rating) as avg_rating
     FROM reviews
-    WHERE product_id = ? AND status = 'APPROVED'
+    WHERE product_id = ? AND ${PUBLIC_REVIEW_FILTER}
   `).get(row.id) as any;
 
   let nutrition = undefined;
@@ -144,7 +145,7 @@ function mapRowToProduct(db: any, row: any): Product {
     badge: row.badge || undefined,
     is_featured: Boolean(row.is_featured),
     variants,
-    rating: reviewStats?.avg_rating ? Math.round(reviewStats.avg_rating * 10) / 10 : 5.0,
+    rating: reviewStats?.count > 0 ? Math.round(reviewStats.avg_rating * 10) / 10 : undefined,
     review_count: reviewStats?.count || 0,
   };
 }

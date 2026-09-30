@@ -124,7 +124,7 @@ export default function FaqPage() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
-            href="https://wa.me/923041117333"
+            href="https://wa.me/923719055758"
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full text-xs font-semibold flex items-center gap-2"

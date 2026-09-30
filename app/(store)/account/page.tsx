@@ -99,7 +99,7 @@ export default function AccountPage() {
 
             <div className="space-y-2 pt-2 text-xs">
               <a
-                href="https://wa.me/923041117333"
+                href="https://wa.me/923719055758"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3 px-4 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-semibold flex items-center justify-center gap-2"

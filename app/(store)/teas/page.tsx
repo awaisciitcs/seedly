@@ -1,17 +1,16 @@
 import React from 'react';
 import { getProducts } from '../../../lib/services/products';
 import { ProductCard } from '../../../components/product/ProductCard';
-import { Coffee, ShieldCheck, Thermometer } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Mountain Teas & Loose Botanicals | Seedly Pakistan',
+  title: 'Loose-Leaf Tea & Herbal Tea | Seedly Pakistan',
   description:
-    'Whole chamomile blossoms, highland green tea, and wild Gilgit spearmint leaves. Free of paper teabag microplastics, with clearly labelled caffeine levels.',
+    'Shop loose chamomile flowers, spearmint and green tea. Find flavour notes, caffeine information and brewing instructions on each product page.',
   openGraph: {
-    title: 'Mountain Teas & Loose Botanicals | Seedly Pakistan',
+    title: 'Loose-Leaf Tea & Herbal Tea | Seedly Pakistan',
     description:
-      'Whole chamomile blossoms, highland green tea, and alpine spearmint leaves from northern valleys. Honest caffeine labelling for every cup.',
+      'Loose chamomile flowers, spearmint and green tea, with flavour notes and brewing instructions to help you choose.',
     url: 'https://seedly.pk/teas',
     siteName: 'Seedly',
     locale: 'en_PK',
@@ -31,14 +30,15 @@ export default function TeasPage() {
   const teas = getProducts({ productType: 'tea' });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 space-y-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-10">
       {/* Category Header */}
-      <div className="max-w-2xl">
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
-          Mountain Teas &amp; Tisanes
+      <div className="motion-enter max-w-2xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-seedly-primary mb-4">The tea shelf</p>
+        <h1 className="font-serif text-4xl sm:text-5xl font-medium text-charcoal">
+          Find your next cup.
         </h1>
-        <p className="text-sm text-muted-gray mt-2 leading-relaxed">
-          Our herbal teas (chamomile and spearmint) are naturally caffeine-free tisanes. Highland green tea contains gentle caffeine (approx. 20 mg per cup). All loose whole leaves and blossoms, free of paper teabag microplastics and machine dust, with honest caffeine labelling for every cup.
+        <p className="text-base text-muted-gray mt-4 leading-relaxed">
+          Chamomile flowers, spearmint leaves and green tea, ready to brew loose. Explore the flavour notes and find the brewing instructions on each product page.
         </p>
       </div>
 

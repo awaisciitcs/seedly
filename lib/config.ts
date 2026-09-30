@@ -6,8 +6,8 @@ export const siteConfig = {
   contact: {
     phone: '0304 1117333',
     phoneInternational: '+92 304 1117333',
-    phoneRaw: '923041117333',
-    whatsappUrl: 'https://wa.me/923041117333',
+    phoneRaw: '923719055758',
+    whatsappUrl: 'https://wa.me/923719055758',
     email: 'care@seedly.pk',
     address: 'Plot 42, Block C-2, Gulberg III, Lahore, Punjab, Pakistan',
     dispatchHub: 'Lahore Packing & Dispatch Hub',

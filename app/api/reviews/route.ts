@@ -37,12 +37,12 @@ export async function POST(request: Request) {
 
     const review = createReview({
       product_id,
-      product_name: product_name || 'Botanical Harvest',
+      product_name: product_name || 'Seedly product',
       customer_name: customer_name.trim(),
       rating: numericRating,
-      title: (title || 'Verified Botanical Feedback').trim(),
+      title: (title || 'Customer review').trim(),
       body: reviewText.trim(),
-      verified_purchase: true,
+      verified_purchase: false,
     });
 
     return NextResponse.json({

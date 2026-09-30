@@ -1,9 +1,10 @@
 import { getDatabase } from '../db';
-import { Order, OrderItem, OrderStatus, PaymentMethod, PaymentStatus } from '../types';
+import { Order, OrderItem, OrderStatus, PaymentMethod } from '../types';
 import { generateOrderNumber } from '../utils';
 import { getSiteSettings } from './settings';
 import { dispatchNotification } from './notifications';
 import { getKitById } from './kits';
+import { assertOrderStatusUpdate, getInitialOrderState } from '../order-status';
 
 export interface CreateOrderInput {
   customer_name: string;
@@ -133,17 +134,8 @@ export function createOrder(input: CreateOrderInput): Order {
   const orderId = `ord-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   const orderNumber = generateOrderNumber();
 
-  // Initial statuses based on payment method
-  let initialPaymentStatus: PaymentStatus = 'UNDER_REVIEW';
-  let initialOrderStatus: OrderStatus = 'PAYMENT_REVIEW';
-
-  if (input.payment_method === 'wallet_aggregator') {
-    initialPaymentStatus = 'VERIFIED';
-    initialOrderStatus = 'PAID';
-  } else if (input.payment_method === 'COD') {
-    initialPaymentStatus = 'PENDING';
-    initialOrderStatus = 'PROCESSING';
-  }
+  const { paymentStatus: initialPaymentStatus, orderStatus: initialOrderStatus } =
+    getInitialOrderState(input.payment_method, Boolean(input.receipt_path));
 
   const insertOrder = db.prepare(`
     INSERT INTO orders (
@@ -313,6 +305,7 @@ export function updateOrderStatus(
   const db = getDatabase();
   const order = getOrderById(orderId);
   if (!order) throw new Error('Order not found');
+  assertOrderStatusUpdate(order, newStatus);
 
   db.prepare(`
     UPDATE orders

@@ -429,7 +429,7 @@ export default function CheckoutPage() {
             <strong>{pendingOrderRef}</strong>
           </div>
           <p className="text-[11px] text-muted-gray">
-            Need assistance? <a href="https://wa.me/923041117333" target="_blank" rel="noopener noreferrer" className="text-seedly-dark font-semibold hover:underline">WhatsApp 0304 1117333</a>
+            Need assistance? <a href="https://wa.me/923719055758" target="_blank" rel="noopener noreferrer" className="text-seedly-dark font-semibold hover:underline">WhatsApp 0304 1117333</a>
           </p>
         </div>
       </div>

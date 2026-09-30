@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { getOrders } from '../../../lib/services/orders';
+import { PAYMENT_METHOD_LABELS } from '../../../lib/order-status';
 import { formatPKR, formatDate } from '../../../lib/utils';
 import { ShoppingBag, Search, Eye, Filter } from 'lucide-react';
 
@@ -46,7 +47,7 @@ export default async function AdminOrdersPage(props: {
                 : 'bg-white text-amber-800 border border-amber-300'
             }`}
           >
-            Pending Bank Review
+            Payments under review
           </Link>
           <Link
             href="/admin/orders?status=PROCESSING"
@@ -97,7 +98,7 @@ export default async function AdminOrdersPage(props: {
                     </td>
                     <td className="py-4 px-6 text-charcoal">{o.shipping_city}</td>
                     <td className="py-4 px-6 capitalize">
-                      {o.payment_method === 'wallet_aggregator' ? 'Wallet' : 'Bank Transfer'}
+                      {PAYMENT_METHOD_LABELS[o.payment_method]}
                     </td>
                     <td className="py-4 px-6">
                       <span

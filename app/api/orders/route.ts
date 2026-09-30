@@ -57,6 +57,10 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!['COD', 'bank_transfer', 'wallet_aggregator'].includes(payment_method)) {
+      return NextResponse.json({ error: { message: 'Please select a valid payment method.' } }, { status: 400 });
+    }
+
     const order = createOrder({
       customer_name,
       customer_email,
@@ -66,7 +70,7 @@ export async function POST(request: Request) {
       shipping_province: shipping_province || 'Punjab',
       shipping_postal_code,
       shipping_notes,
-      payment_method: payment_method || 'wallet_aggregator',
+      payment_method,
       receipt_path,
       items,
     });

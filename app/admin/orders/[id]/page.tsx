@@ -31,6 +31,7 @@ export default function AdminOrderDetailPage() {
   const [trackingNumber, setTrackingNumber] = useState('');
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     fetch(`/api/admin/orders/${orderId}`)
@@ -49,19 +50,21 @@ export default function AdminOrderDetailPage() {
 
   const handleApprovePayment = async () => {
     setUpdating(true);
+    setMessage('');
+    setErrorMessage('');
     try {
       const res = await fetch(`/api/admin/orders/${orderId}/payment/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ admin_note: 'Verified against Meezan Bank statement' }),
+        body: JSON.stringify({ admin_note: 'Transfer verified by administrator' }),
       });
-      if (res.ok) {
-        const json = await res.json();
-        setOrder(json.data);
-        setMessage('Bank transfer payment approved and confirmed! WhatsApp notification dispatched.');
-      }
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Unable to approve payment.');
+      setOrder(json.data);
+      setStatus(json.data.order_status);
+      setMessage('Payment verified. Update fulfillment separately when preparation begins.');
     } catch (err) {
-      console.error(err);
+      setErrorMessage(err instanceof Error ? err.message : 'Unable to approve payment.');
     } finally {
       setUpdating(false);
     }
@@ -72,19 +75,21 @@ export default function AdminOrderDetailPage() {
     if (!reason) return;
 
     setUpdating(true);
+    setMessage('');
+    setErrorMessage('');
     try {
       const res = await fetch(`/api/admin/orders/${orderId}/payment/reject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason }),
       });
-      if (res.ok) {
-        const json = await res.json();
-        setOrder(json.data);
-        setMessage('Payment rejected. Customer has been alerted with rejection reason.');
-      }
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Unable to reject payment.');
+      setOrder(json.data);
+      setStatus(json.data.order_status);
+      setMessage('Payment rejected.');
     } catch (err) {
-      console.error(err);
+      setErrorMessage(err instanceof Error ? err.message : 'Unable to reject payment.');
     } finally {
       setUpdating(false);
     }
@@ -93,6 +98,8 @@ export default function AdminOrderDetailPage() {
   const handleUpdateFulfillment = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdating(true);
+    setMessage('');
+    setErrorMessage('');
     try {
       const res = await fetch(`/api/admin/orders/${orderId}/status`, {
         method: 'POST',
@@ -103,13 +110,13 @@ export default function AdminOrderDetailPage() {
           tracking_number: trackingNumber,
         }),
       });
-      if (res.ok) {
-        const json = await res.json();
-        setOrder(json.data);
-        setMessage('Fulfillment status updated and tracking notifications dispatched!');
-      }
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Unable to update fulfillment.');
+      setOrder(json.data);
+      setStatus(json.data.order_status);
+      setMessage('Fulfillment status updated.');
     } catch (err) {
-      console.error(err);
+      setErrorMessage(err instanceof Error ? err.message : 'Unable to update fulfillment.');
     } finally {
       setUpdating(false);
     }
@@ -179,13 +186,15 @@ export default function AdminOrderDetailPage() {
         </div>
       )}
 
-      {/* Bank Transfer Receipt Verification Section (Section 7.3 & 9.3) */}
-      {order.payment_method === 'bank_transfer' && (
+      {errorMessage && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">{errorMessage}</p>}
+
+      {/* Manual payment verification */}
+      {order.payment_method !== 'COD' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-border-gray/70">
             <h3 className="font-serif font-bold text-lg text-charcoal flex items-center gap-2">
               <Clock className="w-5 h-5 text-amber-600" />
-              <span>Manual Bank Transfer Verification</span>
+              <span>{order.payment_method === 'wallet_aggregator' ? 'Wallet transfer verification' : 'Bank transfer verification'}</span>
             </h3>
             <span className="text-xs font-bold font-mono text-charcoal">
               Amount to Verify: {formatPKR(order.total_minor)}
@@ -204,7 +213,7 @@ export default function AdminOrderDetailPage() {
                 </div>
               ) : (
                 <div className="p-8 text-center bg-cream/40 rounded-2xl border border-dashed border-border-gray text-xs text-muted-gray">
-                  Customer has not attached a screenshot yet.
+                  {order.payment_method === 'wallet_aggregator' ? 'Check the transaction ID in the order notes against your wallet account.' : 'Customer has not attached a screenshot yet.'}
                 </div>
               )}
             </div>
@@ -216,7 +225,7 @@ export default function AdminOrderDetailPage() {
                   <strong>Customer:</strong> {order.customer_name} ({order.customer_phone})
                 </p>
                 <p>
-                  <strong>Destination Account:</strong> Meezan Bank Limited (0102-0104882910)
+                  <strong>Payment method:</strong> {order.payment_method === 'wallet_aggregator' ? 'JazzCash / Easypaisa' : 'Bank transfer'}
                 </p>
                 <p>
                   <strong>Total Value:</strong> {formatPKR(order.total_minor)}
@@ -272,13 +281,16 @@ export default function AdminOrderDetailPage() {
               onChange={(e) => setStatus(e.target.value)}
               className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-seedly-primary/50"
             >
+              <option value="RECEIVED">RECEIVED (Awaiting preparation)</option>
+              <option value="PENDING_PAYMENT">PENDING_PAYMENT</option>
               <option value="PAYMENT_REVIEW">PAYMENT_REVIEW</option>
-              <option value="PAID">PAID</option>
-              <option value="PROCESSING">PROCESSING (Packing in Lahore)</option>
-              <option value="PACKED">PACKED (Ready for Courier Pickup)</option>
-              <option value="SHIPPED">SHIPPED (In Transit)</option>
-              <option value="DELIVERED">DELIVERED (Completed)</option>
+              <option value="PAID" disabled={order.payment_status !== 'VERIFIED'}>PAID</option>
+              <option value="PROCESSING" disabled={order.payment_method !== 'COD' && order.payment_status !== 'VERIFIED'}>PROCESSING (Preparation in progress)</option>
+              <option value="PACKED" disabled={order.payment_method !== 'COD' && order.payment_status !== 'VERIFIED'}>PACKED (Ready for Courier Pickup)</option>
+              <option value="SHIPPED" disabled={order.payment_method !== 'COD' && order.payment_status !== 'VERIFIED'}>SHIPPED (In Transit)</option>
+              <option value="DELIVERED" disabled={order.payment_method !== 'COD' && order.payment_status !== 'VERIFIED'}>DELIVERED (Completed)</option>
               <option value="CANCELLED">CANCELLED</option>
+              <option value="REFUNDED">REFUNDED</option>
             </select>
           </div>
 
@@ -314,7 +326,7 @@ export default function AdminOrderDetailPage() {
               disabled={updating}
               className="px-6 py-2.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-xl text-xs font-semibold shadow-card transition-all"
             >
-              {updating ? 'Updating...' : 'Save & Dispatch Tracking Alert'}
+              {updating ? 'Updating...' : 'Save status'}
             </button>
           </div>
         </form>

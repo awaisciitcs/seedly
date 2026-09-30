@@ -1,5 +1,6 @@
 import { getDatabase, toPlain } from '../db';
 import { Review } from '../types';
+import { PUBLIC_REVIEW_FILTER } from '../review-visibility';
 
 function mapRowToReview(row: any): Review {
   return {
@@ -18,7 +19,7 @@ function mapRowToReview(row: any): Review {
 
 export function getApprovedReviews(productId?: string): Review[] {
   const db = getDatabase();
-  let query = `SELECT * FROM reviews WHERE status = 'APPROVED'`;
+  let query = `SELECT * FROM reviews WHERE ${PUBLIC_REVIEW_FILTER}`;
   const params: any[] = [];
   if (productId) {
     query += ` AND product_id = ?`;
@@ -58,7 +59,7 @@ export function createReview(data: {
   const db = getDatabase();
   const id = `rev-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   const status = 'PENDING';
-  const verified = data.verified_purchase !== false ? 1 : 0;
+  const verified = data.verified_purchase === true ? 1 : 0;
 
   db.prepare(`
     INSERT INTO reviews (

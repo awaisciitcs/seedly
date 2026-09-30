@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getOrder } from '../../../../lib/services/orders';
 import { formatPKR, formatDate } from '../../../../lib/utils';
+import { getOrderProgress, PAYMENT_METHOD_LABELS } from '../../../../lib/order-status';
 import {
   CheckCircle2,
   Clock,
@@ -28,32 +29,35 @@ export default async function OrderConfirmationPage(props: {
     notFound();
   }
 
+  const progress = getOrderProgress(order);
   const steps = [
     { key: 'RECEIVED', label: 'Order Received', icon: CheckCircle2, done: true },
     {
       key: 'PAYMENT',
-      label: order.payment_status === 'VERIFIED' ? 'Payment Verified' : 'Payment Under Review',
+      label: progress.paymentLabel,
       icon: Clock,
-      done: order.payment_status === 'VERIFIED',
-      active: order.payment_status === 'UNDER_REVIEW',
+      done: progress.paymentDone,
+      active: progress.paymentActive,
+      detail: order.payment_method === 'COD' && !progress.paymentDone ? 'Due on delivery' : undefined,
     },
     {
-      key: 'PROCESSING',
-      label: 'Batch Prepared & Packed',
+      key: 'PACKED',
+      label: progress.packingActive ? 'Preparing your order' : 'Prepared & packed',
       icon: Package,
-      done: ['PROCESSING', 'PACKED', 'SHIPPED', 'DELIVERED'].includes(order.order_status),
+      done: progress.packed,
+      active: progress.packingActive,
     },
     {
       key: 'SHIPPED',
       label: 'Dispatched via Courier',
       icon: Truck,
-      done: ['SHIPPED', 'DELIVERED'].includes(order.order_status),
+      done: progress.shipped,
     },
     {
       key: 'DELIVERED',
       label: 'Safely Delivered',
       icon: CheckCheck,
-      done: order.order_status === 'DELIVERED',
+      done: progress.delivered,
     },
   ];
 
@@ -66,7 +70,7 @@ export default async function OrderConfirmationPage(props: {
         </div>
 
         <span className="text-xs uppercase tracking-widest font-bold text-seedly-dark bg-seedly-light px-3 py-1 rounded-full">
-          Order Confirmed
+          {order.order_status === 'CANCELLED' ? 'Order cancelled' : order.order_status === 'REFUNDED' ? 'Order refunded' : 'Order received'}
         </span>
 
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
@@ -78,13 +82,13 @@ export default async function OrderConfirmationPage(props: {
         </p>
 
         {/* Bank Review Notification Banner if applicable */}
-        {order.payment_method === 'bank_transfer' && order.payment_status === 'UNDER_REVIEW' && (
+        {order.payment_method !== 'COD' && order.payment_status === 'UNDER_REVIEW' && (
           <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-left flex items-start gap-3">
             <Clock className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
             <div className="space-y-1 text-xs text-amber-900">
-              <strong className="block text-sm font-semibold">Bank Transfer Receipt Under Review</strong>
+              <strong className="block text-sm font-semibold">Payment under review</strong>
               <p>
-                Our fulfillment team in Lahore verifies bank transfers during business hours. Once confirmed against our Meezan Bank statement, your order will automatically advance to processing.
+                Our team will verify your payment. Preparation and packing will appear here only after our team updates your order status.
               </p>
             </div>
           </div>
@@ -139,7 +143,7 @@ export default async function OrderConfirmationPage(props: {
                 <div className="space-y-0.5">
                   <span className="text-xs font-bold block">{step.label}</span>
                   <span className="text-[10px] text-muted-gray">
-                    {step.done ? 'Completed' : step.active ? 'In Progress' : 'Pending'}
+                    {step.detail || (step.done ? 'Completed' : step.active ? 'In progress' : 'Pending')}
                   </span>
                 </div>
               </div>
@@ -181,7 +185,7 @@ export default async function OrderConfirmationPage(props: {
             <div className="flex justify-between">
               <span>Payment Method:</span>
               <strong className="text-charcoal capitalize">
-                {order.payment_method === 'wallet_aggregator' ? 'JazzCash / Easypaisa' : 'Manual Bank Transfer'}
+                {PAYMENT_METHOD_LABELS[order.payment_method]}
               </strong>
             </div>
             <div className="flex justify-between">
@@ -268,7 +272,7 @@ export default async function OrderConfirmationPage(props: {
       {/* Support & Return to shop CTA */}
       <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
         <a
-          href={`https://wa.me/923041117333?text=${encodeURIComponent(
+          href={`https://wa.me/923719055758?text=${encodeURIComponent(
             `Salam Seedly! I am inquiring about my order #${order.order_number}`
           )}`}
           target="_blank"

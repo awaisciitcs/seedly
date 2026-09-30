@@ -34,22 +34,20 @@ export function dispatchNotification(payload: NotificationPayload) {
   let whatsappBody = '';
 
   switch (payload.type) {
-    case 'ORDER_CREATED':
-      emailSubject = `Your Seedly Order ${payload.orderNumber} is Received`;
-      emailBody = `Dear ${payload.customerName},\n\nThank you for choosing Seedly. We have received your order ${payload.orderNumber} totaling ${amountStr}.\n\n` +
-        (payload.paymentMethod === 'bank_transfer'
-          ? `We have received your bank transfer receipt and our team is verifying it. You will receive an update shortly.`
-          : `Your payment was completed successfully via digital wallet and your package is being prepared for dispatch.`);
-      whatsappBody = `🌱 *Seedly Pakistan*\n\nSalam ${payload.customerName}! Your order *#${payload.orderNumber}* (${amountStr}) has been received.\n\n` +
-        (payload.paymentMethod === 'bank_transfer'
-          ? `Your bank transfer receipt is currently under review by our operations desk.`
-          : `Payment is verified and your seeds/teas are being packed! Track anytime: https://seedly.pk/order/${payload.orderNumber}`);
+    case 'ORDER_CREATED': {
+      const paymentNote = payload.paymentMethod === 'COD'
+        ? 'Payment is due on delivery. Preparation has not started yet.'
+        : 'Your payment must be verified by our team before preparation begins.';
+      emailSubject = `Your Seedly order ${payload.orderNumber} is received`;
+      emailBody = `Dear ${payload.customerName},\n\nWe have received order ${payload.orderNumber}, totaling ${amountStr}.\n\n${paymentNote}\nTrack your order: https://seedly.pk/order/${payload.orderNumber}`;
+      whatsappBody = `Salam ${payload.customerName}! Your Seedly order #${payload.orderNumber} (${amountStr}) has been received.\n\n${paymentNote}\nTrack your order: https://seedly.pk/order/${payload.orderNumber}`;
       break;
+    }
 
     case 'PAYMENT_CONFIRMED':
-      emailSubject = `Payment Confirmed: Order ${payload.orderNumber}`;
-      emailBody = `Dear ${payload.customerName},\n\nYour bank transfer payment for order ${payload.orderNumber} has been verified and confirmed! Our team in Lahore is now freshly preparing your organic botanical package.`;
-      whatsappBody = `🌱 *Seedly Pakistan*\n\nSalam ${payload.customerName}! Your bank transfer for order *#${payload.orderNumber}* is *Verified & Confirmed*. We are preparing your order for shipment.`;
+      emailSubject = `Payment confirmed: order ${payload.orderNumber}`;
+      emailBody = `Dear ${payload.customerName},\n\nYour payment for order ${payload.orderNumber} has been verified. Preparation and packing will be updated separately by our team.\nTrack your order: https://seedly.pk/order/${payload.orderNumber}`;
+      whatsappBody = `Salam ${payload.customerName}! Payment for Seedly order #${payload.orderNumber} is verified. Preparation and packing will be updated separately.\nTrack your order: https://seedly.pk/order/${payload.orderNumber}`;
       break;
 
     case 'PAYMENT_REJECTED':

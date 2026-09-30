@@ -32,7 +32,7 @@ export default function AdminDashboardPage() {
     .reduce((sum, o) => sum + o.total_minor, 0);
 
   const pendingReceipts = orders.filter(
-    (o) => o.payment_method === 'bank_transfer' && o.payment_status === 'UNDER_REVIEW'
+    (o) => o.payment_method !== 'COD' && o.payment_status === 'UNDER_REVIEW'
   );
 
   const lowStockProducts = products.flatMap((p) =>

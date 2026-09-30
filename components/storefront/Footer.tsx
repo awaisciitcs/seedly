@@ -1,182 +1,72 @@
-'use client';
-
-import React, { useState } from 'react';
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { SeedlyLogo } from '../ui/SeedlyLogo';
-import { Mail, CheckCircle2, MapPin, Phone, ShieldCheck } from 'lucide-react';
-
 import { siteConfig } from '../../lib/config';
 
+const shopLinks = [
+  { href: '/shop', label: 'Shop all' },
+  { href: '/seeds', label: 'Raw seeds' },
+  { href: '/kits', label: 'Seed kits' },
+  { href: '/teas', label: 'Mountain teas' },
+  { href: '/find-your-seed', label: 'Routine finder' },
+];
+
+const helpLinks = [
+  { href: '/about', label: 'Our story' },
+  { href: '/shipping', label: 'Shipping & delivery' },
+  { href: '/returns', label: 'Returns & replacements' },
+  { href: '/faq', label: 'Frequently asked questions' },
+  { href: '/contact', label: 'Contact us' },
+];
+
 export function Footer() {
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setSubscribed(true);
-    }
-  };
-
   return (
-    <footer className="bg-seedly-dark text-cream border-t border-seedly-forest/40 pt-16 pb-24 lg:pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-seedly-light/10">
-          {/* Brand Info */}
-          <div className="lg:col-span-2 space-y-4">
-            <SeedlyLogo size="lg" textColor="text-white" />
-            <p className="text-sm text-seedly-light/80 leading-relaxed max-w-sm">
-              Pure raw seeds and whole mountain teas, sourced directly from smallholder growers across Pakistan and packaged fresh in Lahore in amber glass and airtight barrier pouches.
+    <footer className="border-t border-seedly-forest bg-seedly-dark pb-28 pt-14 text-cream lg:pb-8 lg:pt-16">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 pb-12 md:grid-cols-4 lg:grid-cols-[1.35fr_0.8fr_1fr_1.2fr] lg:gap-12">
+          <div className="col-span-2 md:col-span-1">
+            <SeedlyLogo size="lg" textColor="text-cream" />
+            <p className="mt-5 max-w-xs text-sm leading-7 text-cream/75">
+              Raw pantry seeds and whole-flower teas, packed in Lahore for everyday use.
             </p>
+            <p className="mt-5 text-xs leading-6 text-cream/60">Lahore, Pakistan<br />Delivering nationwide.</p>
+          </div>
 
-            <div className="pt-2 space-y-2 text-xs text-seedly-light/70">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
-                <span>Dispatched daily from our {siteConfig.contact.dispatchHub} via TCS &amp; Leopards</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
-                <span>Customer Care: <a href={`tel:${siteConfig.contact.phoneRaw}`} className="hover:text-white transition-colors underline underline-offset-2">{siteConfig.contact.phoneInternational}</a> ({siteConfig.contact.hours})</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-seedly-primary shrink-0" />
-                <span>Support: <a href={`mailto:${siteConfig.contact.email}`} className="hover:text-white transition-colors underline underline-offset-2">{siteConfig.contact.email}</a></span>
-              </div>
+          <nav aria-label="Shop footer links">
+            <h2 className="mb-5 text-sm font-semibold text-cream">Shop</h2>
+            <ul className="space-y-3 text-sm leading-6 text-cream/75">
+              {shopLinks.map((link) => <li key={link.href}><Link href={link.href} className="transition-colors hover:text-white">{link.label}</Link></li>)}
+            </ul>
+          </nav>
+
+          <nav aria-label="Help footer links">
+            <h2 className="mb-5 text-sm font-semibold text-cream">Good to know</h2>
+            <ul className="space-y-3 text-sm leading-6 text-cream/75">
+              {helpLinks.map((link) => <li key={link.href}><Link href={link.href} className="transition-colors hover:text-white">{link.label}</Link></li>)}
+            </ul>
+          </nav>
+
+          <div className="col-span-2 md:col-span-1">
+            <h2 className="mb-5 text-sm font-semibold text-cream">Here to help</h2>
+            <p className="max-w-xs text-sm leading-6 text-cream/75">Questions about an order or choosing a product? Get in touch.</p>
+            <div className="mt-4 space-y-2 text-sm leading-6">
+              <a href={`tel:+${siteConfig.contact.phoneRaw}`} className="block w-fit text-cream/85 transition-colors hover:text-white">{siteConfig.contact.phoneInternational}</a>
+              <a href={`mailto:${siteConfig.contact.email}`} className="block w-fit text-cream/85 transition-colors hover:text-white">{siteConfig.contact.email}</a>
+              <a href={siteConfig.contact.whatsappUrl} target="_blank" rel="noopener noreferrer" className="inline-block pt-1 text-cream underline decoration-cream/40 underline-offset-4 transition-colors hover:decoration-cream">Chat on WhatsApp<span className="sr-only"> (opens in a new tab)</span></a>
             </div>
-          </div>
-
-          {/* Catalog Links */}
-          <div className="space-y-3">
-            <h4 className="text-xs uppercase tracking-widest font-semibold text-white/90">Catalog</h4>
-            <ul className="space-y-2 text-sm text-seedly-light/80">
-              <li>
-                <Link href="/shop" className="hover:text-white transition-colors">
-                  Shop All Products
-                </Link>
-              </li>
-              <li>
-                <Link href="/seeds" className="hover:text-white transition-colors">
-                  Raw Pantry Seeds
-                </Link>
-              </li>
-              <li>
-                <Link href="/kits" className="hover:text-white transition-colors">
-                  Cycle Routine Kits
-                </Link>
-              </li>
-              <li>
-                <Link href="/teas" className="hover:text-white transition-colors">
-                  Mountain Teas &amp; Tisanes
-                </Link>
-              </li>
-              <li>
-                <Link href="/find-your-seed" className="hover:text-white transition-colors">
-                  Routine Finder
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Customer Support */}
-          <div className="space-y-3">
-            <h4 className="text-xs uppercase tracking-widest font-semibold text-white/90">Customer Care</h4>
-            <ul className="space-y-2 text-sm text-seedly-light/80">
-              <li>
-                <Link href="/about" className="hover:text-white transition-colors">
-                  Our Sourcing Story
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="hover:text-white transition-colors">
-                  Shipping &amp; Delivery
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="hover:text-white transition-colors">
-                  7-Day Replacement Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="hover:text-white transition-colors">
-                  Common Questions (FAQ)
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
-                  Contact &amp; WhatsApp
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Newsletter Box */}
-          <div className="space-y-3">
-            <h4 className="text-xs uppercase tracking-widest font-semibold text-white/90">Harvest Updates</h4>
-            <p className="text-xs text-seedly-light/80 leading-relaxed">
-              Seasonal harvest announcements and pantry updates. No spam.
-            </p>
-
-            {subscribed ? (
-              <div className="flex items-center gap-2 p-3 bg-seedly-forest rounded-xl text-xs text-seedly-light">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Thank you. We will keep you updated on new harvests.</span>
-              </div>
-            ) : (
-              <form onSubmit={handleNewsletterSubmit} className="space-y-2">
-                <label htmlFor="newsletter-email" className="sr-only">
-                  Email address for harvest updates
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 absolute left-3 top-3 text-seedly-light/60" aria-hidden="true" />
-                  <input
-                    id="newsletter-email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs bg-seedly-forest/70 border border-seedly-light/20 rounded-xl text-white placeholder:text-seedly-light/50 focus:outline-none focus:border-seedly-primary"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-2 bg-seedly-primary hover:bg-seedly-primary/90 text-white rounded-xl text-xs font-semibold transition-colors shadow-subtle"
-                >
-                  Join the Newsletter
-                </button>
-              </form>
-            )}
+            <p className="mt-4 text-xs leading-6 text-cream/60">{siteConfig.contact.hours}</p>
           </div>
         </div>
 
-        {/* Bottom Trust & Legal row */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-seedly-light/60 gap-4">
-          <div className="flex flex-wrap items-center gap-4">
-            <Link href="/privacy" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <span>•</span>
-            <Link href="/terms" className="hover:text-white transition-colors">
-              Terms of Service
-            </Link>
-            <span>•</span>
-            <Link href="/product-disclaimer" className="hover:text-white transition-colors">
-              Product Disclaimer
-            </Link>
+        <div className="space-y-5 border-t border-cream/15 pt-7 text-xs leading-6 text-cream/60">
+          <div className="flex flex-col justify-between gap-4 lg:flex-row">
+            <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2">
+              <Link href="/privacy" className="transition-colors hover:text-white">Privacy policy</Link>
+              <Link href="/terms" className="transition-colors hover:text-white">Terms of service</Link>
+              <Link href="/product-disclaimer" className="transition-colors hover:text-white">Product disclaimer</Link>
+            </nav>
+            <p>JazzCash &nbsp;/&nbsp; Easypaisa &nbsp;/&nbsp; Bank transfer &nbsp;/&nbsp; Cash on delivery</p>
           </div>
-
-          {/* Payment Badges in Pakistan */}
-          <div className="flex items-center gap-2 text-[11px] text-seedly-light/80">
-            <span>Payment Options:</span>
-            <span className="px-2 py-0.5 bg-white/10 rounded font-medium text-white">JazzCash</span>
-            <span className="px-2 py-0.5 bg-white/10 rounded font-medium text-white">Easypaisa</span>
-            <span className="px-2 py-0.5 bg-white/10 rounded font-medium text-white">Bank Transfer</span>
-            <span className="px-2 py-0.5 bg-white/10 rounded font-medium text-white">COD</span>
-          </div>
-
-          <p>© {new Date().getFullYear()} Seedly Naturals Pakistan. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Seedly Naturals Pakistan. All rights reserved.</p>
         </div>
       </div>
     </footer>
