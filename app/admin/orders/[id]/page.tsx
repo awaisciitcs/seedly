@@ -98,12 +98,12 @@ export default function AdminOrderDetailPage() {
         body: JSON.stringify({ reason }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error?.message || 'Unable to reject payment.');
+      if (!res.ok) throw new Error(json.error?.message || 'Unable to reject receipt.');
       setOrder(json.data);
       setStatus(json.data.order_status);
-      setMessage('Payment rejected.');
+      setMessage('Receipt marked as rejected. Customer has been notified.');
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Unable to reject payment.');
+      setErrorMessage(err instanceof Error ? err.message : 'Unable to reject receipt.');
     } finally {
       setUpdating(false);
     }
@@ -114,103 +114,117 @@ export default function AdminOrderDetailPage() {
     setUpdating(true);
     setMessage('');
     setErrorMessage('');
+
     try {
-      const res = await fetch(`/api/admin/orders/${orderId}/status`, {
+      const res = await fetch(`/api/admin/orders/${orderId}/fulfillment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status,
-          courier,
+          tracking_courier: courier,
           tracking_number: trackingNumber,
         }),
       });
+
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error?.message || 'Unable to update fulfillment.');
+      if (!res.ok) {
+        throw new Error(json.error?.message || 'Failed to update order fulfillment.');
+      }
+
       setOrder(json.data);
-      setStatus(json.data.order_status);
-      setMessage('Fulfillment status updated.');
+      setMessage(`Fulfillment status updated to ${status}.`);
+      router.refresh();
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Unable to update fulfillment.');
+      setErrorMessage(err instanceof Error ? err.message : 'Error updating fulfillment.');
     } finally {
       setUpdating(false);
     }
   };
 
   if (loading) {
-    return <div className="p-12 text-center text-xs text-muted-gray">Loading order details...</div>;
+    return (
+      <div className="py-20 text-center text-botanical-sage text-xs">
+        Loading order inspection details...
+      </div>
+    );
   }
 
   if (!order) {
     return (
-      <div className="p-12 text-center space-y-4">
-        <p className="text-sm font-semibold">Order not found.</p>
-        <Link href="/admin/orders" className="text-xs text-seedly-dark underline">
-          Return to Orders List
+      <div className="py-20 text-center space-y-4">
+        <p className="text-white text-sm">Order record not found.</p>
+        <Link href="/admin/orders" className="glass-btn-3d px-4 py-2 rounded-xl text-xs font-semibold">
+          Return to Orders
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link
             href="/admin/orders"
-            className="p-2 bg-white rounded-xl border border-border-gray hover:bg-cream text-charcoal transition-colors"
+            className="glass-btn-3d p-2 rounded-xl text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">
+            <div className="flex items-center gap-2.5">
+              <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white tracking-tight">
                 Order #{order.order_number}
               </h1>
               <span
-                className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] ${
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10px] border ${
                   order.payment_status === 'VERIFIED'
-                    ? 'bg-emerald-100 text-emerald-800'
+                    ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30'
                     : order.payment_status === 'UNDER_REVIEW'
-                    ? 'bg-amber-100 text-amber-800'
-                    : 'bg-rose-100 text-rose-800'
+                    ? 'bg-amber-950/70 text-amber-300 border-amber-500/30'
+                    : 'bg-rose-950/70 text-rose-300 border-rose-500/30'
                 }`}
               >
+                <span className="w-1.5 h-1.5 rounded-full bg-current" />
                 Payment: {order.payment_status}
               </span>
             </div>
-            <p className="text-xs text-muted-gray mt-0.5">Placed on {formatDate(order.created_at)}</p>
+            <p className="text-xs text-botanical-sage mt-0.5">Placed on {formatDate(order.created_at)}</p>
           </div>
         </div>
 
         <Link
           href={`/order/${order.order_number}`}
           target="_blank"
-          className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-border-gray rounded-xl text-xs font-medium text-charcoal hover:bg-cream"
+          className="glass-btn-3d inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white"
         >
           <span>Customer Tracking View</span>
-          <ExternalLink className="w-3.5 h-3.5 text-muted-gray" />
+          <ExternalLink className="w-3.5 h-3.5 text-lime" />
         </Link>
       </div>
 
       {message && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="p-4 bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn shadow-[0_0_12px_rgba(34,197,94,0.2)]">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{message}</span>
         </div>
       )}
 
-      {errorMessage && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">{errorMessage}</p>}
+      {errorMessage && (
+        <p role="alert" className="rounded-2xl border border-rose-500/40 bg-rose-950/70 p-4 text-xs text-rose-300">
+          {errorMessage}
+        </p>
+      )}
 
       {/* Manual payment verification */}
       {order.payment_method !== 'COD' && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-border-gray/70">
-            <h3 className="font-serif font-bold text-lg text-charcoal flex items-center gap-2">
-              <Clock className="w-5 h-5 text-amber-600" />
+        <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-white/10">
+            <h3 className="font-serif font-bold text-lg text-white flex items-center gap-2 tracking-tight">
+              <Clock className="w-5 h-5 text-amber-400" />
               <span>{order.payment_method === 'wallet_aggregator' ? 'Wallet transfer verification' : 'Bank transfer verification'}</span>
             </h3>
-            <span className="text-xs font-bold font-mono text-charcoal">
+            <span className="text-xs font-bold font-mono text-white">
               Amount to Verify: {formatPKR(order.total_minor)}
             </span>
           </div>
@@ -218,23 +232,23 @@ export default function AdminOrderDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             {/* Receipt Preview */}
             <div className="space-y-2">
-              <span className="text-xs font-semibold text-muted-gray uppercase tracking-wider block">
+              <span className="text-[11px] font-semibold text-botanical-sage uppercase tracking-wider block">
                 Uploaded Receipt Screenshot
               </span>
               {order.receipt_path ? (
                 <div className="space-y-2">
-                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border-gray bg-cream">
+                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 bg-black/40">
                     {receiptUrl ? (
                       order.receipt_path.endsWith('.pdf') ? (
                         <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
-                          <ExternalLink className="w-8 h-8 text-seedly-dark mb-2" />
-                          <span className="text-xs font-semibold text-charcoal">PDF Receipt Document</span>
+                          <ExternalLink className="w-8 h-8 text-lime mb-2" />
+                          <span className="text-xs font-semibold text-white">PDF Receipt Document</span>
                         </div>
                       ) : (
                         <img src={receiptUrl} alt="Customer Bank Receipt" className="w-full h-full object-contain" />
                       )
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-muted-gray">
+                      <div className="w-full h-full flex items-center justify-center text-xs text-botanical-sage">
                         Loading secure receipt...
                       </div>
                     )}
@@ -244,7 +258,7 @@ export default function AdminOrderDetailPage() {
                       href={receiptUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-seedly-dark hover:underline"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-lime hover:underline"
                     >
                       <span>Open Full Receipt</span>
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -252,7 +266,7 @@ export default function AdminOrderDetailPage() {
                   )}
                 </div>
               ) : (
-                <div className="p-8 text-center bg-cream/40 rounded-2xl border border-dashed border-border-gray text-xs text-muted-gray">
+                <div className="p-8 text-center bg-white/[0.02] rounded-2xl border border-dashed border-white/10 text-xs text-botanical-sage">
                   {order.payment_method === 'wallet_aggregator' ? 'Check the transaction ID in the order notes against your wallet account.' : 'Customer has not attached a screenshot yet.'}
                 </div>
               )}
@@ -260,15 +274,15 @@ export default function AdminOrderDetailPage() {
 
             {/* Approval Controls */}
             <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-cream/50 border border-border-gray space-y-2 text-xs">
-                <p>
-                  <strong>Customer:</strong> {order.customer_name} ({order.customer_phone})
+              <div className="glass-card-3d p-4 rounded-2xl space-y-2 text-xs">
+                <p className="text-white/90">
+                  <strong className="text-white">Customer:</strong> {order.customer_name} ({order.customer_phone})
                 </p>
-                <p>
-                  <strong>Payment method:</strong> {order.payment_method === 'wallet_aggregator' ? 'JazzCash / Easypaisa' : 'Bank transfer'}
+                <p className="text-white/90">
+                  <strong className="text-white">Payment method:</strong> {order.payment_method === 'wallet_aggregator' ? 'JazzCash / Easypaisa' : 'Bank transfer'}
                 </p>
-                <p>
-                  <strong>Total Value:</strong> {formatPKR(order.total_minor)}
+                <p className="text-white/90">
+                  <strong className="text-white">Total Value:</strong> {formatPKR(order.total_minor)}
                 </p>
               </div>
 
@@ -278,7 +292,7 @@ export default function AdminOrderDetailPage() {
                     type="button"
                     disabled={updating}
                     onClick={handleApprovePayment}
-                    className="flex-1 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-subtle flex items-center justify-center gap-1.5"
+                    className="btn-lime-3d flex-1 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Approve Payment</span>
@@ -287,15 +301,15 @@ export default function AdminOrderDetailPage() {
                     type="button"
                     disabled={updating}
                     onClick={handleRejectPayment}
-                    className="px-4 py-3 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                    className="glass-btn-3d px-4 py-3 rounded-xl text-rose-300 hover:text-rose-100 hover:bg-rose-500/20 border-rose-500/30 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <XCircle className="w-4 h-4" />
                     <span>Reject</span>
                   </button>
                 </div>
               ) : (
-                <div className="p-3 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-semibold flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <div className="glass-card-3d p-3 rounded-xl text-xs font-semibold flex items-center gap-2 text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>Payment has been {order.payment_status}</span>
                 </div>
               )}
@@ -305,21 +319,21 @@ export default function AdminOrderDetailPage() {
       )}
 
       {/* Fulfillment Status Controls & Courier Assignment */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card space-y-6">
-        <h3 className="font-serif font-bold text-lg text-charcoal flex items-center gap-2">
-          <Truck className="w-5 h-5 text-seedly-primary" />
-          <span>Fulfillment & Courier Tracking</span>
+      <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 space-y-6">
+        <h3 className="font-serif font-bold text-lg text-white flex items-center gap-2 tracking-tight">
+          <Truck className="w-5 h-5 text-lime" />
+          <span>Fulfillment &amp; Courier Tracking</span>
         </h3>
 
         <form onSubmit={handleUpdateFulfillment} className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
           <div>
-            <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+            <label className="block text-[11px] font-semibold text-botanical-sage uppercase tracking-wider mb-1">
               Fulfillment Status
             </label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-seedly-primary/50"
+              className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-xs bg-botanical-dark text-white"
             >
               <option value="RECEIVED">RECEIVED (Awaiting preparation)</option>
               <option value="PENDING_PAYMENT">PENDING_PAYMENT</option>
@@ -335,7 +349,7 @@ export default function AdminOrderDetailPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+            <label className="block text-[11px] font-semibold text-botanical-sage uppercase tracking-wider mb-1">
               Courier Partner
             </label>
             <input
@@ -343,12 +357,12 @@ export default function AdminOrderDetailPage() {
               placeholder="e.g. TCS / Leopards Courier"
               value={courier}
               onChange={(e) => setCourier(e.target.value)}
-              className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-seedly-primary/50"
+              className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-xs"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+            <label className="block text-[11px] font-semibold text-botanical-sage uppercase tracking-wider mb-1">
               Tracking Number
             </label>
             <input
@@ -356,7 +370,7 @@ export default function AdminOrderDetailPage() {
               placeholder="e.g. TCS-7729104"
               value={trackingNumber}
               onChange={(e) => setTrackingNumber(e.target.value)}
-              className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-seedly-primary/50"
+              className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-xs font-mono"
             />
           </div>
 
@@ -364,7 +378,7 @@ export default function AdminOrderDetailPage() {
             <button
               type="submit"
               disabled={updating}
-              className="px-6 py-2.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-xl text-xs font-semibold shadow-card transition-all"
+              className="btn-lime-3d px-6 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
             >
               {updating ? 'Updating...' : 'Save status'}
             </button>
@@ -374,50 +388,50 @@ export default function AdminOrderDetailPage() {
 
       {/* Customer & Shipping Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-3xl p-6 border border-border-gray shadow-card space-y-3 text-xs">
-          <h4 className="font-serif font-bold text-base text-charcoal">Customer Information</h4>
-          <p>
-            <strong>Name:</strong> {order.customer_name}
+        <div className="glass-panel-3d rounded-3xl p-6 space-y-3 text-xs">
+          <h4 className="font-serif font-bold text-base text-white">Customer Information</h4>
+          <p className="text-white/90">
+            <strong className="text-white">Name:</strong> {order.customer_name}
           </p>
-          <p>
-            <strong>Phone:</strong> {order.customer_phone}
+          <p className="text-white/90">
+            <strong className="text-white">Phone:</strong> {order.customer_phone}
           </p>
-          <p>
-            <strong>Email:</strong> {order.customer_email}
+          <p className="text-white/90">
+            <strong className="text-white">Email:</strong> {order.customer_email}
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl p-6 border border-border-gray shadow-card space-y-3 text-xs">
-          <h4 className="font-serif font-bold text-base text-charcoal">Delivery Address</h4>
-          <p>{order.shipping_address}</p>
-          <p>
+        <div className="glass-panel-3d rounded-3xl p-6 space-y-3 text-xs">
+          <h4 className="font-serif font-bold text-base text-white">Delivery Address</h4>
+          <p className="text-white/90">{order.shipping_address}</p>
+          <p className="text-white/90">
             {order.shipping_city}, {order.shipping_province}
           </p>
-          {order.shipping_notes && <p className="italic text-muted-gray">Note: {order.shipping_notes}</p>}
+          {order.shipping_notes && <p className="italic text-botanical-sage">Note: {order.shipping_notes}</p>}
         </div>
       </div>
 
       {/* Items Table */}
-      <div className="bg-white rounded-3xl p-6 border border-border-gray shadow-card space-y-4">
-        <h4 className="font-serif font-bold text-base text-charcoal">Ordered Goods</h4>
-        <div className="divide-y divide-border-gray/50">
+      <div className="glass-panel-3d rounded-3xl p-6 space-y-4">
+        <h4 className="font-serif font-bold text-base text-white">Ordered Goods</h4>
+        <div className="divide-y divide-white/10">
           {order.items?.map((item: any) => (
             <div key={item.id} className="py-3 flex items-center justify-between text-xs">
               <div>
-                <p className="font-bold text-charcoal">{item.name_snapshot}</p>
-                <p className="text-muted-gray font-mono text-[11px]">SKU: {item.sku_snapshot}</p>
+                <p className="font-bold text-white text-xs">{item.name_snapshot}</p>
+                <p className="text-botanical-sage font-mono text-[10px] mt-0.5">SKU: {item.sku_snapshot}</p>
               </div>
               <div className="text-right">
-                <span className="font-semibold text-charcoal">{formatPKR(item.line_total_minor)}</span>
-                <p className="text-muted-gray">Qty: {item.quantity}</p>
+                <span className="font-medium font-mono text-white text-xs">{formatPKR(item.line_total_minor)}</span>
+                <p className="text-botanical-sage text-[11px]">Qty: {item.quantity}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="border-t border-border-gray pt-4 flex justify-between text-sm font-bold text-charcoal">
+        <div className="border-t border-white/10 pt-4 flex justify-between text-sm font-bold text-white">
           <span>Total Order Value</span>
-          <span className="text-seedly-dark">{formatPKR(order.total_minor)}</span>
+          <span className="font-mono text-lime">{formatPKR(order.total_minor)}</span>
         </div>
       </div>
     </div>

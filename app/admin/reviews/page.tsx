@@ -11,7 +11,6 @@ import {
   Search,
   MessageSquare,
   AlertCircle,
-  Sparkles,
   ShieldCheck,
   RefreshCw,
 } from 'lucide-react';
@@ -112,20 +111,22 @@ export default function AdminReviewsPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-charcoal">Customer Reviews & Feedback</h1>
-          <p className="text-xs text-muted-gray mt-1">
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-white tracking-tight">
+            Customer Reviews &amp; Feedback
+          </h1>
+          <p className="text-xs text-botanical-sage mt-1">
             Moderate submitted botanical reviews. Only approved reviews appear on customer product pages.
           </p>
         </div>
         <button
           onClick={fetchReviews}
-          className="inline-flex items-center gap-2 px-4 py-2 border border-border-gray bg-white rounded-xl text-xs font-semibold text-charcoal hover:bg-cream/50 transition-colors shadow-subtle self-start sm:self-auto"
+          className="glass-btn-3d inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white self-start sm:self-auto cursor-pointer"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 text-lime ${loading ? 'animate-spin' : ''}`} />
           <span>Refresh</span>
         </button>
       </div>
@@ -133,23 +134,23 @@ export default function AdminReviewsPage() {
       {/* Notifications */}
       {notification && (
         <div
-          className={`p-4 rounded-2xl flex items-center justify-between text-xs font-medium border ${
+          className={`p-4 rounded-2xl flex items-center justify-between text-xs font-medium border animate-fadeIn ${
             notification.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-              : 'bg-rose-50 text-rose-800 border-rose-200'
+              ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40 shadow-[0_0_12px_rgba(34,197,94,0.2)]'
+              : 'bg-rose-950/70 text-rose-300 border-rose-500/40 shadow-[0_0_12px_rgba(244,63,94,0.2)]'
           }`}
         >
           <div className="flex items-center gap-2">
             {notification.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             ) : (
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
             )}
             <span>{notification.message}</span>
           </div>
           <button
             onClick={() => setNotification(null)}
-            className="text-xs opacity-70 hover:opacity-100"
+            className="text-xs opacity-70 hover:opacity-100 text-white"
           >
             Dismiss
           </button>
@@ -158,56 +159,56 @@ export default function AdminReviewsPage() {
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="bg-white p-4 rounded-2xl border border-border-gray shadow-card">
-          <div className="flex items-center justify-between text-xs text-muted-gray mb-1">
+        <div className="glass-card-3d p-4 rounded-2xl">
+          <div className="flex items-center justify-between text-xs text-botanical-sage mb-1">
             <span>Total Reviews</span>
-            <MessageSquare className="w-3.5 h-3.5 text-seedly-primary" />
+            <MessageSquare className="w-3.5 h-3.5 text-lime" />
           </div>
-          <p className="font-serif text-2xl font-bold text-charcoal">{totalReviews}</p>
+          <p className="font-serif text-2xl font-bold text-white">{totalReviews}</p>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-amber-200 bg-amber-50/30 shadow-card">
-          <div className="flex items-center justify-between text-xs text-amber-800 font-semibold mb-1">
+        <div className="glass-card-3d p-4 rounded-2xl border-amber-500/30">
+          <div className="flex items-center justify-between text-xs text-amber-300 font-semibold mb-1">
             <span>Needs Moderation</span>
-            <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+            <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
           </div>
           <div className="flex items-baseline gap-2">
-            <p className="font-serif text-2xl font-bold text-amber-700">{pendingCount}</p>
+            <p className="font-serif text-2xl font-bold text-amber-300">{pendingCount}</p>
             {pendingCount > 0 && (
-              <span className="text-[10px] uppercase font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">
+              <span className="text-[9px] uppercase font-bold text-amber-400 bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-500/40">
                 Action Required
               </span>
             )}
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-border-gray shadow-card">
-          <div className="flex items-center justify-between text-xs text-emerald-800 mb-1">
+        <div className="glass-card-3d p-4 rounded-2xl">
+          <div className="flex items-center justify-between text-xs text-emerald-300 mb-1">
             <span>Approved</span>
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <p className="font-serif text-2xl font-bold text-emerald-700">{approvedCount}</p>
+          <p className="font-serif text-2xl font-bold text-emerald-300">{approvedCount}</p>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-border-gray shadow-card">
-          <div className="flex items-center justify-between text-xs text-rose-800 mb-1">
+        <div className="glass-card-3d p-4 rounded-2xl">
+          <div className="flex items-center justify-between text-xs text-rose-300 mb-1">
             <span>Rejected</span>
-            <XCircle className="w-3.5 h-3.5 text-rose-600" />
+            <XCircle className="w-3.5 h-3.5 text-rose-400" />
           </div>
-          <p className="font-serif text-2xl font-bold text-rose-700">{rejectedCount}</p>
+          <p className="font-serif text-2xl font-bold text-rose-300">{rejectedCount}</p>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-border-gray shadow-card col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between text-xs text-muted-gray mb-1">
+        <div className="glass-card-3d p-4 rounded-2xl col-span-2 sm:col-span-1">
+          <div className="flex items-center justify-between text-xs text-botanical-sage mb-1">
             <span>Avg Rating</span>
-            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
+            <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
           </div>
-          <p className="font-serif text-2xl font-bold text-charcoal">{averageRating} / 5.0</p>
+          <p className="font-serif text-2xl font-bold text-white">{averageRating} / 5.0</p>
         </div>
       </div>
 
       {/* Filter Tabs & Search */}
-      <div className="bg-white rounded-3xl border border-border-gray p-4 shadow-card flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="glass-panel-3d rounded-3xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Status Pills */}
         <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           {[
@@ -221,12 +222,12 @@ export default function AdminReviewsPage() {
               <button
                 key={tab.id}
                 onClick={() => setFilterStatus(tab.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all cursor-pointer ${
                   active
-                    ? 'bg-seedly-dark text-white shadow-subtle'
+                    ? 'btn-lime-3d font-bold'
                     : tab.highlight
-                    ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
-                    : 'bg-cream/60 text-charcoal hover:bg-cream border border-border-gray/50'
+                    ? 'bg-amber-950/70 text-amber-300 border border-amber-500/40 hover:bg-amber-900/60 font-semibold'
+                    : 'glass-btn-3d font-medium hover:text-white'
                 }`}
               >
                 {tab.label}
@@ -237,40 +238,40 @@ export default function AdminReviewsPage() {
 
         {/* Search Bar */}
         <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-muted-gray absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-botanical-sage absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search reviews or products..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-cream/30 border border-border-gray rounded-xl text-xs focus:outline-none focus:border-seedly-primary focus:bg-white transition-all"
+            className="glass-input-3d w-full pl-9 pr-4 py-2 rounded-xl text-xs placeholder:text-botanical-sage/60"
           />
         </div>
       </div>
 
       {/* Reviews Table / List */}
-      <div className="bg-white rounded-3xl border border-border-gray shadow-card overflow-hidden">
+      <div className="glass-panel-3d rounded-3xl p-5 md:p-6 overflow-hidden">
         {loading ? (
-          <div className="py-16 text-center text-xs text-muted-gray">Loading reviews...</div>
+          <div className="py-16 text-center text-xs text-botanical-sage">Loading reviews...</div>
         ) : filteredReviews.length === 0 ? (
           <div className="py-16 text-center space-y-2">
-            <MessageSquare className="w-8 h-8 text-muted-gray/50 mx-auto" />
-            <p className="text-sm font-semibold text-charcoal">No reviews match your filters</p>
-            <p className="text-xs text-muted-gray">Try switching the status filter tab or search keywords.</p>
+            <MessageSquare className="w-8 h-8 text-botanical-sage/40 mx-auto" />
+            <p className="text-sm font-semibold text-white">No reviews match your filters</p>
+            <p className="text-xs text-botanical-sage">Try switching the status filter tab or search keywords.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-cream/60 border-b border-border-gray text-muted-gray uppercase tracking-wider font-semibold">
-                <tr>
-                  <th className="py-4 px-6">Product & Date</th>
-                  <th className="py-4 px-6">Customer & Rating</th>
-                  <th className="py-4 px-6">Review Content</th>
-                  <th className="py-4 px-6">Status</th>
-                  <th className="py-4 px-6 text-right">Moderation Actions</th>
+          <div className="overflow-x-auto -mx-5 md:-mx-6 px-5 md:px-6">
+            <table className="w-full text-left text-xs min-w-[760px]">
+              <thead>
+                <tr className="border-b border-white/10 text-botanical-sage text-[11px] uppercase tracking-wider font-semibold">
+                  <th className="py-3.5 px-4 font-semibold">Product &amp; Date</th>
+                  <th className="py-3.5 px-4 font-semibold">Customer &amp; Rating</th>
+                  <th className="py-3.5 px-4 font-semibold">Review Content</th>
+                  <th className="py-3.5 px-4 font-semibold">Status</th>
+                  <th className="py-3.5 px-4 font-semibold text-right">Moderation Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-gray/50">
+              <tbody className="divide-y divide-white/[0.06]">
                 {filteredReviews.map((rev) => {
                   const isPending = rev.status === 'PENDING';
                   const isApproved = rev.status === 'APPROVED';
@@ -280,44 +281,44 @@ export default function AdminReviewsPage() {
                   return (
                     <tr
                       key={rev.id}
-                      className={`hover:bg-cream/30 transition-colors ${
-                        isPending ? 'bg-amber-50/20' : ''
+                      className={`hover:bg-white/[0.03] transition-colors ${
+                        isPending ? 'bg-amber-950/20' : ''
                       }`}
                     >
                       {/* Product & Date */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-4 whitespace-nowrap">
                         <div className="space-y-0.5">
-                          <p className="font-semibold text-charcoal">{rev.product_name}</p>
-                          <p className="text-[11px] text-muted-gray">{formatDate(rev.created_at)}</p>
-                          <span className="text-[10px] text-muted-gray/70 font-mono">
+                          <p className="font-semibold text-white">{rev.product_name}</p>
+                          <p className="text-[11px] text-botanical-sage">{formatDate(rev.created_at)}</p>
+                          <span className="text-[10px] text-botanical-sage/70 font-mono">
                             ID: {rev.id.slice(0, 12)}
                           </span>
                         </div>
                       </td>
 
                       {/* Customer & Rating */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-4 whitespace-nowrap">
                         <div className="space-y-1">
-                          <div className="flex items-center gap-1.5 font-medium text-charcoal">
+                          <div className="flex items-center gap-1.5 font-medium text-white">
                             <span>{rev.customer_name}</span>
                             {rev.verified_purchase && (
                               <span title="Verified Customer">
-                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                <ShieldCheck className="w-3.5 h-3.5 text-lime" />
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center text-amber-500 gap-0.5">
+                          <div className="flex items-center text-amber-400 gap-0.5">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
                                 className={`w-3.5 h-3.5 ${
                                   i < rev.rating
-                                    ? 'fill-amber-400 text-amber-500'
-                                    : 'text-border-gray fill-transparent'
+                                    ? 'fill-amber-400 text-amber-400'
+                                    : 'text-white/20 fill-transparent'
                                 }`}
                               />
                             ))}
-                            <span className="text-[11px] font-bold text-charcoal ml-1">
+                            <span className="text-[11px] font-bold text-white ml-1">
                               {rev.rating}.0
                             </span>
                           </div>
@@ -325,41 +326,47 @@ export default function AdminReviewsPage() {
                       </td>
 
                       {/* Review Content */}
-                      <td className="py-4 px-6 max-w-sm">
+                      <td className="py-4 px-4 max-w-sm">
                         <div className="space-y-1">
-                          <p className="font-bold text-charcoal">{rev.title}</p>
-                          <p className="text-muted-gray text-[11px] leading-relaxed">
-                            "{rev.body}"
+                          <p className="font-bold text-white text-xs">{rev.title}</p>
+                          <p className="text-botanical-sage text-[11px] leading-relaxed">
+                            &quot;{rev.body}&quot;
                           </p>
                         </div>
                       </td>
 
                       {/* Status */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-4 whitespace-nowrap">
                         <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider ${
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider border ${
                             isApproved
-                              ? 'bg-emerald-100 text-emerald-800'
+                              ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30 shadow-[0_0_8px_rgba(34,197,94,0.2)]'
                               : isPending
-                              ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                              : 'bg-rose-100 text-rose-800'
+                              ? 'bg-amber-950/70 text-amber-300 border-amber-500/40 shadow-[0_0_8px_rgba(245,158,11,0.2)]'
+                              : 'bg-rose-950/70 text-rose-300 border-rose-500/30'
                           }`}
                         >
-                          {isApproved && <CheckCircle2 className="w-3 h-3 text-emerald-600" />}
-                          {isPending && <AlertCircle className="w-3 h-3 text-amber-600" />}
-                          {isRejected && <XCircle className="w-3 h-3 text-rose-600" />}
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              isApproved
+                                ? 'bg-emerald-400'
+                                : isPending
+                                ? 'bg-amber-400'
+                                : 'bg-rose-400'
+                            }`}
+                          />
                           <span>{rev.status}</span>
                         </span>
                       </td>
 
                       {/* Moderation Actions */}
-                      <td className="py-4 px-6 text-right">
+                      <td className="py-4 px-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-2">
                           {!isApproved && (
                             <button
                               disabled={isBusy}
                               onClick={() => handleUpdateStatus(rev.id, 'APPROVED')}
-                              className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-[11px] transition-all flex items-center gap-1 shadow-subtle disabled:opacity-50"
+                              className="btn-lime-3d px-3 py-1.5 rounded-xl font-bold text-[11px] flex items-center gap-1 cursor-pointer disabled:opacity-50"
                               title="Approve review for public display"
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -371,7 +378,7 @@ export default function AdminReviewsPage() {
                             <button
                               disabled={isBusy}
                               onClick={() => handleUpdateStatus(rev.id, 'REJECTED')}
-                              className="px-3 py-1.5 rounded-xl bg-white border border-rose-300 text-rose-700 hover:bg-rose-50 font-semibold text-[11px] transition-all flex items-center gap-1 shadow-subtle disabled:opacity-50"
+                              className="glass-btn-3d px-3 py-1.5 rounded-xl text-rose-300 hover:text-rose-100 hover:bg-rose-500/20 border-rose-500/30 font-semibold text-[11px] flex items-center gap-1 cursor-pointer disabled:opacity-50"
                               title="Reject and hide review"
                             >
                               <XCircle className="w-3.5 h-3.5" />
@@ -382,10 +389,10 @@ export default function AdminReviewsPage() {
                           <button
                             disabled={isBusy}
                             onClick={() => handleDelete(rev.id)}
-                            className="p-1.5 rounded-xl text-muted-gray hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                            className="glass-btn-3d p-1.5 rounded-xl text-botanical-sage hover:text-rose-400 hover:bg-rose-500/20 border-white/10 cursor-pointer"
                             title="Delete review"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>

@@ -100,20 +100,22 @@ export default function AdminStockAlertsPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-charcoal">Back-In-Stock Alerts</h1>
-          <p className="text-xs text-muted-gray mt-1">
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-white tracking-tight">
+            Back-In-Stock Alerts
+          </h1>
+          <p className="text-xs text-botanical-sage mt-1">
             Track customer demand for out-of-stock items and manage automated restock notifications.
           </p>
         </div>
         <button
           onClick={fetchSubscriptions}
-          className="inline-flex items-center gap-2 px-4 py-2 border border-border-gray bg-white rounded-xl text-xs font-semibold text-charcoal hover:bg-cream/50 transition-colors shadow-subtle self-start sm:self-auto"
+          className="glass-btn-3d inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white self-start sm:self-auto cursor-pointer"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 text-lime ${loading ? 'animate-spin' : ''}`} />
           <span>Refresh</span>
         </button>
       </div>
@@ -121,23 +123,23 @@ export default function AdminStockAlertsPage() {
       {/* Notifications */}
       {notification && (
         <div
-          className={`p-4 rounded-2xl flex items-center justify-between text-xs font-medium border ${
+          className={`p-4 rounded-2xl flex items-center justify-between text-xs font-medium border animate-fadeIn ${
             notification.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-              : 'bg-rose-50 text-rose-800 border-rose-200'
+              ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40 shadow-[0_0_12px_rgba(34,197,94,0.2)]'
+              : 'bg-rose-950/70 text-rose-300 border-rose-500/40 shadow-[0_0_12px_rgba(244,63,94,0.2)]'
           }`}
         >
           <div className="flex items-center gap-2">
             {notification.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             ) : (
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
             )}
             <span>{notification.message}</span>
           </div>
           <button
             onClick={() => setNotification(null)}
-            className="text-xs opacity-70 hover:opacity-100"
+            className="text-xs opacity-70 hover:opacity-100 text-white"
           >
             Dismiss
           </button>
@@ -146,48 +148,48 @@ export default function AdminStockAlertsPage() {
 
       {/* Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white p-4 rounded-2xl border border-border-gray shadow-card">
-          <div className="flex items-center justify-between text-xs text-muted-gray mb-1">
+        <div className="glass-card-3d p-4 rounded-2xl">
+          <div className="flex items-center justify-between text-xs text-botanical-sage mb-1">
             <span>Total Requests</span>
-            <Bell className="w-3.5 h-3.5 text-seedly-primary" />
+            <Bell className="w-3.5 h-3.5 text-lime" />
           </div>
-          <p className="font-serif text-2xl font-bold text-charcoal">{total}</p>
+          <p className="font-serif text-2xl font-bold text-white">{total}</p>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-amber-200 bg-amber-50/30 shadow-card">
-          <div className="flex items-center justify-between text-xs text-amber-800 font-semibold mb-1">
+        <div className="glass-card-3d p-4 rounded-2xl border-amber-500/30">
+          <div className="flex items-center justify-between text-xs text-amber-300 font-semibold mb-1">
             <span>Waiting for Stock</span>
-            <Package className="w-3.5 h-3.5 text-amber-600" />
+            <Package className="w-3.5 h-3.5 text-amber-400" />
           </div>
           <div className="flex items-baseline gap-2">
-            <p className="font-serif text-2xl font-bold text-amber-700">{activeCount}</p>
+            <p className="font-serif text-2xl font-bold text-amber-300">{activeCount}</p>
             {activeCount > 0 && (
-              <span className="text-[10px] uppercase font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">
+              <span className="text-[9px] uppercase font-bold text-amber-400 bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-500/40">
                 Unfulfilled Demand
               </span>
             )}
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-border-gray shadow-card">
-          <div className="flex items-center justify-between text-xs text-emerald-800 mb-1">
+        <div className="glass-card-3d p-4 rounded-2xl">
+          <div className="flex items-center justify-between text-xs text-emerald-300 mb-1">
             <span>Notified (Restocked)</span>
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <p className="font-serif text-2xl font-bold text-emerald-700">{notifiedCount}</p>
+          <p className="font-serif text-2xl font-bold text-emerald-300">{notifiedCount}</p>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-border-gray shadow-card">
-          <div className="flex items-center justify-between text-xs text-muted-gray mb-1">
+        <div className="glass-card-3d p-4 rounded-2xl">
+          <div className="flex items-center justify-between text-xs text-botanical-sage mb-1">
             <span>Unsubscribed</span>
-            <Mail className="w-3.5 h-3.5 text-muted-gray" />
+            <Mail className="w-3.5 h-3.5 text-botanical-sage" />
           </div>
-          <p className="font-serif text-2xl font-bold text-charcoal">{unsubscribedCount}</p>
+          <p className="font-serif text-2xl font-bold text-white">{unsubscribedCount}</p>
         </div>
       </div>
 
       {/* Filter Tabs & Search */}
-      <div className="bg-white rounded-3xl border border-border-gray p-4 shadow-card flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="glass-panel-3d rounded-3xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           {[
             { id: 'ALL', label: `All (${total})` },
@@ -200,12 +202,12 @@ export default function AdminStockAlertsPage() {
               <button
                 key={tab.id}
                 onClick={() => setFilterStatus(tab.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all cursor-pointer ${
                   active
-                    ? 'bg-seedly-dark text-white shadow-subtle'
+                    ? 'btn-lime-3d font-bold'
                     : tab.highlight
-                    ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
-                    : 'bg-cream/60 text-charcoal hover:bg-cream border border-border-gray/50'
+                    ? 'bg-amber-950/70 text-amber-300 border border-amber-500/40 hover:bg-amber-900/60 font-semibold'
+                    : 'glass-btn-3d font-medium hover:text-white'
                 }`}
               >
                 {tab.label}
@@ -215,95 +217,120 @@ export default function AdminStockAlertsPage() {
         </div>
 
         <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-muted-gray absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-botanical-sage absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search email or product title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-cream/30 border border-border-gray rounded-xl text-xs focus:outline-none focus:border-seedly-primary focus:bg-white transition-all"
+            className="glass-input-3d w-full pl-9 pr-4 py-2 rounded-xl text-xs placeholder:text-botanical-sage/60"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-3xl border border-border-gray shadow-card overflow-hidden">
+      <div className="glass-panel-3d rounded-3xl p-5 md:p-6 overflow-hidden">
         {loading ? (
-          <div className="py-16 text-center text-xs text-muted-gray">Loading stock alert subscriptions...</div>
+          <div className="py-16 text-center text-xs text-botanical-sage">Loading stock alert subscriptions...</div>
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center space-y-2">
-            <Bell className="w-8 h-8 text-muted-gray/50 mx-auto" />
-            <p className="text-sm font-semibold text-charcoal">No alert subscriptions found</p>
-            <p className="text-xs text-muted-gray">Subscribers will appear here when an out-of-stock item is requested.</p>
+            <Bell className="w-8 h-8 text-botanical-sage/40 mx-auto" />
+            <p className="text-sm font-semibold text-white">No alert subscriptions found</p>
+            <p className="text-xs text-botanical-sage">Subscribers will appear here when an out-of-stock item is requested.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-cream/60 border-b border-border-gray text-muted-gray uppercase tracking-wider font-semibold">
-                <tr>
-                  <th className="py-4 px-6">Product / Sellable</th>
-                  <th className="py-4 px-6">Customer Email</th>
-                  <th className="py-4 px-6">Status</th>
-                  <th className="py-4 px-6">Requested On</th>
-                  <th className="py-4 px-6">Notified On</th>
-                  <th className="py-4 px-6 text-right">Actions</th>
+          <div className="overflow-x-auto -mx-5 md:-mx-6 px-5 md:px-6">
+            <table className="w-full text-left text-xs min-w-[760px]">
+              <thead>
+                <tr className="border-b border-white/10 text-botanical-sage text-[11px] uppercase tracking-wider font-semibold">
+                  <th className="py-3.5 px-4 font-semibold">Product / Sellable</th>
+                  <th className="py-3.5 px-4 font-semibold">Customer Email</th>
+                  <th className="py-3.5 px-4 font-semibold">Status</th>
+                  <th className="py-3.5 px-4 font-semibold">Requested On</th>
+                  <th className="py-3.5 px-4 font-semibold">Notified On</th>
+                  <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-gray/50">
+              <tbody className="divide-y divide-white/[0.06]">
                 {filtered.map((sub) => {
-                  const isActive = sub.status === 'ACTIVE';
+                  const isWaiting = sub.status === 'ACTIVE';
                   const isNotified = sub.status === 'NOTIFIED';
                   const isBusy = actionLoadingId === sub.id;
 
                   return (
-                    <tr key={sub.id} className="hover:bg-cream/30 transition-colors">
-                      <td className="py-4 px-6 font-semibold text-charcoal">
-                        {sub.sellable_title}
+                    <tr
+                      key={sub.id}
+                      className={`hover:bg-white/[0.03] transition-colors ${
+                        isWaiting ? 'bg-amber-950/20' : ''
+                      }`}
+                    >
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2.5">
+                          <Package className="w-4 h-4 text-lime shrink-0" />
+                          <div>
+                            <p className="font-semibold text-white">{sub.sellable_title}</p>
+                            <span className="text-[10px] text-botanical-sage/70 font-mono">
+                              ID: {sub.id.slice(0, 8)}
+                            </span>
+                          </div>
+                        </div>
                       </td>
-                      <td className="py-4 px-6 font-mono text-charcoal">
-                        {sub.email}
+
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="flex items-center gap-1.5 text-white/90">
+                          <Mail className="w-3.5 h-3.5 text-botanical-sage" />
+                          <span>{sub.email}</span>
+                        </div>
                       </td>
-                      <td className="py-4 px-6">
+
+                      <td className="py-4 px-4 whitespace-nowrap">
                         <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider ${
-                            isActive
-                              ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider border ${
+                            isWaiting
+                              ? 'bg-amber-950/70 text-amber-300 border-amber-500/40 shadow-[0_0_8px_rgba(245,158,11,0.2)]'
                               : isNotified
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-gray-100 text-gray-700'
+                              ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30 shadow-[0_0_8px_rgba(34,197,94,0.2)]'
+                              : 'bg-white/10 text-white/80 border-white/20'
                           }`}
                         >
-                          {isActive && <AlertCircle className="w-3 h-3 text-amber-600" />}
-                          {isNotified && <CheckCircle2 className="w-3 h-3 text-emerald-600" />}
-                          <span>{sub.status}</span>
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              isWaiting ? 'bg-amber-400' : isNotified ? 'bg-emerald-400' : 'bg-white/60'
+                            }`}
+                          />
+                          <span>{sub.status === 'ACTIVE' ? 'WAITING' : sub.status}</span>
                         </span>
                       </td>
-                      <td className="py-4 px-6 text-muted-gray">
+
+                      <td className="py-4 px-4 text-botanical-sage whitespace-nowrap">
                         {formatDate(sub.created_at)}
                       </td>
-                      <td className="py-4 px-6 text-muted-gray">
+
+                      <td className="py-4 px-4 text-botanical-sage whitespace-nowrap">
                         {sub.notified_at ? formatDate(sub.notified_at) : '—'}
                       </td>
-                      <td className="py-4 px-6 text-right">
+
+                      <td className="py-4 px-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-2">
-                          {isActive && (
+                          {isWaiting && (
                             <button
                               disabled={isBusy}
                               onClick={() => handleTriggerAlert(sub.id, sub.sellable_title)}
-                              className="px-3 py-1.5 rounded-xl bg-seedly-dark hover:bg-seedly-forest text-white font-semibold text-[11px] transition-all flex items-center gap-1 shadow-subtle disabled:opacity-50"
-                              title="Manually dispatch restock alert"
+                              className="btn-lime-3d px-3 py-1.5 rounded-xl font-bold text-[11px] flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                              title="Send restock email immediately"
                             >
-                              <Send className="w-3 h-3" />
+                              <Send className="w-3.5 h-3.5" />
                               <span>Dispatch Alert</span>
                             </button>
                           )}
+
                           <button
                             disabled={isBusy}
                             onClick={() => handleDelete(sub.id)}
-                            className="p-1.5 rounded-xl text-muted-gray hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                            title="Delete subscription"
+                            className="glass-btn-3d p-1.5 rounded-xl text-botanical-sage hover:text-rose-400 hover:bg-rose-500/20 border-white/10 cursor-pointer"
+                            title="Remove subscription"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>

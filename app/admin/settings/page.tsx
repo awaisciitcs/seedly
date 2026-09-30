@@ -79,119 +79,121 @@ export default function AdminSettingsPage() {
   };
 
   if (loading) {
-    return <div className="p-12 text-center text-xs text-muted-gray">Loading store configuration...</div>;
+    return <div className="p-12 text-center text-xs text-botanical-sage">Loading store configuration...</div>;
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl mx-auto">
       <div>
-        <h1 className="font-serif text-3xl font-bold text-charcoal">Store & Payment Settings</h1>
-        <p className="text-xs text-muted-gray mt-1">
+        <h1 className="font-serif text-3xl md:text-4xl font-bold text-white tracking-tight">
+          Store &amp; Payment Settings
+        </h1>
+        <p className="text-xs text-botanical-sage mt-1">
           Configure Pakistani nationwide delivery rules, bank accounts, and customer helplines.
         </p>
       </div>
 
       {savedMsg && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn">
-          <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="p-4 bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn shadow-[0_0_12px_rgba(34,197,94,0.2)]">
+          <Check className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{savedMsg}</span>
         </div>
       )}
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Delivery Rates */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card space-y-4">
-          <h2 className="font-serif font-bold text-lg text-charcoal flex items-center gap-2">
-            <Truck className="w-5 h-5 text-seedly-primary" />
-            <span>Shipping & Delivery Rates (PKR)</span>
+        <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 space-y-4">
+          <h2 className="font-serif font-bold text-lg text-white flex items-center gap-2">
+            <Truck className="w-5 h-5 text-lime" />
+            <span>Shipping &amp; Delivery Rates (PKR)</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1">
                 Standard Nationwide Shipping (PKR)
               </label>
               <input
                 type="number"
                 value={deliveryFeePKR}
                 onChange={(e) => setDeliveryFeePKR(parseInt(e.target.value, 10))}
-                className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm font-bold font-mono text-charcoal"
+                className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-sm font-bold font-mono text-white"
               />
-              <p className="text-[11px] text-muted-gray mt-1">Applied on orders below the free threshold.</p>
+              <p className="text-[11px] text-botanical-sage mt-1">Applied on orders below the free threshold.</p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1">
                 Free Delivery Threshold (PKR)
               </label>
               <input
                 type="number"
                 value={freeThresholdPKR}
                 onChange={(e) => setFreeThresholdPKR(parseInt(e.target.value, 10))}
-                className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm font-bold font-mono text-charcoal"
+                className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-sm font-bold font-mono text-white"
               />
-              <p className="text-[11px] text-muted-gray mt-1">Orders above this qualify for free shipping.</p>
+              <p className="text-[11px] text-botanical-sage mt-1">Orders above this qualify for free shipping.</p>
             </div>
           </div>
         </div>
 
         {/* Mobile Wallet Accounts (JazzCash & Easypaisa) */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card space-y-4">
-          <h2 className="font-serif font-bold text-lg text-charcoal flex items-center gap-2">
-            <Wallet className="w-5 h-5 text-seedly-primary" />
-            <span>Official Mobile Wallet Accounts (JazzCash & Easypaisa)</span>
+        <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 space-y-4">
+          <h2 className="font-serif font-bold text-lg text-white flex items-center gap-2">
+            <Wallet className="w-5 h-5 text-lime" />
+            <span>Official Mobile Wallet Accounts (JazzCash &amp; Easypaisa)</span>
           </h2>
-          <p className="text-xs text-muted-gray">
+          <p className="text-xs text-botanical-sage">
             These numbers and titles will be displayed to customers at checkout to transfer payment directly.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
             {/* JazzCash */}
-            <div className="p-4 rounded-2xl bg-cream/30 border border-border-gray space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-rose-800 bg-rose-50 px-2.5 py-0.5 rounded-full inline-block">
+            <div className="glass-card-3d p-4 rounded-2xl space-y-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 bg-rose-950/80 px-2.5 py-0.5 rounded-full border border-rose-500/30 inline-block">
                 JazzCash Account
               </span>
               <div>
-                <label className="block text-xs font-semibold text-charcoal mb-1">Account Title</label>
+                <label className="block text-xs font-semibold text-white/90 mb-1">Account Title</label>
                 <input
                   type="text"
                   value={jazzcashTitle}
                   onChange={(e) => setJazzcashTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-border-gray rounded-xl text-sm"
+                  className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-charcoal mb-1">Account Number</label>
+                <label className="block text-xs font-semibold text-white/90 mb-1">Account Number</label>
                 <input
                   type="text"
                   value={jazzcashNumber}
                   onChange={(e) => setJazzcashNumber(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-border-gray rounded-xl text-sm font-mono font-bold"
+                  className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-mono font-bold"
                 />
               </div>
             </div>
 
             {/* Easypaisa */}
-            <div className="p-4 rounded-2xl bg-cream/30 border border-border-gray space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full inline-block">
+            <div className="glass-card-3d p-4 rounded-2xl space-y-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/30 inline-block">
                 Easypaisa Account
               </span>
               <div>
-                <label className="block text-xs font-semibold text-charcoal mb-1">Account Title</label>
+                <label className="block text-xs font-semibold text-white/90 mb-1">Account Title</label>
                 <input
                   type="text"
                   value={easypaisaTitle}
                   onChange={(e) => setEasypaisaTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-border-gray rounded-xl text-sm"
+                  className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-charcoal mb-1">Account Number</label>
+                <label className="block text-xs font-semibold text-white/90 mb-1">Account Number</label>
                 <input
                   type="text"
                   value={easypaisaNumber}
                   onChange={(e) => setEasypaisaNumber(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-border-gray rounded-xl text-sm font-mono font-bold"
+                  className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-mono font-bold"
                 />
               </div>
             </div>
@@ -199,103 +201,104 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Bank Transfer Details */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card space-y-4">
-          <h2 className="font-serif font-bold text-lg text-charcoal flex items-center gap-2">
-            <Building className="w-5 h-5 text-seedly-primary" />
+        <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 space-y-4">
+          <h2 className="font-serif font-bold text-lg text-white flex items-center gap-2">
+            <Building className="w-5 h-5 text-lime" />
             <span>Manual Bank Transfer Details (Pakistan)</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1">
                 Bank Name
               </label>
               <input
                 type="text"
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
-                className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm text-charcoal"
+                className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-sm text-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1">
                 Account Title
               </label>
               <input
                 type="text"
                 value={accountTitle}
                 onChange={(e) => setAccountTitle(e.target.value)}
-                className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm text-charcoal"
+                className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-sm text-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1">
                 Account Number
               </label>
               <input
                 type="text"
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
-                className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm font-mono text-charcoal"
+                className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-sm font-mono text-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1">
                 IBAN
               </label>
               <input
                 type="text"
                 value={iban}
                 onChange={(e) => setIban(e.target.value)}
-                className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm font-mono text-charcoal"
+                className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-sm font-mono text-white"
               />
             </div>
           </div>
         </div>
 
-        {/* Customer Care Channels */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-border-gray shadow-card space-y-4">
-          <h2 className="font-serif font-bold text-lg text-charcoal flex items-center gap-2">
-            <Phone className="w-5 h-5 text-seedly-primary" />
-            <span>Helpline Channels</span>
+        {/* Customer Support Channels */}
+        <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 space-y-4">
+          <h2 className="font-serif font-bold text-lg text-white flex items-center gap-2">
+            <Phone className="w-5 h-5 text-lime" />
+            <span>Support &amp; Helpline Channels</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
-                WhatsApp Customer Helpline
+              <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1">
+                WhatsApp Hotline
               </label>
               <input
                 type="text"
                 value={whatsapp}
                 onChange={(e) => setWhatsapp(e.target.value)}
-                className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm font-mono text-charcoal"
+                className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-sm font-mono text-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1">
                 Support Email
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm font-mono text-charcoal"
+                className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-sm text-white"
               />
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end">
+        {/* Save Button */}
+        <div className="flex justify-end pt-2">
           <button
             type="submit"
-            className="px-8 py-3.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-full font-semibold text-xs transition-all shadow-card"
+            className="btn-lime-3d px-8 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer"
           >
-            Save All Settings
+            Save All Store Settings
           </button>
         </div>
       </form>

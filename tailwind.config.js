@@ -25,6 +25,18 @@ module.exports = {
         sand: "#F4EFE6",
         terracotta: "#B86644",
         honey: "#C88B38",
+        lime: {
+          DEFAULT: "#B7E459",
+          bright: "#C8F169",
+          hover: "#AEE24E",
+        },
+        botanical: {
+          deep: "#08150E",
+          dark: "#0B1D14",
+          surface: "#10261B",
+          card: "rgba(16, 38, 27, 0.58)",
+          sage: "#94A89C",
+        },
       },
       fontFamily: {
         serif: ["var(--font-serif)", "Playfair Display", "Georgia", "serif"],

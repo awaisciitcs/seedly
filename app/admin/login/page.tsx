@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { SeedlyLogo } from '../../../components/ui/SeedlyLogo';
 import { Lock, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 
@@ -60,31 +59,41 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-cream">
-      <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 border border-border-gray shadow-card space-y-6">
-        <div className="text-center space-y-2">
-          <div className="flex justify-center mb-2">
-            <SeedlyLogo size="lg" />
+    <div className="w-full max-w-md">
+      <div className="glass-panel-3d rounded-3xl p-8 sm:p-10 border border-white/15 space-y-6 shadow-2xl relative">
+        <div className="text-center space-y-3">
+          {/* Logo */}
+          <div className="flex justify-center mb-1">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-lime flex items-center justify-center text-botanical-deep shadow-[0_0_15px_rgba(183,228,89,0.5)]">
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 2-10 6-1.5 3-1 6.5-1 6.5s2.5-.5 5.5-2.5C18.5 11.5 19 8 19 8Z" />
+                </svg>
+              </div>
+              <span className="font-serif text-3xl font-bold tracking-tight text-white lowercase">seedly</span>
+            </div>
           </div>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-seedly-dark bg-seedly-light px-3 py-1 rounded-full inline-block">
-            Internal Operations Portal
+
+          <span className="text-[9px] uppercase font-bold font-mono tracking-widest text-emerald-300 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-500/30 inline-block shadow-[0_0_8px_rgba(34,197,94,0.2)]">
+            INTERNAL OPERATIONS PORTAL
           </span>
-          <h1 className="font-serif text-2xl font-bold text-charcoal">Sign In to Seedly Admin</h1>
-          <p className="text-xs text-muted-gray">
+
+          <h1 className="font-serif text-2xl font-bold text-white tracking-tight">Sign In to Operations Desk</h1>
+          <p className="text-xs text-botanical-sage">
             Authoritative inventory control, order fulfillment &amp; payment verification.
           </p>
         </div>
 
         {error && (
-          <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+          <div className="p-3.5 bg-rose-950/70 border border-rose-500/40 text-rose-300 rounded-xl text-xs flex items-center gap-2 animate-fadeIn shadow-[0_0_12px_rgba(244,63,94,0.2)]">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
             <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1.5">
               Admin Email
             </label>
             <input
@@ -93,19 +102,19 @@ export default function AdminLoginPage() {
               placeholder="owner@seedly.pk"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-seedly-primary/50 text-charcoal"
+              className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-sm text-white placeholder:text-botanical-sage/50"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-semibold text-charcoal uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider">
                 Password
               </label>
               <button
                 type="button"
                 onClick={() => alert('Password reset requests must be processed by the system owner or via Supabase Admin.')}
-                className="text-[11px] text-seedly-dark hover:underline font-medium"
+                className="text-[11px] text-lime hover:underline font-medium"
               >
                 Forgot password?
               </button>
@@ -116,18 +125,18 @@ export default function AdminLoginPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-seedly-primary/50 text-charcoal"
+              className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-sm text-white placeholder:text-botanical-sage/50"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-seedly-dark hover:bg-seedly-forest disabled:opacity-50 text-white rounded-xl font-semibold text-xs transition-all shadow-card flex items-center justify-center gap-2 cursor-pointer"
+            className="btn-lime-3d w-full py-3 rounded-xl font-bold text-xs transition-all shadow-card flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {loading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin text-botanical-deep" />
                 <span>Authenticating...</span>
               </>
             ) : (
@@ -139,10 +148,10 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <div className="pt-4 border-t border-border-gray/70 text-center">
+        <div className="pt-4 border-t border-white/10 text-center">
           <Link
             href="/"
-            className="text-xs text-muted-gray hover:text-charcoal transition-colors"
+            className="text-xs text-botanical-sage hover:text-white transition-colors"
           >
             ← Return to Seedly Storefront
           </Link>

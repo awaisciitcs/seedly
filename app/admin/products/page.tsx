@@ -3,12 +3,28 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { formatPKR, minorToPKR } from '../../../lib/utils';
-import { Package, Search, Plus, Edit, Check, Trash2, X, AlertCircle, ExternalLink } from 'lucide-react';
+import {
+  Package,
+  Search,
+  Plus,
+  Edit,
+  Check,
+  Trash2,
+  X,
+  AlertCircle,
+  ExternalLink,
+  Filter,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  Leaf,
+} from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -72,9 +88,11 @@ export default function AdminProductsPage() {
           ingredients,
           usage_instructions: usage,
           storage_instructions: storage,
-          image_url: imageUrl || (productType === 'tea'
-            ? '/images/products/chamomile-tea.svg'
-            : '/images/products/pumpkin-seeds.svg'),
+          image_url:
+            imageUrl ||
+            (productType === 'tea'
+              ? '/images/products/chamomile-tea.svg'
+              : '/images/products/pumpkin-seeds.svg'),
           badge: badge || null,
         }),
       });
@@ -172,20 +190,32 @@ export default function AdminProductsPage() {
     }
   };
 
+  const filteredProducts = products.filter((p) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      p.name?.toLowerCase().includes(q) ||
+      p.sku?.toLowerCase().includes(q) ||
+      p.product_type?.toLowerCase().includes(q)
+    );
+  });
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-charcoal">Catalog & Inventory</h1>
-          <p className="text-xs text-muted-gray mt-1">
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-white tracking-tight">
+            Catalog &amp; Inventory
+          </h1>
+          <p className="text-xs text-botanical-sage mt-1">
             Create, edit, remove, and manage all raw pantry seed and tea SKUs and warehouse stock.
           </p>
         </div>
 
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="px-5 py-2.5 bg-seedly-dark hover:bg-seedly-forest text-white rounded-xl text-xs font-semibold shadow-card flex items-center justify-center gap-1.5 transition-all"
+          className="btn-lime-3d px-5 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(183,228,89,0.4)]"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Product</span>
@@ -193,29 +223,238 @@ export default function AdminProductsPage() {
       </div>
 
       {successMsg && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn">
-          <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="p-4 bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+          <Check className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
-      {/* Add Product Modal */}
+      {/* Main Glass Table Container */}
+      <div className="glass-panel-3d rounded-3xl p-5 md:p-6 space-y-4">
+        {/* Table Toolbar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="w-4 h-4 text-botanical-sage absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search products or SKUs..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="glass-input-3d w-full pl-10 pr-4 py-2 rounded-2xl text-xs placeholder:text-botanical-sage/60"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            <button
+              type="button"
+              className="glass-btn-3d px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+            >
+              <Filter className="w-3.5 h-3.5 text-botanical-sage" />
+              <span>Filter</span>
+            </button>
+            <button
+              type="button"
+              className="glass-btn-3d px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+            >
+              <Download className="w-3.5 h-3.5 text-botanical-sage" />
+              <span>Export</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto -mx-5 md:-mx-6 px-5 md:px-6">
+          <table className="w-full text-left text-xs min-w-[760px]">
+            <thead>
+              <tr className="border-b border-white/10 text-botanical-sage text-[11px] uppercase tracking-wider font-semibold">
+                <th className="py-3.5 px-4 font-semibold">PRODUCT</th>
+                <th className="py-3.5 px-4 font-semibold">CATEGORY</th>
+                <th className="py-3.5 px-4 font-semibold">PRICE (PKR)</th>
+                <th className="py-3.5 px-4 font-semibold">VARIANTS &amp; WAREHOUSE STOCK</th>
+                <th className="py-3.5 px-4 font-semibold">STATUS</th>
+                <th className="py-3.5 px-4 font-semibold text-right">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.06]">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-botanical-sage text-xs">
+                    Loading catalog inventory...
+                  </td>
+                </tr>
+              ) : filteredProducts.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-botanical-sage text-xs">
+                    No products found matching your search.
+                  </td>
+                </tr>
+              ) : (
+                filteredProducts.map((p) => {
+                  const isLow = (p.variants || []).some((v: any) => v.inventory_quantity <= 20);
+                  return (
+                    <tr key={p.id} className="hover:bg-white/[0.03] transition-colors">
+                      {/* PRODUCT */}
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-lime shrink-0 shadow-[0_0_10px_rgba(74,222,128,0.2)]">
+                            <Leaf className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <p className="font-bold text-white text-xs whitespace-nowrap">{p.name}</p>
+                              <Link
+                                href={`/${p.product_type === 'tea' ? 'teas' : 'seeds'}/${p.slug}`}
+                                target="_blank"
+                                className="text-botanical-sage hover:text-white"
+                                title="View on Storefront"
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                              </Link>
+                            </div>
+                            <p className="text-[10px] text-botanical-sage font-mono mt-0.5">{p.sku}</p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* CATEGORY */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <span className="px-2.5 py-0.5 rounded-full bg-white/[0.08] text-white/90 border border-white/10 font-medium text-[10px] capitalize">
+                          {p.product_type}
+                        </span>
+                      </td>
+
+                      {/* PRICE */}
+                      <td className="py-4 px-4 font-mono font-bold text-white whitespace-nowrap">
+                        {formatPKR(p.price_minor)}
+                      </td>
+
+                      {/* VARIANTS & WAREHOUSE STOCK */}
+                      <td className="py-4 px-4">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {p.variants?.map((v: any) => (
+                            <div key={v.id} className="flex items-center gap-1.5 whitespace-nowrap">
+                              <span className="text-botanical-sage text-[11px]">{v.option_value}:</span>
+                              <span
+                                className={`font-mono font-bold px-2 py-0.5 rounded-full text-[10px] border ${
+                                  v.inventory_quantity > 20
+                                    ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30 shadow-[0_0_6px_rgba(34,197,94,0.15)]'
+                                    : 'bg-rose-950/70 text-rose-300 border-rose-500/30 shadow-[0_0_6px_rgba(244,63,94,0.15)]'
+                                }`}
+                              >
+                                {v.inventory_quantity} units
+                              </span>
+                              <button
+                                onClick={() => {
+                                  setEditingVariant(v);
+                                  setNewStock(v.inventory_quantity);
+                                }}
+                                className="text-[11px] text-lime/90 hover:text-lime underline cursor-pointer"
+                              >
+                                Adjust
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+
+                      {/* STATUS */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10px] border ${
+                            p.status === 'ACTIVE'
+                              ? isLow
+                                ? 'bg-amber-950/70 text-amber-300 border-amber-500/30 shadow-[0_0_8px_rgba(245,158,11,0.2)]'
+                                : 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30 shadow-[0_0_8px_rgba(34,197,94,0.2)]'
+                              : 'bg-white/10 text-white/80 border-white/20'
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              p.status === 'ACTIVE'
+                                ? isLow
+                                  ? 'bg-amber-400'
+                                  : 'bg-emerald-400'
+                                : 'bg-white/60'
+                            }`}
+                          />
+                          {p.status === 'ACTIVE' ? (isLow ? 'LOW STOCK' : 'ACTIVE') : p.status}
+                        </span>
+                      </td>
+
+                      {/* ACTIONS */}
+                      <td className="py-4 px-4 text-right whitespace-nowrap space-x-2">
+                        <button
+                          onClick={() =>
+                            setEditingProduct({
+                              ...p,
+                              price_pkr: minorToPKR(p.price_minor),
+                            })
+                          }
+                          className="glass-btn-3d px-3 py-1.5 rounded-xl font-semibold text-xs cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(p.id, p.name)}
+                          className="glass-btn-3d p-1.5 rounded-xl text-rose-300 hover:text-rose-100 hover:bg-rose-500/20 border-rose-500/20 cursor-pointer inline-flex items-center"
+                          title="Remove Product"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Table Footer / Pagination */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-white/10 text-xs text-botanical-sage">
+          <p>
+            Showing 1–{filteredProducts.length} of {products.length} products
+          </p>
+
+          <div className="flex items-center gap-1.5 self-end sm:self-auto">
+            <button
+              type="button"
+              disabled
+              className="glass-btn-3d p-1.5 rounded-lg opacity-40 cursor-not-allowed"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <span className="w-7 h-7 rounded-lg bg-lime text-botanical-deep font-bold flex items-center justify-center text-xs shadow-[0_0_10px_rgba(183,228,89,0.4)]">
+              1
+            </span>
+            <button
+              type="button"
+              disabled
+              className="glass-btn-3d p-1.5 rounded-lg opacity-40 cursor-not-allowed"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Add Product Modal (3D Glass) */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-charcoal/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl border border-border-gray space-y-5 my-8 animate-fadeIn">
-            <div className="flex items-center justify-between border-b border-border-gray/60 pb-3">
-              <h3 className="font-serif font-bold text-xl text-charcoal">Add New Product to Store</h3>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 max-w-2xl w-full border border-white/15 space-y-5 my-8 animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 className="font-serif font-bold text-xl text-white">Add New Product to Store</h3>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="p-1.5 rounded-full hover:bg-cream text-muted-gray hover:text-charcoal"
+                className="glass-btn-3d p-1.5 rounded-full text-botanical-sage hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {errorMsg && (
-              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <div className="p-3 bg-rose-950/70 border border-rose-500/40 text-rose-300 rounded-xl text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
                 <span>{errorMsg}</span>
               </div>
             )}
@@ -223,23 +462,23 @@ export default function AdminProductsPage() {
             <form onSubmit={handleAddProduct} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block font-semibold text-charcoal mb-1">Product Title *</label>
+                  <label className="block font-semibold text-white/90 mb-1">Product Title *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Organic Black Chia Seeds or Lavender Blossom Tea"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm"
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-charcoal mb-1">Product Category *</label>
+                  <label className="block font-semibold text-white/90 mb-1">Product Category *</label>
                   <select
                     value={productType}
                     onChange={(e) => setProductType(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm"
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm bg-botanical-dark text-white"
                   >
                     <option value="seed">Raw Pantry Seed</option>
                     <option value="tea">Mountain Herbal Tea</option>
@@ -247,18 +486,18 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-charcoal mb-1">Badge (Optional)</label>
+                  <label className="block font-semibold text-white/90 mb-1">Badge (Optional)</label>
                   <input
                     type="text"
                     placeholder="e.g. NEW, BESTSELLER, LIMITED"
                     value={badge}
                     onChange={(e) => setBadge(e.target.value)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm uppercase"
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm uppercase"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-charcoal mb-1">Price in PKR (Rs.) *</label>
+                  <label className="block font-semibold text-white/90 mb-1">Price in PKR (Rs.) *</label>
                   <input
                     type="number"
                     required
@@ -266,100 +505,78 @@ export default function AdminProductsPage() {
                     placeholder="e.g. 950"
                     value={pricePKR}
                     onChange={(e) => setPricePKR(e.target.value)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm font-bold font-mono"
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-bold font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-charcoal mb-1">Compare-At Price (Rs.)</label>
+                  <label className="block font-semibold text-white/90 mb-1">Compare-At Price (Rs.)</label>
                   <input
                     type="number"
                     placeholder="e.g. 1100"
                     value={comparePricePKR}
                     onChange={(e) => setComparePricePKR(e.target.value)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm font-mono"
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-charcoal mb-1">Pack Size / Weight (Grams)</label>
+                  <label className="block font-semibold text-white/90 mb-1">Pack Size / Weight (Grams)</label>
                   <input
                     type="number"
                     placeholder="250"
                     value={weightGrams}
                     onChange={(e) => setWeightGrams(e.target.value)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm"
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-charcoal mb-1">Initial Stock Units</label>
+                  <label className="block font-semibold text-white/90 mb-1">Initial Stock Units</label>
                   <input
                     type="number"
                     placeholder="50"
                     value={initialStock}
                     onChange={(e) => setInitialStock(e.target.value)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm font-mono"
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-mono"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block font-semibold text-charcoal mb-1">Image URL</label>
-                  <input
-                    type="text"
-                    placeholder="/images/products/pumpkin-seeds.svg or custom URL"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block font-semibold text-charcoal mb-1">Short Description *</label>
+                  <label className="block font-semibold text-white/90 mb-1">Short Description *</label>
                   <input
                     type="text"
                     required
                     placeholder="Brief 1-line benefit descriptor shown on cards"
                     value={shortDesc}
                     onChange={(e) => setShortDesc(e.target.value)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm"
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block font-semibold text-charcoal mb-1">Detailed Description</label>
+                  <label className="block font-semibold text-white/90 mb-1">Detailed Description</label>
                   <textarea
                     rows={3}
                     placeholder="Full product sourcing and botanical background"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block font-semibold text-charcoal mb-1">Ingredients</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 100% Pure Organic Raw Pumpkin Seeds (Cucurbita pepo)"
-                    value={ingredients}
-                    onChange={(e) => setIngredients(e.target.value)}
-                    className="w-full px-3 py-2 bg-cream/30 border border-border-gray rounded-xl text-sm"
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
                   />
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-border-gray flex justify-end gap-2">
+              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 border border-border-gray rounded-xl text-muted-gray hover:text-charcoal font-semibold"
+                  className="glass-btn-3d px-4 py-2 rounded-xl text-botanical-sage font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-seedly-dark hover:bg-seedly-forest text-white rounded-xl font-semibold shadow-card"
+                  className="btn-lime-3d px-6 py-2 rounded-xl font-bold shadow-card"
                 >
                   Publish Product
                 </button>
@@ -369,129 +586,36 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* Edit Product Modal */}
-      {editingProduct && (
-        <div className="fixed inset-0 z-50 bg-charcoal/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-border-gray space-y-4 animate-fadeIn">
-            <div className="flex items-center justify-between border-b border-border-gray pb-2">
-              <h3 className="font-serif font-bold text-lg text-charcoal">Edit Product Details</h3>
-              <button
-                onClick={() => setEditingProduct(null)}
-                className="p-1 rounded-full hover:bg-cream text-muted-gray"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateProduct} className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-charcoal mb-1">Product Title</label>
-                <input
-                  type="text"
-                  value={editingProduct.name}
-                  onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-border-gray rounded-xl text-sm"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-charcoal mb-1">Base Price (PKR)</label>
-                  <input
-                    type="number"
-                    value={editingProduct.price_pkr}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, price_pkr: e.target.value })}
-                    className="w-full px-3 py-2 border border-border-gray rounded-xl text-sm font-bold font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-charcoal mb-1">Catalog Status</label>
-                  <select
-                    value={editingProduct.status}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, status: e.target.value })}
-                    className="w-full px-3 py-2 border border-border-gray rounded-xl text-sm"
-                  >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="DRAFT">DRAFT</option>
-                    <option value="ARCHIVED">ARCHIVED</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-charcoal mb-1">Short Description</label>
-                <input
-                  type="text"
-                  value={editingProduct.short_description}
-                  onChange={(e) =>
-                    setEditingProduct({ ...editingProduct, short_description: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-border-gray rounded-xl text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-charcoal mb-1">Detailed Description</label>
-                <textarea
-                  rows={3}
-                  value={editingProduct.description}
-                  onChange={(e) =>
-                    setEditingProduct({ ...editingProduct, description: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-border-gray rounded-xl text-sm"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingProduct(null)}
-                  className="px-4 py-2 border border-border-gray rounded-xl text-muted-gray font-semibold"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-seedly-dark text-white rounded-xl font-semibold shadow-card"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
       {/* Quick Stock Edit Modal */}
       {editingVariant && (
-        <div className="fixed inset-0 z-50 bg-charcoal/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-border-gray space-y-4 animate-fadeIn">
-            <h3 className="font-serif font-bold text-lg text-charcoal">Adjust Variant Inventory</h3>
-            <p className="text-xs text-muted-gray">
-              SKU: <strong className="font-mono text-charcoal">{editingVariant.sku}</strong> ({editingVariant.option_value})
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="glass-panel-3d rounded-3xl p-6 max-w-sm w-full border border-white/15 space-y-4 animate-fadeIn">
+            <h3 className="font-serif font-bold text-lg text-white">Adjust Variant Inventory</h3>
+            <p className="text-xs text-botanical-sage">
+              SKU: <strong className="font-mono text-white">{editingVariant.sku}</strong> ({editingVariant.option_value})
             </p>
             <form onSubmit={handleUpdateStock} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-charcoal mb-1">On-Hand Quantity (Units)</label>
+                <label className="block text-xs font-semibold text-white/90 mb-1">On-Hand Quantity (Units)</label>
                 <input
                   type="number"
                   min="0"
                   value={newStock}
                   onChange={(e) => setNewStock(parseInt(e.target.value, 10))}
-                  className="w-full px-4 py-2 border border-border-gray rounded-xl text-sm font-mono font-bold"
+                  className="glass-input-3d w-full px-4 py-2 rounded-xl text-sm font-mono font-bold"
                 />
               </div>
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setEditingVariant(null)}
-                  className="px-4 py-2 text-xs font-semibold text-muted-gray hover:text-charcoal"
+                  className="glass-btn-3d px-4 py-2 text-xs font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-seedly-dark text-white rounded-xl text-xs font-semibold shadow-subtle"
+                  className="btn-lime-3d px-5 py-2 rounded-xl text-xs font-bold"
                 >
                   Save Stock
                 </button>
@@ -501,115 +625,98 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* Products Table */}
-      <div className="bg-white rounded-3xl border border-border-gray shadow-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-cream/60 border-b border-border-gray text-muted-gray uppercase tracking-wider font-semibold">
-              <tr>
-                <th className="py-4 px-6">Product</th>
-                <th className="py-4 px-6">Category</th>
-                <th className="py-4 px-6">Price (PKR)</th>
-                <th className="py-4 px-6">Variants & Warehouse Stock</th>
-                <th className="py-4 px-6">Status</th>
-                <th className="py-4 px-6 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-gray/50">
-              {products.map((p) => (
-                <tr key={p.id} className="hover:bg-cream/30 transition-colors">
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 relative rounded-xl overflow-hidden bg-cream shrink-0 border border-border-gray">
-                        <Image src={p.image_url} alt={p.name} fill className="object-cover" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <p className="font-bold text-charcoal">{p.name}</p>
-                          <Link
-                            href={`/${p.product_type === 'tea' ? 'teas' : 'seeds'}/${p.slug}`}
-                            target="_blank"
-                            className="text-muted-gray hover:text-seedly-dark"
-                            title="View on Storefront"
-                          >
-                            <ExternalLink className="w-3 h-3" />
-                          </Link>
-                        </div>
-                        <p className="text-[11px] text-muted-gray font-mono">{p.sku}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6 capitalize">
-                    <span className="px-2.5 py-0.5 rounded-full bg-cream font-medium text-[11px]">
-                      {p.product_type}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 font-serif font-bold text-sm text-charcoal">
-                    {formatPKR(p.price_minor)}
-                  </td>
-                  <td className="py-4 px-6 space-y-1">
-                    {p.variants?.map((v: any) => (
-                      <div key={v.id} className="flex items-center gap-2">
-                        <span className="font-medium text-charcoal">{v.option_value}:</span>
-                        <span
-                          className={`font-mono font-semibold px-2 py-0.5 rounded-full text-[10px] ${
-                            v.inventory_quantity > 20
-                              ? 'bg-emerald-50 text-emerald-800'
-                              : 'bg-rose-50 text-rose-800'
-                          }`}
-                        >
-                          {v.inventory_quantity} units
-                        </span>
-                        <button
-                          onClick={() => {
-                            setEditingVariant(v);
-                            setNewStock(v.inventory_quantity);
-                          }}
-                          className="text-[10px] text-seedly-dark underline font-medium hover:text-charcoal"
-                        >
-                          Adjust
-                        </button>
-                      </div>
-                    ))}
-                  </td>
-                  <td className="py-4 px-6">
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] ${
-                        p.status === 'ACTIVE'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-cream text-charcoal'
-                      }`}
-                    >
-                      {p.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-right space-x-2">
-                    <button
-                      onClick={() =>
-                        setEditingProduct({
-                          ...p,
-                          price_pkr: minorToPKR(p.price_minor),
-                        })
-                      }
-                      className="px-2.5 py-1.5 bg-cream hover:bg-seedly-light text-seedly-dark rounded-lg font-medium transition-colors"
-                      title="Edit Product Details"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProduct(p.id, p.name)}
-                      className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors inline-flex items-center"
-                      title="Remove Product"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Edit Product Modal */}
+      {editingProduct && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-white/15 space-y-4 animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <h3 className="font-serif font-bold text-lg text-white">Edit Product Details</h3>
+              <button
+                onClick={() => setEditingProduct(null)}
+                className="glass-btn-3d p-1 rounded-full text-botanical-sage"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateProduct} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-semibold text-white/90 mb-1">Product Title</label>
+                <input
+                  type="text"
+                  value={editingProduct.name}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
+                  className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-white/90 mb-1">Base Price (PKR)</label>
+                  <input
+                    type="number"
+                    value={editingProduct.price_pkr}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, price_pkr: e.target.value })}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-bold font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-white/90 mb-1">Catalog Status</label>
+                  <select
+                    value={editingProduct.status}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, status: e.target.value })}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm bg-botanical-dark text-white"
+                  >
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="DRAFT">DRAFT</option>
+                    <option value="ARCHIVED">ARCHIVED</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-white/90 mb-1">Short Description</label>
+                <input
+                  type="text"
+                  value={editingProduct.short_description}
+                  onChange={(e) =>
+                    setEditingProduct({ ...editingProduct, short_description: e.target.value })
+                  }
+                  className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-white/90 mb-1">Detailed Description</label>
+                <textarea
+                  rows={3}
+                  value={editingProduct.description}
+                  onChange={(e) =>
+                    setEditingProduct({ ...editingProduct, description: e.target.value })
+                  }
+                  className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingProduct(null)}
+                  className="glass-btn-3d px-4 py-2 rounded-xl font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-lime-3d px-5 py-2 rounded-xl font-bold"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
