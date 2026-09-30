@@ -108,7 +108,7 @@ export function NotifyMeModal({
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-xs font-bold uppercase tracking-wider">
                 <Bell className="w-3 h-3 text-amber-600" />
                 <span>Restock Notification</span>
               </div>
@@ -140,8 +140,8 @@ export function NotifyMeModal({
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-2.5 bg-cream/30 border border-border-gray rounded-xl text-xs focus:outline-none focus:border-seedly-primary focus:bg-white transition-all"
               />
-              <p className="text-[10px] text-muted-gray">
-                We'll only email you about this specific product restock. Unsubscribe anytime with 1 click.
+              <p className="text-xs text-muted-gray">
+                We&apos;ll only email you about this specific product restock. Unsubscribe anytime with 1 click.
               </p>
             </div>
 

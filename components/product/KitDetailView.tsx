@@ -8,10 +8,11 @@ import { Kit, Review } from '../../lib/types';
 import { formatPKR, formatDate } from '../../lib/utils';
 import { useCart } from '../../lib/store/cart';
 import { useWishlist } from '../../lib/store/wishlist';
-import { Star, Box, PenLine, Bell, MessageCircle, Info } from 'lucide-react';
+import { Star, Box, PenLine, Bell, MessageCircle, Info, Truck } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
 import { PurchaseActions } from './PurchaseActions';
 import { StickyPurchaseBar } from './StickyPurchaseBar';
+import { KitContentsExplorer } from './KitContentsExplorer';
 import { siteConfig } from '../../lib/config';
 
 interface KitDetailViewProps {
@@ -259,20 +260,16 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               )}
             </div>
 
-            <section aria-labelledby="kit-contents" className="border-y border-border-gray py-5 space-y-4">
-              <h2 id="kit-contents" className="font-serif text-xl font-normal">In the box</h2>
-              <p className="text-sm leading-6 text-muted-gray">{kit.package_size}</p>
-              <ul className="divide-y divide-border-gray text-sm">
-                {kit.items.map((item) => (
-                  <li key={item.id} className="py-3">
-                    {item.quantity} &times; {item.product_name}{item.variant_name ? ' (' + item.variant_name + ')' : ''}
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <KitContentsExplorer items={kit.items} kitSlug={kit.slug} />
 
             {/* In Stock vs Out of Stock Action Controls */}
-            <div ref={mainActionsRef}>
+            <div ref={mainActionsRef} className="space-y-3">
+              <div className="flex items-center gap-2 py-2.5 px-3.5 bg-seedly-light/70 border border-seedly-primary/20 rounded-xl text-xs text-charcoal">
+                <Truck className="h-4 w-4 text-seedly-primary shrink-0" aria-hidden="true" />
+                <span>
+                  <strong>Flat Rs. 200 delivery</strong> · <strong className="text-seedly-dark">FREE</strong> over Rs. 2,500 · Dispatched in 24h from Lahore
+                </span>
+              </div>
               {inStock ? (
                 <PurchaseActions
                   quantity={quantity}

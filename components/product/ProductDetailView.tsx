@@ -8,11 +8,12 @@ import { Product, ProductVariant, Review } from '../../lib/types';
 import { formatPKR, formatDate } from '../../lib/utils';
 import { useCart } from '../../lib/store/cart';
 import { useWishlist } from '../../lib/store/wishlist';
-import { Star, Leaf, Clock, Coffee, CheckCircle2, PenLine, AlertCircle, Bell, MessageCircle, Thermometer, ChevronDown } from 'lucide-react';
+import { Star, Leaf, Clock, Coffee, CheckCircle2, PenLine, AlertCircle, Bell, MessageCircle, Thermometer, ChevronDown, Truck } from 'lucide-react';
 import { NotifyMeModal } from './NotifyMeModal';
 import { ProductCard } from './ProductCard';
 import { PurchaseActions } from './PurchaseActions';
 import { StickyPurchaseBar } from './StickyPurchaseBar';
+import { TeaBrewCalculator } from './TeaBrewCalculator';
 import { siteConfig } from '../../lib/config';
 
 interface ProductDetailViewProps {
@@ -27,12 +28,13 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
 
   const activeVariants = product.variants?.filter((variant) => variant.status === 'ACTIVE') || [];
   const defaultVar = activeVariants.find((variant) => variant.weight_grams === product.weight_grams)
+    || activeVariants.find((variant) => variant.weight_grams === 250)
     || activeVariants[0];
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(defaultVar);
   const [quantity, setQuantity] = useState(1);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     details: true,
-    usage: false,
+    usage: product.product_type === 'tea',
     storage: false,
     faqs: false,
   });
@@ -365,7 +367,13 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             )}
 
             {/* Action Controls */}
-            <div ref={mainActionsRef}>
+            <div ref={mainActionsRef} className="space-y-3">
+              <div className="flex items-center gap-2 py-2.5 px-3.5 bg-seedly-light/70 border border-seedly-primary/20 rounded-xl text-xs text-charcoal">
+                <Truck className="h-4 w-4 text-seedly-primary shrink-0" aria-hidden="true" />
+                <span>
+                  <strong>Flat Rs. 200 delivery</strong> · <strong className="text-seedly-dark">FREE</strong> over Rs. 2,500 · Dispatched in 24h from Lahore
+                </span>
+              </div>
               {inStock ? (
                 <PurchaseActions
                   quantity={quantity}
@@ -520,8 +528,17 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               data-open={openSections.usage}
             >
               <div className="accordion-inner">
-                <div className="pb-6 pt-1 text-sm leading-relaxed text-muted-gray space-y-3">
+                <div className="pb-6 pt-1 text-sm leading-relaxed text-muted-gray space-y-4">
                   <p>{product.usage_instructions}</p>
+                  {product.product_type === 'tea' && (
+                    <TeaBrewCalculator
+                      teaName={product.name}
+                      slug={product.slug}
+                      steepTime={product.steep_time}
+                      waterTemp={product.water_temp}
+                      caffeineLevel={product.caffeine_level}
+                    />
+                  )}
                 </div>
               </div>
             </div>

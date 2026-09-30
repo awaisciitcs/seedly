@@ -22,6 +22,7 @@ import {
   PhoneCall,
   Clock,
 } from 'lucide-react';
+import { siteConfig } from '../../../lib/config';
 
 const PAKISTAN_CITIES = [
   'Lahore',
@@ -232,8 +233,9 @@ export default function CheckoutPage() {
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  const standardShippingFeeMinor = siteConfig.shipping.standardFee * 100;
   const isFreeShipping = subtotalMinor >= freeShippingThreshold;
-  const shippingFee = isFreeShipping ? 0 : 20000; // Rs. 200
+  const shippingFee = isFreeShipping ? 0 : standardShippingFeeMinor;
   const totalMinor = subtotalMinor + shippingFee;
 
   const handleCopyNumber = (num: string) => {
@@ -803,7 +805,7 @@ export default function CheckoutPage() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full">
                       Mobile Wallet
                     </span>
                     <div
@@ -817,7 +819,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <h3 className="font-serif font-bold text-charcoal text-sm sm:text-base">JazzCash / Easypaisa</h3>
-                  <p className="text-[11px] text-muted-gray mt-1 leading-relaxed">
+                  <p className="text-xs text-muted-gray mt-1 leading-relaxed">
                     Send directly to wallet &amp; enter Transaction ID (TID).
                   </p>
                 </div>
@@ -837,7 +839,7 @@ export default function CheckoutPage() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-charcoal bg-sand px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-bold uppercase tracking-wider text-charcoal bg-sand px-2 py-0.5 rounded-full">
                       Bank Transfer
                     </span>
                     <div
@@ -851,7 +853,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <h3 className="font-serif font-bold text-charcoal text-sm sm:text-base">Meezan Bank</h3>
-                  <p className="text-[11px] text-muted-gray mt-1 leading-relaxed">
+                  <p className="text-xs text-muted-gray mt-1 leading-relaxed">
                     Online banking / ATM transfer with receipt upload.
                   </p>
                 </div>

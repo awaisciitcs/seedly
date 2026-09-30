@@ -3,10 +3,10 @@ import { Product, ProductVariant } from '../types';
 
 function sortVariants(variants: any[]): ProductVariant[] {
   return [...variants].sort((a, b) => {
-    const aIs250 = a.weight_grams === 250 ? 0 : 1;
-    const bIs250 = b.weight_grams === 250 ? 0 : 1;
-    if (aIs250 !== bIs250) return aIs250 - bIs250;
-    return (a.weight_grams || 0) - (b.weight_grams || 0);
+    const aWeight = a.weight_grams || 0;
+    const bWeight = b.weight_grams || 0;
+    if (aWeight !== bWeight) return aWeight - bWeight;
+    return (a.sort_order ?? 0) - (b.sort_order ?? 0);
   });
 }
 

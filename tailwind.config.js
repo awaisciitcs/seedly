@@ -10,7 +10,7 @@ module.exports = {
     extend: {
       colors: {
         seedly: {
-          primary: "#67826F",     // Sage green
+          primary: "#3E5C48",     // Rich sage / deep botanical green (WCAG AA compliant: 7.03:1 on cream)
           dark: "#1F382B",        // Deep botanical green
           light: "#EAEFEA",       // Whisper sage tint
           forest: "#16281F",      // Deepest botanical contrast

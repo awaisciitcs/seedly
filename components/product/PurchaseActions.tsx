@@ -19,14 +19,11 @@ export function PurchaseActions({ quantity, maxQuantity, wishlisted, onQuantityC
 
   const handleAddClick = () => {
     if (btnState !== 'idle') return;
-    setBtnState('pending');
+    onAdd();
+    setBtnState('added');
     setTimeout(() => {
-      onAdd();
-      setBtnState('added');
-      setTimeout(() => {
-        setBtnState('idle');
-      }, 1500);
-    }, 150);
+      setBtnState('idle');
+    }, 1500);
   };
 
   return (

@@ -33,19 +33,72 @@ export function CartDrawer() {
   } = useCart();
 
   const [recentlyRemoved, setRecentlyRemoved] = useState<CartItem | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const [shouldRender, setShouldRender] = useState(isCartOpen);
+  const closeTimeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeBtnRef = React.useRef<HTMLButtonElement>(null);
+  const previousFocusRef = React.useRef<HTMLElement | null>(null);
 
+  // Sync open state with rendering
   useEffect(() => {
-    if (!isCartOpen) return;
+    if (isCartOpen) {
+      if (closeTimeout.current) clearTimeout(closeTimeout.current);
+      previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      setIsClosing(false);
+      setShouldRender(true);
+    } else if (shouldRender && !isClosing) {
+      setShouldRender(false);
+    }
+  }, [isCartOpen, shouldRender, isClosing]);
+
+  const handleClose = React.useCallback(() => {
+    if (isClosing) return;
+    setIsClosing(true);
+    closeTimeout.current = setTimeout(() => {
+      setIsCartOpen(false);
+      setShouldRender(false);
+      setIsClosing(false);
+      if (previousFocusRef.current?.isConnected) {
+        previousFocusRef.current.focus({ preventScroll: true });
+      }
+    }, 240);
+  }, [isClosing, setIsCartOpen]);
+
+  const handleImmediateClose = React.useCallback(() => {
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    setIsCartOpen(false);
+    setShouldRender(false);
+    setIsClosing(false);
+  }, [setIsCartOpen]);
+
+  // Lock body scroll and handle Escape key
+  useEffect(() => {
+    if (!shouldRender) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const timer = setTimeout(() => {
+      closeBtnRef.current?.focus();
+    }, 50);
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsCartOpen(false);
+        e.preventDefault();
+        handleClose();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isCartOpen, setIsCartOpen]);
 
-  if (!isCartOpen) return null;
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+      if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    };
+  }, [shouldRender, handleClose]);
+
+  if (!shouldRender) return null;
 
   const freeShippingDelta = Math.max(0, freeShippingThreshold - subtotalMinor);
   const freeShippingPercent = Math.min(100, Math.round((subtotalMinor / freeShippingThreshold) * 100));
@@ -71,12 +124,18 @@ export function CartDrawer() {
     >
       {/* Backdrop */}
       <div
-        onClick={() => setIsCartOpen(false)}
-        className="motion-backdrop absolute inset-0 bg-charcoal/50 backdrop-blur-sm transition-opacity"
+        onClick={handleClose}
+        className={`absolute inset-0 bg-charcoal/50 backdrop-blur-sm transition-opacity ${
+          isClosing ? 'motion-backdrop-exit' : 'motion-backdrop'
+        }`}
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="motion-drawer w-screen max-w-md bg-white shadow-2xl flex flex-col">
+        <div
+          className={`w-screen max-w-md bg-white shadow-2xl flex flex-col ${
+            isClosing ? 'motion-drawer-exit' : 'motion-drawer'
+          }`}
+        >
           {/* Header */}
           <div className="px-6 py-5 border-b border-border-gray flex items-center justify-between bg-cream/50">
             <div className="flex items-center gap-2">
@@ -87,8 +146,9 @@ export function CartDrawer() {
               </span>
             </div>
             <button
-              onClick={() => setIsCartOpen(false)}
-              className="p-2 text-muted-gray hover:text-charcoal rounded-full hover:bg-cream"
+              ref={closeBtnRef}
+              onClick={handleClose}
+              className="p-2 text-muted-gray hover:text-charcoal rounded-full hover:bg-cream transition-colors"
               aria-label="Close basket"
             >
               <X className="w-5 h-5" />
@@ -158,7 +218,7 @@ export function CartDrawer() {
                 </p>
                 <Link
                   href="/shop"
-                  onClick={() => setIsCartOpen(false)}
+                  onClick={handleClose}
                   className="px-6 py-2.5 bg-seedly-dark text-white rounded-full text-sm font-medium hover:bg-seedly-forest transition-colors shadow-subtle"
                 >
                   Explore Catalog
@@ -174,7 +234,7 @@ export function CartDrawer() {
                   <div key={item.id} className="py-4 flex gap-4 items-center">
                     <Link
                       href={itemHref}
-                      onClick={() => setIsCartOpen(false)}
+                      onClick={handleClose}
                       className="w-16 h-16 relative rounded-xl overflow-hidden bg-cream shrink-0 border border-border-gray/70 hover:opacity-85 transition-opacity"
                     >
                       <Image
@@ -187,7 +247,7 @@ export function CartDrawer() {
                     <div className="flex-1 min-w-0">
                       <Link
                         href={itemHref}
-                        onClick={() => setIsCartOpen(false)}
+                        onClick={handleClose}
                         className="hover:text-seedly-dark transition-colors block"
                       >
                         <h4 className="text-sm font-medium text-charcoal line-clamp-2 leading-snug hover:underline">
@@ -249,7 +309,7 @@ export function CartDrawer() {
               <div className="space-y-2">
                 <Link
                   href="/checkout"
-                  onClick={() => setIsCartOpen(false)}
+                  onClick={handleImmediateClose}
                   className="w-full flex items-center justify-center gap-2 py-3.5 bg-seedly-dark text-white rounded-xl font-medium hover:bg-seedly-forest transition-colors shadow-card text-sm"
                 >
                   <span>Proceed to Checkout</span>
@@ -258,15 +318,15 @@ export function CartDrawer() {
                 <div className="flex items-center justify-between pt-1 text-xs">
                   <Link
                     href="/cart"
-                    onClick={() => setIsCartOpen(false)}
+                    onClick={handleImmediateClose}
                     className="font-medium text-seedly-dark hover:underline"
                   >
                     View Full Basket Details
                   </Link>
                   <button
                     type="button"
-                    onClick={() => setIsCartOpen(false)}
-                    className="text-muted-gray hover:text-charcoal"
+                    onClick={handleClose}
+                    className="text-muted-gray hover:text-charcoal transition-colors"
                   >
                     Continue Shopping
                   </button>

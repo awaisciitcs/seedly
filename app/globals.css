@@ -30,7 +30,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid #67826F;
+    outline: 2px solid #3E5C48;
     outline-offset: 4px;
   }
 
@@ -59,6 +59,11 @@
 
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+body[data-sticky-bar-active="true"] .mobile-bottom-nav {
+  transform: translateY(100%);
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -145,9 +150,17 @@
   from { transform: translateX(100%); }
   to { transform: none; }
 }
+@keyframes seedly-drawer-exit {
+  from { transform: none; }
+  to { transform: translateX(100%); }
+}
 @keyframes seedly-fade {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+@keyframes seedly-fade-exit {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 @keyframes drawCheck {
   from { stroke-dashoffset: 24; }
@@ -253,7 +266,9 @@
   .motion-panel, .motion-result { animation: seedly-enter 220ms ease-out both; }
   .motion-search[open] { animation: seedly-dialog 240ms cubic-bezier(0.2, 0.7, 0.2, 1); }
   .motion-search[open]::backdrop, .motion-backdrop { animation: seedly-fade 200ms ease-out; }
+  .motion-backdrop-exit { animation: seedly-fade-exit 240ms ease-out forwards; }
   .motion-drawer { animation: seedly-drawer 320ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .motion-drawer-exit { animation: seedly-drawer-exit 240ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
   .motion-nav::after { transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1); }
 
   .button-primary, .motion-button, .motion-icon {

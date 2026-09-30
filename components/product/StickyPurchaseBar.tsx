@@ -46,8 +46,10 @@ export function StickyPurchaseBar({
         // Show only when target button has scrolled above the viewport
         if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
           setIsVisible(true);
+          document.body.dataset.stickyBarActive = 'true';
         } else {
           setIsVisible(false);
+          delete document.body.dataset.stickyBarActive;
         }
       },
       {
@@ -57,7 +59,10 @@ export function StickyPurchaseBar({
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      delete document.body.dataset.stickyBarActive;
+    };
   }, [targetRef]);
 
   const handleAdd = () => {
@@ -67,15 +72,12 @@ export function StickyPurchaseBar({
     }
     if (btnState !== 'idle') return;
 
-    setBtnState('pending');
-    setTimeout(() => {
-      onAddToCart();
-      setBtnState('added');
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => {
-        setBtnState('idle');
-      }, 1500);
-    }, 150);
+    onAddToCart();
+    setBtnState('added');
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setBtnState('idle');
+    }, 1500);
   };
 
   return (
@@ -102,7 +104,7 @@ export function StickyPurchaseBar({
             <div className="flex items-baseline gap-1.5">
               <span className="text-xs font-bold text-seedly-dark">{formatPKR(priceMinor)}</span>
               {variantLabel && (
-                <span className="text-[10px] text-muted-gray truncate">&middot; {variantLabel}</span>
+                <span className="text-xs text-muted-gray truncate">&middot; {variantLabel}</span>
               )}
             </div>
           </div>

@@ -52,27 +52,24 @@ export function ProductCard({ product }: ProductCardProps) {
     }
     if (btnState !== 'idle') return;
 
-    setBtnState('pending');
-    setTimeout(() => {
-      addItem({
-        id: `${product.id}-${defaultVariant?.id || (isKit ? 'kit' : 'default')}`,
-        product_id: product.id,
-        kit_id: isKit ? product.id : undefined,
-        variant_id: defaultVariant?.id,
-        name: product.name,
-        slug: product.slug,
-        variant_label: packageLabel,
-        price_minor: displayPriceMinor,
-        image_url: product.image_url,
-        quantity: 1,
-        product_type: isKit ? 'kit' : (product as Product).product_type,
-        max_quantity: stock,
-      });
+    addItem({
+      id: `${product.id}-${defaultVariant?.id || (isKit ? 'kit' : 'default')}`,
+      product_id: product.id,
+      kit_id: isKit ? product.id : undefined,
+      variant_id: defaultVariant?.id,
+      name: product.name,
+      slug: product.slug,
+      variant_label: packageLabel,
+      price_minor: displayPriceMinor,
+      image_url: product.image_url,
+      quantity: 1,
+      product_type: isKit ? 'kit' : (product as Product).product_type,
+      max_quantity: stock,
+    });
 
-      setBtnState('added');
-      if (addedTimeout.current) clearTimeout(addedTimeout.current);
-      addedTimeout.current = setTimeout(() => setBtnState('idle'), 1500);
-    }, 150);
+    setBtnState('added');
+    if (addedTimeout.current) clearTimeout(addedTimeout.current);
+    addedTimeout.current = setTimeout(() => setBtnState('idle'), 1500);
   };
 
   return (
@@ -83,7 +80,7 @@ export function ProductCard({ product }: ProductCardProps) {
             src={product.image_url}
             alt={product.name}
             fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             className="object-cover"
           />
         </Link>

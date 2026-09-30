@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -20,7 +20,7 @@ export function MobileBottomNav() {
   ];
 
   return (
-    <nav aria-label="Quick navigation" className="fixed inset-x-0 bottom-0 z-40 border-t border-border-gray bg-cream pb-[env(safe-area-inset-bottom)] lg:hidden">
+    <nav aria-label="Quick navigation" className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border-gray bg-cream pb-[env(safe-area-inset-bottom)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden">
       <div className="grid h-16 grid-cols-5 px-2">
         {items.map((item) => {
           const isActive = pathname === item.href;
@@ -37,7 +37,7 @@ export function MobileBottomNav() {
                 <Icon className="h-5 w-5" strokeWidth={isActive ? 2 : 1.5} aria-hidden="true" />
                 {item.badge && item.badge > 0 ? <span className="absolute -right-2 -top-1.5 text-[9px] font-semibold leading-none text-seedly-dark" aria-hidden="true">{item.badge}</span> : null}
               </span>
-              <span className="text-[10px] leading-4 sm:text-[11px]">{item.label}</span>
+              <span className="text-xs leading-4">{item.label}</span>
             </Link>
           );
         })}

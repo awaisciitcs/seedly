@@ -21,6 +21,7 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
   const [query, setQuery] = useState('');
   const [response, setResponse] = useState<ProductSearchResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState(false);
   const [retry, setRetry] = useState(0);
   const term = query.trim();
@@ -44,9 +45,8 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
   useEffect(() => {
     const controller = new AbortController();
     const isCurrent = () => !controller.signal.aborted && latestTerm.current === term;
-    setLoading(true);
+    setIsSearching(true);
     setError(false);
-    setResponse(null);
 
     // A short debounce keeps typing responsive without requesting every keystroke.
     const timeout = setTimeout(async () => {
@@ -54,11 +54,17 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
         const result = await fetch('/api/search?q=' + encodeURIComponent(term), { signal: controller.signal });
         if (!result.ok) throw new Error('Search unavailable');
         const data: ProductSearchResponse = await result.json();
-        if (isCurrent()) setResponse(data);
+        if (isCurrent()) {
+          setResponse(data);
+          setLoading(false);
+        }
       } catch {
         if (isCurrent()) setError(true);
       } finally {
-        if (isCurrent()) setLoading(false);
+        if (isCurrent()) {
+          setIsSearching(false);
+          setLoading(false);
+        }
       }
     }, term ? 150 : 0);
 
@@ -76,8 +82,7 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
     latestTerm.current = value.trim();
     setQuery(value);
     if (value.trim() !== term) {
-      setLoading(true);
-      setResponse(null);
+      setIsSearching(true);
       setError(false);
     }
   };
@@ -159,14 +164,14 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
           <p id="catalog-search-hint" className="sr-only">Results update as you type. Use the arrow keys to browse products, Enter to open, and Escape to close.</p>
           <div className="flex min-h-12 items-center justify-between gap-3 text-xs text-muted-gray">
             <p role="status" aria-live="polite" aria-atomic="true" className="break-words [overflow-wrap:anywhere]">
-              {loading ? 'Searching...' : error ? 'Unable to load products' : term ? total + (total === 1 ? ' result' : ' results') + ' for \u201c' + term + '\u201d' : 'Explore the range'}
+              {isSearching ? 'Searching...' : error ? 'Unable to load products' : term ? total + (total === 1 ? ' result' : ' results') + ' for \u201c' + term + '\u201d' : 'Explore the range'}
             </p>
-            {loading && <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin motion-reduce:animate-none" aria-hidden="true" />}
+            {isSearching && <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-seedly-primary motion-reduce:animate-none" aria-hidden="true" />}
           </div>
         </div>
 
-        <div id="catalog-search-results" aria-busy={loading} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2 sm:px-3">
-          {loading ? (
+        <div id="catalog-search-results" aria-busy={isSearching} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2 sm:px-3">
+          {loading && !response ? (
             <div className="space-y-1 px-2" aria-hidden="true">
               {[0, 1, 2].map((index) => (
                 <div key={index} className="flex items-center gap-4 rounded-xl py-3 motion-safe:animate-pulse">
@@ -179,13 +184,13 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
                 </div>
               ))}
             </div>
-          ) : error ? (
+          ) : error && !response ? (
             <div className="px-4 py-10 text-center">
               <p className="text-sm text-muted-gray">We couldn&apos;t load products. Please try again.</p>
               <button type="button" onClick={() => setRetry((value) => value + 1)} className="mt-4 min-h-11 rounded-full border border-border-gray px-5 text-sm font-medium transition-colors hover:bg-cream">Try again</button>
             </div>
           ) : items.length ? (
-            <ul aria-label={term ? 'Matching products' : 'Products to explore'}>
+            <ul aria-label={term ? 'Matching products' : 'Products to explore'} className={isSearching ? 'opacity-80 transition-opacity duration-150' : 'opacity-100 transition-opacity duration-150'}>
               {items.map((item, index) => (
                 <li key={item.id} className="motion-result" style={{ animationDelay: Math.min(index * 25, 100) + 'ms' }}>
                   <Link
@@ -205,7 +210,7 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
                       <Image src={item.image} alt="" fill sizes="80px" className="object-cover" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="mb-1 text-[11px] text-muted-gray sm:text-xs">{item.category}{item.size && <> &middot; {item.size}</>}</p>
+                      <p className="mb-1 text-xs text-muted-gray">{item.category}{item.size && <> &middot; {item.size}</>}</p>
                       <p className="text-sm font-medium leading-snug text-seedly-dark sm:text-base">{item.name}</p>
                       <p className="mt-1.5 text-sm tabular-nums text-charcoal">{formatPKR(item.priceMinor)}</p>
                     </div>
