@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { SeedlyLogo } from '../../components/ui/SeedlyLogo';
 import { createClient } from '@/lib/supabase/browser';
+import { CommandPalette } from '@/components/admin/CommandPalette';
+import { OrderDrawer } from '@/components/admin/OrderDrawer';
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -14,11 +15,15 @@ import {
   MessageSquare,
   Settings,
   ExternalLink,
-  ShieldCheck,
   Bell,
-  Clock,
   LogOut,
   Loader2,
+  Search,
+  RefreshCw,
+  Sparkles,
+  ChevronRight,
+  EyeOff,
+  User,
 } from 'lucide-react';
 
 interface AdminInfo {
@@ -26,6 +31,15 @@ interface AdminInfo {
   email: string;
   name: string;
   role: 'OWNER' | 'STAFF' | string;
+}
+
+interface AdminCounts {
+  pendingReceiptsCount: number;
+  oldestReceiptAge: string | null;
+  ordersToPackCount: number;
+  lowStockCount: number;
+  stockAlertsCount: number;
+  totalOrdersCount: number;
 }
 
 export default function AdminLayout({
@@ -36,9 +50,48 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [admin, setAdmin] = useState<AdminInfo | null>(null);
+  const [counts, setCounts] = useState<AdminCounts | null>(null);
   const [loading, setLoading] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [inspectOrderId, setInspectOrderId] = useState<string | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [reduceEffects, setReduceEffects] = useState(false);
+  const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+  const [lastSyncedSec, setLastSyncedSec] = useState(0);
 
+  // Sync counts
+  const fetchCounts = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/counts');
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.data) {
+          setCounts(json.data);
+          setLastSyncedSec(0);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load admin counts:', e);
+    }
+  }, []);
+
+  // Timer for "Synced Xs ago"
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLastSyncedSec((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Poll counts every 45s
+  useEffect(() => {
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 45000);
+    return () => clearInterval(interval);
+  }, [fetchCounts]);
+
+  // Load Admin user
   useEffect(() => {
     let isMounted = true;
     async function loadAdmin() {
@@ -54,9 +107,7 @@ export default function AdminLayout({
             setAdmin(data.data.admin);
           }
         } else if (res.status === 401 || res.status === 403) {
-          if (isMounted) {
-            router.push('/admin/login');
-          }
+          if (isMounted) router.push('/admin/login');
         }
       } catch (err) {
         console.error('Failed to load admin profile:', err);
@@ -70,6 +121,27 @@ export default function AdminLayout({
       isMounted = false;
     };
   }, [pathname, router]);
+
+  // Handle data-fx="lite"
+  useEffect(() => {
+    const saved = localStorage.getItem('seedly_admin_fx');
+    if (saved === 'lite') {
+      setReduceEffects(true);
+      document.documentElement.setAttribute('data-fx', 'lite');
+    }
+  }, []);
+
+  const toggleEffects = () => {
+    const next = !reduceEffects;
+    setReduceEffects(next);
+    if (next) {
+      document.documentElement.setAttribute('data-fx', 'lite');
+      localStorage.setItem('seedly_admin_fx', 'lite');
+    } else {
+      document.documentElement.removeAttribute('data-fx');
+      localStorage.removeItem('seedly_admin_fx');
+    }
+  };
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -99,24 +171,104 @@ export default function AdminLayout({
 
   const isOwner = admin?.role?.toUpperCase() === 'OWNER';
 
-  const navItems = [
-    { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { label: 'Orders & Receipts', href: '/admin/orders', icon: ShoppingBag, badge: 'Live' },
-    { label: 'Products & Stock', href: '/admin/products', icon: Package },
-    { label: 'Curated Kits', href: '/admin/kits', icon: Layers },
-    { label: 'Customers', href: '/admin/customers', icon: Users },
-    { label: 'Reviews', href: '/admin/reviews', icon: MessageSquare },
-    { label: 'Stock Alerts', href: '/admin/stock-alerts', icon: Bell },
-    { label: 'Store Settings', href: '/admin/settings', icon: Settings, ownerOnly: true },
+  interface NavItem {
+    label: string;
+    href: string;
+    icon: React.ComponentType<{ className?: string }>;
+    count?: number;
+    ownerOnly?: boolean;
+  }
+
+  interface NavSection {
+    heading: string;
+    items: NavItem[];
+  }
+
+  // Navigation Structure Grouped by Sections
+  const navSections: NavSection[] = [
+    {
+      heading: 'OPERATE',
+      items: [
+        { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+        {
+          label: 'Orders & Receipts',
+          href: '/admin/orders',
+          icon: ShoppingBag,
+          count: counts?.pendingReceiptsCount || 0,
+        },
+      ],
+    },
+    {
+      heading: 'CATALOG',
+      items: [
+        {
+          label: 'Products & Stock',
+          href: '/admin/products',
+          icon: Package,
+          count: counts?.lowStockCount || 0,
+        },
+        { label: 'Curated Kits', href: '/admin/kits', icon: Layers },
+      ],
+    },
+    {
+      heading: 'CUSTOMERS',
+      items: [
+        { label: 'Customer Directory', href: '/admin/customers', icon: Users },
+        { label: 'Reviews', href: '/admin/reviews', icon: MessageSquare },
+        {
+          label: 'Stock Alerts',
+          href: '/admin/stock-alerts',
+          icon: Bell,
+          count: counts?.stockAlertsCount || 0,
+        },
+      ],
+    },
+    {
+      heading: 'ADMIN',
+      items: [
+        { label: 'Store Settings', href: '/admin/settings', icon: Settings, ownerOnly: true },
+      ],
+    },
   ];
+
+  // Dynamic Breadcrumb computation
+  const getBreadcrumb = () => {
+    if (pathname === '/admin') return 'Dashboard';
+    if (pathname.startsWith('/admin/orders')) return 'Orders & Receipts';
+    if (pathname.startsWith('/admin/products')) return 'Products & Stock';
+    if (pathname.startsWith('/admin/kits')) return 'Curated Kits';
+    if (pathname.startsWith('/admin/customers')) return 'Customer Directory';
+    if (pathname.startsWith('/admin/reviews')) return 'Reviews Moderation';
+    if (pathname.startsWith('/admin/stock-alerts')) return 'Stock Alerts';
+    if (pathname.startsWith('/admin/settings')) return 'Store Settings';
+    return 'Desk';
+  };
 
   return (
     <div className="admin-glass-canvas min-h-screen text-white flex flex-col md:flex-row antialiased relative selection:bg-emerald-500/30 selection:text-white">
-      {/* Sidebar */}
+      {/* Global Command Palette (⌘K) */}
+      <CommandPalette
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onSelectOrder={(ordId) => {
+          setInspectOrderId(ordId);
+          setIsDrawerOpen(true);
+        }}
+      />
+
+      {/* Global Slide-Over Order Drawer */}
+      <OrderDrawer
+        orderId={inspectOrderId}
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        onOrderUpdated={fetchCounts}
+      />
+
+      {/* Glass Sidebar */}
       <aside className="w-full md:w-64 lg:w-72 shrink-0 p-3 md:p-4 flex flex-col justify-between">
-        <div className="glass-panel-3d rounded-3xl p-4 flex flex-col justify-between h-full space-y-6">
+        <div className="glass rounded-3xl p-4 flex flex-col justify-between h-full space-y-6">
           <div className="space-y-6">
-            {/* Logo & Operations Desk Badge */}
+            {/* Brand Logo & Operations Desk Badge */}
             <div className="flex flex-col gap-2 pt-2 px-1">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-lime flex items-center justify-center text-botanical-deep shadow-[0_0_15px_rgba(183,228,89,0.4)]">
@@ -131,113 +283,174 @@ export default function AdminLayout({
               </span>
             </div>
 
-            {/* Navigation Links */}
-            <nav className="space-y-1.5">
-              {navItems.map((item) => {
-                const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
-                const Icon = item.icon;
+            {/* Navigation Grouped by Section */}
+            <nav className="space-y-4">
+              {navSections.map((section) => (
+                <div key={section.heading} className="space-y-1">
+                  <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-botanical-sage/70 font-semibold">
+                    {section.heading}
+                  </div>
+                  <div className="space-y-1">
+                    {section.items.map((item) => {
+                      if (item.ownerOnly && !isOwner) return null;
+                      const isActive =
+                        pathname === item.href ||
+                        (item.href !== '/admin' && pathname.startsWith(item.href));
+                      const Icon = item.icon;
 
-                if (item.ownerOnly && !isOwner) {
-                  return null;
-                }
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          aria-current={isActive ? 'page' : undefined}
+                          className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                            isActive
+                              ? 'nav-lit'
+                              : 'text-botanical-sage hover:text-white hover:bg-white/[0.06] border border-transparent'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <Icon
+                              className={`w-4 h-4 ${isActive ? 'text-lime' : 'text-botanical-sage'}`}
+                            />
+                            <span>{item.label}</span>
+                          </div>
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-medium transition-all ${
-                      isActive
-                        ? 'bg-white/[0.12] text-white font-semibold border border-emerald-400/30 shadow-[0_0_20px_rgba(74,222,128,0.18),inset_0_1px_1px_rgba(255,255,255,0.22)]'
-                        : 'text-botanical-sage hover:text-white hover:bg-white/[0.06] border border-transparent'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-lime' : 'text-botanical-sage'}`} />
-                      <span>{item.label}</span>
-                    </div>
-                    {item.badge && (
-                      <span className="flex items-center gap-1.5 px-2 py-0.5 text-[9px] font-bold uppercase rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 shadow-[0_0_10px_rgba(34,197,94,0.25)]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
+                          {/* Actionable Counter Badge */}
+                          {typeof item.count === 'number' && item.count > 0 && (
+                            <span className="px-2 py-0.2 rounded-full text-[10px] font-mono font-bold bg-white/10 text-white border border-white/15">
+                              {item.count}
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </nav>
           </div>
 
-          {/* Footer / Role & Storefront Link */}
-          <div className="space-y-3 pt-4 border-t border-white/10">
-            {/* Active Role Card */}
-            <div className="glass-card-3d p-3 rounded-2xl space-y-1.5 border border-white/10">
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="text-botanical-sage">Authenticated Role:</span>
-                <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-emerald-400 bg-emerald-950/70 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  {admin?.role?.toUpperCase() || (loading ? 'Checking...' : 'OWNER')}
-                </span>
-              </div>
-              <div className="font-semibold text-white/90 truncate text-[11px]">
-                {admin?.email || (loading ? 'Loading...' : 'owner@seedly.pk')}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Link
-                href="/"
-                target="_blank"
-                className="btn-lime-3d flex-1 py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
-              >
-                <span>Storefront</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </Link>
-
-              <button
-                type="button"
-                onClick={handleSignOut}
-                disabled={signingOut}
-                title="Sign Out of Operations Desk"
-                className="glass-btn-3d p-2.5 rounded-xl text-rose-300 hover:text-rose-100 hover:bg-rose-500/20 border-white/10 cursor-pointer disabled:opacity-50"
-              >
-                {signingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
-              </button>
-            </div>
+          {/* Demoted Storefront Ghost CTA (Only one keycap lit on page) */}
+          <div className="pt-4 border-t border-white/10 space-y-2">
+            <Link
+              href="/"
+              target="_blank"
+              className="btn-ghost-admin w-full py-2.5 px-3 rounded-xl text-xs font-medium gap-1.5"
+            >
+              <span>Storefront</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header Bar */}
-        <header className="glass-panel-3d rounded-2xl mx-3 md:mx-6 mt-3 md:mt-4 px-5 py-3 flex items-center justify-between z-10">
+        {/* Sticky Top Header Bar with Glass Refraction */}
+        <header className="glass sticky top-3 md:top-4 z-40 mx-3 md:mx-6 px-4 py-2.5 flex items-center justify-between">
+          {/* Left: Breadcrumbs & Quick Search Trigger */}
           <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-white tracking-widest uppercase">
-              Seedly Admin Portal
-            </span>
-            <span className="text-xs text-botanical-sage hidden sm:inline">• Pakistan Market Operations</span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="glass-btn-3d px-3.5 py-1.5 rounded-full text-xs font-mono flex items-center gap-2 text-white/80">
-              <Clock className="w-3.5 h-3.5 text-lime" />
-              <span>Karachi Time (PKT)</span>
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="text-botanical-sage hidden sm:inline">Operations Desk</span>
+              <ChevronRight className="w-3.5 h-3.5 text-white/30 hidden sm:inline" />
+              <span className="font-semibold text-white">{getBreadcrumb()}</span>
             </div>
 
+            {/* Ctrl / Cmd + K Search Trigger */}
             <button
               type="button"
-              title="Notifications"
-              className="glass-btn-3d w-8 h-8 rounded-full flex items-center justify-center relative text-white/80 hover:text-white"
+              onClick={() => setIsSearchOpen(true)}
+              className="glass-recessed px-3 py-1.5 rounded-xl text-xs text-botanical-sage hover:text-white flex items-center gap-2 transition-all border border-white/10"
+              title="Search orders, phone numbers, or SKUs (Ctrl+K)"
             >
-              <Bell className="w-3.5 h-3.5" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(74,222,128,0.8)]" />
+              <Search className="w-3.5 h-3.5 text-lime" />
+              <span className="hidden sm:inline">Search (#SED, phone, SKU)...</span>
+              <kbd className="hidden sm:inline font-mono text-[9px] bg-white/10 text-white/70 px-1.5 py-0.5 rounded border border-white/10">
+                ⌘K
+              </kbd>
+            </button>
+          </div>
+
+          {/* Right: Freshness indicator & Consolidated Avatar Menu */}
+          <div className="flex items-center gap-3">
+            {/* Freshness Indicator */}
+            <button
+              type="button"
+              onClick={fetchCounts}
+              title="Click to refresh latest data"
+              className="glass-inset px-2.5 py-1.5 rounded-xl text-[11px] font-mono text-botanical-sage hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <RefreshCw className="w-3 h-3 text-lime" />
+              <span className="hidden md:inline">
+                {lastSyncedSec < 5 ? 'synced just now' : `synced ${lastSyncedSec}s ago`}
+              </span>
             </button>
 
-            <div className="glass-btn-3d pl-1.5 pr-3 py-1 rounded-full flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-lime text-botanical-deep font-bold flex items-center justify-center text-xs shadow-[0_0_8px_rgba(183,228,89,0.5)]">
-                A
-              </div>
-              <span className="text-xs font-medium text-white">Owner</span>
+            {/* Single Consolidated Avatar Menu */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
+                className="glass-inset px-2.5 py-1.5 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                <div className="w-6 h-6 rounded-full bg-lime text-botanical-deep font-bold flex items-center justify-center text-xs shadow-[0_0_8px_rgba(183,228,89,0.5)]">
+                  {admin?.email ? admin.email.charAt(0).toUpperCase() : 'O'}
+                </div>
+                <span className="text-xs font-medium text-white hidden sm:inline">
+                  {admin?.role || 'OWNER'}
+                </span>
+              </button>
+
+              {/* Dropdown Menu */}
+              {isAvatarMenuOpen && (
+                <div
+                  className="glass absolute right-0 mt-2 w-64 rounded-2xl p-3 space-y-2 border border-white/20 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150"
+                  data-elev="overlay"
+                >
+                  <div className="px-2 py-1.5 border-b border-white/10 space-y-0.5">
+                    <div className="text-xs font-semibold text-white truncate">
+                      {admin?.email || 'owner@seedly.pk'}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span className="text-[10px] uppercase font-bold text-emerald-400">
+                        {admin?.role || 'OWNER'} ROLE
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Reduce effects toggle */}
+                  <button
+                    type="button"
+                    onClick={toggleEffects}
+                    className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs text-botanical-sage hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <EyeOff className="w-3.5 h-3.5" />
+                      <span>Reduce Effects (Lite)</span>
+                    </div>
+                    <span
+                      className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
+                        reduceEffects ? 'bg-lime text-botanical-deep font-bold' : 'bg-white/10 text-white/60'
+                      }`}
+                    >
+                      {reduceEffects ? 'ON' : 'OFF'}
+                    </span>
+                  </button>
+
+                  {/* Sign Out Action */}
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    disabled={signingOut}
+                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-rose-300 hover:text-white hover:bg-rose-500/20 transition-colors cursor-pointer"
+                  >
+                    {signingOut ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LogOut className="w-3.5 h-3.5" />}
+                    <span>Sign Out of Operations Desk</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>

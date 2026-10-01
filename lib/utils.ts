@@ -35,8 +35,15 @@ export function formatDate(dateString: string): string {
 }
 
 export function generateOrderNumber(): string {
-  const date = new Date();
-  const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+  // Use Asia/Karachi (PKT, UTC+5) so order number date matches local calendar date
+  const now = new Date();
+  const pktDateFormatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Karachi',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const dateStr = pktDateFormatter.format(now).replace(/-/g, '');
   const randomStr = Math.floor(1000 + Math.random() * 9000);
   return `SED-${dateStr}-${randomStr}`;
 }
