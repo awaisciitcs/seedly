@@ -94,7 +94,7 @@ export default function AdminSettingsPage() {
       </div>
 
       {savedMsg && (
-        <div className="p-4 bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn shadow-[0_0_12px_rgba(34,197,94,0.2)]">
+        <div className="p-4 bg-emerald-400/15 border border-emerald-500/40 text-emerald-300 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn shadow-[0_0_12px_rgba(34,197,94,0.2)]">
           <Check className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{savedMsg}</span>
         </div>
@@ -175,7 +175,7 @@ export default function AdminSettingsPage() {
 
             {/* Easypaisa */}
             <div className="glass-card-3d p-4 rounded-2xl space-y-3">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/30 inline-block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-400/15 px-2.5 py-0.5 rounded-full border border-emerald-500/30 inline-block">
                 Easypaisa Account
               </span>
               <div>

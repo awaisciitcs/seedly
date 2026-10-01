@@ -297,66 +297,296 @@ body[data-sticky-bar-active="true"] .mobile-bottom-nav {
 }
 
 /* ==========================================================================
-   Seedly Admin - 3D Glassmorphism Design System (Production Refined)
+   Seedly Admin - Glassmorphism Design System v2
+   --------------------------------------------------------------------------
+   1. Vivid backdrop      : coloured blobs sit behind every panel (nothing to frost otherwise)
+   2. One blur per stack  : sidebar / top bar / main panels blur; nested glass auto-degrades
+   3. Light translucency  : white sheen + gradient hairline edge + soft shadow
+   4. @layer components   : Tailwind utilities (sticky, absolute, rounded-*, border-*, bg-*)
+                            can finally override these classes. Before, `.glass` forced
+                            position:relative and silently broke `sticky` on the top bar.
    ========================================================================== */
 
-/* 1. Backdrop with static fixed low-alpha radial gradients */
-.admin-glass-canvas {
-  background-color: #04120b;
-  position: relative;
-  min-height: 100vh;
-  color: #F1F5F9;
-}
+@layer components {
+  /* ---- 1. Canvas: a COLOURFUL backdrop, otherwise there is nothing to frost ---- */
+  .admin-glass-canvas {
+    isolation: isolate;               /* lets the fixed blobs sit behind content but above the canvas bg */
+    position: relative;
+    min-height: 100vh;
+    color: #F4F8F5;
+    background-color: #03150E;
+    background-image: linear-gradient(155deg, #04261B 0%, #063A2D 48%, #08303A 100%);
+    background-attachment: fixed;
+  }
+  .admin-glass-canvas::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(42vmax 42vmax at 6% 4%,    rgb(52 211 153 / .55), transparent 65%),
+      radial-gradient(34vmax 34vmax at 94% 18%,  rgb(190 242 100 / .34), transparent 65%),
+      radial-gradient(48vmax 48vmax at 62% 106%, rgb(45 212 191 / .48), transparent 65%),
+      radial-gradient(38vmax 38vmax at 42% 36%,  rgb(45 212 191 / .20), transparent 65%),
+      radial-gradient(30vmax 30vmax at 2% 92%,   rgb(56 189 248 / .26), transparent 65%),
+      radial-gradient(24vmax 24vmax at 74% 48%,  rgb(251 191 36 / .12), transparent 65%);
+  }
+  .admin-glass-canvas::after {        /* soft vignette keeps text contrast high at the edges */
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / .35) 100%);
+  }
 
-.admin-glass-canvas::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(45vmax 45vmax at 10% 5%,   rgb(52 211 153 / .20), transparent 60%),
-    radial-gradient(35vmax 35vmax at 90% 25%,  rgb(163 230 53 / .10), transparent 60%),
-    radial-gradient(50vmax 50vmax at 55% 105%, rgb(20 184 166 / .16), transparent 60%);
-}
+  /* ---- 2. The glass surface: ONE blur layer per stack (sidebar, top bar, main panels) ---- */
+  .glass,
+  .glass-panel-3d {
+    --blur: 24px;
+    --tint: .30;
+    --sheen: .12;
+    position: relative;
+    border-radius: 22px;
+    background:
+      linear-gradient(145deg, rgb(255 255 255 / var(--sheen)), rgb(255 255 255 / .02) 55%),
+      rgb(8 38 26 / var(--tint));
+    -webkit-backdrop-filter: blur(var(--blur)) saturate(165%);
+    backdrop-filter: blur(var(--blur)) saturate(165%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / .22),
+      inset 0 -1px 0 rgb(0 0 0 / .18),
+      0 1px 2px rgb(0 0 0 / .20),
+      0 22px 44px -22px rgb(0 0 0 / .55);
+    transition:
+      background 180ms cubic-bezier(.2, .8, .2, 1),
+      border-color 180ms cubic-bezier(.2, .8, .2, 1),
+      box-shadow 180ms cubic-bezier(.2, .8, .2, 1),
+      transform 180ms cubic-bezier(.2, .8, .2, 1);
+  }
 
-/* 2. Single blur layer per stack */
-.glass {
-  --blur: 18px;
-  --tint: .55;
-  position: relative;
-  border-radius: 20px;
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / .07), transparent 40%),
-    rgb(8 32 20 / var(--tint));
-  -webkit-backdrop-filter: blur(var(--blur)) saturate(140%);
-  backdrop-filter: blur(var(--blur)) saturate(140%);
-  box-shadow:
-    inset 1px 1px 0 rgb(255 255 255 / .16),
-    inset -1px -1px 0 rgb(0 0 0 / .30),
-    0 1px 2px rgb(0 0 0 / .30),
-    0 20px 40px -18px rgb(0 0 0 / .60);
-}
+  /* Shared card hover interactions: pointer fine / hover support */
+  @media (hover: hover) and (pointer: fine) {
+    /* Top-level cards (alerts, KPI, pipeline, tables, kit panel, activity):
+       soft background highlight and marginally stronger shadow, NO lift */
+    .glass:hover:not(header):not(aside > div),
+    .glass-panel-3d:hover:not(header):not(aside > div),
+    .glass-card-hover:hover {
+      background:
+        linear-gradient(145deg, rgb(255 255 255 / calc(var(--sheen, .12) + .06)), rgb(255 255 255 / .04) 55%),
+        rgb(12 46 32 / calc(var(--tint, .30) + .09));
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / .30),
+        inset 0 -1px 0 rgb(0 0 0 / .20),
+        0 2px 6px rgb(0 0 0 / .24),
+        0 26px 52px -18px rgb(0 0 0 / .65);
+    }
 
-.glass[data-elev="overlay"] {
-  --blur: 28px;
-  --tint: .78;
-  box-shadow:
-    inset 1px 1px 0 rgb(255 255 255 / .20),
-    inset -1px -1px 0 rgb(0 0 0 / .40),
-    0 24px 60px -15px rgb(0 0 0 / .85);
-}
+    /* Clickable cards only (links, buttons, or .glass-interactive): 1-2px lift */
+    a.glass:hover,
+    button.glass:hover,
+    .glass-interactive:hover,
+    .glass-clickable:hover {
+      background:
+        linear-gradient(145deg, rgb(255 255 255 / calc(var(--sheen, .12) + .09)), rgb(255 255 255 / .05) 55%),
+        rgb(14 52 36 / calc(var(--tint, .30) + .14));
+      transform: translateY(-2px);
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / .36),
+        inset 0 -1px 0 rgb(0 0 0 / .22),
+        0 4px 12px rgb(0 0 0 / .30),
+        0 28px 56px -16px rgb(0 0 0 / .72),
+        0 0 24px -6px rgba(74, 222, 128, 0.16);
+    }
+    a.glass:active,
+    button.glass:active,
+    .glass-interactive:active,
+    .glass-clickable:active {
+      transform: translateY(0);
+      transition-duration: 80ms;
+    }
 
-/* 3. Inset elements (rows, chips, inner cards) - NO nested blur! */
-.glass-inset {
-  background: rgb(255 255 255 / .04);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / .06), inset 0 -1px 0 rgb(0 0 0 / .25);
-}
+    /* Inner rows (kit rows, stock & order table rows, activity items) get a lighter highlight */
+    .glass-inset {
+      transition:
+        background 160ms cubic-bezier(.2, .8, .2, 1),
+        box-shadow 160ms cubic-bezier(.2, .8, .2, 1),
+        border-color 160ms cubic-bezier(.2, .8, .2, 1);
+    }
+    .glass-inset:hover,
+    .glass-row-hover:hover,
+    tbody tr:hover {
+      background: linear-gradient(180deg, rgb(255 255 255 / .15), rgb(255 255 255 / .075)) !important;
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / .24), inset 0 0 0 1px rgb(255 255 255 / .10) !important;
+    }
+  }
 
-.glass-recessed {
-  background: rgba(4, 18, 11, 0.75);
-  box-shadow: inset 0 1px 3px rgb(0 0 0 / .45), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-}
+  /* Keyboard focus-visible parity */
+  .glass:focus-visible:not(header):not(aside > div),
+  .glass-panel-3d:focus-visible:not(header):not(aside > div),
+  .glass-interactive:focus-visible,
+  .glass-clickable:focus-visible,
+  a.glass:focus-visible,
+  button.glass:focus-visible {
+    outline: 2px solid #B7E459;
+    outline-offset: 2px;
+    background:
+      linear-gradient(145deg, rgb(255 255 255 / calc(var(--sheen, .12) + .08)), rgb(255 255 255 / .04) 55%),
+      rgb(14 50 35 / calc(var(--tint, .30) + .12));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / .36),
+      0 0 18px rgba(183, 228, 89, 0.35);
+  }
+  .glass-inset:focus-visible,
+  .glass-row-hover:focus-visible {
+    outline: 2px solid #B7E459;
+    outline-offset: 1px;
+    background: linear-gradient(180deg, rgb(255 255 255 / .16), rgb(255 255 255 / .09)) !important;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .glass,
+    .glass-panel-3d,
+    .glass-inset,
+    .glass-interactive,
+    .glass-clickable,
+    .glass-row-hover,
+    .tilt,
+    .tilt-lift {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* bright gradient hairline: catches the light top-left, fades bottom-right */
+  .glass::after,
+  .glass-panel-3d::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(145deg,
+      rgb(255 255 255 / .55), rgb(255 255 255 / .10) 35%,
+      rgb(255 255 255 / .04) 60%, rgb(255 255 255 / .28));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  .glass[data-elev="overlay"] {       /* modals / drawers */
+    --blur: 32px;
+    --tint: .72;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / .26),
+      inset 0 -1px 0 rgb(0 0 0 / .30),
+      0 28px 70px -18px rgb(0 0 0 / .75);
+  }
+
+  /* ---- 3. Nested glass never re-blurs (a backdrop-filter inside another one shows nothing).
+          It automatically degrades to a light inset tile, so every existing `glass` in your
+          markup keeps working without edits. ---- */
+  :is(.glass, .glass-panel-3d) :is(.glass, .glass-panel-3d) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: linear-gradient(145deg, rgb(255 255 255 / .10), rgb(255 255 255 / .035));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / .16),
+      inset 0 -1px 0 rgb(0 0 0 / .14);
+  }
+  :is(.glass, .glass-panel-3d) :is(.glass, .glass-panel-3d)::after { opacity: .55; }
+  /* nested pop-overs (profile menu, dropdowns) must stay readable over content */
+  :is(.glass, .glass-panel-3d) :is(.glass, .glass-panel-3d).absolute,
+  :is(.glass, .glass-panel-3d) .glass[data-elev="overlay"] {
+    background: rgb(6 30 21 / .90);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / .22),
+      0 24px 60px -15px rgb(0 0 0 / .70);
+  }
+  :is(.glass, .glass-panel-3d) :is(.glass, .glass-panel-3d).absolute::after { opacity: 1; }
+
+  /* ---- 4. Inset tiles, chips, rows, inputs (no blur) ---- */
+  .glass-inset {
+    background: linear-gradient(180deg, rgb(255 255 255 / .10), rgb(255 255 255 / .045));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .18), inset 0 0 0 1px rgb(255 255 255 / .06);
+  }
+  .glass-recessed {
+    background: rgb(2 14 9 / .38);
+    box-shadow:
+      inset 0 2px 6px rgb(0 0 0 / .35),
+      inset 0 0 0 1px rgb(255 255 255 / .09),
+      0 1px 0 rgb(255 255 255 / .07);
+  }
+  .glass-card-3d {
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgb(255 255 255 / .09), rgb(255 255 255 / .04));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .16), inset 0 0 0 1px rgb(255 255 255 / .06);
+    transition: background .2s var(--ease-out), transform .2s var(--ease-out), box-shadow .2s var(--ease-out);
+  }
+  .glass-card-3d:hover {
+    background: linear-gradient(180deg, rgb(255 255 255 / .15), rgb(255 255 255 / .07));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .26), 0 12px 28px -14px rgb(0 0 0 / .55);
+    transform: translateY(-1px);
+  }
+  .glass-btn-3d {
+    background: rgb(255 255 255 / .10);
+    border: 1px solid rgb(255 255 255 / .22);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .28);
+    color: #EAF2ED;
+    transition: background .18s ease-out, color .18s ease-out, border-color .18s ease-out;
+  }
+  .glass-btn-3d:hover { background: rgb(255 255 255 / .18); border-color: rgb(255 255 255 / .34); color: #fff; }
+  .glass-input-3d {
+    background: rgb(2 14 9 / .35);
+    border: 1px solid rgb(255 255 255 / .16);
+    box-shadow: inset 0 2px 6px rgb(0 0 0 / .32);
+    color: #fff;
+  }
+  .glass-input-3d::placeholder { color: rgb(255 255 255 / .55); }
+  .glass-input-3d:focus {
+    border-color: rgb(200 241 105 / .75);
+    box-shadow: 0 0 0 3px rgb(200 241 105 / .18), inset 0 2px 6px rgb(0 0 0 / .35);
+    outline: none;
+  }
+  .btn-ghost-admin {
+    background: rgb(255 255 255 / .05);
+    color: #CFE0D5;
+    border: 1px solid rgb(255 255 255 / .18);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .12);
+    transition: all .18s ease-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-ghost-admin:hover { color: #fff; background: rgb(255 255 255 / .12); border-color: rgb(255 255 255 / .32); }
+
+  /* ---- 5. Glass icon orb (KPI badges) ---- */
+  .glass-orb {
+    position: relative;
+    border-radius: 9999px;
+    background:
+      radial-gradient(circle at 30% 22%, rgb(255 255 255 / .55), transparent 48%),
+      rgb(255 255 255 / .10);
+    box-shadow:
+      inset 0 -6px 10px rgb(0 0 0 / .18),
+      inset 0 1px 1px rgb(255 255 255 / .50),
+      0 0 0 1px rgb(255 255 255 / .18),
+      0 6px 18px var(--orb-glow, rgb(163 230 53 / .30));
+  }
+
+  /* ---- 6. Active nav item: lit glass pill ---- */
+  .nav-lit {
+    background: linear-gradient(90deg, rgb(200 241 105 / .24), rgb(255 255 255 / .09));
+    box-shadow:
+      inset 2px 0 0 #C8F169,
+      inset 0 1px 0 rgb(255 255 255 / .24),
+      0 0 0 1px rgb(255 255 255 / .10),
+      0 8px 20px -10px rgb(200 241 105 / .45);
+    color: #FFFFFF;
+    font-weight: 600;
+  }
 
 /* 4. Controls: Keycap Primary CTA */
 .btn-keycap {
@@ -398,37 +628,6 @@ body[data-sticky-bar-active="true"] .mobile-bottom-nav {
   box-shadow: none;
 }
 
-/* 5. Demoted Ghost Storefront CTA */
-.btn-ghost-admin {
-  background: transparent;
-  color: #94A89C;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: all .18s ease-out;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-ghost-admin:hover {
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.22);
-}
-
-/* 6. KPI Icon Badge Glass Orb */
-.glass-orb {
-  position: relative;
-  border-radius: 9999px;
-  background:
-    radial-gradient(circle at 30% 25%, rgb(255 255 255 / .35), transparent 45%),
-    rgb(16 42 28 / .65);
-  box-shadow:
-    inset 0 -6px 10px rgb(0 0 0 / .25),
-    inset 0 1px 1px rgb(255 255 255 / .3),
-    0 4px 14px var(--orb-glow, rgba(163, 230, 53, 0.25));
-}
-
 /* 7. Tilt & Specular Glare on KPI Tiles */
 .tilt { position: relative; }
 .tilt-face { position: absolute; inset: 0; z-index: 0; }
@@ -450,14 +649,6 @@ body[data-sticky-bar-active="true"] .mobile-bottom-nav {
   .tilt:hover .tilt-face::after { opacity: 1; }
 }
 
-/* 8. Lit States & Active Nav item */
-.nav-lit {
-  background: linear-gradient(90deg, rgba(183, 228, 89, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%);
-  box-shadow: inset 2px 0 0 #B7E459, inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  color: #FFFFFF;
-  font-weight: 600;
-}
-
 /* 9. Tabular Lining Numerals */
 .num-lining {
   font-variant-numeric: lining-nums tabular-nums;
@@ -477,30 +668,6 @@ body[data-sticky-bar-active="true"] .mobile-bottom-nav {
   letter-spacing: 0.025em;
 }
 
-/* 11. Legacy Aliases for Seamless Page Compatibility */
-.glass-panel-3d {
-  background: rgba(8, 32, 20, 0.58);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  border-radius: 20px;
-  box-shadow:
-    inset 1px 1px 0 rgb(255 255 255 / .16),
-    inset -1px -1px 0 rgb(0 0 0 / .30),
-    0 1px 2px rgb(0 0 0 / .30),
-    0 20px 40px -18px rgb(0 0 0 / .60);
-}
-
-.glass-card-3d {
-  background: rgb(255 255 255 / .04);
-  border-radius: 16px;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / .06), inset 0 -1px 0 rgb(0 0 0 / .25);
-  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.glass-card-3d:hover {
-  background: rgb(255 255 255 / .07);
-}
-
 .btn-lime-3d {
   background: linear-gradient(180deg, #C8F169 0%, #AEE24E 100%);
   color: #06160D;
@@ -512,47 +679,37 @@ body[data-sticky-bar-active="true"] .mobile-bottom-nav {
     0 8px 20px -6px rgb(163 230 53 / .45);
 }
 
-.glass-btn-3d {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12);
-  color: #E2E8F0;
-  transition: all 0.18s ease-out;
 }
 
-.glass-btn-3d:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #FFFFFF;
+/* ---- Accessibility & performance fallbacks (unlayered on purpose: they must win) ---- */
+@media (max-width: 767px) {
+  .glass, .glass-panel-3d { --blur: 16px; }
 }
 
-.glass-input-3d {
-  background: rgba(4, 18, 11, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow: inset 0 1px 3px rgb(0 0 0 / .45);
-  color: #FFFFFF;
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .glass, .glass-panel-3d { background: rgb(8 38 26 / .92); }
 }
 
-.glass-input-3d:focus {
-  border-color: rgba(183, 228, 89, 0.6);
-  box-shadow: 0 0 12px rgba(183, 228, 89, 0.2), inset 0 1px 3px rgb(0 0 0 / .5);
-  outline: none;
-}
-
-/* 12. Accessibility & Fallbacks */
 [data-fx="lite"] .glass,
 [data-fx="lite"] .glass-panel-3d {
-  backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
   background: rgb(10 36 23 / .96) !important;
 }
-
 [data-fx="lite"] .tilt,
-[data-fx="lite"] .tilt-lift {
-  transform: none !important;
+[data-fx="lite"] .tilt-lift { transform: none !important; }
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass-panel-3d {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: rgb(10 36 23 / .96) !important;
+  }
 }
 
 @media (prefers-contrast: more) {
   .glass, .glass-panel-3d {
+    -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
     background: rgb(8 28 18 / .97) !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -565,5 +722,3 @@ body[data-sticky-bar-active="true"] .mobile-bottom-nav {
     outline-offset: -1px !important;
   }
 }
-
-

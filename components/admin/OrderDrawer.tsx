@@ -186,7 +186,7 @@ export function OrderDrawer({
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Dim Scrim */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-[3px] transition-opacity duration-240"
+        className="absolute inset-0 bg-[#021a10]/60 backdrop-blur-[6px] transition-opacity duration-240"
         onClick={onClose}
       />
 
@@ -275,7 +275,7 @@ export function OrderDrawer({
                         setCopiedPhone(true);
                         setTimeout(() => setCopiedPhone(false), 2000);
                       }}
-                      className="text-white/40 hover:text-white"
+                      className="text-white/70 hover:text-white"
                       title="Copy phone"
                     >
                       {copiedPhone ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
@@ -307,7 +307,7 @@ export function OrderDrawer({
                     <span
                       className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full ${
                         order.payment_status === 'VERIFIED'
-                          ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40'
+                          ? 'bg-emerald-400/15 text-emerald-400 border border-emerald-500/40'
                           : 'bg-amber-950/80 text-amber-400 border border-amber-500/40 animate-pulse'
                       }`}
                     >

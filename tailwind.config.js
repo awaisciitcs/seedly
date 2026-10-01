@@ -35,7 +35,7 @@ module.exports = {
           dark: "#0B1D14",
           surface: "#10261B",
           card: "rgba(16, 38, 27, 0.58)",
-          sage: "#94A89C",
+          sage: "#CBDAD0",
         },
       },
       fontFamily: {

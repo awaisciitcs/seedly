@@ -349,7 +349,7 @@ export function OrdersTableClient({
                         <span
                           className={`status-chip ${
                             o.payment_status === 'VERIFIED'
-                              ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40'
+                              ? 'bg-emerald-400/15 text-emerald-400 border border-emerald-500/40'
                               : o.payment_status === 'UNDER_REVIEW'
                               ? 'bg-amber-950/80 text-amber-400 border border-amber-500/40 animate-pulse'
                               : 'bg-white/10 text-white/70 border border-white/15'
@@ -379,7 +379,7 @@ export function OrdersTableClient({
                               : o.order_status === 'PACKED'
                               ? 'bg-purple-950/80 text-purple-300 border border-purple-500/40'
                               : o.order_status === 'PAID'
-                              ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40'
+                              ? 'bg-emerald-400/15 text-emerald-300 border border-emerald-500/40'
                               : 'bg-white/10 text-white/70 border border-white/15'
                           }`}
                         >

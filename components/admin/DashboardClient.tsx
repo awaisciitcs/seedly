@@ -22,6 +22,7 @@ import {
   HelpCircle,
   Filter,
   Check,
+  Activity,
 } from 'lucide-react';
 import { Order, Product, Kit, StockAlertSubscription } from '@/lib/types';
 
@@ -131,6 +132,97 @@ export function DashboardClient({
     }
     return filteredOrders;
   }, [filteredOrders, activeTab]);
+
+  // Live recent store activity events
+  const recentActivities = useMemo(() => {
+    const list: {
+      id: string;
+      title: string;
+      description: string;
+      time: string;
+      timestamp: number;
+      icon: any;
+      iconBg: string;
+    }[] = [];
+
+    // Orders activity
+    orders.forEach((ord) => {
+      const ts = new Date(ord.created_at).getTime();
+      const timeStr = formatPKTDateTime(ord.created_at).relative;
+
+      if (ord.payment_status === 'VERIFIED') {
+        list.push({
+          id: `act-ver-${ord.id}`,
+          title: `Payment Verified`,
+          description: `#${ord.order_number} · ${ord.customer_name} (${formatPKR(ord.total_minor)})`,
+          time: timeStr,
+          timestamp: ts + 1000,
+          icon: ShieldCheck,
+          iconBg: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+        });
+      } else if (ord.payment_status === 'UNDER_REVIEW') {
+        list.push({
+          id: `act-rev-${ord.id}`,
+          title: `Payment Under Review`,
+          description: `#${ord.order_number} · ${ord.customer_name}`,
+          time: timeStr,
+          timestamp: ts + 500,
+          icon: Clock,
+          iconBg: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
+        });
+      }
+
+      if (ord.order_status === 'DELIVERED') {
+        list.push({
+          id: `act-del-${ord.id}`,
+          title: `Order Delivered`,
+          description: `#${ord.order_number} to ${ord.shipping_city}`,
+          time: timeStr,
+          timestamp: ts + 2000,
+          icon: CheckCircle2,
+          iconBg: 'bg-teal-500/20 text-teal-300 border border-teal-500/30',
+        });
+      } else if (ord.order_status === 'PACKED' || ord.order_status === 'SHIPPED') {
+        list.push({
+          id: `act-ful-${ord.id}`,
+          title: `Order ${ord.order_status}`,
+          description: `#${ord.order_number} · ${ord.customer_name}`,
+          time: timeStr,
+          timestamp: ts + 1500,
+          icon: Truck,
+          iconBg: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
+        });
+      }
+
+      list.push({
+        id: `act-ord-${ord.id}`,
+        title: `Order Placed`,
+        description: `#${ord.order_number} · ${ord.customer_name} (${formatPKR(ord.total_minor)})`,
+        time: timeStr,
+        timestamp: ts,
+        icon: ShoppingBag,
+        iconBg: 'bg-lime/20 text-lime border border-lime/30',
+      });
+    });
+
+    // Stock alert waitlist signups
+    initialStockAlerts.forEach((alt) => {
+      const ts = new Date(alt.created_at).getTime();
+      list.push({
+        id: `act-sub-${alt.id}`,
+        title: `Restock Alert Subscribed`,
+        description: `${alt.sellable_title} (${alt.email})`,
+        time: formatPKTDateTime(alt.created_at).relative,
+        timestamp: ts,
+        icon: Bell,
+        iconBg: 'bg-teal-500/20 text-teal-300 border border-teal-500/30',
+      });
+    });
+
+    // Sort by timestamp descending and take top 8
+    list.sort((a, b) => b.timestamp - a.timestamp);
+    return list.slice(0, 8);
+  }, [orders, initialStockAlerts]);
 
   const handleOpenOrder = (orderId: string) => {
     setSelectedOrderId(orderId);
@@ -281,13 +373,13 @@ export function DashboardClient({
               </div>
             </div>
           </div>
-          <Link
-            href="/admin/products"
-            className="text-xs font-bold text-lime hover:text-white flex items-center gap-1 glass-inset px-2.5 py-1.5 rounded-xl transition-colors"
+          <a
+            href="#low-stock-watchlist"
+            className="text-xs font-bold text-lime hover:text-white flex items-center gap-1 glass-inset px-2.5 py-1.5 rounded-xl transition-colors cursor-pointer"
           >
-            <span>Restock</span>
+            <span>Watchlist</span>
             <ArrowRight className="w-3 h-3" />
-          </Link>
+          </a>
         </div>
 
         {/* Back-in-Stock Alerts Queue */}
@@ -466,7 +558,7 @@ export function DashboardClient({
                 {pipelineCounts.received}
               </div>
             </div>
-            <ArrowRight className="w-3.5 h-3.5 text-white/30" />
+            <ArrowRight className="w-3.5 h-3.5 text-white/55" />
           </Link>
 
           <Link
@@ -479,7 +571,7 @@ export function DashboardClient({
                 {pipelineCounts.verified}
               </div>
             </div>
-            <ArrowRight className="w-3.5 h-3.5 text-white/30" />
+            <ArrowRight className="w-3.5 h-3.5 text-white/55" />
           </Link>
 
           <Link
@@ -492,7 +584,7 @@ export function DashboardClient({
                 {pipelineCounts.packed}
               </div>
             </div>
-            <ArrowRight className="w-3.5 h-3.5 text-white/30" />
+            <ArrowRight className="w-3.5 h-3.5 text-white/55" />
           </Link>
 
           <Link
@@ -505,7 +597,7 @@ export function DashboardClient({
                 {pipelineCounts.shipped}
               </div>
             </div>
-            <ArrowRight className="w-3.5 h-3.5 text-white/30" />
+            <ArrowRight className="w-3.5 h-3.5 text-white/55" />
           </Link>
 
           <Link
@@ -525,201 +617,278 @@ export function DashboardClient({
 
       {/* ROW 4: MAIN CONTENT SPLIT (8 cols Orders Table | 4 cols Kit Availability & Low Stock) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* LEFT COLUMN: 8 COLS ORDERS TABLE */}
-        <div className="lg:col-span-8 glass p-5 rounded-2xl space-y-4 border border-white/10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-white/10">
-            {/* Tabs */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setActiveTab('needs_action')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  activeTab === 'needs_action'
-                    ? 'bg-white/15 text-white shadow-sm border border-white/15'
-                    : 'text-botanical-sage hover:text-white'
-                }`}
-              >
-                Needs Action ({pendingReceiptOrders.length + ordersToPack.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('all')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  activeTab === 'all'
-                    ? 'bg-white/15 text-white shadow-sm border border-white/15'
-                    : 'text-botanical-sage hover:text-white'
-                }`}
-              >
-                All Orders ({filteredOrders.length})
-              </button>
+        {/* LEFT COLUMN: 8 COLS (Orders Table + Low Stock Watchlist below it in the center) */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Main Orders Table Panel ("Needs Action" Card) */}
+          <div className="glass p-5 rounded-2xl space-y-4 border border-white/10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-white/10">
+              {/* Tabs */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('needs_action')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    activeTab === 'needs_action'
+                      ? 'bg-white/15 text-white shadow-sm border border-white/15'
+                      : 'text-botanical-sage hover:text-white'
+                  }`}
+                >
+                  Needs Action ({pendingReceiptOrders.length + ordersToPack.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('all')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    activeTab === 'all'
+                      ? 'bg-white/15 text-white shadow-sm border border-white/15'
+                      : 'text-botanical-sage hover:text-white'
+                  }`}
+                >
+                  All Orders ({filteredOrders.length})
+                </button>
+              </div>
+
+              {/* Test Orders Filter Toggle */}
+              <label className="flex items-center gap-2 text-xs text-botanical-sage cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={excludeTestOrders}
+                  onChange={(e) => setExcludeTestOrders(e.target.checked)}
+                  className="w-3.5 h-3.5 rounded bg-white/10 border-white/20 text-lime focus:ring-0"
+                />
+                <span>Hide Simulation Test Orders</span>
+              </label>
             </div>
 
-            {/* Test Orders Filter Toggle */}
-            <label className="flex items-center gap-2 text-xs text-botanical-sage cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={excludeTestOrders}
-                onChange={(e) => setExcludeTestOrders(e.target.checked)}
-                className="w-3.5 h-3.5 rounded bg-white/10 border-white/20 text-lime focus:ring-0"
-              />
-              <span>Hide Simulation Test Orders</span>
-            </label>
+            {/* Table Container */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-white/10 text-[10px] font-mono uppercase tracking-wider text-botanical-sage">
+                    <th className="pb-3 font-semibold">Order</th>
+                    <th className="pb-3 font-semibold">Customer</th>
+                    <th className="pb-3 font-semibold">Method</th>
+                    <th className="pb-3 font-semibold">Payment</th>
+                    <th className="pb-3 font-semibold">Fulfillment</th>
+                    <th className="pb-3 font-semibold">Placed</th>
+                    <th className="pb-3 font-semibold text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {displayOrders.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="py-12 text-center text-xs text-botanical-sage">
+                        No orders in this queue. Everything is fulfilled!
+                      </td>
+                    </tr>
+                  ) : (
+                    displayOrders.slice(0, 10).map((ord) => {
+                      const isTest = isTestOrder(ord);
+                      const cleanPhone = (ord.customer_phone || '').replace(/[^0-9]/g, '');
+                      const waNum = cleanPhone.startsWith('92')
+                        ? cleanPhone
+                        : `92${cleanPhone.replace(/^0+/, '')}`;
+
+                      return (
+                        <tr
+                          key={ord.id}
+                          onClick={() => handleOpenOrder(ord.id)}
+                          className="group hover:bg-white/[0.04] transition-colors cursor-pointer"
+                        >
+                          {/* Order Number & Test Badge */}
+                          <td className="py-3 pr-2">
+                            <div className="font-mono font-semibold text-white group-hover:text-lime transition-colors">
+                              #{ord.order_number}
+                            </div>
+                            {isTest && (
+                              <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-amber-950/80 text-amber-400 border border-amber-500/30">
+                                SIMULATION TEST
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Customer & WhatsApp */}
+                          <td className="py-3 pr-2">
+                            <div className="font-medium text-white">{ord.customer_name}</div>
+                            <div className="flex items-center gap-1.5 text-[11px] text-botanical-sage">
+                              <span className="font-mono">{ord.customer_phone}</span>
+                              {ord.customer_phone && (
+                                <a
+                                  href={`https://wa.me/${waNum}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="text-emerald-400/70 hover:text-emerald-300"
+                                  title="Open WhatsApp"
+                                >
+                                  <MessageCircle className="w-3 h-3 fill-current" />
+                                </a>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* Payment Method */}
+                          <td className="py-3 pr-2">
+                            <span className="text-[11px] text-botanical-sage">
+                              {ord.payment_method === 'COD' ? 'Cash on Delivery' : 'Meezan Transfer'}
+                            </span>
+                          </td>
+
+                          {/* Payment Status Chip */}
+                          <td className="py-3 pr-2">
+                            <span
+                              className={`status-chip ${
+                                ord.payment_status === 'VERIFIED'
+                                  ? 'bg-emerald-400/15 text-emerald-400 border border-emerald-500/40'
+                                  : ord.payment_status === 'UNDER_REVIEW'
+                                  ? 'bg-amber-950/80 text-amber-400 border border-amber-500/40 animate-pulse'
+                                  : 'bg-white/10 text-white/70 border border-white/15'
+                              }`}
+                            >
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full ${
+                                  ord.payment_status === 'VERIFIED'
+                                    ? 'bg-emerald-400'
+                                    : ord.payment_status === 'UNDER_REVIEW'
+                                    ? 'bg-amber-400'
+                                    : 'bg-white/50'
+                                }`}
+                              />
+                              <span>{ord.payment_status}</span>
+                            </span>
+                          </td>
+
+                          {/* Fulfillment Status Chip */}
+                          <td className="py-3 pr-2">
+                            <span
+                              className={`status-chip ${
+                                ord.order_status === 'DELIVERED'
+                                  ? 'bg-teal-950/80 text-teal-300 border border-teal-500/40'
+                                  : ord.order_status === 'SHIPPED'
+                                  ? 'bg-blue-950/80 text-blue-300 border border-blue-500/40'
+                                  : ord.order_status === 'PACKED'
+                                  ? 'bg-purple-950/80 text-purple-300 border border-purple-500/40'
+                                  : ord.order_status === 'PAID'
+                                  ? 'bg-emerald-400/15 text-emerald-300 border border-emerald-500/40'
+                                  : 'bg-white/10 text-white/70 border border-white/15'
+                              }`}
+                            >
+                              <span>{ord.order_status}</span>
+                            </span>
+                          </td>
+
+                          {/* Placed Date & Age */}
+                          <td className="py-3 pr-2 whitespace-nowrap">
+                            <div className="text-white">
+                              {formatPKTDateTime(ord.created_at).dateOnly}
+                            </div>
+                            <div className="text-[11px] text-botanical-sage">
+                              {formatPKTDateTime(ord.created_at).relative}
+                            </div>
+                          </td>
+
+                          {/* Total Amount in PKR */}
+                          <td className="py-3 text-right font-serif font-bold text-white num-lining">
+                            {formatPKR(ord.total_minor)}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="pt-2 flex items-center justify-between border-t border-white/10 text-xs">
+              <span className="text-botanical-sage">
+                Showing {Math.min(10, displayOrders.length)} of {displayOrders.length} orders
+              </span>
+              <Link
+                href="/admin/orders"
+                className="text-lime hover:text-white font-bold flex items-center gap-1 transition-colors"
+              >
+                <span>View Full Orders Desk</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
 
-          {/* Table Container */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-white/10 text-[10px] font-mono uppercase tracking-wider text-botanical-sage">
-                  <th className="pb-3 font-semibold">Order</th>
-                  <th className="pb-3 font-semibold">Customer</th>
-                  <th className="pb-3 font-semibold">Method</th>
-                  <th className="pb-3 font-semibold">Payment</th>
-                  <th className="pb-3 font-semibold">Fulfillment</th>
-                  <th className="pb-3 font-semibold">Placed</th>
-                  <th className="pb-3 font-semibold text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {displayOrders.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="py-12 text-center text-xs text-botanical-sage">
-                      No orders in this queue. Everything is fulfilled!
-                    </td>
+          {/* LOW STOCK WATCHLIST: Located below the Needs Action card in the center */}
+          <div
+            id="low-stock-watchlist"
+            className="glass p-5 rounded-2xl space-y-4 border border-white/10 scroll-mt-20"
+          >
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-400" />
+                <h3 className="font-serif text-lg font-bold text-white">Low Stock Watchlist</h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-950/80 text-amber-400 border border-amber-500/30">
+                  {lowStockItems.length} below threshold
+                </span>
+              </div>
+              <Link
+                href="/admin/products"
+                className="text-xs font-semibold text-lime hover:text-white flex items-center gap-1 transition-colors"
+              >
+                <span>Manage Catalog</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-white/10 text-[10px] font-mono uppercase tracking-wider text-botanical-sage">
+                    <th className="pb-3 font-semibold">Product &amp; Variant</th>
+                    <th className="pb-3 font-semibold">SKU</th>
+                    <th className="pb-3 font-semibold">On-Hand Stock</th>
+                    <th className="pb-3 font-semibold">Threshold</th>
+                    <th className="pb-3 font-semibold">Cover</th>
+                    <th className="pb-3 font-semibold text-right">Action</th>
                   </tr>
-                ) : (
-                  displayOrders.slice(0, 10).map((ord) => {
-                    const isTest = isTestOrder(ord);
-                    const cleanPhone = (ord.customer_phone || '').replace(/[^0-9]/g, '');
-                    const waNum = cleanPhone.startsWith('92')
-                      ? cleanPhone
-                      : `92${cleanPhone.replace(/^0+/, '')}`;
-
-                    return (
-                      <tr
-                        key={ord.id}
-                        onClick={() => handleOpenOrder(ord.id)}
-                        className="group hover:bg-white/[0.04] transition-colors cursor-pointer"
-                      >
-                        {/* Order Number & Test Badge */}
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {lowStockItems.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-xs text-botanical-sage">
+                        All catalog variants have sufficient stock levels.
+                      </td>
+                    </tr>
+                  ) : (
+                    lowStockItems.map((item) => (
+                      <tr key={item.id} className="group hover:bg-white/[0.04] transition-colors">
                         <td className="py-3 pr-2">
-                          <div className="font-mono font-semibold text-white group-hover:text-lime transition-colors">
-                            #{ord.order_number}
-                          </div>
-                          {isTest && (
-                            <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-amber-950/80 text-amber-400 border border-amber-500/30">
-                              SIMULATION TEST
-                            </span>
-                          )}
-                        </td>
-
-                        {/* Customer & WhatsApp */}
-                        <td className="py-3 pr-2">
-                          <div className="font-medium text-white">{ord.customer_name}</div>
-                          <div className="flex items-center gap-1.5 text-[11px] text-botanical-sage">
-                            <span className="font-mono">{ord.customer_phone}</span>
-                            {ord.customer_phone && (
-                              <a
-                                href={`https://wa.me/${waNum}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-emerald-400/70 hover:text-emerald-300"
-                                title="Open WhatsApp"
-                              >
-                                <MessageCircle className="w-3 h-3 fill-current" />
-                              </a>
-                            )}
+                          <div className="font-semibold text-white">{item.productName}</div>
+                          <div className="text-[11px] text-botanical-sage font-mono">
+                            {item.option_value}
                           </div>
                         </td>
-
-                        {/* Payment Method */}
-                        <td className="py-3 pr-2">
-                          <span className="text-[11px] text-botanical-sage">
-                            {ord.payment_method === 'COD' ? 'Cash on Delivery' : 'Meezan Transfer'}
-                          </span>
+                        <td className="py-3 pr-2 font-mono text-[11px] text-white/80">{item.sku}</td>
+                        <td className="py-3 pr-2 font-mono font-bold text-amber-400 num-lining">
+                          {item.inventory_quantity} units
                         </td>
-
-                        {/* Payment Status Chip */}
-                        <td className="py-3 pr-2">
-                          <span
-                            className={`status-chip ${
-                              ord.payment_status === 'VERIFIED'
-                                ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40'
-                                : ord.payment_status === 'UNDER_REVIEW'
-                                ? 'bg-amber-950/80 text-amber-400 border border-amber-500/40 animate-pulse'
-                                : 'bg-white/10 text-white/70 border border-white/15'
-                            }`}
+                        <td className="py-3 pr-2 font-mono text-botanical-sage num-lining">30 units</td>
+                        <td className="py-3 pr-2 font-mono text-xs text-white/90">
+                          ~{item.daysOfCover}d cover
+                        </td>
+                        <td className="py-3 text-right">
+                          <Link
+                            href="/admin/products"
+                            className="glass-btn-3d px-2.5 py-1 rounded-lg text-xs font-semibold hover:text-white"
                           >
-                            <span
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                ord.payment_status === 'VERIFIED'
-                                  ? 'bg-emerald-400'
-                                  : ord.payment_status === 'UNDER_REVIEW'
-                                  ? 'bg-amber-400'
-                                  : 'bg-white/50'
-                              }`}
-                            />
-                            <span>{ord.payment_status}</span>
-                          </span>
-                        </td>
-
-                        {/* Fulfillment Status Chip */}
-                        <td className="py-3 pr-2">
-                          <span
-                            className={`status-chip ${
-                              ord.order_status === 'DELIVERED'
-                                ? 'bg-teal-950/80 text-teal-300 border border-teal-500/40'
-                                : ord.order_status === 'SHIPPED'
-                                ? 'bg-blue-950/80 text-blue-300 border border-blue-500/40'
-                                : ord.order_status === 'PACKED'
-                                ? 'bg-purple-950/80 text-purple-300 border border-purple-500/40'
-                                : ord.order_status === 'PAID'
-                                ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40'
-                                : 'bg-white/10 text-white/70 border border-white/15'
-                            }`}
-                          >
-                            <span>{ord.order_status}</span>
-                          </span>
-                        </td>
-
-                        {/* Placed Date & Age */}
-                        <td className="py-3 pr-2 whitespace-nowrap">
-                          <div className="text-white">
-                            {formatPKTDateTime(ord.created_at).dateOnly}
-                          </div>
-                          <div className="text-[11px] text-botanical-sage">
-                            {formatPKTDateTime(ord.created_at).relative}
-                          </div>
-                        </td>
-
-                        {/* Total Amount in PKR */}
-                        <td className="py-3 text-right font-serif font-bold text-white num-lining">
-                          {formatPKR(ord.total_minor)}
+                            Adjust
+                          </Link>
                         </td>
                       </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="pt-2 flex items-center justify-between border-t border-white/10 text-xs">
-            <span className="text-botanical-sage">
-              Showing {Math.min(10, displayOrders.length)} of {displayOrders.length} orders
-            </span>
-            <Link
-              href="/admin/orders"
-              className="text-lime hover:text-white font-bold flex items-center gap-1 transition-colors"
-            >
-              <span>View Full Orders Desk</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: 4 COLS (Kit Availability & Low Stock Panel) */}
+        {/* RIGHT COLUMN: 4 COLS (Kit Availability & Recent Activity Panel) */}
         <div className="lg:col-span-4 space-y-6">
           {/* Kit Availability with Limiting Seed Stock Components */}
           <div className="glass p-5 rounded-2xl space-y-4 border border-white/10">
@@ -775,40 +944,36 @@ export function DashboardClient({
             </div>
           </div>
 
-          {/* Low Stock Watchlist */}
+          {/* RECENT ACTIVITY: Positioned on the right side at the place of low stock watchlist */}
           <div className="glass p-5 rounded-2xl space-y-4 border border-white/10">
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-400" />
-                <h3 className="font-serif text-base font-bold text-white">Low Stock Watchlist</h3>
+                <Activity className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-serif text-base font-bold text-white">Recent Activity</h3>
               </div>
-              <Link href="/admin/products" className="text-xs font-semibold text-lime hover:text-white">
-                Catalog →
-              </Link>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
+                LIVE FEED
+              </span>
             </div>
 
-            <div className="space-y-2.5 max-h-[320px] overflow-y-auto pr-1">
-              {lowStockItems.length === 0 ? (
-                <div className="py-6 text-center text-xs text-botanical-sage">
-                  All catalog variants have sufficient stock levels.
+            <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
+              {recentActivities.length === 0 ? (
+                <div className="py-8 text-center text-xs text-botanical-sage">
+                  No recent activities recorded yet.
                 </div>
               ) : (
-                lowStockItems.slice(0, 6).map((item) => (
+                recentActivities.map((act) => (
                   <div
-                    key={item.id}
-                    className="glass-inset p-3 rounded-xl flex items-center justify-between text-xs"
+                    key={act.id}
+                    className="glass-inset p-3 rounded-xl flex items-start gap-3 text-xs transition-colors"
                   >
-                    <div>
-                      <div className="font-semibold text-white">{item.productName}</div>
-                      <div className="text-[11px] text-botanical-sage font-mono">
-                        {item.option_value} · ~{item.daysOfCover}d cover
-                      </div>
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${act.iconBg}`}>
+                      <act.icon className="w-3.5 h-3.5" />
                     </div>
-
-                    <div className="text-right">
-                      <span className="font-mono font-bold text-amber-400">
-                        {item.inventory_quantity} left
-                      </span>
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                      <div className="font-semibold text-white truncate">{act.title}</div>
+                      <div className="text-[11px] text-botanical-sage truncate">{act.description}</div>
+                      <div className="text-[10px] text-botanical-sage/60 font-mono">{act.time}</div>
                     </div>
                   </div>
                 ))

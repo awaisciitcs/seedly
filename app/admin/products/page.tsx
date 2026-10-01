@@ -223,7 +223,7 @@ export default function AdminProductsPage() {
       </div>
 
       {successMsg && (
-        <div className="p-4 bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+        <div className="p-4 bg-emerald-400/15 border border-emerald-500/40 text-emerald-300 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn shadow-[0_0_15px_rgba(34,197,94,0.2)]">
           <Check className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{successMsg}</span>
         </div>
@@ -337,7 +337,7 @@ export default function AdminProductsPage() {
                               <span
                                 className={`font-mono font-bold px-2 py-0.5 rounded-full text-[10px] border ${
                                   v.inventory_quantity > 20
-                                    ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30 shadow-[0_0_6px_rgba(34,197,94,0.15)]'
+                                    ? 'bg-emerald-400/15 text-emerald-300 border-emerald-500/30 shadow-[0_0_6px_rgba(34,197,94,0.15)]'
                                     : 'bg-rose-950/70 text-rose-300 border-rose-500/30 shadow-[0_0_6px_rgba(244,63,94,0.15)]'
                                 }`}
                               >
@@ -364,7 +364,7 @@ export default function AdminProductsPage() {
                             p.status === 'ACTIVE'
                               ? isLow
                                 ? 'bg-amber-950/70 text-amber-300 border-amber-500/30 shadow-[0_0_8px_rgba(245,158,11,0.2)]'
-                                : 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30 shadow-[0_0_8px_rgba(34,197,94,0.2)]'
+                                : 'bg-emerald-400/15 text-emerald-300 border-emerald-500/30 shadow-[0_0_8px_rgba(34,197,94,0.2)]'
                               : 'bg-white/10 text-white/80 border-white/20'
                           }`}
                         >
@@ -440,7 +440,7 @@ export default function AdminProductsPage() {
 
       {/* Add Product Modal (3D Glass) */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-[#021a10]/55 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
           <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 max-w-2xl w-full border border-white/15 space-y-5 my-8 animate-fadeIn">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="font-serif font-bold text-xl text-white">Add New Product to Store</h3>
@@ -588,7 +588,7 @@ export default function AdminProductsPage() {
 
       {/* Quick Stock Edit Modal */}
       {editingVariant && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#021a10]/55 backdrop-blur-md flex items-center justify-center p-4">
           <div className="glass-panel-3d rounded-3xl p-6 max-w-sm w-full border border-white/15 space-y-4 animate-fadeIn">
             <h3 className="font-serif font-bold text-lg text-white">Adjust Variant Inventory</h3>
             <p className="text-xs text-botanical-sage">
@@ -627,7 +627,7 @@ export default function AdminProductsPage() {
 
       {/* Edit Product Modal */}
       {editingProduct && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#021a10]/55 backdrop-blur-md flex items-center justify-center p-4">
           <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-white/15 space-y-4 animate-fadeIn">
             <div className="flex items-center justify-between border-b border-white/10 pb-2">
               <h3 className="font-serif font-bold text-lg text-white">Edit Product Details</h3>

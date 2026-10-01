@@ -353,7 +353,7 @@ export default function AdminLayout({
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 text-xs">
               <span className="text-botanical-sage hidden sm:inline">Operations Desk</span>
-              <ChevronRight className="w-3.5 h-3.5 text-white/30 hidden sm:inline" />
+              <ChevronRight className="w-3.5 h-3.5 text-white/55 hidden sm:inline" />
               <span className="font-semibold text-white">{getBreadcrumb()}</span>
             </div>
 

@@ -166,7 +166,7 @@ export function CommandPalette({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-[#021a10]/55 backdrop-blur-sm animate-in fade-in duration-200">
       <div
         className="glass w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl border border-white/20 animate-in zoom-in-95 duration-150"
         data-elev="overlay"
@@ -188,7 +188,7 @@ export function CommandPalette({
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="p-1 rounded-md text-white/50 hover:text-white"
+              className="p-1 rounded-md text-white/75 hover:text-white"
             >
               <X className="w-4 h-4" />
             </button>
@@ -247,7 +247,7 @@ export function CommandPalette({
                   </div>
 
                   {item.badge && (
-                    <span className="shrink-0 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
+                    <span className="shrink-0 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-400/15 text-emerald-400 border border-emerald-500/30">
                       {item.badge}
                     </span>
                   )}

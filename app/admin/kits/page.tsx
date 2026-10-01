@@ -42,7 +42,7 @@ export default async function AdminKitsPage() {
             <div className="space-y-3">
               <div className="relative aspect-video rounded-2xl overflow-hidden bg-black/40 border border-white/10">
                 <Image src={kit.image_url} alt={kit.name} fill className="object-cover" />
-                <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold rounded-full shadow-[0_0_8px_rgba(34,197,94,0.3)]">
+                <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 bg-emerald-400/15 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold rounded-full shadow-[0_0_8px_rgba(34,197,94,0.3)]">
                   {kit.compliance_status}
                 </span>
               </div>
@@ -78,7 +78,7 @@ export default async function AdminKitsPage() {
             {/* Computed Stock Footer */}
             <div className="pt-3 border-t border-white/10 flex items-center justify-between">
               <span className="text-xs text-botanical-sage">Available to Order:</span>
-              <span className="font-mono font-bold text-xs bg-emerald-950/70 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.2)]">
+              <span className="font-mono font-bold text-xs bg-emerald-400/15 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.2)]">
                 {kit.computed_stock} kits
               </span>
             </div>

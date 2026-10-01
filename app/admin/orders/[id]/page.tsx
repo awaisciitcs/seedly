@@ -179,7 +179,7 @@ export default function AdminOrderDetailPage() {
               <span
                 className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10px] border ${
                   order.payment_status === 'VERIFIED'
-                    ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30'
+                    ? 'bg-emerald-400/15 text-emerald-300 border-emerald-500/30'
                     : order.payment_status === 'UNDER_REVIEW'
                     ? 'bg-amber-950/70 text-amber-300 border-amber-500/30'
                     : 'bg-rose-950/70 text-rose-300 border-rose-500/30'
@@ -204,7 +204,7 @@ export default function AdminOrderDetailPage() {
       </div>
 
       {message && (
-        <div className="p-4 bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn shadow-[0_0_12px_rgba(34,197,94,0.2)]">
+        <div className="p-4 bg-emerald-400/15 border border-emerald-500/40 text-emerald-300 rounded-2xl text-xs flex items-center gap-2 animate-fadeIn shadow-[0_0_12px_rgba(34,197,94,0.2)]">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{message}</span>
         </div>

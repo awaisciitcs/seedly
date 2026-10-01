@@ -74,7 +74,7 @@ export default function AdminLoginPage() {
             </div>
           </div>
 
-          <span className="text-[9px] uppercase font-bold font-mono tracking-widest text-emerald-300 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-500/30 inline-block shadow-[0_0_8px_rgba(34,197,94,0.2)]">
+          <span className="text-[9px] uppercase font-bold font-mono tracking-widest text-emerald-300 bg-emerald-400/15 px-3 py-1 rounded-full border border-emerald-500/30 inline-block shadow-[0_0_8px_rgba(34,197,94,0.2)]">
             INTERNAL OPERATIONS PORTAL
           </span>
 

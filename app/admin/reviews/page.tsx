@@ -136,7 +136,7 @@ export default function AdminReviewsPage() {
         <div
           className={`p-4 rounded-2xl flex items-center justify-between text-xs font-medium border animate-fadeIn ${
             notification.type === 'success'
-              ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40 shadow-[0_0_12px_rgba(34,197,94,0.2)]'
+              ? 'bg-emerald-400/15 text-emerald-300 border-emerald-500/40 shadow-[0_0_12px_rgba(34,197,94,0.2)]'
               : 'bg-rose-950/70 text-rose-300 border-rose-500/40 shadow-[0_0_12px_rgba(244,63,94,0.2)]'
           }`}
         >
@@ -314,7 +314,7 @@ export default function AdminReviewsPage() {
                                 className={`w-3.5 h-3.5 ${
                                   i < rev.rating
                                     ? 'fill-amber-400 text-amber-400'
-                                    : 'text-white/20 fill-transparent'
+                                    : 'text-white/35 fill-transparent'
                                 }`}
                               />
                             ))}
@@ -340,7 +340,7 @@ export default function AdminReviewsPage() {
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider border ${
                             isApproved
-                              ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30 shadow-[0_0_8px_rgba(34,197,94,0.2)]'
+                              ? 'bg-emerald-400/15 text-emerald-300 border-emerald-500/30 shadow-[0_0_8px_rgba(34,197,94,0.2)]'
                               : isPending
                               ? 'bg-amber-950/70 text-amber-300 border-amber-500/40 shadow-[0_0_8px_rgba(245,158,11,0.2)]'
                               : 'bg-rose-950/70 text-rose-300 border-rose-500/30'
