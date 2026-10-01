@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "seed": "node scripts/seed.mjs"
+    "seed": "node scripts/seed.mjs",
+    "backup": "node scripts/backup.mjs"
   },
   "engines": {
     "node": ">=22.0.0"

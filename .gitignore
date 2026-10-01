@@ -41,3 +41,7 @@ next-env.d.ts
 /public/uploads/receipts/*
 !/public/uploads/receipts/.gitkeep
 
+# Local database backups
+/backups
+
+
