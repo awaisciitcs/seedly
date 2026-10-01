@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { formatDate } from '../../../lib/utils';
-import { StockAlertSubscription } from '../../../lib/types';
+import { formatDate } from '@/lib/utils';
+import { StockAlertSubscription } from '@/lib/types';
 import {
   Bell,
   CheckCircle2,

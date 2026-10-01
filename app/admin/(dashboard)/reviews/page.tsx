@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { formatDate } from '../../../lib/utils';
+import { formatDate } from '@/lib/utils';
 import {
   Star,
   CheckCircle2,
@@ -14,7 +14,7 @@ import {
   ShieldCheck,
   RefreshCw,
 } from 'lucide-react';
-import { Review } from '../../../lib/types';
+import { Review } from '@/lib/types';
 
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);

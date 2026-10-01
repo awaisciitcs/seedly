@@ -1,4 +1,5 @@
 import 'server-only';
+import { redirect } from 'next/navigation';
 import { createClient } from '../supabase/server';
 
 export interface AdminSession {
@@ -86,3 +87,27 @@ export async function requireAdmin(requiredRole?: 'OWNER' | 'STAFF'): Promise<Ad
     admin: adminRecord,
   };
 }
+
+/**
+ * Server-side guard for Server Components and Layouts.
+ * Throws Next.js redirect to /admin/login if the user is unauthenticated or unauthorized.
+ */
+export async function requireAdminOrRedirect(
+  requiredRole?: 'OWNER' | 'STAFF',
+  redirectToPath?: string
+): Promise<AdminSession> {
+  let session: AdminSession;
+  try {
+    session = await requireAdmin(requiredRole);
+  } catch (err: any) {
+    if (err?.digest?.startsWith('NEXT_REDIRECT') || err?.message === 'NEXT_REDIRECT') {
+      throw err;
+    }
+    const target = redirectToPath
+      ? `/admin/login?redirectTo=${encodeURIComponent(redirectToPath)}`
+      : '/admin/login';
+    redirect(target);
+  }
+  return session;
+}
+

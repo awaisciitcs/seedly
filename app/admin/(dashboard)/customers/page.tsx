@@ -1,11 +1,15 @@
 import React from 'react';
+import { requireAdminOrRedirect } from '@/lib/auth/require-admin';
 import { getOrders } from '@/lib/services/orders';
 import { isTestOrder } from '@/lib/admin-utils';
 import { CustomersTableClient } from '@/components/admin/CustomersTableClient';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function AdminCustomersPage() {
+  await requireAdminOrRedirect();
+
   const orders = await getOrders();
 
   // Aggregate customers from orders

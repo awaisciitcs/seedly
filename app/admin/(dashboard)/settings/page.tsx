@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { formatPKR, minorToPKR, pkrToMinor } from '../../../lib/utils';
+import { formatPKR, minorToPKR, pkrToMinor } from '@/lib/utils';
 import { Settings, Check, Building, Truck, Phone, ShieldCheck, Wallet } from 'lucide-react';
 
 export default function AdminSettingsPage() {

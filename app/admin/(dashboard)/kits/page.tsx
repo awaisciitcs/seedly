@@ -1,11 +1,16 @@
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { getKits } from '../../../lib/services/kits';
-import { formatPKR } from '../../../lib/utils';
-import { Layers, Box, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { requireAdminOrRedirect } from '@/lib/auth/require-admin';
+import { getKits } from '@/lib/services/kits';
+import { formatPKR } from '@/lib/utils';
+import { ShieldCheck } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function AdminKitsPage() {
+  await requireAdminOrRedirect();
+
   const kits = await getKits();
 
   return (

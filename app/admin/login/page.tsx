@@ -1,17 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Lock, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/browser';
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const rawRedirect = searchParams.get('redirectTo');
+  const redirectTarget =
+    rawRedirect && rawRedirect.startsWith('/admin') && !rawRedirect.startsWith('/admin/login')
+      ? rawRedirect
+      : '/admin';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +57,7 @@ export default function AdminLoginPage() {
         return;
       }
 
-      router.push('/admin');
+      router.push(redirectTarget);
       router.refresh();
     } catch (err: any) {
       setError(err?.message || 'An unexpected error occurred during sign-in.');
@@ -157,6 +164,16 @@ export default function AdminLoginPage() {
           </Link>
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <div className="admin-glass-canvas min-h-screen text-white flex items-center justify-center p-4 selection:bg-emerald-500/30 selection:text-white">
+      <Suspense fallback={<div className="text-xs text-botanical-sage">Loading portal...</div>}>
+        <AdminLoginForm />
+      </Suspense>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { formatPKR, formatDate } from '../../../../lib/utils';
+import { formatPKR, formatDate } from '@/lib/utils';
 import {
   ArrowLeft,
   CheckCircle2,

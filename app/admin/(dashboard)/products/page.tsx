@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { formatPKR, minorToPKR } from '../../../lib/utils';
+import { formatPKR, minorToPKR } from '@/lib/utils';
 import {
   Package,
   Search,
