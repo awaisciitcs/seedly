@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { formatPKR, minorToPKR } from '@/lib/utils';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import {
   Package,
   Search,
@@ -18,13 +19,24 @@ import {
   ChevronLeft,
   ChevronRight,
   Leaf,
+  Layers,
+  ArrowRight,
 } from 'lucide-react';
 import Link from 'next/link';
 
+interface CategoryItem {
+  id: string;
+  name: string;
+  slug: string;
+  type: string;
+}
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('all');
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -36,6 +48,7 @@ export default function AdminProductsPage() {
 
   // New Product Form State
   const [name, setName] = useState('');
+  const [categoryId, setCategoryId] = useState('cat-seeds');
   const [productType, setProductType] = useState<'seed' | 'tea'>('seed');
   const [pricePKR, setPricePKR] = useState('');
   const [comparePricePKR, setComparePricePKR] = useState('');
@@ -46,6 +59,10 @@ export default function AdminProductsPage() {
   const [ingredients, setIngredients] = useState('');
   const [usage, setUsage] = useState('');
   const [storage, setStorage] = useState('');
+  const [flavorProfile, setFlavorProfile] = useState('');
+  const [caffeineLevel, setCaffeineLevel] = useState('');
+  const [steepTime, setSteepTime] = useState('');
+  const [waterTemp, setWaterTemp] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [badge, setBadge] = useState('');
 
@@ -59,9 +76,37 @@ export default function AdminProductsPage() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch('/api/admin/categories');
+      const json = await res.json();
+      if (json.data) {
+        setCategories(json.data);
+      }
+    } catch (e) {
+      console.error('Failed to load categories:', e);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
+
+  const handleCategoryChange = (catId: string) => {
+    setCategoryId(catId);
+    if (catId === 'cat-teas') {
+      setProductType('tea');
+      if (!imageUrl || imageUrl.includes('pumpkin-seeds')) {
+        setImageUrl('/images/products/chamomile-tea.svg');
+      }
+    } else {
+      setProductType('seed');
+      if (!imageUrl || imageUrl.includes('chamomile-tea')) {
+        setImageUrl('/images/products/pumpkin-seeds.svg');
+      }
+    }
+  };
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,6 +123,7 @@ export default function AdminProductsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
+          category_id: categoryId,
           product_type: productType,
           price_pkr: Number(pricePKR),
           compare_price_pkr: comparePricePKR ? Number(comparePricePKR) : null,
@@ -88,11 +134,11 @@ export default function AdminProductsPage() {
           ingredients,
           usage_instructions: usage,
           storage_instructions: storage,
-          image_url:
-            imageUrl ||
-            (productType === 'tea'
-              ? '/images/products/chamomile-tea.svg'
-              : '/images/products/pumpkin-seeds.svg'),
+          flavor_profile: productType === 'tea' ? flavorProfile || null : null,
+          caffeine_level: productType === 'tea' ? caffeineLevel || null : null,
+          steep_time: productType === 'tea' ? steepTime || null : null,
+          water_temp: productType === 'tea' ? waterTemp || null : null,
+          image_url: imageUrl || (productType === 'tea' ? '/images/products/chamomile-tea.svg' : '/images/products/pumpkin-seeds.svg'),
           badge: badge || null,
         }),
       });
@@ -109,7 +155,14 @@ export default function AdminProductsPage() {
       setShortDesc('');
       setDescription('');
       setIngredients('');
+      setUsage('');
+      setStorage('');
+      setFlavorProfile('');
+      setCaffeineLevel('');
+      setSteepTime('');
+      setWaterTemp('');
       setImageUrl('');
+      setBadge('');
       fetchProducts();
       setTimeout(() => setSuccessMsg(''), 3500);
     } catch (err: any) {
@@ -153,21 +206,38 @@ export default function AdminProductsPage() {
         body: JSON.stringify({
           id: editingProduct.id,
           name: editingProduct.name,
-          price_minor: Math.round(Number(editingProduct.price_pkr) * 100),
+          category_id: editingProduct.category_id,
+          product_type: editingProduct.category_id === 'cat-teas' ? 'tea' : 'seed',
+          price_pkr: editingProduct.price_pkr,
+          compare_price_pkr: editingProduct.compare_price_pkr,
+          weight_grams: editingProduct.weight_grams,
           short_description: editingProduct.short_description,
           description: editingProduct.description,
+          ingredients: editingProduct.ingredients,
+          usage_instructions: editingProduct.usage_instructions,
+          storage_instructions: editingProduct.storage_instructions,
+          flavor_profile: editingProduct.flavor_profile,
+          caffeine_level: editingProduct.caffeine_level,
+          steep_time: editingProduct.steep_time,
+          water_temp: editingProduct.water_temp,
+          image_url: editingProduct.image_url,
+          badge: editingProduct.badge || null,
           status: editingProduct.status,
         }),
       });
 
       if (res.ok) {
-        setSuccessMsg(`Product updated successfully!`);
+        setSuccessMsg(`Product "${editingProduct.name}" updated successfully!`);
         setEditingProduct(null);
         fetchProducts();
         setTimeout(() => setSuccessMsg(''), 3000);
+      } else {
+        const json = await res.json();
+        throw new Error(json.error?.message || 'Failed to update product');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setErrorMsg(err.message || 'Error updating product');
     }
   };
 
@@ -180,17 +250,25 @@ export default function AdminProductsPage() {
       const res = await fetch(`/api/admin/products?id=${id}`, {
         method: 'DELETE',
       });
+      const json = await res.json();
       if (res.ok) {
-        setSuccessMsg(`Product "${prodName}" removed from catalog.`);
+        setSuccessMsg(json.message || `Product "${prodName}" removed from catalog.`);
         fetchProducts();
         setTimeout(() => setSuccessMsg(''), 3000);
+      } else {
+        setErrorMsg(json.error?.message || 'Failed to delete product');
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Error deleting product');
     }
   };
 
   const filteredProducts = products.filter((p) => {
+    // Category tab filter
+    if (selectedCategoryTab === 'seeds' && p.product_type !== 'seed') return false;
+    if (selectedCategoryTab === 'teas' && p.product_type !== 'tea') return false;
+
+    // Search filter
     if (!search) return true;
     const q = search.toLowerCase();
     return (
@@ -209,17 +287,30 @@ export default function AdminProductsPage() {
             Catalog &amp; Inventory
           </h1>
           <p className="text-xs text-botanical-sage mt-1">
-            Create, edit, remove, and manage all raw pantry seed and tea SKUs and warehouse stock.
+            Create, edit, upload pictures, and manage all raw pantry seed and mountain tea SKUs.
           </p>
         </div>
 
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="btn-lime-3d px-5 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(183,228,89,0.4)]"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Product</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/kits"
+            className="glass-btn-3d px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"
+          >
+            <Layers className="w-4 h-4 text-lime" />
+            <span>Manage Curated Kits</span>
+          </Link>
+
+          <button
+            onClick={() => {
+              setErrorMsg('');
+              setIsAddModalOpen(true);
+            }}
+            className="btn-lime-3d px-5 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(183,228,89,0.4)]"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New Product</span>
+          </button>
+        </div>
       </div>
 
       {successMsg && (
@@ -231,6 +322,58 @@ export default function AdminProductsPage() {
 
       {/* Main Glass Table Container */}
       <div className="glass-panel-3d rounded-3xl p-5 md:p-6 space-y-4">
+        {/* Category Tabs Aligned with Storefront Shop All Tabs */}
+        <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-white/10 text-xs">
+          <span className="text-botanical-sage text-[11px] uppercase font-semibold tracking-wider mr-1">
+            Tabs:
+          </span>
+          <button
+            type="button"
+            onClick={() => setSelectedCategoryTab('all')}
+            className={`px-3.5 py-1.5 rounded-xl font-medium transition-all ${
+              selectedCategoryTab === 'all'
+                ? 'bg-lime text-botanical-deep font-bold shadow-[0_0_10px_rgba(183,228,89,0.3)]'
+                : 'glass-btn-3d text-botanical-sage hover:text-white'
+            }`}
+          >
+            All Products ({products.length})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedCategoryTab('seeds')}
+            className={`px-3.5 py-1.5 rounded-xl font-medium transition-all ${
+              selectedCategoryTab === 'seeds'
+                ? 'bg-lime text-botanical-deep font-bold shadow-[0_0_10px_rgba(183,228,89,0.3)]'
+                : 'glass-btn-3d text-botanical-sage hover:text-white'
+            }`}
+          >
+            Raw seeds ({products.filter((p) => p.product_type === 'seed').length})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedCategoryTab('teas')}
+            className={`px-3.5 py-1.5 rounded-xl font-medium transition-all ${
+              selectedCategoryTab === 'teas'
+                ? 'bg-lime text-botanical-deep font-bold shadow-[0_0_10px_rgba(183,228,89,0.3)]'
+                : 'glass-btn-3d text-botanical-sage hover:text-white'
+            }`}
+          >
+            Mountain teas ({products.filter((p) => p.product_type === 'tea').length})
+          </button>
+
+          <Link
+            href="/admin/kits"
+            className="glass-btn-3d px-3.5 py-1.5 rounded-xl font-medium text-emerald-300 hover:text-white flex items-center gap-1.5 ml-auto"
+            title="Curated Kits are managed under Curated Kits"
+          >
+            <Layers className="w-3.5 h-3.5 text-lime" />
+            <span>Cycle kits (Curated Kits)</span>
+            <ArrowRight className="w-3 h-3 text-botanical-sage" />
+          </Link>
+        </div>
+
         {/* Table Toolbar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
@@ -245,20 +388,14 @@ export default function AdminProductsPage() {
           </div>
 
           <div className="flex items-center gap-2 self-end sm:self-auto">
-            <button
-              type="button"
+            <Link
+              href="/shop"
+              target="_blank"
               className="glass-btn-3d px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"
             >
-              <Filter className="w-3.5 h-3.5 text-botanical-sage" />
-              <span>Filter</span>
-            </button>
-            <button
-              type="button"
-              className="glass-btn-3d px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"
-            >
-              <Download className="w-3.5 h-3.5 text-botanical-sage" />
-              <span>Export</span>
-            </button>
+              <ExternalLink className="w-3.5 h-3.5 text-lime" />
+              <span>View Shop</span>
+            </Link>
           </div>
         </div>
 
@@ -267,8 +404,8 @@ export default function AdminProductsPage() {
           <table className="w-full text-left text-xs min-w-[760px]">
             <thead>
               <tr className="border-b border-white/10 text-botanical-sage text-[11px] uppercase tracking-wider font-semibold">
-                <th className="py-3.5 px-4 font-semibold">PRODUCT</th>
-                <th className="py-3.5 px-4 font-semibold">CATEGORY</th>
+                <th className="py-3.5 px-4 font-semibold">PRODUCT &amp; PICTURE</th>
+                <th className="py-3.5 px-4 font-semibold">STORE CATEGORY</th>
                 <th className="py-3.5 px-4 font-semibold">PRICE (PKR)</th>
                 <th className="py-3.5 px-4 font-semibold">VARIANTS &amp; WAREHOUSE STOCK</th>
                 <th className="py-3.5 px-4 font-semibold">STATUS</th>
@@ -291,17 +428,33 @@ export default function AdminProductsPage() {
               ) : (
                 filteredProducts.map((p) => {
                   const isLow = (p.variants || []).some((v: any) => v.inventory_quantity <= 20);
+                  const categoryLabel = p.product_type === 'tea' ? 'Mountain teas' : 'Raw seeds';
+
                   return (
                     <tr key={p.id} className="hover:bg-white/[0.03] transition-colors">
-                      {/* PRODUCT */}
+                      {/* PRODUCT & PICTURE */}
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-lime shrink-0 shadow-[0_0_10px_rgba(74,222,128,0.2)]">
-                            <Leaf className="w-5 h-5" />
+                          <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-black/40 border border-white/15 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(74,222,128,0.15)]">
+                            {p.image_url ? (
+                              <Image
+                                src={p.image_url}
+                                alt={p.name}
+                                fill
+                                className="object-cover"
+                              />
+                            ) : (
+                              <Leaf className="w-5 h-5 text-lime" />
+                            )}
                           </div>
                           <div>
                             <div className="flex items-center gap-1.5">
                               <p className="font-bold text-white text-xs whitespace-nowrap">{p.name}</p>
+                              {p.badge && (
+                                <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-lime/20 text-lime border border-lime/30">
+                                  {p.badge}
+                                </span>
+                              )}
                               <Link
                                 href={`/${p.product_type === 'tea' ? 'teas' : 'seeds'}/${p.slug}`}
                                 target="_blank"
@@ -316,16 +469,21 @@ export default function AdminProductsPage() {
                         </div>
                       </td>
 
-                      {/* CATEGORY */}
+                      {/* STORE CATEGORY */}
                       <td className="py-4 px-4 whitespace-nowrap">
-                        <span className="px-2.5 py-0.5 rounded-full bg-white/[0.08] text-white/90 border border-white/10 font-medium text-[10px] capitalize">
-                          {p.product_type}
+                        <span className="px-2.5 py-1 rounded-full bg-white/[0.08] text-white/90 border border-white/10 font-medium text-[10px]">
+                          {categoryLabel}
                         </span>
                       </td>
 
                       {/* PRICE */}
                       <td className="py-4 px-4 font-mono font-bold text-white whitespace-nowrap">
                         {formatPKR(p.price_minor)}
+                        {p.compare_price_minor && (
+                          <span className="text-[10px] text-botanical-sage line-through block font-normal">
+                            {formatPKR(p.compare_price_minor)}
+                          </span>
+                        )}
                       </td>
 
                       {/* VARIANTS & WAREHOUSE STOCK */}
@@ -388,6 +546,15 @@ export default function AdminProductsPage() {
                             setEditingProduct({
                               ...p,
                               price_pkr: minorToPKR(p.price_minor),
+                              compare_price_pkr: p.compare_price_minor ? minorToPKR(p.compare_price_minor) : '',
+                              weight_grams: p.weight_grams || 250,
+                              category_id: p.category_id || (p.product_type === 'tea' ? 'cat-teas' : 'cat-seeds'),
+                              usage_instructions: p.usage_instructions || '',
+                              storage_instructions: p.storage_instructions || '',
+                              flavor_profile: p.flavor_profile || '',
+                              caffeine_level: p.caffeine_level || '',
+                              steep_time: p.steep_time || '',
+                              water_temp: p.water_temp || '',
                             })
                           }
                           className="glass-btn-3d px-3 py-1.5 rounded-xl font-semibold text-xs cursor-pointer"
@@ -440,10 +607,15 @@ export default function AdminProductsPage() {
 
       {/* Add Product Modal (3D Glass) */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#021a10]/55 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 max-w-2xl w-full border border-white/15 space-y-5 my-8 animate-fadeIn">
+        <div className="fixed inset-0 z-50 bg-[#021a10]/65 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 max-w-2xl w-full border border-white/15 space-y-5 my-8 animate-fadeIn max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="font-serif font-bold text-xl text-white">Add New Product to Store</h3>
+              <div>
+                <h3 className="font-serif font-bold text-xl text-white">Add New Product to Store</h3>
+                <p className="text-xs text-botanical-sage mt-0.5">
+                  Creates an SKU visible on the storefront under the chosen category tab.
+                </p>
+              </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
                 className="glass-btn-3d p-1.5 rounded-full text-botanical-sage hover:text-white"
@@ -460,6 +632,16 @@ export default function AdminProductsPage() {
             )}
 
             <form onSubmit={handleAddProduct} className="space-y-4 text-xs">
+              {/* Product Picture Upload Area */}
+              <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                <ImageUpload
+                  value={imageUrl}
+                  onChange={(url) => setImageUrl(url)}
+                  label="Product Picture (Upload File or Enter URL) *"
+                  helperText="Upload JPG, PNG, WebP, or SVG. Stored securely on CDN."
+                />
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <label className="block font-semibold text-white/90 mb-1">Product Title *</label>
@@ -474,14 +656,16 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-white/90 mb-1">Product Category *</label>
+                  <label className="block font-semibold text-white/90 mb-1">
+                    Storefront Tab / Category *
+                  </label>
                   <select
-                    value={productType}
-                    onChange={(e) => setProductType(e.target.value as any)}
-                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm bg-botanical-dark text-white"
+                    value={categoryId}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm bg-botanical-dark text-white cursor-pointer"
                   >
-                    <option value="seed">Raw Pantry Seed</option>
-                    <option value="tea">Mountain Herbal Tea</option>
+                    <option value="cat-seeds">Raw seeds (seeds tab)</option>
+                    <option value="cat-teas">Mountain teas (teas tab)</option>
                   </select>
                 </div>
 
@@ -494,6 +678,22 @@ export default function AdminProductsPage() {
                     onChange={(e) => setBadge(e.target.value)}
                     className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm uppercase"
                   />
+                </div>
+
+                {/* Helpful note regarding Cycle Kits */}
+                <div className="sm:col-span-2 p-3 rounded-xl bg-lime/10 border border-lime/25 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2 text-lime">
+                    <Layers className="w-4 h-4 shrink-0" />
+                    <span className="text-white/90">
+                      Need to add a <strong>Cycle kit</strong>? Curated kits combine multiple seed SKUs and are managed under Curated Kits.
+                    </span>
+                  </div>
+                  <Link
+                    href="/admin/kits"
+                    className="btn-lime-3d px-3 py-1 rounded-lg text-[11px] font-bold shrink-0 ml-2"
+                  >
+                    Go to Kits
+                  </Link>
                 </div>
 
                 <div>
@@ -555,6 +755,17 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div className="sm:col-span-2">
+                  <label className="block font-semibold text-white/90 mb-1">Ingredients (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 100% Raw Unsalted Pumpkin Seed Kernels"
+                    value={ingredients}
+                    onChange={(e) => setIngredients(e.target.value)}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
                   <label className="block font-semibold text-white/90 mb-1">Detailed Description</label>
                   <textarea
                     rows={3}
@@ -564,6 +775,78 @@ export default function AdminProductsPage() {
                     className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
                   />
                 </div>
+
+                <div>
+                  <label className="block font-semibold text-white/90 mb-1">Usage Instructions (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Eat 1-2 tbsp daily in smoothies, salads, or bowls"
+                    value={usage}
+                    onChange={(e) => setUsage(e.target.value)}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-white/90 mb-1">Storage Instructions (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Store tightly sealed in a cool, dry pantry"
+                    value={storage}
+                    onChange={(e) => setStorage(e.target.value)}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                  />
+                </div>
+
+                {productType === 'tea' && (
+                  <div className="sm:col-span-2 p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3">
+                    <span className="font-semibold text-lime text-xs block">
+                      Mountain Herbal Tea Attributes
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] text-white/80 mb-1">Flavor Notes</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Floral, Sweet Honey, Calming"
+                          value={flavorProfile}
+                          onChange={(e) => setFlavorProfile(e.target.value)}
+                          className="glass-input-3d w-full px-2.5 py-1.5 rounded-lg text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-white/80 mb-1">Caffeine Level</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Caffeine-free, Low, Medium"
+                          value={caffeineLevel}
+                          onChange={(e) => setCaffeineLevel(e.target.value)}
+                          className="glass-input-3d w-full px-2.5 py-1.5 rounded-lg text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-white/80 mb-1">Brew / Steep Time</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 4–5 mins"
+                          value={steepTime}
+                          onChange={(e) => setSteepTime(e.target.value)}
+                          className="glass-input-3d w-full px-2.5 py-1.5 rounded-lg text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-white/80 mb-1">Water Temperature</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 90°C – 95°C"
+                          value={waterTemp}
+                          onChange={(e) => setWaterTemp(e.target.value)}
+                          className="glass-input-3d w-full px-2.5 py-1.5 rounded-lg text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
@@ -625,12 +908,15 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* Edit Product Modal */}
+      {/* Full Edit Product Modal */}
       {editingProduct && (
-        <div className="fixed inset-0 z-50 bg-[#021a10]/55 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-white/15 space-y-4 animate-fadeIn">
+        <div className="fixed inset-0 z-50 bg-[#021a10]/65 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="glass-panel-3d rounded-3xl p-6 sm:p-8 max-w-2xl w-full border border-white/15 space-y-4 animate-fadeIn max-h-[90vh] overflow-y-auto my-8">
             <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <h3 className="font-serif font-bold text-lg text-white">Edit Product Details</h3>
+              <div>
+                <h3 className="font-serif font-bold text-xl text-white">Edit Product Details</h3>
+                <p className="text-xs text-botanical-sage mt-0.5">SKU: {editingProduct.sku}</p>
+              </div>
               <button
                 onClick={() => setEditingProduct(null)}
                 className="glass-btn-3d p-1 rounded-full text-botanical-sage"
@@ -639,18 +925,59 @@ export default function AdminProductsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleUpdateProduct} className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-white/90 mb-1">Product Title</label>
-                <input
-                  type="text"
-                  value={editingProduct.name}
-                  onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                  className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+            <form onSubmit={handleUpdateProduct} className="space-y-4 text-xs">
+              {/* Product Picture Upload Area */}
+              <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                <ImageUpload
+                  value={editingProduct.image_url || ''}
+                  onChange={(url) => setEditingProduct({ ...editingProduct, image_url: url })}
+                  label="Product Picture (Upload File or Enter URL)"
+                  helperText="Upload JPG, PNG, WebP, or SVG. Stored securely on CDN."
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block font-semibold text-white/90 mb-1">Product Title</label>
+                  <input
+                    type="text"
+                    value={editingProduct.name}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-white/90 mb-1">Store Category Tab</label>
+                  <select
+                    value={editingProduct.category_id || (editingProduct.product_type === 'tea' ? 'cat-teas' : 'cat-seeds')}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        category_id: e.target.value,
+                        product_type: e.target.value === 'cat-teas' ? 'tea' : 'seed',
+                      })
+                    }
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm bg-botanical-dark text-white cursor-pointer"
+                  >
+                    <option value="cat-seeds">Raw seeds (seeds tab)</option>
+                    <option value="cat-teas">Mountain teas (teas tab)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-white/90 mb-1">Catalog Status</label>
+                  <select
+                    value={editingProduct.status}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, status: e.target.value })}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm bg-botanical-dark text-white cursor-pointer"
+                  >
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="DRAFT">DRAFT</option>
+                    <option value="ARCHIVED">ARCHIVED</option>
+                  </select>
+                </div>
+
                 <div>
                   <label className="block font-semibold text-white/90 mb-1">Base Price (PKR)</label>
                   <input
@@ -660,45 +987,154 @@ export default function AdminProductsPage() {
                     className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-bold font-mono"
                   />
                 </div>
+
                 <div>
-                  <label className="block font-semibold text-white/90 mb-1">Catalog Status</label>
-                  <select
-                    value={editingProduct.status}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, status: e.target.value })}
-                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm bg-botanical-dark text-white"
-                  >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="DRAFT">DRAFT</option>
-                    <option value="ARCHIVED">ARCHIVED</option>
-                  </select>
+                  <label className="block font-semibold text-white/90 mb-1">Compare-At Price (PKR)</label>
+                  <input
+                    type="number"
+                    value={editingProduct.compare_price_pkr || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, compare_price_pkr: e.target.value })}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-mono"
+                  />
                 </div>
+
+                <div>
+                  <label className="block font-semibold text-white/90 mb-1">Pack Size / Weight (Grams)</label>
+                  <input
+                    type="number"
+                    value={editingProduct.weight_grams || 250}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, weight_grams: e.target.value })}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-white/90 mb-1">Badge (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. BESTSELLER, NEW, LIMITED"
+                    value={editingProduct.badge || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, badge: e.target.value })}
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm uppercase"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block font-semibold text-white/90 mb-1">Short Description</label>
+                  <input
+                    type="text"
+                    value={editingProduct.short_description || ''}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, short_description: e.target.value })
+                    }
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block font-semibold text-white/90 mb-1">Ingredients</label>
+                  <input
+                    type="text"
+                    value={editingProduct.ingredients || ''}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, ingredients: e.target.value })
+                    }
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block font-semibold text-white/90 mb-1">Detailed Description</label>
+                  <textarea
+                    rows={3}
+                    value={editingProduct.description || ''}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, description: e.target.value })
+                    }
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-white/90 mb-1">Usage Instructions (Optional)</label>
+                  <input
+                    type="text"
+                    value={editingProduct.usage_instructions || ''}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, usage_instructions: e.target.value })
+                    }
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-white/90 mb-1">Storage Instructions (Optional)</label>
+                  <input
+                    type="text"
+                    value={editingProduct.storage_instructions || ''}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, storage_instructions: e.target.value })
+                    }
+                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
+                  />
+                </div>
+
+                {editingProduct.category_id === 'cat-teas' && (
+                  <div className="sm:col-span-2 p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3">
+                    <span className="font-semibold text-lime text-xs block">
+                      Mountain Herbal Tea Attributes
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] text-white/80 mb-1">Flavor Notes</label>
+                        <input
+                          type="text"
+                          value={editingProduct.flavor_profile || ''}
+                          onChange={(e) =>
+                            setEditingProduct({ ...editingProduct, flavor_profile: e.target.value })
+                          }
+                          className="glass-input-3d w-full px-2.5 py-1.5 rounded-lg text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-white/80 mb-1">Caffeine Level</label>
+                        <input
+                          type="text"
+                          value={editingProduct.caffeine_level || ''}
+                          onChange={(e) =>
+                            setEditingProduct({ ...editingProduct, caffeine_level: e.target.value })
+                          }
+                          className="glass-input-3d w-full px-2.5 py-1.5 rounded-lg text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-white/80 mb-1">Brew / Steep Time</label>
+                        <input
+                          type="text"
+                          value={editingProduct.steep_time || ''}
+                          onChange={(e) =>
+                            setEditingProduct({ ...editingProduct, steep_time: e.target.value })
+                          }
+                          className="glass-input-3d w-full px-2.5 py-1.5 rounded-lg text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-white/80 mb-1">Water Temperature</label>
+                        <input
+                          type="text"
+                          value={editingProduct.water_temp || ''}
+                          onChange={(e) =>
+                            setEditingProduct({ ...editingProduct, water_temp: e.target.value })
+                          }
+                          className="glass-input-3d w-full px-2.5 py-1.5 rounded-lg text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div>
-                <label className="block font-semibold text-white/90 mb-1">Short Description</label>
-                <input
-                  type="text"
-                  value={editingProduct.short_description}
-                  onChange={(e) =>
-                    setEditingProduct({ ...editingProduct, short_description: e.target.value })
-                  }
-                  className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-white/90 mb-1">Detailed Description</label>
-                <textarea
-                  rows={3}
-                  value={editingProduct.description}
-                  onChange={(e) =>
-                    setEditingProduct({ ...editingProduct, description: e.target.value })
-                  }
-                  className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
+              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setEditingProduct(null)}
@@ -708,7 +1144,7 @@ export default function AdminProductsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="btn-lime-3d px-5 py-2 rounded-xl font-bold"
+                  className="btn-lime-3d px-6 py-2 rounded-xl font-bold shadow-card"
                 >
                   Save Changes
                 </button>

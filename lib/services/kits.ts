@@ -67,8 +67,10 @@ export async function getKits(options?: { status?: string; search?: string }): P
     )
   `);
 
-  if (options?.status) {
-    query = query.eq('status', options.status);
+  if (options?.status !== undefined) {
+    if (options.status !== '') {
+      query = query.eq('status', options.status);
+    }
   } else {
     query = query.eq('status', 'ACTIVE');
   }

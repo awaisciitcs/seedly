@@ -85,7 +85,7 @@ export default async function TeaDetailPage(props: {
       {
         '@type': 'Product',
         name: product.name,
-        image: `https://seedly.pk${product.image_url}`,
+        image: product.image_url.startsWith('http') ? product.image_url : `https://seedly.pk${product.image_url}`,
         description: product.short_description || product.description,
         sku: product.sku,
         brand: {

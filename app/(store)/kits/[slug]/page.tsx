@@ -81,7 +81,7 @@ export default async function KitDetailPage(props: {
       {
         '@type': 'Product',
         name: kit.name,
-        image: `https://seedly.pk${kit.image_url}`,
+        image: kit.image_url.startsWith('http') ? kit.image_url : `https://seedly.pk${kit.image_url}`,
         description: kit.short_description || kit.description,
         sku: kit.slug,
         brand: {

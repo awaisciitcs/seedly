@@ -35,6 +35,10 @@ export async function POST(request: Request) {
       ingredients,
       usage_instructions,
       storage_instructions,
+      flavor_profile,
+      caffeine_level,
+      steep_time,
+      water_temp,
       image_url,
       badge,
       initial_stock,
@@ -46,24 +50,39 @@ export async function POST(request: Request) {
 
     const supabase = await getScopedClient();
     const id = `prod-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const slug = name
+    const baseSlug = name
       .toLowerCase()
       .trim()
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
+      .replace(/^-|-$/g, '') || `prod-${Date.now()}`;
+
+    let slug = baseSlug;
+    const { data: existingProd } = await supabase.from('products').select('id').eq('slug', slug).maybeSingle();
+    if (existingProd) {
+      slug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
+    }
     const sku = `SED-${slug.slice(0, 8).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
 
     const price_minor = Math.round(Number(price_pkr) * 100);
     const compare_price_minor = compare_price_pkr ? Math.round(Number(compare_price_pkr) * 100) : null;
-    const catId = category_id || (product_type === 'tea' ? 'cat-teas' : 'cat-seeds');
+    
+    // Resolve category and product type
+    let finalCatId = category_id;
+    let finalType = product_type;
+    if (!finalCatId) {
+      finalCatId = finalType === 'tea' ? 'cat-teas' : 'cat-seeds';
+    }
+    if (!finalType) {
+      finalType = finalCatId === 'cat-teas' ? 'tea' : 'seed';
+    }
 
     const newProduct = {
       id,
-      category_id: catId,
+      category_id: finalCatId,
       name,
       slug,
       sku,
-      product_type: product_type || 'seed',
+      product_type: finalType,
       status: 'ACTIVE',
       short_description: short_description || '',
       description: description || '',
@@ -74,7 +93,15 @@ export async function POST(request: Request) {
       ingredients: ingredients || '',
       usage_instructions: usage_instructions || '',
       storage_instructions: storage_instructions || '',
-      image_url: image_url || '/images/products/pumpkin-seeds.svg',
+      flavor_profile: flavor_profile || null,
+      caffeine_level: caffeine_level || null,
+      steep_time: steep_time || null,
+      water_temp: water_temp || null,
+      image_url:
+        image_url ||
+        (finalType === 'tea'
+          ? '/images/products/chamomile-tea.svg'
+          : '/images/products/pumpkin-seeds.svg'),
       badge: badge || null,
       is_featured: false,
       created_at: new Date().toISOString(),
@@ -124,7 +151,31 @@ export async function PATCH(request: Request) {
   try {
     await requireAdmin();
     const body = await request.json();
-    const { id, name, price_minor, short_description, description, image_url, variant_id, inventory_quantity, status } = body;
+    const {
+      id,
+      name,
+      price_minor,
+      price_pkr,
+      compare_price_minor,
+      compare_price_pkr,
+      short_description,
+      description,
+      image_url,
+      category_id,
+      product_type,
+      badge,
+      weight_grams,
+      ingredients,
+      usage_instructions,
+      storage_instructions,
+      flavor_profile,
+      caffeine_level,
+      steep_time,
+      water_temp,
+      variant_id,
+      inventory_quantity,
+      status,
+    } = body;
     const supabase = await getScopedClient();
 
     if (variant_id && inventory_quantity !== undefined) {
@@ -161,12 +212,48 @@ export async function PATCH(request: Request) {
 
     if (id) {
       const updates: Record<string, any> = { updated_at: new Date().toISOString() };
-      if (price_minor !== undefined) updates.price_minor = price_minor;
-      if (name) updates.name = name;
+
+      const computedPriceMinor =
+        price_minor !== undefined
+          ? price_minor
+          : price_pkr !== undefined
+          ? Math.round(Number(price_pkr) * 100)
+          : undefined;
+
+      const computedComparePriceMinor =
+        compare_price_minor !== undefined
+          ? compare_price_minor
+          : compare_price_pkr !== undefined
+          ? compare_price_pkr
+            ? Math.round(Number(compare_price_pkr) * 100)
+            : null
+          : undefined;
+
+      if (computedPriceMinor !== undefined) updates.price_minor = computedPriceMinor;
+      if (computedComparePriceMinor !== undefined) updates.compare_price_minor = computedComparePriceMinor;
+      if (name !== undefined) updates.name = name;
       if (short_description !== undefined) updates.short_description = short_description;
       if (description !== undefined) updates.description = description;
-      if (image_url) updates.image_url = image_url;
-      if (status) updates.status = status;
+      if (image_url !== undefined) updates.image_url = image_url;
+      if (category_id !== undefined) updates.category_id = category_id;
+      if (product_type !== undefined) updates.product_type = product_type;
+      if (badge !== undefined) updates.badge = badge || null;
+      if (weight_grams !== undefined) updates.weight_grams = Number(weight_grams);
+      if (ingredients !== undefined) updates.ingredients = ingredients;
+      if (usage_instructions !== undefined) updates.usage_instructions = usage_instructions;
+      if (storage_instructions !== undefined) updates.storage_instructions = storage_instructions;
+      if (flavor_profile !== undefined) updates.flavor_profile = flavor_profile || null;
+      if (caffeine_level !== undefined) updates.caffeine_level = caffeine_level || null;
+      if (steep_time !== undefined) updates.steep_time = steep_time || null;
+      if (water_temp !== undefined) updates.water_temp = water_temp || null;
+      if (status !== undefined) updates.status = status;
+
+      // Sync category_id and product_type if only one is updated
+      if (category_id && !product_type) {
+        updates.product_type = category_id === 'cat-teas' ? 'tea' : 'seed';
+      } else if (product_type && !category_id) {
+        updates.category_id = product_type === 'tea' ? 'cat-teas' : 'cat-seeds';
+      }
 
       const { error: prodUpdateErr } = await supabase
         .from('products')
@@ -175,6 +262,22 @@ export async function PATCH(request: Request) {
 
       if (prodUpdateErr) {
         throw new Error(`Failed to update product: ${prodUpdateErr.message}`);
+      }
+
+      // Keep default variant aligned if price or weight updated
+      if (computedPriceMinor !== undefined || weight_grams !== undefined) {
+        const variantUpdates: Record<string, any> = { updated_at: new Date().toISOString() };
+        if (computedPriceMinor !== undefined) variantUpdates.price_minor = computedPriceMinor;
+        if (computedComparePriceMinor !== undefined) variantUpdates.compare_price_minor = computedComparePriceMinor;
+        if (weight_grams !== undefined) {
+          variantUpdates.weight_grams = Number(weight_grams);
+          variantUpdates.option_value = `${weight_grams}g`;
+        }
+
+        await supabase
+          .from('product_variants')
+          .update(variantUpdates as any)
+          .eq('product_id', id);
       }
     }
 
@@ -198,16 +301,57 @@ export async function DELETE(request: Request) {
     }
 
     const supabase = await getScopedClient();
-    // Delete variants first
+
+    // 1. Check if this product is part of any Curated Kits
+    const { data: kitRefs } = await supabase
+      .from('kit_items')
+      .select('kit_id, kits(name)')
+      .eq('product_id', id);
+
+    if (kitRefs && kitRefs.length > 0) {
+      const kitNames = kitRefs
+        .map((k: any) => k.kits?.name || k.kit_id)
+        .filter(Boolean)
+        .join(', ');
+      return NextResponse.json(
+        {
+          error: {
+            message: `Cannot delete product: it is a constituent seed in curated kit(s): ${kitNames}. Please remove it from the kit formulation or set its status to ARCHIVED.`,
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    // 2. Check if this product has historical customer orders
+    const { data: orderRefs } = await supabase
+      .from('order_items')
+      .select('id')
+      .eq('product_id', id)
+      .limit(1);
+
+    if (orderRefs && orderRefs.length > 0) {
+      // Archive instead of hard delete to preserve invoices and financial records
+      await supabase
+        .from('products')
+        .update({ status: 'ARCHIVED', updated_at: new Date().toISOString() })
+        .eq('id', id);
+
+      return NextResponse.json({
+        success: true,
+        message: 'Product has customer order history. It has been safely ARCHIVED instead of hard-deleted to preserve order invoices.',
+      });
+    }
+
+    // 3. Delete variants first, then product
     await supabase.from('product_variants').delete().eq('product_id', id);
-    // Delete product
     const { error } = await supabase.from('products').delete().eq('id', id);
 
     if (error) {
       throw new Error(`Failed to delete product: ${error.message}`);
     }
 
-    return NextResponse.json({ success: true, message: 'Product deleted successfully' });
+    return NextResponse.json({ success: true, message: 'Product permanently removed from catalog.' });
   } catch (error: any) {
     if (error instanceof AdminAuthError) {
       return NextResponse.json({ error: { message: error.message } }, { status: error.status });
