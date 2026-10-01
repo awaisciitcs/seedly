@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { getSupabaseUrl, getSupabaseKey } from './lib/supabase/config';
 
 function applySecurityHeaders(res: NextResponse): NextResponse {
   res.headers.set('Cache-Control', 'private, no-cache, no-store, max-age=0, must-revalidate');
@@ -34,15 +35,8 @@ export async function middleware(request: NextRequest) {
       request,
     });
 
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key =
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (!url || !key) {
-      console.error('Supabase credentials missing in middleware');
-      return handleUnauthorized(request, pathname);
-    }
+    const url = getSupabaseUrl();
+    const key = getSupabaseKey();
 
     const supabase = createServerClient(url, key, {
       cookies: {
