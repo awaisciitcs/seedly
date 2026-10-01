@@ -105,25 +105,25 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
-      className="motion-search fixed inset-x-0 bottom-auto top-4 m-0 mx-auto max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-hidden rounded-2xl border border-border-gray bg-white p-0 text-charcoal shadow-2xl backdrop:bg-seedly-dark/35 backdrop:backdrop-blur-[3px] sm:top-[10vh] sm:max-h-[80dvh] sm:rounded-3xl"
+      className="motion-search fixed inset-x-0 bottom-auto top-4 m-0 mx-auto max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-hidden rounded-[28px] border-2 border-ink bg-paper p-0 text-ink shadow-brutal-xl backdrop:bg-ink/50 backdrop:backdrop-blur-xs sm:top-[10vh] sm:max-h-[80dvh]"
     >
-      <div className="flex max-h-[calc(100dvh_-_2rem_-_2px)] flex-col sm:max-h-[calc(80dvh_-_2px)]">
-        <div className="shrink-0 px-4 pt-4 sm:px-6 sm:pt-5">
+      <div className="flex max-h-[calc(100dvh_-_2rem_-_4px)] flex-col sm:max-h-[calc(80dvh_-_4px)]">
+        <div className="shrink-0 px-4 pt-4 sm:px-6 sm:pt-6">
           <div className="mb-3 flex items-center justify-between gap-4">
-            <h2 id="catalog-search-title" className="text-base font-semibold tracking-tight text-seedly-dark">Search Seedly</h2>
+            <h2 id="catalog-search-title" className="font-heading font-extrabold text-lg text-ink">Search Seedly Pantry</h2>
             <button
               type="button"
               onClick={onClose}
               aria-label="Close search"
-              className="-mr-2 flex h-11 w-11 items-center justify-center rounded-full text-muted-gray transition-colors hover:bg-cream hover:text-charcoal focus-visible:outline focus-visible:outline-2 focus-visible:outline-seedly-dark"
+              className="btn-brutal h-9 w-9 bg-white text-ink hover:bg-seed-lime"
             >
-              <X className="h-5 w-5" aria-hidden="true" />
+              <X className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
           <form role="search" onSubmit={viewResults}>
             <label htmlFor="catalog-search-input" className="sr-only">Search products</label>
-            <div className="flex items-center gap-3 rounded-xl border border-seedly-dark/25 bg-cream px-4 transition-colors focus-within:border-seedly-dark focus-within:ring-1 focus-within:ring-seedly-dark">
-              <Search className="h-5 w-5 shrink-0 text-seedly-primary" aria-hidden="true" />
+            <div className="flex items-center gap-3 rounded-full border-2 border-ink bg-white px-5 shadow-brutal-sm transition-colors focus-within:ring-2 focus-within:ring-seed-lime">
+              <Search className="h-5 w-5 shrink-0 text-ink" aria-hidden="true" />
               <input
                 ref={inputRef}
                 id="catalog-search-input"

@@ -44,4 +44,8 @@ next-env.d.ts
 # Local database backups
 /backups
 
+# Canva reference designs
+/design-ref
+
+
 

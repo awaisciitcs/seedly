@@ -81,12 +81,12 @@ export function KitContentsExplorer({ items }: KitContentsExplorerProps) {
   const meta = getMetadata(currentItem.product_name);
 
   return (
-    <section aria-labelledby="kit-contents-heading" className="border-y border-border-gray py-6 space-y-6">
+    <section aria-labelledby="kit-contents-heading" className="border-y-2 border-ink/10 py-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
-        <h2 id="kit-contents-heading" className="font-serif text-2xl font-normal text-charcoal">
+        <h2 id="kit-contents-heading" className="font-heading font-black text-2xl text-ink">
           What&apos;s inside this kit?
         </h2>
-        <span className="text-xs text-muted-gray">
+        <span className="text-xs font-bold text-muted-gray">
           Click any pouch to explore ingredients &amp; routine phase
         </span>
       </div>
@@ -110,14 +110,14 @@ export function KitContentsExplorer({ items }: KitContentsExplorerProps) {
               aria-controls={`pouch-panel-${idx}`}
               tabIndex={isSelected ? 0 : -1}
               onClick={() => setSelectedIndex(idx)}
-              className={`group relative flex flex-col items-start p-3 rounded-xl border text-left transition-all duration-200 ${
+              className={`group relative flex flex-col items-start p-3 rounded-[18px] border-2 border-ink text-left transition-all duration-200 cursor-pointer ${
                 isSelected
-                  ? 'border-seedly-dark bg-white shadow-card ring-1 ring-seedly-dark'
-                  : 'border-border-gray bg-cream/50 hover:bg-white hover:border-seedly-primary/50'
+                  ? 'bg-seed-lime text-ink shadow-brutal'
+                  : 'bg-white text-ink hover:bg-seed-lime/20 shadow-brutal-sm'
               }`}
             >
               <div className="flex items-center gap-2.5 w-full">
-                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-cream border border-border-gray">
+                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-[10px] bg-paper border border-ink">
                   <Image
                     src={itemMeta.image}
                     alt=""
@@ -128,18 +128,18 @@ export function KitContentsExplorer({ items }: KitContentsExplorerProps) {
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-semibold text-charcoal leading-tight">
+                  <p className="truncate text-xs font-black text-ink leading-tight">
                     {item.product_name}
                   </p>
-                  <p className="text-[11px] text-muted-gray mt-0.5">
+                  <p className="text-[11px] font-bold text-muted-gray mt-0.5">
                     {item.quantity}&times; {item.variant_name || '250g'}
                   </p>
                 </div>
               </div>
 
               {isSelected && (
-                <div className="absolute top-2 right-2 flex items-center justify-center text-seedly-dark motion-pop">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
+                <div className="absolute top-2 right-2 flex items-center justify-center text-ink motion-pop">
+                  <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
                 </div>
               )}
             </button>
@@ -152,12 +152,12 @@ export function KitContentsExplorer({ items }: KitContentsExplorerProps) {
         role="tabpanel"
         id={`pouch-panel-${selectedIndex}`}
         aria-labelledby={`pouch-tab-${selectedIndex}`}
-        className="p-5 sm:p-6 bg-white rounded-2xl border border-border-gray shadow-subtle motion-enter space-y-4"
+        className="card-brutal p-5 sm:p-6 bg-white shadow-brutal space-y-4"
       >
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-border-gray/60">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b-2 border-ink/10">
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-bold uppercase tracking-wider text-seedly-dark bg-seedly-light px-2.5 py-0.5 rounded-full">
+              <span className="text-xs font-black uppercase tracking-wider text-ink bg-seed-lime border-2 border-ink px-3 py-0.5 rounded-full shadow-brutal-sm">
                 {meta.phase}
               </span>
               <span className="text-xs text-muted-gray font-medium">

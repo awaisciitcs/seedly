@@ -37,18 +37,58 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setToastItem(null);
   }, []);
 
+  // Live Price Revalidation (Guarantees prices match live catalog, e.g. Luteal Kit Rs. 1,290)
+  const syncLivePrices = React.useCallback(async (currentItems: CartItem[]) => {
+    if (!currentItems.length) return;
+    try {
+      const res = await fetch('/api/cart/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: currentItems }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data.updatedItems) && data.updatedItems.length > 0) {
+        setItems((prev) =>
+          prev.map((item) => {
+            const update = data.updatedItems.find((u: any) => u.id === item.id);
+            if (update && (update.price_minor !== item.price_minor || update.max_quantity !== item.max_quantity)) {
+              return {
+                ...item,
+                price_minor: update.price_minor,
+                max_quantity: update.max_quantity,
+              };
+            }
+            return item;
+          })
+        );
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   // Load from localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem('seedly_cart');
       if (saved) {
-        setItems(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        setItems(parsed);
+        syncLivePrices(parsed);
       }
     } catch {
       // ignore
     }
     setIsLoaded(true);
-  }, []);
+  }, [syncLivePrices]);
+
+  // Sync prices when drawer opens
+  useEffect(() => {
+    if (isCartOpen && items.length > 0) {
+      syncLivePrices(items);
+    }
+  }, [isCartOpen, syncLivePrices]);
 
   // Save to localStorage
   useEffect(() => {

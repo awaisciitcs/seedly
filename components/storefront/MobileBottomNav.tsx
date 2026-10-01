@@ -20,7 +20,7 @@ export function MobileBottomNav() {
   ];
 
   return (
-    <nav aria-label="Quick navigation" className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border-gray bg-cream pb-[env(safe-area-inset-bottom)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden">
+    <nav aria-label="Quick navigation" className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink bg-paper pb-[env(safe-area-inset-bottom)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden">
       <div className="grid h-16 grid-cols-5 px-2">
         {items.map((item) => {
           const isActive = pathname === item.href;
@@ -31,13 +31,17 @@ export function MobileBottomNav() {
               href={item.href}
               aria-current={isActive ? 'page' : undefined}
               aria-label={item.badge ? `${item.label}, ${item.badge} saved items` : item.label}
-              className={`flex min-w-0 flex-col items-center justify-center gap-1 border-t-2 transition-colors ${isActive ? 'border-seedly-dark font-medium text-seedly-dark' : 'border-transparent text-muted-gray hover:text-seedly-dark'}`}
+              className={`flex min-w-0 flex-col items-center justify-center gap-1 border-t-2 transition-colors ${isActive ? 'border-ink font-bold text-ink' : 'border-transparent text-ink/60 hover:text-ink'}`}
             >
               <span className="relative">
-                <Icon className="h-5 w-5" strokeWidth={isActive ? 2 : 1.5} aria-hidden="true" />
-                {item.badge && item.badge > 0 ? <span className="absolute -right-2 -top-1.5 text-[9px] font-semibold leading-none text-seedly-dark" aria-hidden="true">{item.badge}</span> : null}
+                <Icon className="h-5 w-5" strokeWidth={isActive ? 2.5 : 1.75} aria-hidden="true" />
+                {item.badge && item.badge > 0 ? (
+                  <span className="absolute -right-2 -top-1.5 h-3.5 min-w-[14px] px-0.5 rounded-full border border-ink bg-kit-coral text-white text-[8px] font-extrabold flex items-center justify-center" aria-hidden="true">
+                    {item.badge}
+                  </span>
+                ) : null}
               </span>
-              <span className="text-xs leading-4">{item.label}</span>
+              <span className="text-[11px] leading-4 font-medium">{item.label}</span>
             </Link>
           );
         })}

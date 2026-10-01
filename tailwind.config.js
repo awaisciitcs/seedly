@@ -9,46 +9,60 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Canva Neo-Brutalist Design Tokens
+        paper: "#FFF9EE",
+        ink: "#14201A",
+        "seed-lime": "#C8EB5A",
+        "tea-butter": "#FFE27A",
+        "kit-coral": "#FF6A3D",
+        "pistachio-sage": "#DCEBC0",
         seedly: {
           primary: "#3E5C48",     // Rich sage / deep botanical green (WCAG AA compliant: 7.03:1 on cream)
-          dark: "#1F382B",        // Deep botanical green
+          dark: "#14201A",        // Aligned to Canva deep ink
           light: "#EAEFEA",       // Whisper sage tint
           forest: "#16281F",      // Deepest botanical contrast
           soft: "#F4F7F4",        // Soft tinted surface
           stone: "#F2EDE4",       // Soft beige / stone
         },
-        cream: "#FAF8F5",         // Warm ivory background
+        cream: "#FFF9EE",         // Aligned to Canva paper
         ivory: "#FFFFFF",
-        charcoal: "#1B1E1C",      // Deep charcoal text
+        charcoal: "#14201A",      // Aligned to Canva deep ink
         "muted-gray": "#5F6660",  // Refined stone gray
-        "border-gray": "#E5E0D6", // Soft stone border
+        "border-gray": "#14201A", // 2px ink border
         sand: "#F4EFE6",
-        terracotta: "#B86644",
-        honey: "#C88B38",
+        terracotta: "#FF6A3D",
+        honey: "#FFE27A",
         lime: {
-          DEFAULT: "#B7E459",
-          bright: "#C8F169",
-          hover: "#AEE24E",
+          DEFAULT: "#C8EB5A",
+          bright: "#C8EB5A",
+          hover: "#B8DA48",
         },
         botanical: {
           deep: "#08150E",
           dark: "#0B1D14",
           surface: "#10261B",
           card: "rgba(16, 38, 27, 0.58)",
-          sage: "#CBDAD0",
+          sage: "#DCEBC0",
         },
       },
       fontFamily: {
+        grotesk: ["var(--font-grotesk)", "Space Grotesk", "sans-serif"],
         serif: ["var(--font-serif)", "Playfair Display", "Georgia", "serif"],
-        sans: ["var(--font-sans)", "Roboto", "sans-serif"],
+        sans: ["var(--font-sans)", "DM Sans", "Roboto", "sans-serif"],
       },
       boxShadow: {
         subtle: "0 1px 3px rgba(27, 30, 28, 0.04), 0 4px 12px rgba(27, 30, 28, 0.03)",
         card: "0 2px 8px rgba(31, 56, 43, 0.04), 0 12px 28px rgba(31, 56, 43, 0.06)",
         hover: "0 4px 14px rgba(31, 56, 43, 0.08), 0 18px 36px rgba(31, 56, 43, 0.1)",
         dropdown: "0 12px 36px rgba(27, 30, 28, 0.12)",
+        "brutal-sm": "2px 2px 0px #14201A",
+        brutal: "4px 4px 0px #14201A",
+        "brutal-lg": "6px 6px 0px #14201A",
+        "brutal-xl": "8px 8px 0px #14201A",
       },
       borderRadius: {
+        "28px": "28px",
+        "32px": "32px",
         "3xl": "1.5rem",
         "4xl": "2rem",
       },

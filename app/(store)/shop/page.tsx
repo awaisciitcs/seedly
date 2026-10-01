@@ -2,8 +2,8 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { getProducts } from '../../../lib/services/products';
 import { getKits } from '../../../lib/services/kits';
-import { ProductCard } from '../../../components/product/ProductCard';
-import { ShopSort } from '../../../components/product/ShopSort';
+import { ShopCatalogClient } from '../../../components/storefront/ShopCatalogClient';
+import { ArrowUpRight, Sparkles, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -32,8 +32,8 @@ export const metadata: Metadata = {
 const categories = [
   { label: 'All products', slug: 'all' },
   { label: 'Raw seeds', slug: 'seeds' },
-  { label: 'Cycle kits', slug: 'kits' },
   { label: 'Mountain teas', slug: 'teas' },
+  { label: 'Seed kits', slug: 'kits' },
 ];
 
 const sortOptions = [
@@ -49,7 +49,7 @@ export default async function ShopPage(props: {
   const firstParam = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] || '' : value || '';
   const categoryParam = firstParam(searchParams.category);
   const sortParam = firstParam(searchParams.sort);
-  const currentCategory = categories.some((category) => category.slug === categoryParam)
+  const currentCategory = categories.some((cat) => cat.slug === categoryParam)
     ? categoryParam
     : 'all';
   const currentSort = sortOptions.some((option) => option.value === sortParam)
@@ -78,68 +78,90 @@ export default async function ShopPage(props: {
     allItems.sort((a, b) => Number(b.name.toLowerCase().includes(term)) - Number(a.name.toLowerCase().includes(term)));
   }
 
-  const categoryHref = (category: string, includeSearch = true) => {
-    const params = new URLSearchParams({ category, sort: currentSort });
-    if (includeSearch && currentSearch) params.set('search', currentSearch);
-    return `/shop?${params.toString()}`;
-  };
-
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
-      <header className="motion-enter mb-9 max-w-2xl sm:mb-12">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-seedly-dark">The Seedly pantry</p>
-        <h1 className="font-serif text-4xl leading-tight text-charcoal sm:text-5xl">Seeds, kits &amp; herbal teas.</h1>
-        <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-gray">
-          Raw seeds, ready-to-use cycle kits and loose-leaf herbal teas. Find your favourites for the kitchen shelf.
-        </p>
-      </header>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 bg-paper">
+      
+      {/* CANVA SHOP ALL HERO: SPLIT TWO-TONE BANNER (LIME + BUTTER) */}
+      <section className="rounded-[32px] border-2 border-ink shadow-brutal-lg overflow-hidden grid md:grid-cols-12 mb-10">
+        
+        {/* Left Section (~60%): Lime #C8EB5A */}
+        <div className="md:col-span-7 bg-seed-lime border-b-2 md:border-b-0 md:border-r-2 border-ink p-6 sm:p-10 relative flex flex-col justify-between overflow-hidden">
+          
+          {/* Top Butter Circle Accent at boundary seam */}
+          <div className="absolute top-4 -right-8 h-20 w-20 sm:h-24 sm:w-24 rounded-full border-2 border-ink bg-tea-butter shadow-brutal-sm pointer-events-none z-0" />
 
-      <nav aria-label="Product categories" className="flex flex-wrap gap-x-6 border-b border-border-gray sm:gap-x-8">
-        {categories.map((category) => {
-          const active = currentCategory === category.slug;
-          return (
-            <Link
-              key={category.slug}
-              href={categoryHref(category.slug)}
-              aria-current={active ? 'page' : undefined}
-              className={`-mb-px flex min-h-12 items-center border-b-2 py-3 text-sm transition-colors sm:text-base ${
-                active
-                  ? 'border-seedly-dark font-semibold text-seedly-dark'
-                  : 'border-transparent text-muted-gray hover:border-seedly-dark/40 hover:text-charcoal'
-              }`}
-            >
-              {category.label}
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="mb-7 flex flex-col gap-4 pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0 break-words text-sm text-muted-gray">
-          <span className="font-medium text-charcoal">{allItems.length}</span> {allItems.length === 1 ? 'product' : 'products'}
-          {currentSearch && (
-            <span>
-              {' '}for <span className="text-charcoal">&ldquo;{currentSearch}&rdquo;</span>
-              <Link href={categoryHref(currentCategory, false)} className="ml-3 inline-flex min-h-11 items-center underline underline-offset-4 hover:text-seedly-dark">
-                Clear search
-              </Link>
+          <div className="relative z-10">
+            <span className="rounded-full border-2 border-ink bg-white px-3.5 py-1 text-xs font-black uppercase tracking-wider text-ink shadow-brutal-sm inline-block mb-4">
+              ✦ 100% Pure Agricultural Harvest
             </span>
-          )}
-        </div>
-        <ShopSort value={currentSort} category={currentCategory} search={currentSearch} options={sortOptions} />
-      </div>
 
-      {allItems.length === 0 ? (
-        <div className="border-y border-border-gray py-20 text-center">
-          <p className="font-serif text-2xl text-charcoal">No products found</p>
-          <p className="mt-3 text-sm text-muted-gray">Try another search or browse the full collection.</p>
-          <Link href="/shop" className="mt-6 inline-flex min-h-11 items-center rounded-sm bg-seedly-dark px-6 py-3 text-sm font-medium text-white">View all products</Link>
+            <h1 className="font-heading font-black text-3xl sm:text-5xl lg:text-[3.25rem] text-ink leading-[1.08] tracking-[-0.03em]">
+              The Seedly Pantry.
+            </h1>
+
+            {/* Orange flourish accent */}
+            <div className="mt-2 w-32 sm:w-44 h-2.5 rounded-full bg-kit-coral" />
+
+            <p className="mt-4 text-xs sm:text-sm text-ink/90 font-bold max-w-md leading-relaxed">
+              Clean raw seeds, mountain herbal teas, and simple routine kits. Freshly packaged in Lahore with zero additives.
+            </p>
+          </div>
+
+          <div className="mt-8 flex items-center justify-between z-10">
+            <div className="flex items-center gap-2 text-xs font-extrabold text-ink">
+              <span className="h-2.5 w-2.5 rounded-full bg-ink" />
+              <span>Lahore Pantry Collection</span>
+            </div>
+
+            {/* Circular diagonal arrow badge */}
+            <div className="h-11 w-11 rounded-full border-2 border-ink bg-white flex items-center justify-center shadow-brutal-sm">
+              <ArrowUpRight className="h-5 w-5 text-ink stroke-[2.5]" />
+            </div>
+          </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-8">
-          {allItems.map((item) => <ProductCard key={item.id} product={item} />)}
+
+        {/* Right Section (~40%): Butter #FFE27A */}
+        <div className="md:col-span-5 bg-tea-butter p-6 sm:p-8 relative flex items-center justify-center overflow-hidden">
+          
+          {/* Overlapping Coral Accent Orb at bottom-left */}
+          <div className="absolute -bottom-3 -left-3 h-16 w-16 rounded-full border-2 border-ink bg-kit-coral shadow-brutal-sm z-20 pointer-events-none" />
+
+          {/* Inset Tilted Framing Card */}
+          <div className="relative w-full rounded-[28px] border-2 border-ink bg-white/70 backdrop-blur-xs p-6 shadow-brutal flex flex-col justify-between min-h-[220px] transform md:rotate-[1.5deg]">
+            <div>
+              <div className="rounded-full border-2 border-ink bg-seed-lime px-3 py-1 text-[10px] font-black uppercase tracking-wider text-ink shadow-brutal-sm inline-block mb-3">
+                ✦ Dispatched in 24 Hours
+              </div>
+
+              <h2 className="font-heading font-black text-xl sm:text-2xl text-ink leading-tight">
+                Pantry Essentials for Daily Nourishment
+              </h2>
+
+              <p className="mt-2 text-xs text-muted-gray leading-relaxed font-medium">
+                Shipped in resealable moisture-barrier pouches with lot dates and preparation guides.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t-2 border-ink/10 flex items-center justify-between text-xs font-bold text-ink">
+              <span>Free Delivery Rs. 2,500+</span>
+              <span className="text-[11px] font-black uppercase tracking-wider">COD Pakistan ✦</span>
+            </div>
+          </div>
+
         </div>
-      )}
+
+      </section>
+
+      {/* INTERACTIVE CATALOG CLIENT (TABS, SIDEBAR FILTERS, SORT, GRID) */}
+      <ShopCatalogClient
+        initialItems={allItems}
+        currentCategory={currentCategory}
+        currentSort={currentSort}
+        currentSearch={currentSearch}
+        sortOptions={sortOptions}
+        categories={categories}
+      />
+
     </div>
   );
 }

@@ -159,21 +159,21 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
   const waMessage = encodeURIComponent(`Hi Seedly, I have a question about the ${kit.name}.`);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 bg-paper text-ink">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-muted-gray mb-8">
-        <Link href="/" className="hover:text-charcoal">Home</Link>
+      <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-gray mb-8">
+        <Link href="/" className="hover:text-ink">Home</Link>
         <span>/</span>
-        <Link href="/kits" className="hover:text-charcoal">Curated Kits</Link>
+        <Link href="/kits" className="capitalize hover:text-ink">Curated Seed Kits</Link>
         <span>/</span>
-        <span className="text-charcoal font-medium truncate">{kit.name}</span>
+        <span className="text-ink truncate">{kit.name}</span>
       </nav>
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
         {/* Left Column: Kit Imagery */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="relative aspect-square w-full rounded-sm overflow-hidden bg-cream border border-border-gray">
+          <div className="relative aspect-square w-full rounded-[28px] overflow-hidden bg-white border-2 border-ink shadow-brutal">
             <Image
               src={kit.image_url}
               alt={kit.name}
@@ -182,19 +182,28 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
             />
+            {/* Top-Right Sticker Badge matching Canva */}
+            <div className="absolute top-4 right-4 z-10 rounded-full border-2 border-ink bg-seed-lime px-3.5 py-1 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-ink shadow-brutal-sm">
+              PACKED IN LAHORE ✦ DISPATCHED IN 24H
+            </div>
+
+            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-xs px-3.5 py-1 rounded-full border-2 border-ink text-xs font-bold text-ink shadow-brutal-sm flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-kit-coral border border-ink"></span>
+              <span>{kit.package_size || 'Complete Curated Box'}</span>
+            </div>
           </div>
 
           {/* Contextual WhatsApp Consultation */}
-          <div className="p-4 rounded-sm bg-white border border-border-gray flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-4 rounded-[20px] bg-white border-2 border-ink shadow-brutal-sm flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-0.5">
-              <p className="text-sm font-bold text-charcoal">Questions about how this routine works?</p>
-              <p className="text-sm text-muted-gray">Chat with our team on WhatsApp for ingredients, preparation and storage guidance.</p>
+              <p className="text-xs font-black uppercase tracking-wider text-ink">Questions about how this routine works?</p>
+              <p className="text-xs text-muted-gray font-medium">Chat with our team on WhatsApp for ingredients, preparation and storage guidance.</p>
             </div>
             <a
               href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full text-sm font-semibold flex items-center gap-1.5 transition-colors shrink-0"
+              className="btn-brutal px-4 py-2 bg-seed-lime text-ink text-xs font-black uppercase tracking-wider shadow-brutal-sm shrink-0 flex items-center gap-1.5"
             >
               <MessageCircle className="w-3.5 h-3.5" />
               <span>Ask on WhatsApp</span>
@@ -207,54 +216,54 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
           <div className="space-y-4">
             {/* Header / Social Proof */}
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className="text-sm uppercase tracking-widest font-semibold text-seedly-primary">
-                Seed kit
+              <span className="rounded-full border-2 border-ink bg-kit-coral px-3 py-0.5 text-xs font-black uppercase tracking-wider text-white shadow-brutal-sm">
+                ✦ 14 &amp; 28-Day Routine Kit
               </span>
 
               {reviews.length > 0 ? (
-                <div className="flex items-center gap-1.5 text-sm">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-ink">
                   <div className="flex items-center text-amber-500">
-                    <Star className="w-4 h-4 fill-amber-400" />
+                    <Star className="w-3.5 h-3.5 fill-amber-400 stroke-ink stroke-1" />
                   </div>
-                  <span className="font-semibold text-charcoal">{(reviews.reduce((total, review) => total + review.rating, 0) / reviews.length).toFixed(1)}</span>
-                  <span className="text-muted-gray">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+                  <span>{(reviews.reduce((total, review) => total + review.rating, 0) / reviews.length).toFixed(1)}</span>
+                  <span className="text-muted-gray">({reviews.length} reviews)</span>
                 </div>
               ) : null}
             </div>
 
             {/* Title */}
-            <h1 className="font-serif text-3xl sm:text-4xl font-normal text-charcoal leading-tight">
+            <h1 className="font-heading font-black text-3xl sm:text-4xl lg:text-5xl text-ink leading-tight">
               {kit.name}
             </h1>
 
             {/* Short descriptor */}
-            <p className="text-sm sm:text-base text-muted-gray leading-relaxed">
+            <p className="text-xs sm:text-sm text-muted-gray leading-relaxed font-medium">
               {kit.short_description}
             </p>
 
             {/* Price & Inventory State */}
             <div className="flex flex-wrap items-baseline gap-3 pt-2">
-              <span className="font-serif text-3xl font-medium text-charcoal">
+              <span className="font-heading font-black text-3xl sm:text-4xl text-ink tabular-nums">
                 {formatPKR(kit.price_minor)}
               </span>
               {kit.compare_price_minor && (
-                <span className="text-base text-muted-gray line-through">
+                <span className="text-base text-muted-gray line-through tabular-nums font-bold">
                   {formatPKR(kit.compare_price_minor)}
                 </span>
               )}
               {inStock ? (
                 isLowStock ? (
-                  <span className="text-sm text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full font-medium">
-                    Low stock — only {currentStock} kits left
+                  <span className="text-[11px] font-black uppercase tracking-wider text-ink bg-tea-butter border-2 border-ink px-3 py-0.5 rounded-full shadow-brutal-sm">
+                    Low stock — {currentStock} kits left
                   </span>
                 ) : (
-                  <span className="text-sm text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full font-medium">
-                    In stock
+                  <span className="text-[11px] font-black uppercase tracking-wider text-ink bg-seed-lime border-2 border-ink px-3 py-0.5 rounded-full shadow-brutal-sm">
+                    In Stock in Lahore
                   </span>
                 )
               ) : (
-                <span className="text-sm text-rose-800 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1">
-                  <Bell className="w-3 h-3 text-rose-600" />
+                <span className="text-[11px] font-black uppercase tracking-wider text-white bg-kit-coral border-2 border-ink px-3 py-0.5 rounded-full shadow-brutal-sm flex items-center gap-1">
+                  <Bell className="w-3 h-3 text-white" />
                   <span>Out of stock</span>
                 </span>
               )}
@@ -264,10 +273,10 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
 
             {/* In Stock vs Out of Stock Action Controls */}
             <div ref={mainActionsRef} className="space-y-3">
-              <div className="flex items-center gap-2 py-2.5 px-3.5 bg-seedly-light/70 border border-seedly-primary/20 rounded-xl text-xs text-charcoal">
-                <Truck className="h-4 w-4 text-seedly-primary shrink-0" aria-hidden="true" />
+              <div className="flex items-center gap-2 py-2.5 px-3.5 bg-white border-2 border-ink rounded-full text-xs font-bold text-ink shadow-brutal-sm">
+                <Truck className="h-4 w-4 text-seed-lime stroke-[2.5]" aria-hidden="true" />
                 <span>
-                  <strong>Flat Rs. 200 delivery</strong> · <strong className="text-seedly-dark">FREE</strong> over Rs. 2,500 · Dispatched in 24h from Lahore
+                  <strong>Flat Rs. 200 delivery</strong> · <strong>FREE</strong> over Rs. 2,500 · Dispatched in 24h from Lahore
                 </span>
               </div>
               {inStock ? (

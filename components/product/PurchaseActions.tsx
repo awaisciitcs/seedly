@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRight, Heart, Loader2, Minus, Plus, ShoppingBag } from 'lucide-react';
+import { ArrowRight, Heart, Loader2, Minus, Plus, ShoppingBag, Check } from 'lucide-react';
 
 interface PurchaseActionsProps {
   quantity: number;
@@ -14,7 +14,15 @@ interface PurchaseActionsProps {
   onWishlist: () => void;
 }
 
-export function PurchaseActions({ quantity, maxQuantity, wishlisted, onQuantityChange, onAdd, onBuy, onWishlist }: PurchaseActionsProps) {
+export function PurchaseActions({
+  quantity,
+  maxQuantity,
+  wishlisted,
+  onQuantityChange,
+  onAdd,
+  onBuy,
+  onWishlist,
+}: PurchaseActionsProps) {
   const [btnState, setBtnState] = useState<'idle' | 'pending' | 'added'>('idle');
 
   const handleAddClick = () => {
@@ -29,76 +37,83 @@ export function PurchaseActions({ quantity, maxQuantity, wishlisted, onQuantityC
   return (
     <div className="space-y-3 pt-4">
       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3">
-        <div className="col-span-2 flex h-14 w-fit items-center rounded-full border border-border-gray bg-white px-1.5 sm:col-span-1" role="group" aria-label="Quantity">
+        {/* Stepper */}
+        <div
+          className="col-span-2 sm:col-span-1 flex h-14 w-fit items-center rounded-full border-2 border-ink bg-white px-2 shadow-brutal-sm"
+          role="group"
+          aria-label="Quantity"
+        >
           <button
             type="button"
             onClick={() => onQuantityChange(Math.max(1, quantity - 1))}
             disabled={quantity <= 1}
-            className="motion-icon flex h-11 w-11 items-center justify-center rounded-full text-seedly-dark transition-colors hover:bg-seedly-light disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-paper transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
             aria-label="Decrease quantity"
           >
-            <Minus className="h-4 w-4" aria-hidden="true" />
+            <Minus className="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
           </button>
-          <span className="w-8 text-center text-sm font-medium tabular-nums" aria-live="polite" aria-atomic="true"><span key={quantity} className="motion-count inline-block">{quantity}</span></span>
+          <span className="w-8 text-center text-sm font-black tabular-nums text-ink" aria-live="polite" aria-atomic="true">
+            {quantity}
+          </span>
           <button
             type="button"
             onClick={() => onQuantityChange(Math.min(maxQuantity, quantity + 1))}
             disabled={quantity >= maxQuantity}
-            className="motion-icon flex h-11 w-11 items-center justify-center rounded-full text-seedly-dark transition-colors hover:bg-seedly-light disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-paper transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
             aria-label="Increase quantity"
           >
-            <Plus className="h-4 w-4" aria-hidden="true" />
+            <Plus className="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
           </button>
         </div>
 
+        {/* Primary Add to Basket Button */}
         <button
           type="button"
           onClick={handleAddClick}
           disabled={btnState === 'pending'}
           aria-busy={btnState === 'pending'}
-          className="motion-button order-3 col-span-3 flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-seedly-dark px-5 py-3 text-sm font-medium text-white shadow-[0_4px_12px_rgba(31,56,43,0.1)] transition-[background-color,box-shadow,transform] duration-200 hover:bg-seedly-forest hover:shadow-[0_6px_18px_rgba(31,56,43,0.16)] motion-safe:active:scale-[0.98] sm:order-none sm:col-span-1"
+          className="btn-brutal order-3 sm:order-none col-span-3 sm:col-span-1 flex min-h-14 items-center justify-center gap-2.5 bg-seed-lime text-ink px-6 text-xs sm:text-sm font-black uppercase tracking-wider shadow-brutal hover:bg-seed-lime/80"
         >
           {btnState === 'pending' ? (
-            <Loader2 className="h-[18px] w-[18px] animate-spin text-white" aria-hidden="true" />
+            <Loader2 className="h-4 w-4 animate-spin text-ink" aria-hidden="true" />
           ) : btnState === 'added' ? (
-            <svg
-              className="h-[18px] w-[18px] text-white"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <polyline points="20 6 9 17 4 12" className="motion-draw-check" />
-            </svg>
+            <Check className="h-4 w-4 text-ink stroke-[3]" />
           ) : (
-            <ShoppingBag className="h-[18px] w-[18px]" aria-hidden="true" />
+            <ShoppingBag className="h-4 w-4 text-ink" aria-hidden="true" />
           )}
           <span aria-live="polite">
-            {btnState === 'pending' ? 'Adding...' : btnState === 'added' ? 'Added' : 'Add to basket'}
+            {btnState === 'pending' ? 'Adding...' : btnState === 'added' ? 'Added to Basket' : 'Add to Basket'}
           </span>
         </button>
 
+        {/* Wishlist Button */}
         <button
           type="button"
           onClick={onWishlist}
           aria-label={wishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
           aria-pressed={wishlisted}
-          className={`motion-button order-2 flex h-14 w-14 items-center justify-center rounded-full border transition-[background-color,border-color,transform] duration-200 motion-safe:active:scale-95 sm:order-none ${wishlisted ? 'border-seedly-primary bg-seedly-light text-seedly-dark' : 'border-border-gray bg-white text-seedly-dark hover:border-seedly-primary hover:bg-seedly-light/50'}`}
+          className={`btn-brutal order-2 sm:order-none flex h-14 w-14 items-center justify-center shadow-brutal-sm transition-colors ${
+            wishlisted ? 'bg-paper' : 'bg-white hover:bg-seed-lime'
+          }`}
         >
-          <Heart key={String(wishlisted)} className={`${wishlisted ? 'motion-pop' : ''} h-5 w-5 ${wishlisted ? 'fill-seedly-dark' : ''}`} aria-hidden="true" />
+          <Heart
+            className={`h-5 w-5 ${wishlisted ? 'fill-kit-coral text-kit-coral stroke-[2]' : 'text-ink'}`}
+            aria-hidden="true"
+          />
         </button>
       </div>
 
+      {/* Buy Now Button */}
       <button
         type="button"
         onClick={onBuy}
-        className="motion-button group flex min-h-14 w-full items-center justify-center gap-3 rounded-full border border-seedly-dark/30 bg-transparent px-6 py-3 text-sm font-medium text-seedly-dark transition-[background-color,border-color,transform] duration-200 hover:border-seedly-dark hover:bg-seedly-light/50 motion-safe:active:scale-[0.99]"
+        className="btn-brutal group flex min-h-14 w-full items-center justify-center gap-3 bg-white text-ink px-6 text-xs sm:text-sm font-black uppercase tracking-wider shadow-brutal hover:bg-paper"
       >
-        Buy now <ArrowRight className="h-4 w-4 transition-transform duration-200 motion-safe:group-hover:translate-x-1" aria-hidden="true" />
+        <span>Direct Checkout</span>
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
       </button>
     </div>
   );
 }
+
+export default PurchaseActions;

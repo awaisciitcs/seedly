@@ -180,23 +180,23 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
   const waMessage = encodeURIComponent(`Hi Seedly, I have a question about ${product.name}.`);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 bg-paper text-ink">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-muted-gray mb-8">
-        <Link href="/" className="hover:text-charcoal">Home</Link>
+      <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-gray mb-8">
+        <Link href="/" className="hover:text-ink">Home</Link>
         <span>/</span>
-        <Link href={`/${product.product_type === 'tea' ? 'teas' : 'seeds'}`} className="capitalize hover:text-charcoal">
+        <Link href={`/${product.product_type === 'tea' ? 'teas' : 'seeds'}`} className="capitalize hover:text-ink">
           {product.product_type === 'tea' ? 'Mountain Teas' : 'Raw Pantry Seeds'}
         </Link>
         <span>/</span>
-        <span className="text-charcoal font-medium truncate">{product.name}</span>
+        <span className="text-ink truncate">{product.name}</span>
       </nav>
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
         {/* Left Column: Packaging Visual */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="relative aspect-square w-full rounded-sm overflow-hidden bg-cream border border-border-gray">
+          <div className="relative aspect-square w-full rounded-[28px] overflow-hidden bg-white border-2 border-ink shadow-brutal">
             <Image
               src={product.image_url}
               alt={product.name}
@@ -205,23 +205,28 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
             />
-            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full border border-border-gray text-sm font-medium text-charcoal flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-seedly-primary"></span>
+            {/* Top-Right Sticker Badge matching Canva */}
+            <div className="absolute top-4 right-4 z-10 rounded-full border-2 border-ink bg-seed-lime px-3.5 py-1 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-ink shadow-brutal-sm">
+              PACKED IN LAHORE ✦ DISPATCHED IN 24H
+            </div>
+
+            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-xs px-3.5 py-1 rounded-full border-2 border-ink text-xs font-bold text-ink shadow-brutal-sm flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-seed-lime border border-ink"></span>
               <span>{selectedVariant?.option_value || (product.weight_grams ? `${product.weight_grams}g` : product.name)}</span>
             </div>
           </div>
 
           {/* Contextual WhatsApp Consultation */}
-          <div className="p-4 rounded-sm bg-white border border-border-gray flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-4 rounded-[20px] bg-white border-2 border-ink shadow-brutal-sm flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-0.5">
-              <p className="text-sm font-bold text-charcoal">Questions about this product?</p>
-              <p className="text-sm text-muted-gray">Ask our team about ingredients, preparation, or storage.</p>
+              <p className="text-xs font-black uppercase tracking-wider text-ink">Questions about this product?</p>
+              <p className="text-xs text-muted-gray font-medium">Ask our team about ingredients, preparation, or storage.</p>
             </div>
             <a
               href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full text-sm font-semibold flex items-center gap-1.5 transition-colors shrink-0"
+              className="btn-brutal px-4 py-2 bg-seed-lime text-ink text-xs font-black uppercase tracking-wider shadow-brutal-sm shrink-0 flex items-center gap-1.5"
             >
               <MessageCircle className="w-3.5 h-3.5" />
               <span>Ask on WhatsApp</span>
@@ -234,7 +239,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
           <div className="space-y-4">
             {/* Category & Verified Review Social Proof */}
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className="text-sm uppercase tracking-widest font-semibold text-seedly-primary">
+              <span className="rounded-full border-2 border-ink bg-seed-lime px-3 py-0.5 text-xs font-black uppercase tracking-wider text-ink shadow-brutal-sm">
                 {product.slug === 'chamomile-tea'
                   ? 'Whole Flower Tisane'
                   : product.slug === 'spearmint-tea'
@@ -247,88 +252,88 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               </span>
 
               {reviews.length > 0 ? (
-                <div className="flex items-center gap-1.5 text-sm">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-ink">
                   <div className="flex items-center text-amber-500">
-                    <Star className="w-4 h-4 fill-amber-400" />
+                    <Star className="w-3.5 h-3.5 fill-amber-400 stroke-ink stroke-1" />
                   </div>
-                  <span className="font-semibold text-charcoal">{(reviews.reduce((total, review) => total + review.rating, 0) / reviews.length).toFixed(1)}</span>
-                  <span className="text-muted-gray">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+                  <span>{(reviews.reduce((total, review) => total + review.rating, 0) / reviews.length).toFixed(1)}</span>
+                  <span className="text-muted-gray">({reviews.length} reviews)</span>
                 </div>
               ) : null}
             </div>
 
             {/* Title */}
-            <h1 className="font-serif text-3xl sm:text-4xl font-normal text-charcoal leading-tight">
+            <h1 className="font-heading font-black text-3xl sm:text-4xl lg:text-5xl text-ink leading-tight">
               {product.name}
             </h1>
 
             {/* Short descriptor */}
-            <p className="text-sm sm:text-base text-muted-gray leading-relaxed">
+            <p className="text-xs sm:text-sm text-muted-gray leading-relaxed font-medium">
               {product.short_description}
             </p>
 
             {/* Tea specific quick attributes */}
             {product.product_type === 'tea' && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 py-3 px-4 bg-seedly-stone rounded-sm border border-border-gray text-sm text-charcoal">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 py-3 px-4 bg-white rounded-[20px] border-2 border-ink shadow-brutal-sm text-xs text-ink">
                 {product.flavor_profile && (
                   <div className="space-y-0.5">
-                    <span className="font-semibold flex items-center gap-1 text-seedly-dark">
-                      <Leaf className="w-3.5 h-3.5" /> Notes
+                    <span className="font-black uppercase tracking-wider flex items-center gap-1 text-ink">
+                      <Leaf className="w-3 h-3 text-seed-lime stroke-[2.5]" /> Notes
                     </span>
-                    <p className="text-sm text-muted-gray truncate">{product.flavor_profile}</p>
+                    <p className="text-xs text-muted-gray truncate font-medium">{product.flavor_profile}</p>
                   </div>
                 )}
                 <div className="space-y-0.5">
-                  <span className="font-semibold flex items-center gap-1 text-seedly-dark">
-                    <Clock className="w-3.5 h-3.5" /> Brew Time
+                  <span className="font-black uppercase tracking-wider flex items-center gap-1 text-ink">
+                    <Clock className="w-3 h-3 text-tea-butter stroke-[2.5]" /> Brew Time
                   </span>
-                  <p className="text-sm text-muted-gray">{product.steep_time || '3–4 mins'}</p>
+                  <p className="text-xs text-muted-gray font-medium">{product.steep_time || '3–4 mins'}</p>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="font-semibold flex items-center gap-1 text-seedly-dark">
-                    <Thermometer className="w-3.5 h-3.5" /> Water Temp
+                  <span className="font-black uppercase tracking-wider flex items-center gap-1 text-ink">
+                    <Thermometer className="w-3 h-3 text-kit-coral stroke-[2.5]" /> Temp
                   </span>
-                  <p className="text-sm text-muted-gray">{product.water_temp || (product.slug === 'green-tea' ? '80°C' : '90°C–95°C')}</p>
+                  <p className="text-xs text-muted-gray font-medium">{product.water_temp || (product.slug === 'green-tea' ? '80°C' : '90°C–95°C')}</p>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="font-semibold flex items-center gap-1 text-seedly-dark">
-                    <Coffee className="w-3.5 h-3.5" /> Caffeine
+                  <span className="font-black uppercase tracking-wider flex items-center gap-1 text-ink">
+                    <Coffee className="w-3 h-3 text-ink stroke-[2.5]" /> Caffeine
                   </span>
-                  <p className="text-sm text-muted-gray">{product.caffeine_level || 'Caffeine-free'}</p>
+                  <p className="text-xs text-muted-gray font-medium">{product.caffeine_level || 'Caffeine-free'}</p>
                 </div>
               </div>
             )}
 
             {/* Price & Real Inventory State */}
             <div className="flex flex-wrap items-baseline gap-3 pt-2">
-              <span key={priceMinor} className="font-serif text-3xl font-medium text-charcoal price-crossfade motion-count">
+              <span key={priceMinor} className="font-heading font-black text-3xl sm:text-4xl text-ink tabular-nums">
                 {formatPKR(priceMinor)}
               </span>
               {comparePriceMinor && (
-                <span key={comparePriceMinor} className="text-base text-muted-gray line-through price-crossfade">
+                <span key={comparePriceMinor} className="text-base text-muted-gray line-through tabular-nums font-bold">
                   {formatPKR(comparePriceMinor)}
                 </span>
               )}
               {inStock ? (
                 isLowStock ? (
-                  <span className="text-sm text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full font-medium">
-                    Low stock — only {currentStock} left
+                  <span className="text-[11px] font-black uppercase tracking-wider text-ink bg-tea-butter border-2 border-ink px-3 py-0.5 rounded-full shadow-brutal-sm">
+                    Low stock — {currentStock} left
                   </span>
                 ) : (
-                  <span className="text-sm text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full font-medium">
-                    In stock
+                  <span className="text-[11px] font-black uppercase tracking-wider text-ink bg-seed-lime border-2 border-ink px-3 py-0.5 rounded-full shadow-brutal-sm">
+                    In Stock in Lahore
                   </span>
                 )
               ) : (
-                <span className="text-sm text-rose-800 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1">
-                  <Bell className="w-3 h-3 text-rose-600" />
+                <span className="text-[11px] font-black uppercase tracking-wider text-white bg-kit-coral border-2 border-ink px-3 py-0.5 rounded-full shadow-brutal-sm flex items-center gap-1">
+                  <Bell className="w-3 h-3 text-white" />
                   <span>Out of stock</span>
                 </span>
               )}
             </div>
 
             {selectedVariant && selectedVariant.weight_grams > 0 && (
-              <p className="text-sm text-muted-gray">
+              <p className="text-xs text-muted-gray font-bold">
                 {selectedVariant.option_value} &middot; {formatPKR(Math.round(priceMinor * 100 / selectedVariant.weight_grams))} per 100g
               </p>
             )}
@@ -337,9 +342,9 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             {activeVariants.length > 1 && (
               <fieldset className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
-                  <legend className="text-sm font-semibold text-charcoal">Select Pack Size (Weight)</legend>
+                  <legend className="text-xs font-black uppercase tracking-wider text-ink">Select Pack Size (Weight)</legend>
                   {selectedVariant && (
-                    <span className="text-xs font-mono text-seedly-dark font-medium">
+                    <span className="text-xs font-bold text-ink">
                       Selected: {selectedVariant.option_value} ({formatPKR(selectedVariant.price_minor)})
                     </span>
                   )}
@@ -362,21 +367,21 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                         type="button"
                         onClick={() => { setSelectedVariant(v); setQuantity(1); }}
                         aria-pressed={isSelected}
-                        className={`relative flex min-h-[84px] flex-col items-start justify-center gap-1 rounded-2xl border px-3.5 py-3 text-left transition-all duration-200 sm:px-4 cursor-pointer ${
+                        className={`relative flex min-h-[80px] flex-col items-start justify-center gap-1 rounded-[18px] border-2 border-ink px-3.5 py-3 text-left transition-all duration-200 sm:px-4 cursor-pointer ${
                           isSelected
-                            ? 'border-seedly-dark bg-seedly-light/70 text-seedly-dark ring-2 ring-seedly-dark shadow-sm'
-                            : 'border-border-gray bg-white text-charcoal hover:border-seedly-primary hover:bg-seedly-light/30'
+                            ? 'bg-seed-lime text-ink shadow-brutal'
+                            : 'bg-white text-ink hover:bg-seed-lime/20 shadow-brutal-sm'
                         }`}
                       >
-                        <span className="text-sm font-bold tracking-tight">{v.option_value}</span>
-                        <span className={`text-xs font-mono font-semibold sm:text-sm ${isSelected ? 'text-seedly-dark' : 'text-muted-gray'}`}>
+                        <span className="text-sm font-black tracking-tight">{v.option_value}</span>
+                        <span className={`text-xs font-bold tabular-nums ${isSelected ? 'text-ink' : 'text-muted-gray'}`}>
                           {formatPKR(v.price_minor)}
                         </span>
                         {isSelected && (
-                          <CheckCircle2 className="absolute right-2.5 top-2.5 h-4 w-4 text-seedly-dark motion-pop" aria-hidden="true" />
+                          <CheckCircle2 className="absolute right-2.5 top-2.5 h-4 w-4 text-ink stroke-[2.5]" aria-hidden="true" />
                         )}
                         {!vInStock && (
-                          <span className="text-[11px] font-medium text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.2 rounded-md">
+                          <span className="text-[10px] font-black uppercase text-white bg-kit-coral border border-ink px-1.5 py-0.5 rounded-full">
                             Sold out
                           </span>
                         )}
@@ -389,10 +394,10 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
 
             {/* Action Controls */}
             <div ref={mainActionsRef} className="space-y-3">
-              <div className="flex items-center gap-2 py-2.5 px-3.5 bg-seedly-light/70 border border-seedly-primary/20 rounded-xl text-xs text-charcoal">
-                <Truck className="h-4 w-4 text-seedly-primary shrink-0" aria-hidden="true" />
+              <div className="flex items-center gap-2 py-2.5 px-3.5 bg-white border-2 border-ink rounded-full text-xs font-bold text-ink shadow-brutal-sm">
+                <Truck className="h-4 w-4 text-seed-lime stroke-[2.5]" aria-hidden="true" />
                 <span>
-                  <strong>Flat Rs. 200 delivery</strong> · <strong className="text-seedly-dark">FREE</strong> over Rs. 2,500 · Dispatched in 24h from Lahore
+                  <strong>Flat Rs. 200 delivery</strong> · <strong>FREE</strong> over Rs. 2,500 · Dispatched in 24h from Lahore
                 </span>
               </div>
               {inStock ? (
@@ -408,19 +413,19 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                 />
               ) : (
                 <div className="space-y-3 pt-4">
-                  <div className="p-4 bg-amber-50/80 border border-amber-200/80 rounded-sm text-sm text-amber-900 space-y-1">
-                    <p className="font-bold flex items-center gap-1.5">
-                      <Bell className="w-4 h-4 text-amber-700" />
+                  <div className="p-4 bg-kit-coral/15 border-2 border-ink rounded-[20px] text-xs font-bold text-ink space-y-1 shadow-brutal-sm">
+                    <p className="font-black uppercase tracking-wider flex items-center gap-1.5">
+                      <Bell className="w-4 h-4 text-kit-coral" />
                       <span>Currently out of stock</span>
                     </p>
-                    <p className="text-amber-800">
-                      Leave your email and we will let you know when this product is available.
+                    <p className="text-muted-gray">
+                      Leave your email and we will let you know when this fresh batch is packed.
                     </p>
                   </div>
 
                   <button
                     onClick={() => setIsNotifyModalOpen(true)}
-                    className="min-h-14 w-full py-3.5 px-6 rounded-full font-medium text-sm bg-seedly-dark hover:bg-seedly-forest text-white transition-all flex items-center justify-center gap-2"
+                    className="btn-brutal min-h-14 w-full py-3.5 px-6 font-black text-xs sm:text-sm uppercase tracking-wider bg-seed-lime text-ink shadow-brutal hover:bg-seed-lime/80 flex items-center justify-center gap-2"
                   >
                     <Bell className="w-4 h-4" />
                     <span>Notify Me When Available</span>
@@ -429,29 +434,29 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               )}
             </div>
 
-            <div className="border-t border-border-gray pt-5 space-y-3 text-sm leading-6 text-muted-gray">
-              <p>Delivery across Pakistan. <Link href="/shipping" className="underline underline-offset-4 text-seedly-dark">See delivery times and charges</Link>.</p>
-              <p>Something wrong with your parcel? <Link href="/returns" className="underline underline-offset-4 text-seedly-dark">Read our replacement policy</Link>.</p>
-              {product.sku && <p className="text-sm">Product code: {product.sku}</p>}
+            <div className="border-t-2 border-ink/10 pt-5 space-y-2 text-xs font-bold leading-5 text-muted-gray">
+              <p>Delivery across Pakistan. <Link href="/shipping" className="underline text-ink">See delivery times and charges</Link>.</p>
+              <p>Something wrong with your parcel? <Link href="/returns" className="underline text-ink">Read our replacement policy</Link>.</p>
+              {product.sku && <p className="text-xs">Product code: <span className="font-mono text-ink">{product.sku}</span></p>}
             </div>
 
             {/* Prominent Allergen Notice */}
             {product.slug === 'sesame-seeds' && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-sm text-sm text-amber-900 font-semibold flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
+              <div className="p-3.5 bg-tea-butter/40 border-2 border-ink rounded-[16px] text-xs text-ink font-bold flex items-center gap-2 shadow-brutal-sm">
+                <AlertCircle className="w-4 h-4 text-kit-coral shrink-0" />
                 <span>Allergen Notice: Contains Sesame Seeds. Packed in a facility handling edible seeds.</span>
               </div>
             )}
             {product.slug === 'chamomile-tea' && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-sm text-sm text-amber-900 font-semibold flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
+              <div className="p-3.5 bg-tea-butter/40 border-2 border-ink rounded-[16px] text-xs text-ink font-bold flex items-center gap-2 shadow-brutal-sm">
+                <AlertCircle className="w-4 h-4 text-kit-coral shrink-0" />
                 <span>Allergy Caution: Chamomile belongs to the Asteraceae (daisy) plant family. Avoid if you have known allergies to daisy-family plants.</span>
               </div>
             )}
 
-            {/* Standard Dietary Disclaimer */}
-            <div className="p-3.5 bg-stone/50 border border-border-gray rounded-sm text-sm text-muted-gray leading-relaxed">
-              <strong className="text-charcoal font-semibold">Dietary Notice: </strong>
+            {/* Standard Dietary Disclaimer (Verbatim) */}
+            <div className="p-4 bg-white border-2 border-ink rounded-[18px] text-xs text-muted-gray leading-relaxed shadow-brutal-sm">
+              <strong className="text-ink font-black uppercase tracking-wider block mb-1">Dietary Food Notice: </strong>
               {siteConfig.disclaimer.standard}
             </div>
           </div>

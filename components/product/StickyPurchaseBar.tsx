@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { formatPKR } from '../../lib/utils';
-import { Loader2, Plus, Bell } from 'lucide-react';
+import { Loader2, Plus, Bell, Check } from 'lucide-react';
 
 interface StickyPurchaseBarProps {
   name: string;
@@ -43,7 +43,6 @@ export function StickyPurchaseBar({
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        // Show only when target button has scrolled above the viewport
         if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
           setIsVisible(true);
           document.body.dataset.stickyBarActive = 'true';
@@ -83,13 +82,13 @@ export function StickyPurchaseBar({
   return (
     <aside
       aria-label="Quick purchase actions"
-      className={`fixed inset-x-0 bottom-0 z-50 border-t border-border-gray bg-cream/95 backdrop-blur-md px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] transition-transform duration-200 ease-out lg:hidden motion-reduce:transition-none ${
+      className={`fixed inset-x-0 bottom-0 z-50 border-t-2 border-ink bg-paper px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] shadow-brutal-xl transition-transform duration-200 ease-out lg:hidden ${
         isVisible ? 'translate-y-0' : 'translate-y-full pointer-events-none'
       }`}
     >
       <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-md border border-border-gray bg-white">
+          <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-[10px] border-2 border-ink bg-white shadow-brutal-sm">
             <Image
               src={imageUrl}
               alt=""
@@ -100,11 +99,11 @@ export function StickyPurchaseBar({
             />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-xs font-semibold text-charcoal">{name}</p>
+            <p className="truncate text-xs font-black text-ink">{name}</p>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-xs font-bold text-seedly-dark">{formatPKR(priceMinor)}</span>
+              <span className="text-xs font-extrabold text-ink tabular-nums">{formatPKR(priceMinor)}</span>
               {variantLabel && (
-                <span className="text-xs text-muted-gray truncate">&middot; {variantLabel}</span>
+                <span className="text-[11px] font-bold text-muted-gray truncate">&middot; {variantLabel}</span>
               )}
             </div>
           </div>
@@ -117,42 +116,24 @@ export function StickyPurchaseBar({
               onClick={handleAdd}
               disabled={btnState === 'pending'}
               aria-busy={btnState === 'pending'}
-              className={`motion-button flex h-11 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-semibold shadow-sm transition-[background-color,border-color,color,transform] duration-150 motion-safe:active:scale-[0.97] ${
-                btnState === 'added'
-                  ? 'bg-seedly-forest text-white'
-                  : 'bg-seedly-dark text-white hover:bg-seedly-forest'
-              }`}
+              className="btn-brutal h-10 px-4 text-xs font-black uppercase tracking-wider bg-seed-lime text-ink shadow-brutal-sm hover:bg-seed-lime/80"
             >
               {btnState === 'pending' ? (
                 <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
               ) : btnState === 'added' ? (
-                <svg
-                  className="h-3.5 w-3.5 text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <polyline points="20 6 9 17 4 12" className="motion-draw-check" />
-                </svg>
+                <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 stroke-[3]" /> Added</span>
               ) : (
-                <Plus aria-hidden="true" className="h-3.5 w-3.5" />
+                <span className="flex items-center gap-1"><Plus className="h-3.5 w-3.5 stroke-[2.5]" /> Add</span>
               )}
-              <span aria-live="polite">
-                {btnState === 'pending' ? 'Adding...' : btnState === 'added' ? 'Added' : 'Add to basket'}
-              </span>
             </button>
           ) : (
             <button
               type="button"
               onClick={onNotifyMe}
-              className="motion-button flex h-11 items-center justify-center gap-1.5 rounded-full border border-border-gray bg-white px-4 text-xs font-semibold text-charcoal shadow-sm hover:border-charcoal"
+              className="btn-brutal h-10 px-4 text-xs font-bold uppercase tracking-wider border-2 border-ink bg-white text-ink shadow-brutal-sm hover:bg-paper"
             >
               <Bell aria-hidden="true" className="h-3.5 w-3.5" />
-              <span>Notify me</span>
+              <span>Notify</span>
             </button>
           )}
         </div>
@@ -160,3 +141,5 @@ export function StickyPurchaseBar({
     </aside>
   );
 }
+
+export default StickyPurchaseBar;

@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   RotateCcw,
   Loader2,
+  MessageCircle,
 } from 'lucide-react';
 
 export function CartDrawer() {
@@ -125,58 +126,60 @@ export function CartDrawer() {
       {/* Backdrop */}
       <div
         onClick={handleClose}
-        className={`absolute inset-0 bg-charcoal/50 backdrop-blur-sm transition-opacity ${
+        className={`absolute inset-0 bg-ink/50 backdrop-blur-xs transition-opacity ${
           isClosing ? 'motion-backdrop-exit' : 'motion-backdrop'
         }`}
       />
 
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-8 sm:pl-10">
         <div
-          className={`w-screen max-w-md bg-white shadow-2xl flex flex-col ${
+          className={`w-screen max-w-md bg-paper border-l-2 border-ink shadow-brutal-xl flex flex-col ${
             isClosing ? 'motion-drawer-exit' : 'motion-drawer'
           }`}
         >
           {/* Header */}
-          <div className="px-6 py-5 border-b border-border-gray flex items-center justify-between bg-cream/50">
-            <div className="flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-seedly-dark" />
-              <h2 className="text-lg font-serif font-semibold text-charcoal">Your Basket</h2>
-              <span className="text-xs bg-seedly-light text-seedly-dark px-2 py-0.5 rounded-full font-medium">
+          <div className="px-5 py-4 border-b-2 border-ink flex items-center justify-between bg-white">
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-full border-2 border-ink bg-seed-lime flex items-center justify-center shadow-brutal-sm">
+                <ShoppingBag className="w-4 h-4 text-ink" />
+              </div>
+              <h2 className="font-heading font-black text-lg text-ink">Your Basket</h2>
+              <span className="rounded-full border-2 border-ink bg-tea-butter px-2.5 py-0.5 text-[11px] font-black text-ink shadow-brutal-sm">
                 {items.length} {items.length === 1 ? 'item' : 'items'}
               </span>
             </div>
             <button
               ref={closeBtnRef}
               onClick={handleClose}
-              className="p-2 text-muted-gray hover:text-charcoal rounded-full hover:bg-cream transition-colors"
+              className="btn-brutal h-9 w-9 bg-white text-ink hover:bg-seed-lime shadow-brutal-sm"
               aria-label="Close basket"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Free Shipping Progress Indicator */}
-          <div className={`px-6 py-3 border-b transition-colors duration-300 ${
-            freeShippingDelta === 0 ? 'bg-emerald-50/80 border-emerald-200' : 'bg-seedly-light/60 border-seedly-primary/20'
+          {/* Neo-Brutalist Free Shipping Progress Meter */}
+          <div className={`px-5 py-3.5 border-b-2 border-ink transition-colors duration-300 ${
+            freeShippingDelta === 0 ? 'bg-seed-lime/30' : 'bg-white'
           }`}>
             {freeShippingDelta === 0 ? (
-              <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 motion-pop" />
-                <span>Free delivery unlocked!</span>
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-ink">
+                <CheckCircle2 className="w-4 h-4 text-ink shrink-0 stroke-[2.5]" />
+                <span>✦ Free nationwide delivery unlocked!</span>
               </div>
             ) : (
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs text-charcoal">
-                  <span className="flex items-center gap-1 font-medium">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                    Add <strong>{formatPKR(freeShippingDelta)}</strong> for FREE Delivery (Orders Rs. 2,500+)
+                <div className="flex items-center justify-between text-xs font-bold text-ink">
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-kit-coral" />
+                    <span>Add <strong>{formatPKR(freeShippingDelta)}</strong> for Free Delivery</span>
                   </span>
-                  <span className="font-semibold text-seedly-dark">{freeShippingPercent}%</span>
+                  <span className="font-extrabold">{freeShippingPercent}%</span>
                 </div>
-                <div className="w-full bg-white h-2 rounded-full overflow-hidden border border-seedly-primary/20">
+                <div className="w-full bg-paper h-3.5 rounded-full border-2 border-ink overflow-hidden p-0.5 shadow-brutal-sm">
                   <div
-                    className="bg-seedly-primary h-full progress-scale-x rounded-full"
-                    style={{ transform: `scaleX(${freeShippingPercent / 100})` }}
+                    className="bg-seed-lime h-full rounded-full transition-all duration-300"
+                    style={{ width: `${freeShippingPercent}%` }}
                   />
                 </div>
               </div>
@@ -185,43 +188,43 @@ export function CartDrawer() {
 
           {/* Undo Removal Banner */}
           {recentlyRemoved && (
-            <div className="mx-6 mt-3 p-3 bg-cream rounded-xl border border-border-gray flex items-center justify-between text-xs animate-fadeIn shadow-subtle">
-              <span className="text-charcoal truncate max-w-[200px]">
+            <div className="mx-5 mt-3 p-3 rounded-[16px] border-2 border-ink bg-white flex items-center justify-between text-xs shadow-brutal-sm animate-fadeIn">
+              <span className="text-ink truncate max-w-[200px] font-medium">
                 Removed <strong>{recentlyRemoved.name}</strong>
               </span>
               <button
                 type="button"
                 onClick={handleUndoRemove}
-                className="text-seedly-dark font-bold hover:underline flex items-center gap-1 shrink-0 ml-2"
+                className="btn-brutal px-2.5 py-1 text-[11px] font-bold bg-seed-lime text-ink flex items-center gap-1 shadow-brutal-sm"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-3 h-3" />
                 <span>Undo</span>
               </button>
             </div>
           )}
 
           {/* Items List */}
-          <div className="flex-1 overflow-y-auto px-6 py-4 divide-y divide-border-gray/50">
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
             {!isLoaded ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-seedly-primary mb-2" />
-                <p className="text-xs text-muted-gray">Loading basket...</p>
+                <Loader2 className="w-6 h-6 animate-spin text-ink mb-2" />
+                <p className="text-xs font-bold text-muted-gray">Syncing live catalog prices...</p>
               </div>
             ) : items.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-12">
-                <div className="w-16 h-16 rounded-full bg-cream flex items-center justify-center text-muted-gray mb-4">
-                  <ShoppingBag className="w-8 h-8 stroke-1 text-seedly-primary" />
+                <div className="w-16 h-16 rounded-full border-2 border-ink bg-seed-lime flex items-center justify-center text-ink mb-4 shadow-brutal">
+                  <ShoppingBag className="w-8 h-8 stroke-[2]" />
                 </div>
-                <h3 className="font-serif text-lg font-medium text-charcoal mb-1">Your basket is empty</h3>
-                <p className="text-sm text-muted-gray max-w-xs mb-6">
-                  Explore our fresh-milled pantry seeds, mountain teas, and phase seed routine kits.
+                <h3 className="font-heading font-black text-xl text-ink mb-1">Your basket is empty</h3>
+                <p className="text-xs text-muted-gray max-w-xs mb-6 font-medium">
+                  Add raw seeds, high-altitude herbal teas, or 14-day seed routine kits to get started.
                 </p>
                 <Link
                   href="/shop"
                   onClick={handleClose}
-                  className="px-6 py-2.5 bg-seedly-dark text-white rounded-full text-sm font-medium hover:bg-seedly-forest transition-colors shadow-subtle"
+                  className="btn-brutal bg-seed-lime text-ink px-6 py-3 text-xs uppercase tracking-wider font-extrabold shadow-brutal"
                 >
-                  Explore Catalog
+                  Explore Catalog →
                 </Link>
               </div>
             ) : (
@@ -231,11 +234,14 @@ export function CartDrawer() {
                   : `/${item.product_type === 'tea' ? 'teas' : 'seeds'}/${item.slug}`;
 
                 return (
-                  <div key={item.id} className="py-4 flex gap-4 items-center">
+                  <div
+                    key={item.id}
+                    className="card-brutal bg-white p-3.5 shadow-brutal-sm flex gap-3.5 items-center"
+                  >
                     <Link
                       href={itemHref}
                       onClick={handleClose}
-                      className="w-16 h-16 relative rounded-xl overflow-hidden bg-cream shrink-0 border border-border-gray/70 hover:opacity-85 transition-opacity"
+                      className="w-16 h-16 relative rounded-[14px] border-2 border-ink overflow-hidden bg-paper shrink-0 hover:opacity-85 transition-opacity"
                     >
                       <Image
                         src={item.image_url}
@@ -244,49 +250,58 @@ export function CartDrawer() {
                         className="object-cover"
                       />
                     </Link>
+
                     <div className="flex-1 min-w-0">
                       <Link
                         href={itemHref}
                         onClick={handleClose}
-                        className="hover:text-seedly-dark transition-colors block"
+                        className="hover:text-seed-lime transition-colors block"
                       >
-                        <h4 className="text-sm font-medium text-charcoal line-clamp-2 leading-snug hover:underline">
+                        <h4 className="font-heading font-extrabold text-xs sm:text-sm text-ink line-clamp-1 leading-snug">
                           {item.name}
                         </h4>
                       </Link>
-                      <p className="text-xs text-muted-gray">
-                        {item.variant_label || (item.product_type === 'kit' ? 'Curated Box' : '250g Pouch')}
-                      </p>
-                      <p className="text-sm font-semibold text-seedly-dark mt-1">
-                        {formatPKR(item.price_minor)}
+
+                      <p className="text-[11px] text-muted-gray font-medium">
+                        {item.variant_label || (item.product_type === 'kit' ? 'Curated Kit' : '250g Pouch')}
                       </p>
 
-                      {/* Stepper */}
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="flex items-center border border-border-gray rounded-lg bg-cream/40">
+                      <div className="flex items-center justify-between mt-2">
+                        <p className="font-heading font-black text-sm text-ink tabular-nums">
+                          {formatPKR(item.price_minor)}
+                        </p>
+
+                        {/* Quantity Stepper */}
+                        <div className="flex items-center gap-1.5">
+                          <div className="flex items-center rounded-full border-2 border-ink bg-paper p-0.5 shadow-brutal-sm">
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className="h-6 w-6 rounded-full flex items-center justify-center text-ink hover:bg-white transition-colors"
+                              aria-label="Decrease quantity"
+                            >
+                              <Minus className="w-3 h-3 stroke-[2.5]" />
+                            </button>
+                            <span className="w-6 text-center text-xs font-black text-ink">{item.quantity}</span>
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="h-6 w-6 rounded-full flex items-center justify-center text-ink hover:bg-white transition-colors"
+                              aria-label="Increase quantity"
+                            >
+                              <Plus className="w-3 h-3 stroke-[2.5]" />
+                            </button>
+                          </div>
+
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="p-1 hover:text-seedly-dark"
-                            aria-label="Decrease quantity"
+                            type="button"
+                            onClick={() => handleRemoveItem(item)}
+                            className="btn-brutal h-7 w-7 bg-white text-muted-gray hover:text-kit-coral hover:bg-kit-coral/10 p-0 shadow-brutal-sm"
+                            aria-label={`Remove ${item.name}`}
                           >
-                            <Minus className="w-3.5 h-3.5" />
-                          </button>
-                          <span className="w-7 text-center text-xs font-semibold">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="p-1 hover:text-seedly-dark"
-                            aria-label="Increase quantity"
-                          >
-                            <Plus className="w-3.5 h-3.5" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
-                        <button
-                          onClick={() => handleRemoveItem(item)}
-                          className="text-muted-gray hover:text-red-500 p-1 transition-colors"
-                          aria-label="Remove item"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -297,38 +312,57 @@ export function CartDrawer() {
 
           {/* Footer / Checkout */}
           {items.length > 0 && (
-            <div className="border-t border-border-gray p-6 bg-cream/40 space-y-4">
+            <div className="border-t-2 border-ink p-5 bg-white space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-gray">Subtotal</span>
-                <span className="text-lg font-serif font-bold text-charcoal">{formatPKR(subtotalMinor)}</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-gray">Estimated Subtotal</span>
+                <span className="font-heading font-black text-xl text-ink tabular-nums">
+                  {formatPKR(subtotalMinor)}
+                </span>
               </div>
-              <p className="text-xs text-muted-gray">
-                Taxes included. Rs. 200 flat nationwide delivery, FREE on orders of Rs. 2,500 or more. Cash on Delivery &amp; Wallets accepted.
-              </p>
 
-              <div className="space-y-2">
+              <div className="rounded-[14px] border border-ink/30 bg-paper p-2.5 text-[11px] font-medium text-ink flex items-center justify-between">
+                <span>Nationwide Shipping:</span>
+                <span className="font-bold">
+                  {freeShippingDelta === 0 ? 'FREE' : 'Rs. 200 (Flat COD)'}
+                </span>
+              </div>
+
+              <div className="space-y-2.5">
                 <Link
                   href="/checkout"
                   onClick={handleImmediateClose}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 bg-seedly-dark text-white rounded-xl font-medium hover:bg-seedly-forest transition-colors shadow-card text-sm"
+                  className="btn-brutal w-full py-3.5 bg-seed-lime text-ink font-black uppercase tracking-wider text-xs sm:text-sm shadow-brutal hover:bg-seed-lime/80 flex items-center justify-center gap-2"
                 >
                   <span>Proceed to Checkout</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
+
+                <a
+                  href={`https://wa.me/923719055758?text=${encodeURIComponent(
+                    `Hi Seedly, I'd like to place an order for ${items.length} item(s) totalling ${formatPKR(subtotalMinor)}.`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-brutal w-full py-2.5 bg-white text-ink text-xs font-bold uppercase tracking-wider hover:bg-paper flex items-center justify-center gap-1.5"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Order via WhatsApp Helpline</span>
+                </a>
+
                 <div className="flex items-center justify-between pt-1 text-xs">
                   <Link
                     href="/cart"
                     onClick={handleImmediateClose}
-                    className="font-medium text-seedly-dark hover:underline"
+                    className="font-bold text-ink hover:underline text-[11px]"
                   >
-                    View Full Basket Details
+                    View Full Cart Page
                   </Link>
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="text-muted-gray hover:text-charcoal transition-colors"
+                    className="font-bold text-muted-gray hover:text-ink text-[11px]"
                   >
-                    Continue Shopping
+                    Keep Browsing
                   </button>
                 </div>
               </div>
@@ -339,3 +373,5 @@ export function CartDrawer() {
     </div>
   );
 }
+
+export default CartDrawer;

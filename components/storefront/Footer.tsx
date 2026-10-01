@@ -1,6 +1,7 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { SeedlyLogo } from '../ui/SeedlyLogo';
 import { siteConfig } from '../../lib/config';
+import { MessageCircle, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
 
 const shopLinks = [
   { href: '/shop', label: 'Shop all' },
@@ -20,55 +21,138 @@ const helpLinks = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-seedly-forest bg-seedly-dark pb-28 pt-14 text-cream lg:pb-8 lg:pt-16">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-10 pb-12 md:grid-cols-4 lg:grid-cols-[1.35fr_0.8fr_1fr_1.2fr] lg:gap-12">
+    <footer className="border-t-2 border-ink bg-paper pt-14 pb-24 lg:pb-12 text-ink">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        
+        {/* Trust Badges Bar */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pb-12 border-b-2 border-ink/10">
+          <div className="rounded-[20px] border-2 border-ink bg-white p-4 shadow-brutal-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full border-2 border-ink bg-seed-lime flex items-center justify-center shrink-0">
+              <Truck className="h-5 w-5 text-ink" />
+            </div>
+            <div>
+              <p className="font-heading font-extrabold text-xs uppercase tracking-wider text-ink">Dispatched in 24h</p>
+              <p className="text-[11px] text-muted-gray">Freshly packed in Lahore</p>
+            </div>
+          </div>
+
+          <div className="rounded-[20px] border-2 border-ink bg-white p-4 shadow-brutal-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full border-2 border-ink bg-tea-butter flex items-center justify-center shrink-0">
+              <ShieldCheck className="h-5 w-5 text-ink" />
+            </div>
+            <div>
+              <p className="font-heading font-extrabold text-xs uppercase tracking-wider text-ink">100% Pure & Raw</p>
+              <p className="text-[11px] text-muted-gray">No additives or fillers</p>
+            </div>
+          </div>
+
+          <div className="rounded-[20px] border-2 border-ink bg-white p-4 shadow-brutal-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full border-2 border-ink bg-pistachio-sage flex items-center justify-center shrink-0">
+              <RefreshCw className="h-5 w-5 text-ink" />
+            </div>
+            <div>
+              <p className="font-heading font-extrabold text-xs uppercase tracking-wider text-ink">Free Delivery 2,500+</p>
+              <p className="text-[11px] text-muted-gray">Nationwide COD across Pakistan</p>
+            </div>
+          </div>
+
+          <div className="rounded-[20px] border-2 border-ink bg-white p-4 shadow-brutal-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full border-2 border-ink bg-kit-coral flex items-center justify-center shrink-0">
+              <MessageCircle className="h-5 w-5 text-ink" />
+            </div>
+            <div>
+              <p className="font-heading font-extrabold text-xs uppercase tracking-wider text-ink">Helpline WhatsApp</p>
+              <p className="text-[11px] text-muted-gray">0371 9055758</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Links Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-12 border-b-2 border-ink/10">
           <div className="col-span-2 md:col-span-1">
-            <SeedlyLogo size="lg" textColor="text-cream" />
-            <p className="mt-5 max-w-xs text-sm leading-7 text-cream/75">
-              Raw pantry seeds and whole-flower teas, packed in Lahore for everyday use.
+            <SeedlyLogo size="lg" />
+            <p className="mt-4 max-w-xs text-xs sm:text-sm leading-relaxed text-muted-gray">
+              Clean raw pantry seeds and high-altitude whole blossom teas, packed fresh in Lahore and dispatched nationwide across Pakistan.
             </p>
-            <p className="mt-5 text-xs leading-6 text-cream/60">Lahore, Pakistan<br />Delivering nationwide.</p>
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-seed-lime px-3 py-1 text-[11px] font-bold uppercase tracking-wider shadow-brutal-sm">
+              <span>✦ Lahore, Pakistan</span>
+            </div>
           </div>
 
           <nav aria-label="Shop footer links">
-            <h2 className="mb-5 text-sm font-semibold text-cream">Shop</h2>
-            <ul className="space-y-3 text-sm leading-6 text-cream/75">
-              {shopLinks.map((link) => <li key={link.href}><Link href={link.href} className="transition-colors hover:text-white">{link.label}</Link></li>)}
+            <h3 className="mb-4 font-heading font-extrabold text-xs uppercase tracking-wider text-ink">
+              The Pantry
+            </h3>
+            <ul className="space-y-2 text-xs sm:text-sm font-medium">
+              {shopLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-ink/80 transition-colors hover:text-ink hover:underline">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
 
           <nav aria-label="Help footer links">
-            <h2 className="mb-5 text-sm font-semibold text-cream">Good to know</h2>
-            <ul className="space-y-3 text-sm leading-6 text-cream/75">
-              {helpLinks.map((link) => <li key={link.href}><Link href={link.href} className="transition-colors hover:text-white">{link.label}</Link></li>)}
+            <h3 className="mb-4 font-heading font-extrabold text-xs uppercase tracking-wider text-ink">
+              Good To Know
+            </h3>
+            <ul className="space-y-2 text-xs sm:text-sm font-medium">
+              {helpLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-ink/80 transition-colors hover:text-ink hover:underline">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
 
           <div className="col-span-2 md:col-span-1">
-            <h2 className="mb-5 text-sm font-semibold text-cream">Here to help</h2>
-            <p className="max-w-xs text-sm leading-6 text-cream/75">Questions about an order or choosing a product? Get in touch.</p>
-            <div className="mt-4 space-y-2 text-sm leading-6">
-              <a href={`tel:+${siteConfig.contact.phoneRaw}`} className="block w-fit text-cream/85 transition-colors hover:text-white">{siteConfig.contact.phoneInternational}</a>
-              <a href={`mailto:${siteConfig.contact.email}`} className="block w-fit text-cream/85 transition-colors hover:text-white">{siteConfig.contact.email}</a>
-              <a href={siteConfig.contact.whatsappUrl} target="_blank" rel="noopener noreferrer" className="inline-block pt-1 text-cream underline decoration-cream/40 underline-offset-4 transition-colors hover:decoration-cream">Chat on WhatsApp<span className="sr-only"> (opens in a new tab)</span></a>
+            <h3 className="mb-4 font-heading font-extrabold text-xs uppercase tracking-wider text-ink">
+              Direct Contact
+            </h3>
+            <div className="space-y-2 text-xs sm:text-sm">
+              <a
+                href={siteConfig.contact.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-brutal w-full justify-center gap-2 bg-seed-lime py-2 text-xs font-bold text-ink"
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span>WhatsApp 0371 9055758</span>
+              </a>
+              <p className="text-[11px] text-muted-gray pt-1">{siteConfig.contact.hours}</p>
             </div>
-            <p className="mt-4 text-xs leading-6 text-cream/60">{siteConfig.contact.hours}</p>
           </div>
         </div>
 
-        <div className="space-y-5 border-t border-cream/15 pt-7 text-xs leading-6 text-cream/60">
-          <div className="flex flex-col justify-between gap-4 lg:flex-row">
-            <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2">
-              <Link href="/privacy" className="transition-colors hover:text-white">Privacy policy</Link>
-              <Link href="/terms" className="transition-colors hover:text-white">Terms of service</Link>
-              <Link href="/product-disclaimer" className="transition-colors hover:text-white">Product disclaimer</Link>
-            </nav>
-            <p>JazzCash &nbsp;/&nbsp; Easypaisa &nbsp;/&nbsp; Bank transfer &nbsp;/&nbsp; Cash on delivery</p>
-          </div>
-          <p>&copy; {new Date().getFullYear()} Seedly Naturals Pakistan. All rights reserved.</p>
+        {/* Mandatory Dietary & Allergen Warning (Verbatim) */}
+        <div className="my-8 rounded-[20px] border-2 border-ink bg-white p-4 text-[11px] text-muted-gray leading-relaxed">
+          <p className="font-bold text-ink mb-1">Dietary Food Notice & Allergen Advisory:</p>
+          <p>
+            All products sold by Seedly are raw agricultural food staples and mountain botanicals for dietary consumption and culinary brewing only. They are not intended to diagnose, treat, cure, or prevent any medical condition. Packed in a facility that also handles tree nuts, sesame seeds, and cereal grains. If you have severe seed or nut allergies or are pregnant, consult your physician before dietary changes.
+          </p>
         </div>
+
+        {/* Bottom Legal & Payment Badges */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 text-xs text-muted-gray">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-ink">Accepted Payments:</span>
+            <span className="rounded-full border border-ink/40 bg-white px-2.5 py-0.5 text-[10px] font-bold text-ink">Cash on Delivery</span>
+            <span className="rounded-full border border-ink/40 bg-white px-2.5 py-0.5 text-[10px] font-bold text-ink">JazzCash</span>
+            <span className="rounded-full border border-ink/40 bg-white px-2.5 py-0.5 text-[10px] font-bold text-ink">EasyPaisa</span>
+            <span className="rounded-full border border-ink/40 bg-white px-2.5 py-0.5 text-[10px] font-bold text-ink">Bank Transfer</span>
+          </div>
+          <p className="text-[11px]">
+            &copy; {new Date().getFullYear()} Seedly Naturals Pakistan. Dispatched from Lahore.
+          </p>
+        </div>
+
       </div>
     </footer>
   );
 }
+
+export default Footer;

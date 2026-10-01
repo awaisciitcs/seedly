@@ -13,25 +13,30 @@
   }
 
   body {
-    background-color: #FAF8F5;
-    color: #1B1E1C;
+    background-color: #FFF9EE;
+    color: #14201A;
     font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, .font-serif {
+  h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-grotesk), var(--font-sans), sans-serif;
+    letter-spacing: -0.03em;
+  }
+
+  .font-serif {
     font-family: var(--font-serif), Georgia, serif;
   }
 
   ::selection {
-    background: #dbe5d9;
-    color: #1F382B;
+    background: #C8EB5A;
+    color: #14201A;
   }
 
   :focus-visible {
-    outline: 2px solid #3E5C48;
-    outline-offset: 4px;
+    outline: 2px solid #14201A;
+    outline-offset: 3px;
   }
 
   html {
@@ -41,19 +46,65 @@
 
 @layer components {
   .eyebrow {
-    @apply text-xs font-medium uppercase tracking-[0.16em] text-seedly-dark;
+    @apply text-xs font-bold uppercase tracking-[0.16em] text-ink;
   }
 
   .section-heading {
-    @apply font-serif text-3xl sm:text-4xl font-normal leading-tight tracking-[-0.025em] text-seedly-dark;
+    @apply font-sans font-bold text-3xl sm:text-4xl lg:text-5xl leading-tight tracking-[-0.03em] text-ink;
   }
 
   .button-primary {
-    @apply inline-flex min-h-12 items-center justify-center gap-3 rounded-sm bg-seedly-dark px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-seedly-forest;
+    @apply inline-flex min-h-12 items-center justify-center gap-3 rounded-full border-2 border-ink bg-seed-lime px-7 py-3 text-sm font-bold text-ink shadow-brutal transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-lg active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
+  }
+
+  .button-secondary {
+    @apply inline-flex min-h-12 items-center justify-center gap-3 rounded-full border-2 border-ink bg-white px-7 py-3 text-sm font-bold text-ink shadow-brutal transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-lg active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
   }
 
   .text-link {
-    @apply py-2 text-sm font-medium text-seedly-dark underline underline-offset-[6px] decoration-seedly-dark/30 transition-colors hover:decoration-seedly-dark;
+    @apply py-2 text-sm font-semibold text-ink underline underline-offset-[6px] decoration-ink/40 transition-colors hover:decoration-ink;
+  }
+
+  /* Neo-Brutalist Core Utilities */
+  .btn-brutal {
+    @apply inline-flex items-center justify-center font-bold rounded-full border-2 border-ink shadow-brutal transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-lg active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .card-brutal {
+    @apply rounded-[28px] border-2 border-ink shadow-brutal bg-white overflow-hidden transition-all duration-200;
+  }
+
+  .card-brutal-interactive {
+    @apply rounded-[28px] border-2 border-ink shadow-brutal bg-white overflow-hidden transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg;
+  }
+
+  .pill-brutal {
+    @apply rounded-full border-2 border-ink shadow-brutal-sm transition-all;
+  }
+}
+
+/* Marquee Ticker */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee-scroll 32s linear infinite;
+}
+
+.marquee-track:hover,
+.marquee-track:focus-within {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    overflow-x: auto;
   }
 }
 

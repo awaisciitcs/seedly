@@ -3,6 +3,7 @@ import { AnnouncementBar } from '../../components/storefront/AnnouncementBar';
 import { Navbar } from '../../components/storefront/Navbar';
 import { Footer } from '../../components/storefront/Footer';
 import { MobileBottomNav } from '../../components/storefront/MobileBottomNav';
+import { FloatingWhatsApp } from '../../components/storefront/FloatingWhatsApp';
 
 export default function StoreLayout({
   children,
@@ -16,6 +17,7 @@ export default function StoreLayout({
       <main id="main-content" className="flex-1 pb-16 lg:pb-0">{children}</main>
       <Footer />
       <MobileBottomNav />
+      <FloatingWhatsApp />
     </div>
   );
 }

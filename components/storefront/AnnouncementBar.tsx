@@ -1,124 +1,42 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { siteConfig } from '../../lib/config';
-
-interface Announcement {
-  id: string;
-  text: string;
-  href: string;
-}
-
-const announcements: Announcement[] = [
-  {
-    id: 'shipping',
-    text: `Free nationwide delivery across Pakistan on orders of Rs. ${siteConfig.shipping.freeThreshold.toLocaleString('en-PK')}+`,
-    href: '/shipping',
-  },
-  {
-    id: 'origin',
-    text: 'Raw pantry seeds & high-altitude herbal teas — clean, whole, & fresh-packed in Lahore',
-    href: '/shop',
-  },
-  {
-    id: 'support',
-    text: `Questions about seed routines? WhatsApp our helpline: ${siteConfig.contact.phone}`,
-    href: `${siteConfig.contact.whatsappUrl}?text=${encodeURIComponent('Hi Seedly, I have a question about your seed routines.')}`,
-  },
-];
 
 export function AnnouncementBar() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFading, setIsFading] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const goTo = (index: number) => {
-    setIsFading(true);
-    setTimeout(() => {
-      setCurrentIndex(index);
-      setIsFading(false);
-    }, 150);
-  };
-
-  const next = () => {
-    goTo((currentIndex + 1) % announcements.length);
-  };
-
-  const prev = () => {
-    goTo((currentIndex - 1 + announcements.length) % announcements.length);
-  };
-
-  useEffect(() => {
-    if (isPaused) return;
-
-    timerRef.current = setInterval(() => {
-      next();
-    }, 5000);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [currentIndex, isPaused]);
-
-  const current = announcements[currentIndex];
+  const tickerText = 'FREE NATIONWIDE DELIVERY ON RS. 2,500+ ✦ CASH ON DELIVERY ✦ JAZZCASH ✦ EASYPAISA ✦ QUESTIONS? WHATSAPP 0371 9055758 ✦';
 
   return (
     <aside
       aria-label="Store Announcements"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onFocus={() => setIsPaused(true)}
-      onBlur={() => setIsPaused(false)}
-      className="relative bg-seedly-dark text-cream px-3 py-2 text-center text-[11px] leading-5 tracking-wide sm:text-xs select-none"
+      className="relative bg-ink text-seed-lime py-2.5 overflow-hidden select-none border-b-2 border-ink z-50"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">
-        <button
-          type="button"
-          onClick={prev}
-          aria-label="Previous announcement"
-          className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-cream/70 hover:text-white focus:outline-none focus:ring-1 focus:ring-cream/50 transition-colors"
-        >
-          <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
-        </button>
-
-        <div className="flex-1 overflow-hidden px-1">
-          <Link
-            href={current.href}
-            className={`block truncate transition-opacity duration-150 hover:text-white ${
-              isFading ? 'opacity-0' : 'opacity-100'
-            }`}
-          >
-            {current.text}
-          </Link>
-        </div>
-
-        <button
-          type="button"
-          onClick={next}
-          aria-label="Next announcement"
-          className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-cream/70 hover:text-white focus:outline-none focus:ring-1 focus:ring-cream/50 transition-colors"
-        >
-          <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
-        </button>
+      <div className="sr-only">
+        Free nationwide delivery across Pakistan on orders of Rs. 2,500+. Cash on delivery, JazzCash, and EasyPaisa accepted. Questions? WhatsApp 0371 9055758.
       </div>
-
-      {/* Accessible dot indicators */}
-      <div className="flex justify-center items-center gap-1.5 pt-0.5" role="tablist" aria-label="Announcement slides">
-        {announcements.map((item, idx) => (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            aria-selected={idx === currentIndex}
-            aria-label={`Slide ${idx + 1}`}
-            onClick={() => goTo(idx)}
-            className={`h-1 rounded-full transition-all duration-200 ${
-              idx === currentIndex ? 'w-4 bg-white' : 'w-1 bg-white/30 hover:bg-white/60'
-            }`}
-          />
+      <div className="marquee-track flex whitespace-nowrap text-[11px] sm:text-xs font-bold tracking-[0.14em] uppercase" aria-hidden="true">
+        {Array.from({ length: 6 }).map((_, idx) => (
+          <span key={idx} className="flex items-center gap-6 px-4">
+            <Link href="/shipping" className="hover:underline transition-all">
+              FREE NATIONWIDE DELIVERY ON RS. 2,500+
+            </Link>
+            <span className="text-white/60">✦</span>
+            <span>CASH ON DELIVERY</span>
+            <span className="text-white/60">✦</span>
+            <span>JAZZCASH</span>
+            <span className="text-white/60">✦</span>
+            <span>EASYPAISA</span>
+            <span className="text-white/60">✦</span>
+            <a
+              href="https://wa.me/923719055758?text=Hi%20Seedly%2C%20I%20have%20a%20question%20about%20your%20products."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline transition-all"
+            >
+              QUESTIONS? WHATSAPP 0371 9055758
+            </a>
+            <span className="text-white/60">✦</span>
+          </span>
         ))}
       </div>
     </aside>
@@ -126,3 +44,4 @@ export function AnnouncementBar() {
 }
 
 export default AnnouncementBar;
+
