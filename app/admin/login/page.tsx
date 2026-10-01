@@ -15,10 +15,18 @@ function AdminLoginForm() {
   const [error, setError] = useState('');
 
   const rawRedirect = searchParams.get('redirectTo');
-  const redirectTarget =
-    rawRedirect && rawRedirect.startsWith('/admin') && !rawRedirect.startsWith('/admin/login')
-      ? rawRedirect
-      : '/admin';
+  const redirectTarget = (() => {
+    if (!rawRedirect) return '/admin';
+    if (
+      (rawRedirect === '/admin' || rawRedirect.startsWith('/admin/') || rawRedirect.startsWith('/admin?')) &&
+      !rawRedirect.startsWith('//') &&
+      !rawRedirect.startsWith('/\\') &&
+      !rawRedirect.startsWith('/admin/login')
+    ) {
+      return rawRedirect;
+    }
+    return '/admin';
+  })();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

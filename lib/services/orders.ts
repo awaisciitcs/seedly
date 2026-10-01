@@ -51,11 +51,17 @@ export async function validateAndQuote(
   }[] = [];
 
   for (const item of items) {
+    const rawQty = Math.floor(Number(item.quantity));
+    if (isNaN(rawQty) || rawQty < 1 || rawQty > 100) {
+      throw new Error('Invalid item quantity. Each item quantity must be between 1 and 100.');
+    }
+    const itemQty = rawQty;
+
     if (item.kit_id) {
       const kit = await getKitById(item.kit_id);
       if (!kit) continue;
 
-      if (kit.computed_stock < item.quantity) {
+      if (kit.computed_stock < itemQty) {
         throw new Error(
           kit.computed_stock <= 0
             ? `"${kit.name}" is currently out of stock.`
@@ -64,7 +70,7 @@ export async function validateAndQuote(
       }
 
       const unitPrice = kit.price_minor;
-      const lineTotal = unitPrice * item.quantity;
+      const lineTotal = unitPrice * itemQty;
       subtotal_minor += lineTotal;
 
       validatedItems.push({
@@ -72,7 +78,7 @@ export async function validateAndQuote(
         kit_id: kit.id,
         name: kit.name,
         sku: `KIT-${kit.slug.toUpperCase()}`,
-        quantity: item.quantity,
+        quantity: itemQty,
         unit_price_minor: unitPrice,
         line_total_minor: lineTotal,
         image_url: kit.image_url,
@@ -98,7 +104,7 @@ export async function validateAndQuote(
           .single();
 
         if (variant) {
-          if ((variant.inventory_quantity ?? 0) < item.quantity) {
+          if ((variant.inventory_quantity ?? 0) < itemQty) {
             throw new Error(
               (variant.inventory_quantity ?? 0) <= 0
                 ? `"${product.name} (${variant.option_value})" is currently out of stock.`
@@ -111,7 +117,7 @@ export async function validateAndQuote(
         }
       }
 
-      const lineTotal = unitPrice * item.quantity;
+      const lineTotal = unitPrice * itemQty;
       subtotal_minor += lineTotal;
 
       validatedItems.push({
@@ -119,7 +125,7 @@ export async function validateAndQuote(
         variant_id: item.variant_id,
         name: `${product.name}${variantLabel}`,
         sku: sku || 'SKU-ITEM',
-        quantity: item.quantity,
+        quantity: itemQty,
         unit_price_minor: unitPrice,
         line_total_minor: lineTotal,
         image_url: product.image_url || '/images/products/pumpkin-seeds.jpg',
@@ -398,10 +404,12 @@ export async function getOrders(options?: {
   }
 
   if (options?.search) {
-    const s = options.search;
-    query = query.or(
-      `order_number.ilike.%${s}%,customer_name.ilike.%${s}%,customer_email.ilike.%${s}%,customer_phone.ilike.%${s}%`
-    );
+    const s = options.search.replace(/[,()%"']/g, ' ').trim().slice(0, 80);
+    if (s) {
+      query = query.or(
+        `order_number.ilike.%${s}%,customer_name.ilike.%${s}%,customer_email.ilike.%${s}%,customer_phone.ilike.%${s}%`
+      );
+    }
   }
 
   query = query.order('created_at', { ascending: false });

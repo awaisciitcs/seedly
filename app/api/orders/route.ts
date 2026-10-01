@@ -61,6 +61,35 @@ export async function POST(request: Request) {
       );
     }
 
+    if (items.length > 50) {
+      return NextResponse.json(
+        { error: { message: 'Basket exceeds maximum allowed items (50).' } },
+        { status: 400 }
+      );
+    }
+
+    for (const item of items) {
+      if (!item || typeof item !== 'object') {
+        return NextResponse.json(
+          { error: { message: 'Invalid item in basket.' } },
+          { status: 400 }
+        );
+      }
+      if (!item.product_id && !item.kit_id) {
+        return NextResponse.json(
+          { error: { message: 'Item must have a valid product or kit identifier.' } },
+          { status: 400 }
+        );
+      }
+      const q = Number(item.quantity);
+      if (!Number.isInteger(q) || q < 1 || q > 99) {
+        return NextResponse.json(
+          { error: { message: 'Each item quantity must be an integer between 1 and 99.' } },
+          { status: 400 }
+        );
+      }
+    }
+
     if (!['COD', 'bank_transfer', 'wallet_aggregator'].includes(payment_method)) {
       return NextResponse.json({ error: { message: 'Please select a valid payment method.' } }, { status: 400 });
     }

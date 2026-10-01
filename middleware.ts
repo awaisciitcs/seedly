@@ -61,8 +61,10 @@ export async function middleware(request: NextRequest) {
       error: userError,
     } = await supabase.auth.getUser();
 
+    const lowerPath = pathname.toLowerCase();
+
     // Protect admin API routes with 401 JSON
-    if (pathname.startsWith('/api/admin')) {
+    if (lowerPath.startsWith('/api/admin')) {
       if (userError || !user) {
         return handleUnauthorized(request, pathname);
       }
@@ -70,8 +72,8 @@ export async function middleware(request: NextRequest) {
     }
 
     // Protect admin page routes
-    if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-      if (pathname === '/admin/login') {
+    if (lowerPath === '/admin' || lowerPath.startsWith('/admin/')) {
+      if (lowerPath === '/admin/login') {
         // If already logged in and visiting /admin/login, redirect to /admin dashboard
         if (user && !userError) {
           const redirectUrl = request.nextUrl.clone();

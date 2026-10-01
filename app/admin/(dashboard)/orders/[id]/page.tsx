@@ -116,12 +116,12 @@ export default function AdminOrderDetailPage() {
     setErrorMessage('');
 
     try {
-      const res = await fetch(`/api/admin/orders/${orderId}/fulfillment`, {
+      const res = await fetch(`/api/admin/orders/${orderId}/status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status,
-          tracking_courier: courier,
+          courier,
           tracking_number: trackingNumber,
         }),
       });
