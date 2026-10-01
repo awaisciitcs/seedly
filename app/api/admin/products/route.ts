@@ -42,9 +42,11 @@ export async function POST(request: Request) {
       image_url,
       badge,
       initial_stock,
+      variants,
     } = body;
 
-    if (!name || !price_pkr) {
+    const effectivePricePKR = price_pkr || (variants?.[0]?.price_pkr);
+    if (!name || (!effectivePricePKR && (!variants || variants.length === 0))) {
       return NextResponse.json({ error: { message: 'Product name and price are required' } }, { status: 400 });
     }
 
@@ -63,9 +65,6 @@ export async function POST(request: Request) {
     }
     const sku = `SED-${slug.slice(0, 8).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
 
-    const price_minor = Math.round(Number(price_pkr) * 100);
-    const compare_price_minor = compare_price_pkr ? Math.round(Number(compare_price_pkr) * 100) : null;
-    
     // Resolve category and product type
     let finalCatId = category_id;
     let finalType = product_type;
@@ -74,6 +73,38 @@ export async function POST(request: Request) {
     }
     if (!finalType) {
       finalType = finalCatId === 'cat-teas' ? 'tea' : 'seed';
+    }
+
+    // Determine primary pricing and weight
+    let primaryPriceMinor = price_pkr ? Math.round(Number(price_pkr) * 100) : 0;
+    let primaryComparePriceMinor = compare_price_pkr ? Math.round(Number(compare_price_pkr) * 100) : null;
+    let primaryWeightGrams = Number(weight_grams) || 250;
+
+    let processedVariants: Array<{
+      weight_grams: number;
+      price_pkr: number;
+      compare_price_pkr?: number | null;
+      inventory_quantity: number;
+    }> = [];
+
+    if (variants && Array.isArray(variants) && variants.length > 0) {
+      // Sort variants ascending by weight
+      processedVariants = [...variants]
+        .map((v) => ({
+          weight_grams: Number(v.weight_grams) || 250,
+          price_pkr: Number(v.price_pkr) || 0,
+          compare_price_pkr: v.compare_price_pkr ? Number(v.compare_price_pkr) : null,
+          inventory_quantity: Number(v.inventory_quantity ?? 50),
+        }))
+        .sort((a, b) => a.weight_grams - b.weight_grams);
+
+      if (processedVariants.length > 0) {
+        primaryPriceMinor = Math.round(processedVariants[0].price_pkr * 100);
+        primaryComparePriceMinor = processedVariants[0].compare_price_pkr
+          ? Math.round(processedVariants[0].compare_price_pkr * 100)
+          : null;
+        primaryWeightGrams = processedVariants[0].weight_grams;
+      }
     }
 
     const newProduct = {
@@ -86,10 +117,10 @@ export async function POST(request: Request) {
       status: 'ACTIVE',
       short_description: short_description || '',
       description: description || '',
-      price_minor,
-      compare_price_minor,
+      price_minor: primaryPriceMinor,
+      compare_price_minor: primaryComparePriceMinor,
       currency: 'PKR',
-      weight_grams: Number(weight_grams) || 250,
+      weight_grams: primaryWeightGrams,
       ingredients: ingredients || '',
       usage_instructions: usage_instructions || '',
       storage_instructions: storage_instructions || '',
@@ -113,28 +144,59 @@ export async function POST(request: Request) {
       throw new Error(`Failed to create product: ${prodErr.message}`);
     }
 
-    // Create default variant
-    const variantId = `var-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const stockQty = Number(initial_stock) || 50;
+    // Insert variants
+    if (processedVariants.length > 0) {
+      const variantRows = processedVariants.map((v, idx) => {
+        const vWeight = v.weight_grams;
+        const vPriceMinor = Math.round(v.price_pkr * 100);
+        const vCompareMinor = v.compare_price_pkr ? Math.round(v.compare_price_pkr * 100) : null;
+        const vLabel = vWeight >= 1000 && vWeight % 1000 === 0 ? `${vWeight / 1000}kg` : `${vWeight}g`;
+        return {
+          id: `var-${Date.now()}-${idx}-${Math.floor(Math.random() * 1000)}`,
+          product_id: id,
+          sku: `${sku}-${vWeight}G`,
+          option_name: 'Pack Size',
+          option_value: vLabel,
+          price_minor: vPriceMinor,
+          compare_price_minor: vCompareMinor,
+          weight_grams: vWeight,
+          inventory_quantity: v.inventory_quantity,
+          sort_order: idx,
+          status: 'ACTIVE',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+      });
 
-    const newVariant = {
-      id: variantId,
-      product_id: id,
-      sku,
-      option_name: 'Pack Size',
-      option_value: `${weight_grams || 250}g`,
-      price_minor,
-      compare_price_minor,
-      weight_grams: Number(weight_grams) || 250,
-      inventory_quantity: stockQty,
-      status: 'ACTIVE',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+      const { error: varErr } = await supabase.from('product_variants').insert(variantRows);
+      if (varErr) {
+        throw new Error(`Failed to create product variants: ${varErr.message}`);
+      }
+    } else {
+      // Fallback single default variant
+      const variantId = `var-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const stockQty = Number(initial_stock) || 50;
 
-    const { error: varErr } = await supabase.from('product_variants').insert([newVariant]);
-    if (varErr) {
-      throw new Error(`Failed to create default variant: ${varErr.message}`);
+      const newVariant = {
+        id: variantId,
+        product_id: id,
+        sku,
+        option_name: 'Pack Size',
+        option_value: `${weight_grams || 250}g`,
+        price_minor: primaryPriceMinor,
+        compare_price_minor: primaryComparePriceMinor,
+        weight_grams: primaryWeightGrams,
+        inventory_quantity: stockQty,
+        sort_order: 0,
+        status: 'ACTIVE',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error: varErr } = await supabase.from('product_variants').insert([newVariant]);
+      if (varErr) {
+        throw new Error(`Failed to create default variant: ${varErr.message}`);
+      }
     }
 
     return NextResponse.json({ success: true, data: { id, slug, sku } });
@@ -175,9 +237,11 @@ export async function PATCH(request: Request) {
       variant_id,
       inventory_quantity,
       status,
+      variants,
     } = body;
     const supabase = await getScopedClient();
 
+    // Quick single-variant stock update
     if (variant_id && inventory_quantity !== undefined) {
       const { data: currentVar } = await supabase
         .from('product_variants')
@@ -255,6 +319,142 @@ export async function PATCH(request: Request) {
         updates.category_id = product_type === 'tea' ? 'cat-teas' : 'cat-seeds';
       }
 
+      // Handle multi-variant array synchronization if provided
+      if (variants && Array.isArray(variants) && variants.length > 0) {
+        const { data: existingVariants } = await supabase
+          .from('product_variants')
+          .select('*')
+          .eq('product_id', id);
+
+        const existingList = existingVariants || [];
+
+        const sortedIncoming = [...variants]
+          .map((v) => ({
+            id: v.id,
+            weight_grams: Number(v.weight_grams) || 250,
+            price_pkr: Number(v.price_pkr) || 0,
+            compare_price_pkr: v.compare_price_pkr ? Number(v.compare_price_pkr) : null,
+            inventory_quantity: Number(v.inventory_quantity ?? 0),
+            status: v.status || 'ACTIVE',
+          }))
+          .sort((a, b) => a.weight_grams - b.weight_grams);
+
+        // Identify removed variants
+        const incomingIds = new Set(sortedIncoming.filter((v) => v.id).map((v) => v.id));
+        const removedVariants = existingList.filter((v) => !incomingIds.has(v.id));
+
+        for (const remVar of removedVariants) {
+          // Check order_items & kit_items
+          const { data: orderItemRefs } = await supabase
+            .from('order_items')
+            .select('id')
+            .eq('variant_id', remVar.id)
+            .limit(1);
+
+          const { data: kitItemRefs } = await supabase
+            .from('kit_items')
+            .select('id')
+            .or(`variant_id.eq.${remVar.id},product_variant_id.eq.${remVar.id}`)
+            .limit(1);
+
+          if ((orderItemRefs && orderItemRefs.length > 0) || (kitItemRefs && kitItemRefs.length > 0)) {
+            // Keep record to prevent FK violation, deactivate so it doesn't show in shop
+            await supabase
+              .from('product_variants')
+              .update({ status: 'INACTIVE', updated_at: new Date().toISOString() })
+              .eq('id', remVar.id);
+          } else {
+            await supabase.from('product_variants').delete().eq('id', remVar.id);
+          }
+        }
+
+        // Fetch product SKU for new variants
+        const { data: currentProdData } = await supabase
+          .from('products')
+          .select('sku')
+          .eq('id', id)
+          .maybeSingle();
+        const prodSku = currentProdData?.sku || `SED-${id.slice(-6).toUpperCase()}`;
+
+        // Upsert incoming variants
+        for (let idx = 0; idx < sortedIncoming.length; idx++) {
+          const v = sortedIncoming[idx];
+          const vPriceMinor = Math.round(v.price_pkr * 100);
+          const vCompPriceMinor = v.compare_price_pkr ? Math.round(v.compare_price_pkr * 100) : null;
+          const vLabel =
+            v.weight_grams >= 1000 && v.weight_grams % 1000 === 0
+              ? `${v.weight_grams / 1000}kg`
+              : `${v.weight_grams}g`;
+
+          if (v.id) {
+            const existingVar = existingList.find((ex) => ex.id === v.id);
+            const oldQty = existingVar?.inventory_quantity ?? 0;
+            const newQty = v.inventory_quantity;
+
+            await supabase
+              .from('product_variants')
+              .update({
+                weight_grams: v.weight_grams,
+                price_minor: vPriceMinor,
+                compare_price_minor: vCompPriceMinor,
+                inventory_quantity: newQty,
+                option_value: vLabel,
+                status: v.status,
+                sort_order: idx,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', v.id);
+
+            if (oldQty <= 0 && newQty > 0) {
+              await handleAvailabilityTransition({
+                variantId: v.id,
+                oldQuantity: oldQty,
+                newQuantity: newQty,
+              });
+            }
+          } else {
+            const newVariantId = `var-${Date.now()}-${idx}-${Math.floor(Math.random() * 1000)}`;
+            const newVarSku = `${prodSku}-${v.weight_grams}G`;
+
+            await supabase.from('product_variants').insert([
+              {
+                id: newVariantId,
+                product_id: id,
+                sku: newVarSku,
+                option_name: 'Pack Size',
+                option_value: vLabel,
+                price_minor: vPriceMinor,
+                compare_price_minor: vCompPriceMinor,
+                weight_grams: v.weight_grams,
+                inventory_quantity: v.inventory_quantity,
+                status: v.status,
+                sort_order: idx,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              },
+            ]);
+
+            if (v.inventory_quantity > 0) {
+              await handleAvailabilityTransition({
+                variantId: newVariantId,
+                oldQuantity: 0,
+                newQuantity: v.inventory_quantity,
+              });
+            }
+          }
+        }
+
+        // Align base product pricing & weight with primary active variant
+        const primaryActive = sortedIncoming.find((v) => v.status !== 'INACTIVE') || sortedIncoming[0];
+        if (primaryActive) {
+          updates.price_minor = Math.round(primaryActive.price_pkr * 100);
+          updates.compare_price_minor = primaryActive.compare_price_pkr
+            ? Math.round(primaryActive.compare_price_pkr * 100)
+            : null;
+          updates.weight_grams = primaryActive.weight_grams;
+        }
+      }
+
       const { error: prodUpdateErr } = await supabase
         .from('products')
         .update(updates as any)
@@ -264,8 +464,8 @@ export async function PATCH(request: Request) {
         throw new Error(`Failed to update product: ${prodUpdateErr.message}`);
       }
 
-      // Keep default variant aligned if price or weight updated
-      if (computedPriceMinor !== undefined || weight_grams !== undefined) {
+      // Legacy fallback: Keep single variant aligned if price or weight updated without variants array
+      if (!variants && (computedPriceMinor !== undefined || weight_grams !== undefined)) {
         const variantUpdates: Record<string, any> = { updated_at: new Date().toISOString() };
         if (computedPriceMinor !== undefined) variantUpdates.price_minor = computedPriceMinor;
         if (computedComparePriceMinor !== undefined) variantUpdates.compare_price_minor = computedComparePriceMinor;

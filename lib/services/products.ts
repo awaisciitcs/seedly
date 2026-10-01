@@ -10,9 +10,9 @@ function sortVariants(variants: any[]): ProductVariant[] {
   });
 }
 
-function mapRowToProduct(row: any, reviewStats?: { count: number; avg_rating: number }): Product {
+function mapRowToProduct(row: any, reviewStats?: { count: number; avg_rating: number }, includeAllVariants?: boolean): Product {
   const rawVariants = (row.product_variants || []).filter(
-    (v: any) => v.status === 'ACTIVE' || row.status !== 'ACTIVE'
+    (v: any) => includeAllVariants || v.status === 'ACTIVE' || row.status !== 'ACTIVE'
   );
   const variants = sortVariants(rawVariants);
 
@@ -156,7 +156,7 @@ export async function getProducts(options?: {
   return rows.map((row) => {
     const st = statsMap[row.id];
     const reviewStats = st && st.count > 0 ? { count: st.count, avg_rating: st.sum / st.count } : undefined;
-    return mapRowToProduct(row, reviewStats);
+    return mapRowToProduct(row, reviewStats, options?.status === '');
   });
 }
 

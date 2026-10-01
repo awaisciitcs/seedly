@@ -336,8 +336,23 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             {/* Pack Size / Variant Selector */}
             {activeVariants.length > 1 && (
               <fieldset className="space-y-3 pt-2">
-                <legend className="text-sm font-medium text-charcoal">Pack size</legend>
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="flex items-center justify-between">
+                  <legend className="text-sm font-semibold text-charcoal">Select Pack Size (Weight)</legend>
+                  {selectedVariant && (
+                    <span className="text-xs font-mono text-seedly-dark font-medium">
+                      Selected: {selectedVariant.option_value} ({formatPKR(selectedVariant.price_minor)})
+                    </span>
+                  )}
+                </div>
+                <div
+                  className={`grid gap-2 sm:gap-3 ${
+                    activeVariants.length === 2
+                      ? 'grid-cols-2'
+                      : activeVariants.length === 4
+                      ? 'grid-cols-2 sm:grid-cols-4'
+                      : 'grid-cols-2 sm:grid-cols-3'
+                  }`}
+                >
                   {activeVariants.map((v) => {
                     const isSelected = selectedVariant?.id === v.id;
                     const vInStock = (v.inventory_quantity ?? 0) > 0;
@@ -347,17 +362,23 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                         type="button"
                         onClick={() => { setSelectedVariant(v); setQuantity(1); }}
                         aria-pressed={isSelected}
-                        className={`relative flex min-h-[84px] flex-col items-start justify-center gap-1 rounded-xl border px-3 py-3 text-left transition-[background-color,border-color,box-shadow] duration-200 sm:px-4 ${
+                        className={`relative flex min-h-[84px] flex-col items-start justify-center gap-1 rounded-2xl border px-3.5 py-3 text-left transition-all duration-200 sm:px-4 cursor-pointer ${
                           isSelected
-                            ? 'border-seedly-dark bg-seedly-light/60 text-seedly-dark ring-1 ring-seedly-dark'
+                            ? 'border-seedly-dark bg-seedly-light/70 text-seedly-dark ring-2 ring-seedly-dark shadow-sm'
                             : 'border-border-gray bg-white text-charcoal hover:border-seedly-primary hover:bg-seedly-light/30'
                         }`}
                       >
-                        <span className="text-sm font-semibold">{v.option_value}</span>
-                        <span className="text-xs text-muted-gray sm:text-sm">{formatPKR(v.price_minor)}</span>
-                        {isSelected && <CheckCircle2 className="absolute right-2 top-2 h-3.5 w-3.5 text-seedly-dark motion-pop" aria-hidden="true" />}
+                        <span className="text-sm font-bold tracking-tight">{v.option_value}</span>
+                        <span className={`text-xs font-mono font-semibold sm:text-sm ${isSelected ? 'text-seedly-dark' : 'text-muted-gray'}`}>
+                          {formatPKR(v.price_minor)}
+                        </span>
+                        {isSelected && (
+                          <CheckCircle2 className="absolute right-2.5 top-2.5 h-4 w-4 text-seedly-dark motion-pop" aria-hidden="true" />
+                        )}
                         {!vInStock && (
-                          <span className="text-xs text-amber-800">Sold out</span>
+                          <span className="text-[11px] font-medium text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.2 rounded-md">
+                            Sold out
+                          </span>
                         )}
                       </button>
                     );

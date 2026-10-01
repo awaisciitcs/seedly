@@ -31,6 +31,15 @@ interface CategoryItem {
   type: string;
 }
 
+interface VariantFormRow {
+  id?: string;
+  weight_grams: number | string;
+  price_pkr: number | string;
+  compare_price_pkr: number | string;
+  inventory_quantity: number | string;
+  status?: 'ACTIVE' | 'INACTIVE';
+}
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
@@ -50,10 +59,9 @@ export default function AdminProductsPage() {
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState('cat-seeds');
   const [productType, setProductType] = useState<'seed' | 'tea'>('seed');
-  const [pricePKR, setPricePKR] = useState('');
-  const [comparePricePKR, setComparePricePKR] = useState('');
-  const [weightGrams, setWeightGrams] = useState('250');
-  const [initialStock, setInitialStock] = useState('50');
+  const [addVariants, setAddVariants] = useState<VariantFormRow[]>([
+    { weight_grams: 250, price_pkr: '', compare_price_pkr: '', inventory_quantity: 50, status: 'ACTIVE' },
+  ]);
   const [shortDesc, setShortDesc] = useState('');
   const [description, setDescription] = useState('');
   const [ingredients, setIngredients] = useState('');
@@ -108,27 +116,101 @@ export default function AdminProductsPage() {
     }
   };
 
+  // Variant Helpers for Add Modal
+  const handleAddPresetAddVariant = (grams: number) => {
+    setAddVariants((prev) => [
+      ...prev,
+      { weight_grams: grams, price_pkr: '', compare_price_pkr: '', inventory_quantity: 50, status: 'ACTIVE' },
+    ]);
+  };
+
+  const handleUpdateAddVariant = (idx: number, field: keyof VariantFormRow, val: any) => {
+    setAddVariants((prev) => prev.map((row, i) => (i === idx ? { ...row, [field]: val } : row)));
+  };
+
+  const handleRemoveAddVariant = (idx: number) => {
+    if (addVariants.length <= 1) return;
+    setAddVariants((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  // Variant Helpers for Edit Modal
+  const handleAddPresetEditVariant = (grams: number) => {
+    if (!editingProduct) return;
+    const currentVars = editingProduct.variants || [];
+    setEditingProduct({
+      ...editingProduct,
+      variants: [
+        ...currentVars,
+        { weight_grams: grams, price_pkr: '', compare_price_pkr: '', inventory_quantity: 50, status: 'ACTIVE' },
+      ],
+    });
+  };
+
+  const handleUpdateEditVariant = (idx: number, field: keyof VariantFormRow, val: any) => {
+    if (!editingProduct) return;
+    const updated = (editingProduct.variants || []).map((row: VariantFormRow, i: number) =>
+      i === idx ? { ...row, [field]: val } : row
+    );
+    setEditingProduct({
+      ...editingProduct,
+      variants: updated,
+    });
+  };
+
+  const handleRemoveEditVariant = (idx: number) => {
+    if (!editingProduct || (editingProduct.variants || []).length <= 1) return;
+    const updated = (editingProduct.variants || []).filter((_: any, i: number) => i !== idx);
+    setEditingProduct({
+      ...editingProduct,
+      variants: updated,
+    });
+  };
+
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
 
-    if (!name || !pricePKR) {
-      setErrorMsg('Product name and price are required.');
+    if (!name.trim()) {
+      setErrorMsg('Product title is required.');
       return;
     }
+
+    if (!addVariants || addVariants.length === 0) {
+      setErrorMsg('At least one pack size / gram variant is required.');
+      return;
+    }
+
+    for (let i = 0; i < addVariants.length; i++) {
+      const v = addVariants[i];
+      if (!v.weight_grams || Number(v.weight_grams) <= 0) {
+        setErrorMsg(`Pack size #${i + 1} has an invalid weight in grams.`);
+        return;
+      }
+      if (!v.price_pkr || Number(v.price_pkr) <= 0) {
+        setErrorMsg(`Pack size #${i + 1} (${v.weight_grams}g) must have a valid price in PKR.`);
+        return;
+      }
+    }
+
+    const primaryVar = addVariants[0];
 
     try {
       const res = await fetch('/api/admin/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
+          name: name.trim(),
           category_id: categoryId,
           product_type: productType,
-          price_pkr: Number(pricePKR),
-          compare_price_pkr: comparePricePKR ? Number(comparePricePKR) : null,
-          weight_grams: Number(weightGrams),
-          initial_stock: Number(initialStock),
+          price_pkr: Number(primaryVar.price_pkr),
+          compare_price_pkr: primaryVar.compare_price_pkr ? Number(primaryVar.compare_price_pkr) : null,
+          weight_grams: Number(primaryVar.weight_grams),
+          variants: addVariants.map((v) => ({
+            weight_grams: Number(v.weight_grams),
+            price_pkr: Number(v.price_pkr),
+            compare_price_pkr: v.compare_price_pkr ? Number(v.compare_price_pkr) : null,
+            inventory_quantity: Number(v.inventory_quantity ?? 50),
+          })),
           short_description: shortDesc,
           description,
           ingredients,
@@ -138,7 +220,11 @@ export default function AdminProductsPage() {
           caffeine_level: productType === 'tea' ? caffeineLevel || null : null,
           steep_time: productType === 'tea' ? steepTime || null : null,
           water_temp: productType === 'tea' ? waterTemp || null : null,
-          image_url: imageUrl || (productType === 'tea' ? '/images/products/chamomile-tea.svg' : '/images/products/pumpkin-seeds.svg'),
+          image_url:
+            imageUrl ||
+            (productType === 'tea'
+              ? '/images/products/chamomile-tea.svg'
+              : '/images/products/pumpkin-seeds.svg'),
           badge: badge || null,
         }),
       });
@@ -146,12 +232,13 @@ export default function AdminProductsPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message || 'Failed to create product');
 
-      setSuccessMsg(`Product "${name}" added to catalog successfully!`);
+      setSuccessMsg(`Product "${name}" added with ${addVariants.length} pack size(s) successfully!`);
       setIsAddModalOpen(false);
       // Reset form
       setName('');
-      setPricePKR('');
-      setComparePricePKR('');
+      setAddVariants([
+        { weight_grams: 250, price_pkr: '', compare_price_pkr: '', inventory_quantity: 50, status: 'ACTIVE' },
+      ]);
       setShortDesc('');
       setDescription('');
       setIngredients('');
@@ -198,6 +285,27 @@ export default function AdminProductsPage() {
   const handleUpdateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
+    setErrorMsg('');
+
+    const editVariants: VariantFormRow[] = editingProduct.variants || [];
+    if (editVariants.length === 0) {
+      setErrorMsg('At least one pack size / gram variant is required.');
+      return;
+    }
+
+    for (let i = 0; i < editVariants.length; i++) {
+      const v = editVariants[i];
+      if (!v.weight_grams || Number(v.weight_grams) <= 0) {
+        setErrorMsg(`Pack size #${i + 1} has an invalid weight in grams.`);
+        return;
+      }
+      if (!v.price_pkr || Number(v.price_pkr) <= 0) {
+        setErrorMsg(`Pack size #${i + 1} (${v.weight_grams}g) must have a valid price in PKR.`);
+        return;
+      }
+    }
+
+    const activeVar = editVariants.find((v) => v.status !== 'INACTIVE') || editVariants[0];
 
     try {
       const res = await fetch('/api/admin/products', {
@@ -208,9 +316,17 @@ export default function AdminProductsPage() {
           name: editingProduct.name,
           category_id: editingProduct.category_id,
           product_type: editingProduct.category_id === 'cat-teas' ? 'tea' : 'seed',
-          price_pkr: editingProduct.price_pkr,
-          compare_price_pkr: editingProduct.compare_price_pkr,
-          weight_grams: editingProduct.weight_grams,
+          price_pkr: Number(activeVar.price_pkr),
+          compare_price_pkr: activeVar.compare_price_pkr ? Number(activeVar.compare_price_pkr) : null,
+          weight_grams: Number(activeVar.weight_grams),
+          variants: editVariants.map((v) => ({
+            id: v.id,
+            weight_grams: Number(v.weight_grams),
+            price_pkr: Number(v.price_pkr),
+            compare_price_pkr: v.compare_price_pkr ? Number(v.compare_price_pkr) : null,
+            inventory_quantity: Number(v.inventory_quantity ?? 0),
+            status: v.status || 'ACTIVE',
+          })),
           short_description: editingProduct.short_description,
           description: editingProduct.description,
           ingredients: editingProduct.ingredients,
@@ -227,7 +343,7 @@ export default function AdminProductsPage() {
       });
 
       if (res.ok) {
-        setSuccessMsg(`Product "${editingProduct.name}" updated successfully!`);
+        setSuccessMsg(`Product "${editingProduct.name}" and variants updated successfully!`);
         setEditingProduct(null);
         fetchProducts();
         setTimeout(() => setSuccessMsg(''), 3000);
@@ -478,35 +594,66 @@ export default function AdminProductsPage() {
 
                       {/* PRICE */}
                       <td className="py-4 px-4 font-mono font-bold text-white whitespace-nowrap">
-                        {formatPKR(p.price_minor)}
-                        {p.compare_price_minor && (
-                          <span className="text-[10px] text-botanical-sage line-through block font-normal">
-                            {formatPKR(p.compare_price_minor)}
-                          </span>
-                        )}
+                        {(() => {
+                          const activeVars = (p.variants || []).filter((v: any) => v.status === 'ACTIVE');
+                          if (activeVars.length > 1) {
+                            const prices = activeVars
+                              .map((v: any) => Number(v.price_minor) || 0)
+                              .filter((pr: number) => pr > 0);
+                            const minP = Math.min(...prices);
+                            const maxP = Math.max(...prices);
+                            if (minP !== maxP && Number.isFinite(minP) && Number.isFinite(maxP)) {
+                              return (
+                                <div>
+                                  <span className="text-white text-xs">{formatPKR(minP)} – {formatPKR(maxP)}</span>
+                                  <span className="text-[10px] text-lime block font-normal font-sans mt-0.5">
+                                    {activeVars.length} pack sizes
+                                  </span>
+                                </div>
+                              );
+                            }
+                          }
+                          return (
+                            <div>
+                              <span>{formatPKR(p.price_minor)}</span>
+                              {p.compare_price_minor && (
+                                <span className="text-[10px] text-botanical-sage line-through block font-normal">
+                                  {formatPKR(p.compare_price_minor)}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </td>
 
                       {/* VARIANTS & WAREHOUSE STOCK */}
                       <td className="py-4 px-4">
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-1.5 max-w-sm">
                           {p.variants?.map((v: any) => (
-                            <div key={v.id} className="flex items-center gap-1.5 whitespace-nowrap">
-                              <span className="text-botanical-sage text-[11px]">{v.option_value}:</span>
+                            <div
+                              key={v.id}
+                              className="flex items-center gap-1.5 whitespace-nowrap bg-white/[0.04] border border-white/10 px-2 py-1 rounded-xl text-[11px]"
+                            >
+                              <span className="text-white font-semibold">{v.option_value}</span>
+                              <span className="text-lime/90 font-mono text-[10px]">
+                                ({formatPKR(v.price_minor)})
+                              </span>
                               <span
-                                className={`font-mono font-bold px-2 py-0.5 rounded-full text-[10px] border ${
+                                className={`font-mono font-bold px-1.5 py-0.2 rounded-md text-[9px] border ${
                                   v.inventory_quantity > 20
-                                    ? 'bg-emerald-400/15 text-emerald-300 border-emerald-500/30 shadow-[0_0_6px_rgba(34,197,94,0.15)]'
-                                    : 'bg-rose-950/70 text-rose-300 border-rose-500/30 shadow-[0_0_6px_rgba(244,63,94,0.15)]'
+                                    ? 'bg-emerald-400/15 text-emerald-300 border-emerald-500/30'
+                                    : 'bg-rose-950/70 text-rose-300 border-rose-500/30'
                                 }`}
                               >
-                                {v.inventory_quantity} units
+                                {v.inventory_quantity}u
                               </span>
                               <button
                                 onClick={() => {
                                   setEditingVariant(v);
                                   setNewStock(v.inventory_quantity);
                                 }}
-                                className="text-[11px] text-lime/90 hover:text-lime underline cursor-pointer"
+                                className="text-[10px] text-botanical-sage hover:text-white underline cursor-pointer ml-0.5"
+                                title={`Adjust stock for ${v.option_value}`}
                               >
                                 Adjust
                               </button>
@@ -542,21 +689,49 @@ export default function AdminProductsPage() {
                       {/* ACTIONS */}
                       <td className="py-4 px-4 text-right whitespace-nowrap space-x-2">
                         <button
-                          onClick={() =>
+                          onClick={() => {
+                            const prodVariants: VariantFormRow[] =
+                              p.variants && p.variants.length > 0
+                                ? p.variants.map((v: any) => ({
+                                    id: v.id,
+                                    weight_grams: v.weight_grams || 250,
+                                    price_pkr: minorToPKR(v.price_minor),
+                                    compare_price_pkr: v.compare_price_minor
+                                      ? minorToPKR(v.compare_price_minor)
+                                      : '',
+                                    inventory_quantity: v.inventory_quantity ?? 0,
+                                    status: v.status || 'ACTIVE',
+                                  }))
+                                : [
+                                    {
+                                      weight_grams: p.weight_grams || 250,
+                                      price_pkr: minorToPKR(p.price_minor),
+                                      compare_price_pkr: p.compare_price_minor
+                                        ? minorToPKR(p.compare_price_minor)
+                                        : '',
+                                      inventory_quantity: 50,
+                                      status: 'ACTIVE',
+                                    },
+                                  ];
+
                             setEditingProduct({
                               ...p,
                               price_pkr: minorToPKR(p.price_minor),
-                              compare_price_pkr: p.compare_price_minor ? minorToPKR(p.compare_price_minor) : '',
+                              compare_price_pkr: p.compare_price_minor
+                                ? minorToPKR(p.compare_price_minor)
+                                : '',
                               weight_grams: p.weight_grams || 250,
-                              category_id: p.category_id || (p.product_type === 'tea' ? 'cat-teas' : 'cat-seeds'),
+                              variants: prodVariants,
+                              category_id:
+                                p.category_id || (p.product_type === 'tea' ? 'cat-teas' : 'cat-seeds'),
                               usage_instructions: p.usage_instructions || '',
                               storage_instructions: p.storage_instructions || '',
                               flavor_profile: p.flavor_profile || '',
                               caffeine_level: p.caffeine_level || '',
                               steep_time: p.steep_time || '',
                               water_temp: p.water_temp || '',
-                            })
-                          }
+                            });
+                          }}
                           className="glass-btn-3d px-3 py-1.5 rounded-xl font-semibold text-xs cursor-pointer"
                         >
                           Edit
@@ -696,50 +871,156 @@ export default function AdminProductsPage() {
                   </Link>
                 </div>
 
-                <div>
-                  <label className="block font-semibold text-white/90 mb-1">Price in PKR (Rs.) *</label>
-                  <input
-                    type="number"
-                    required
-                    min="1"
-                    placeholder="e.g. 950"
-                    value={pricePKR}
-                    onChange={(e) => setPricePKR(e.target.value)}
-                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-bold font-mono"
-                  />
-                </div>
+                {/* Pack Sizes, Grams & Pricing Section */}
+                <div className="sm:col-span-2 p-4 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-lime text-xs uppercase tracking-wider">
+                          Pack Sizes, Grams &amp; Pricing *
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/10 text-white">
+                          {addVariants.length} {addVariants.length === 1 ? 'Size' : 'Sizes'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-botanical-sage mt-0.5">
+                        Set weight and prices for each option. Storefront customers select grams and the price updates dynamically.
+                      </p>
+                    </div>
 
-                <div>
-                  <label className="block font-semibold text-white/90 mb-1">Compare-At Price (Rs.)</label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 1100"
-                    value={comparePricePKR}
-                    onChange={(e) => setComparePricePKR(e.target.value)}
-                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-mono"
-                  />
-                </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] text-botanical-sage uppercase font-semibold">Quick add:</span>
+                      <button
+                        type="button"
+                        onClick={() => handleAddPresetAddVariant(250)}
+                        className="px-2 py-1 rounded-lg text-[10px] font-mono font-medium glass-btn-3d hover:text-white"
+                      >
+                        + 250g
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAddPresetAddVariant(500)}
+                        className="px-2 py-1 rounded-lg text-[10px] font-mono font-medium glass-btn-3d hover:text-white"
+                      >
+                        + 500g
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAddPresetAddVariant(1000)}
+                        className="px-2 py-1 rounded-lg text-[10px] font-mono font-medium glass-btn-3d hover:text-white"
+                      >
+                        + 1kg
+                      </button>
+                    </div>
+                  </div>
 
-                <div>
-                  <label className="block font-semibold text-white/90 mb-1">Pack Size / Weight (Grams)</label>
-                  <input
-                    type="number"
-                    placeholder="250"
-                    value={weightGrams}
-                    onChange={(e) => setWeightGrams(e.target.value)}
-                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
-                  />
-                </div>
+                  <div className="space-y-2.5">
+                    {addVariants.map((v, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 rounded-xl bg-black/35 border border-white/10 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center"
+                      >
+                        {/* Gram weight */}
+                        <div className="sm:col-span-3">
+                          <label className="block text-[10px] font-semibold text-botanical-sage mb-0.5">
+                            Weight (Grams) *
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min="1"
+                              step="10"
+                              required
+                              value={v.weight_grams}
+                              onChange={(e) => handleUpdateAddVariant(idx, 'weight_grams', e.target.value)}
+                              placeholder="250"
+                              className="glass-input-3d w-full pl-3 pr-7 py-1.5 rounded-lg text-xs font-mono font-bold"
+                            />
+                            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-botanical-sage pointer-events-none">
+                              g
+                            </span>
+                          </div>
+                        </div>
 
-                <div>
-                  <label className="block font-semibold text-white/90 mb-1">Initial Stock Units</label>
-                  <input
-                    type="number"
-                    placeholder="50"
-                    value={initialStock}
-                    onChange={(e) => setInitialStock(e.target.value)}
-                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-mono"
-                  />
+                        {/* Price PKR */}
+                        <div className="sm:col-span-3">
+                          <label className="block text-[10px] font-semibold text-botanical-sage mb-0.5">
+                            Price in PKR (Rs.) *
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            required
+                            value={v.price_pkr}
+                            onChange={(e) => handleUpdateAddVariant(idx, 'price_pkr', e.target.value)}
+                            placeholder="e.g. 950"
+                            className="glass-input-3d w-full px-3 py-1.5 rounded-lg text-xs font-mono font-bold text-lime"
+                          />
+                        </div>
+
+                        {/* Compare Price */}
+                        <div className="sm:col-span-3">
+                          <label className="block text-[10px] font-semibold text-botanical-sage mb-0.5">
+                            Compare Price (Rs.)
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={v.compare_price_pkr}
+                            onChange={(e) => handleUpdateAddVariant(idx, 'compare_price_pkr', e.target.value)}
+                            placeholder="e.g. 1100"
+                            className="glass-input-3d w-full px-3 py-1.5 rounded-lg text-xs font-mono"
+                          />
+                        </div>
+
+                        {/* Stock Quantity */}
+                        <div className="sm:col-span-2">
+                          <label className="block text-[10px] font-semibold text-botanical-sage mb-0.5">
+                            Stock Units
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={v.inventory_quantity}
+                            onChange={(e) => handleUpdateAddVariant(idx, 'inventory_quantity', e.target.value)}
+                            placeholder="50"
+                            className="glass-input-3d w-full px-3 py-1.5 rounded-lg text-xs font-mono"
+                          />
+                        </div>
+
+                        {/* Remove Button */}
+                        <div className="sm:col-span-1 flex items-center justify-end pt-2 sm:pt-4">
+                          <button
+                            type="button"
+                            disabled={addVariants.length <= 1}
+                            onClick={() => handleRemoveAddVariant(idx)}
+                            className={`p-1.5 rounded-lg text-rose-400 hover:text-rose-200 hover:bg-rose-500/20 transition-all ${
+                              addVariants.length <= 1 ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'
+                            }`}
+                            title={addVariants.length <= 1 ? 'At least 1 size required' : 'Remove size option'}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAddPresetAddVariant(250)}
+                      className="glass-btn-3d px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-lime hover:text-white cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Another Pack Size / Gram Variant</span>
+                    </button>
+                    {addVariants.length > 0 && addVariants[0].price_pkr && (
+                      <span className="text-[11px] text-botanical-sage font-mono">
+                        Base starting price: <strong className="text-white">Rs. {addVariants[0].price_pkr}</strong> ({addVariants[0].weight_grams}g)
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="sm:col-span-2">
@@ -978,34 +1259,182 @@ export default function AdminProductsPage() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block font-semibold text-white/90 mb-1">Base Price (PKR)</label>
-                  <input
-                    type="number"
-                    value={editingProduct.price_pkr}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, price_pkr: e.target.value })}
-                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-bold font-mono"
-                  />
-                </div>
+                {/* Pack Sizes, Grams & Pricing Section */}
+                <div className="sm:col-span-2 p-4 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-lime text-xs uppercase tracking-wider">
+                          Pack Sizes, Grams &amp; Pricing *
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/10 text-white">
+                          {(editingProduct.variants || []).length}{' '}
+                          {(editingProduct.variants || []).length === 1 ? 'Size' : 'Sizes'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-botanical-sage mt-0.5">
+                        Manage all pack sizes and pricing. Customers select their desired weight on the storefront with instant price updating.
+                      </p>
+                    </div>
 
-                <div>
-                  <label className="block font-semibold text-white/90 mb-1">Compare-At Price (PKR)</label>
-                  <input
-                    type="number"
-                    value={editingProduct.compare_price_pkr || ''}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, compare_price_pkr: e.target.value })}
-                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm font-mono"
-                  />
-                </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] text-botanical-sage uppercase font-semibold">Quick add:</span>
+                      <button
+                        type="button"
+                        onClick={() => handleAddPresetEditVariant(250)}
+                        className="px-2 py-1 rounded-lg text-[10px] font-mono font-medium glass-btn-3d hover:text-white"
+                      >
+                        + 250g
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAddPresetEditVariant(500)}
+                        className="px-2 py-1 rounded-lg text-[10px] font-mono font-medium glass-btn-3d hover:text-white"
+                      >
+                        + 500g
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAddPresetEditVariant(1000)}
+                        className="px-2 py-1 rounded-lg text-[10px] font-mono font-medium glass-btn-3d hover:text-white"
+                      >
+                        + 1kg
+                      </button>
+                    </div>
+                  </div>
 
-                <div>
-                  <label className="block font-semibold text-white/90 mb-1">Pack Size / Weight (Grams)</label>
-                  <input
-                    type="number"
-                    value={editingProduct.weight_grams || 250}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, weight_grams: e.target.value })}
-                    className="glass-input-3d w-full px-3 py-2 rounded-xl text-sm"
-                  />
+                  <div className="space-y-2.5">
+                    {(editingProduct.variants || []).map((v: VariantFormRow, idx: number) => (
+                      <div
+                        key={v.id || idx}
+                        className="p-3 rounded-xl bg-black/35 border border-white/10 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center"
+                      >
+                        {/* Gram weight */}
+                        <div className="sm:col-span-3">
+                          <label className="block text-[10px] font-semibold text-botanical-sage mb-0.5">
+                            Weight (Grams) *
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min="1"
+                              step="10"
+                              required
+                              value={v.weight_grams}
+                              onChange={(e) => handleUpdateEditVariant(idx, 'weight_grams', e.target.value)}
+                              placeholder="250"
+                              className="glass-input-3d w-full pl-3 pr-7 py-1.5 rounded-lg text-xs font-mono font-bold"
+                            />
+                            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-botanical-sage pointer-events-none">
+                              g
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Price PKR */}
+                        <div className="sm:col-span-3">
+                          <label className="block text-[10px] font-semibold text-botanical-sage mb-0.5">
+                            Price in PKR (Rs.) *
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            required
+                            value={v.price_pkr}
+                            onChange={(e) => handleUpdateEditVariant(idx, 'price_pkr', e.target.value)}
+                            placeholder="e.g. 950"
+                            className="glass-input-3d w-full px-3 py-1.5 rounded-lg text-xs font-mono font-bold text-lime"
+                          />
+                        </div>
+
+                        {/* Compare Price */}
+                        <div className="sm:col-span-2">
+                          <label className="block text-[10px] font-semibold text-botanical-sage mb-0.5">
+                            Compare (Rs.)
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={v.compare_price_pkr || ''}
+                            onChange={(e) => handleUpdateEditVariant(idx, 'compare_price_pkr', e.target.value)}
+                            placeholder="e.g. 1100"
+                            className="glass-input-3d w-full px-3 py-1.5 rounded-lg text-xs font-mono"
+                          />
+                        </div>
+
+                        {/* Stock Quantity */}
+                        <div className="sm:col-span-2">
+                          <label className="block text-[10px] font-semibold text-botanical-sage mb-0.5">
+                            Stock Units
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={v.inventory_quantity}
+                            onChange={(e) => handleUpdateEditVariant(idx, 'inventory_quantity', e.target.value)}
+                            placeholder="50"
+                            className="glass-input-3d w-full px-3 py-1.5 rounded-lg text-xs font-mono"
+                          />
+                        </div>
+
+                        {/* Status Toggle & Remove */}
+                        <div className="sm:col-span-2 flex items-center justify-end gap-2 pt-2 sm:pt-4">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleUpdateEditVariant(
+                                idx,
+                                'status',
+                                v.status === 'INACTIVE' ? 'ACTIVE' : 'INACTIVE'
+                              )
+                            }
+                            className={`px-2 py-1 rounded-lg text-[10px] font-semibold border ${
+                              v.status === 'INACTIVE'
+                                ? 'bg-white/10 text-white/50 border-white/10'
+                                : 'bg-emerald-400/15 text-emerald-300 border-emerald-500/30'
+                            }`}
+                            title="Toggle active status"
+                          >
+                            {v.status === 'INACTIVE' ? 'Hidden' : 'Active'}
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={(editingProduct.variants || []).length <= 1}
+                            onClick={() => handleRemoveEditVariant(idx)}
+                            className={`p-1.5 rounded-lg text-rose-400 hover:text-rose-200 hover:bg-rose-500/20 transition-all ${
+                              (editingProduct.variants || []).length <= 1
+                                ? 'opacity-30 cursor-not-allowed'
+                                : 'cursor-pointer'
+                            }`}
+                            title={
+                              (editingProduct.variants || []).length <= 1
+                                ? 'At least 1 size required'
+                                : 'Remove size option'
+                            }
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAddPresetEditVariant(500)}
+                      className="glass-btn-3d px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-lime hover:text-white cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Another Pack Size / Gram Variant</span>
+                    </button>
+                    {(editingProduct.variants || []).length > 0 && (
+                      <span className="text-[11px] text-botanical-sage font-mono">
+                        Base starting price: <strong className="text-white">Rs. {editingProduct.variants[0].price_pkr}</strong> ({editingProduct.variants[0].weight_grams}g)
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div>
