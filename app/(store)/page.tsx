@@ -6,6 +6,7 @@ import { getKits } from '../../lib/services/kits';
 import { ProductCard } from '../../components/product/ProductCard';
 import { Reveal } from '../../components/ui/Reveal';
 import { EditorialCollections } from '../../components/storefront/EditorialCollections';
+import { TestimonialCarousel } from '../../components/storefront/TestimonialCarousel';
 import { siteConfig } from '../../lib/config';
 import { formatPKR } from '../../lib/utils';
 
@@ -220,6 +221,9 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* EDITORIAL TESTIMONIAL & REVIEW CAROUSEL SECTION */}
+      <TestimonialCarousel />
 
       {/* FEATURED SEED ROUTINE KIT SHOWCASE */}
       {completeKit && (
