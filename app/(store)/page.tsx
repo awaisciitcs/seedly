@@ -5,41 +5,9 @@ import { getFeaturedProducts } from '../../lib/services/products';
 import { getKits } from '../../lib/services/kits';
 import { ProductCard } from '../../components/product/ProductCard';
 import { Reveal } from '../../components/ui/Reveal';
+import { EditorialCollections } from '../../components/storefront/EditorialCollections';
 import { siteConfig } from '../../lib/config';
 import { formatPKR } from '../../lib/utils';
-
-const collections = [
-  {
-    href: '/seeds',
-    title: 'Raw seeds',
-    tag: 'Whole & Unroasted',
-    categoryColor: 'bg-seed-lime',
-    borderColor: 'border-seed-lime',
-    description: 'Pumpkin, sunflower, flax, and sesame. For breakfast bowls and baking.',
-    image: '/images/products/pumpkin-seeds.jpg',
-    alt: 'Pumpkin seeds in a pouch with a wooden scoop',
-  },
-  {
-    href: '/teas',
-    title: 'Mountain teas',
-    tag: 'High-Altitude Harvest',
-    categoryColor: 'bg-tea-butter',
-    borderColor: 'border-tea-butter',
-    description: 'Whole blossoms and loose leaves from northern valleys. Just add hot water.',
-    image: '/images/products/chamomile-tea.jpg',
-    alt: 'Dried chamomile blossoms and a glass of brewed tea',
-  },
-  {
-    href: '/kits',
-    title: 'Seed kits',
-    tag: '14 & 28-Day Routines',
-    categoryColor: 'bg-kit-coral',
-    borderColor: 'border-kit-coral',
-    description: 'Our four seed combinations brought together in one box with printed guides.',
-    image: '/images/products/complete-kit.jpg',
-    alt: 'Four seed varieties with a scoop and printed guide',
-  },
-];
 
 export default async function HomePage() {
   const [featuredProductsList, kitsList] = await Promise.all([
@@ -219,65 +187,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* THREE COLLECTIONS SECTION */}
-      <section aria-labelledby="collections-heading" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
-        <div className="flex flex-wrap items-end justify-between gap-5 mb-10">
-          <div>
-            <div className="rounded-full border-2 border-ink bg-white px-3 py-1 text-xs font-black uppercase tracking-wider text-ink shadow-brutal-sm inline-block mb-3">
-              ✦ Handpicked &amp; Fresh
-            </div>
-            <h2 id="collections-heading" className="font-heading font-black text-3xl sm:text-4xl lg:text-5xl text-ink">
-              Find your everyday favourites.
-            </h2>
-          </div>
-          <p className="text-sm font-medium text-muted-gray max-w-xs">
-            Three simple categories. Endless ways to add them to your pantry.
-          </p>
-        </div>
-
-        <div className="grid sm:grid-cols-3 gap-6 lg:gap-8">
-          {collections.map((col, index) => (
-            <Reveal key={col.href} delay={index * 60}>
-              <Link
-                href={col.href}
-                className="card-brutal-interactive group flex flex-col h-full bg-white p-5"
-              >
-                {/* Image Container with category color accent */}
-                <div className="relative aspect-[4/3] w-full rounded-[20px] border-2 border-ink overflow-hidden bg-paper mb-5">
-                  <Image
-                    src={col.image}
-                    alt={col.alt}
-                    fill
-                    sizes="(max-width: 639px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className={`absolute top-3 left-3 rounded-full border-2 border-ink ${col.categoryColor} px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-ink shadow-brutal-sm`}>
-                    {col.tag}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between gap-3 mb-2">
-                  <h3 className="font-heading font-black text-2xl text-ink">
-                    {col.title}
-                  </h3>
-                  <div className="h-9 w-9 rounded-full border-2 border-ink bg-white flex items-center justify-center shadow-brutal-sm group-hover:bg-seed-lime transition-colors">
-                    <ArrowDownRight className="h-4 w-4 text-ink" />
-                  </div>
-                </div>
-
-                <p className="text-xs sm:text-sm text-muted-gray font-medium leading-relaxed mt-1 mb-4 flex-1">
-                  {col.description}
-                </p>
-
-                <div className="pt-3 border-t-2 border-ink/10 flex items-center justify-between text-xs font-bold text-ink">
-                  <span>Explore collection</span>
-                  <span className="text-ink">→</span>
-                </div>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+      {/* EDITORIAL ASYMMETRICAL 3-CARD COLLECTIONS SECTION */}
+      <EditorialCollections />
 
       {/* FEATURED ESSENTIALS GRID */}
       {featuredProducts.length > 0 && (
