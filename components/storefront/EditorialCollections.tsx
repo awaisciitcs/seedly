@@ -62,7 +62,7 @@ export function EditorialCollections() {
           <Link
             href="/seeds"
             aria-label="Explore Raw Seeds (4 products)"
-            className={`lg:col-span-7 group relative flex flex-col justify-between rounded-[28px] sm:rounded-[32px] border-2 border-ink bg-seed-lime p-6 sm:p-8 min-h-[260px] sm:min-h-[300px] shadow-brutal hover:shadow-brutal-lg transition-all duration-300 ease-out hover:-translate-x-1 hover:-translate-y-1 hover:scale-[1.01] overflow-hidden ${
+            className={`lg:col-span-7 group relative flex flex-col justify-between rounded-[28px] sm:rounded-[32px] border-2 border-ink bg-seed-lime p-6 sm:p-8 min-h-[260px] sm:min-h-[300px] shadow-brutal hover:shadow-[6px_8px_0px_#14201A] origin-bottom-left transition-all duration-300 ease-out hover:-rotate-[1.5deg] hover:-translate-y-1 overflow-hidden ${
               isVisible
                 ? 'opacity-100 translate-x-0'
                 : 'opacity-0 -translate-x-8 motion-reduce:opacity-100 motion-reduce:translate-x-0'
@@ -117,7 +117,7 @@ export function EditorialCollections() {
           <Link
             href="/teas"
             aria-label="Explore Mountain Teas (3 products)"
-            className={`lg:col-span-5 group relative flex flex-col justify-between rounded-[28px] sm:rounded-[32px] border-2 border-ink bg-tea-butter p-6 sm:p-8 min-h-[260px] sm:min-h-[300px] shadow-brutal hover:shadow-brutal-lg transition-all duration-300 ease-out hover:-translate-x-1 hover:-translate-y-1 hover:scale-[1.01] overflow-hidden ${
+            className={`lg:col-span-5 group relative flex flex-col justify-between rounded-[28px] sm:rounded-[32px] border-2 border-ink bg-tea-butter p-6 sm:p-8 min-h-[260px] sm:min-h-[300px] shadow-brutal hover:shadow-[6px_8px_0px_#14201A] origin-bottom-left transition-all duration-300 ease-out hover:-rotate-[1.5deg] hover:-translate-y-1 overflow-hidden ${
               isVisible
                 ? 'opacity-100 translate-x-0'
                 : 'opacity-0 translate-x-8 motion-reduce:opacity-100 motion-reduce:translate-x-0'
@@ -168,7 +168,7 @@ export function EditorialCollections() {
           <Link
             href="/kits"
             aria-label="Explore Seed Kits (3 routine kits)"
-            className={`lg:col-span-9 group relative flex items-center justify-between rounded-[28px] sm:rounded-[32px] border-2 border-ink bg-kit-coral p-6 sm:p-8 min-h-[160px] sm:min-h-[180px] shadow-brutal hover:shadow-brutal-lg transition-all duration-300 ease-out hover:-translate-x-1 hover:-translate-y-1 hover:scale-[1.01] overflow-hidden ${
+            className={`lg:col-span-9 group relative flex items-center justify-between rounded-[28px] sm:rounded-[32px] border-2 border-ink bg-kit-coral p-6 sm:p-8 min-h-[160px] sm:min-h-[180px] shadow-brutal hover:shadow-[6px_8px_0px_#14201A] origin-bottom-left transition-all duration-300 ease-out hover:-rotate-[1.2deg] hover:-translate-y-1 overflow-hidden ${
               isVisible
                 ? 'opacity-100 translate-y-0'
                 : 'opacity-0 translate-y-8 motion-reduce:opacity-100 motion-reduce:translate-y-0'
