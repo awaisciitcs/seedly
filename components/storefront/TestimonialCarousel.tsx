@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Star, ArrowUpRight, Instagram } from 'lucide-react';
 import Link from 'next/link';
+import { siteConfig } from '../../lib/config';
 
 interface ReviewItem {
   id: string;
@@ -341,7 +342,7 @@ export function TestimonialCarousel() {
                   0{idx + 1}
                 </span>
                 <span className="text-[10px] font-medium uppercase opacity-75">
-                  Story
+                  Review
                 </span>
               </button>
             );
@@ -349,7 +350,7 @@ export function TestimonialCarousel() {
 
           {/* Tile 6: Warm Amber "Tag us to be featured" Call to Action */}
           <a
-            href="https://www.instagram.com"
+            href={siteConfig.social.instagram}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Tag us on Instagram to be featured"
@@ -360,7 +361,7 @@ export function TestimonialCarousel() {
               <ArrowUpRight className="h-3.5 w-3.5 shrink-0 stroke-[2.5]" />
             </div>
             <span className="text-[10px] font-medium text-white/90 mt-0.5">
-              @seedly.pk
+              @seedlypk
             </span>
           </a>
 

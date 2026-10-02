@@ -224,34 +224,6 @@ export function KitsCategoryClient({ initialKits }: KitsCategoryClientProps) {
           </div>
         </section>
       )}
-
-      {/* 6. SLIM TRUST STRIP */}
-      <div className="border-t border-gray-200/90 pt-6 pb-2">
-        <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-stone-600">
-          <div className="flex items-center gap-2">
-            <Truck className="h-4 w-4 text-neutral-800 shrink-0" />
-            <span className="font-medium text-neutral-900">Cash on Delivery</span>
-            <span className="text-stone-400">· Nationwide across Pakistan</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-neutral-800 shrink-0" />
-            <span className="font-medium text-neutral-900">JazzCash · EasyPaisa · Bank Transfer</span>
-            <span className="text-stone-400">· Instant verified payment</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4 text-neutral-800 shrink-0" />
-            <span className="font-medium text-neutral-900">WhatsApp Help</span>
-            <a
-              href="https://wa.me/923719055758"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-neutral-900 underline hover:text-black"
-            >
-              0371 9055758
-            </a>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

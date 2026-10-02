@@ -269,6 +269,21 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               )}
             </div>
 
+            {/* Bundle Savings & Serving Duration Breakdown */}
+            {kit.slug === 'complete-cycle-kit' && (
+              <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-3 text-xs text-stone-600 space-y-1 shadow-xs">
+                <div className="flex items-center justify-between text-neutral-900 font-semibold">
+                  <span>Ritual Bundle Value:</span>
+                  <span className="text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[11px]">Save Rs. 470</span>
+                </div>
+                <p>• 4 x 250g Fresh Pouches (Rs. 2,970 individual seed value)</p>
+                <p>• Engraved Wooden Measuring Scoop + Printed Cycle Calendar (Rs. 350 value)</p>
+                <p className="text-[11px] text-stone-500 pt-0.5">
+                  Standalone total: Rs. 3,320 · At 1 tbsp/day, this kit supplies <strong>~50–60 daily servings (approx. two 28-day cycles)</strong>.
+                </p>
+              </div>
+            )}
+
             <KitContentsExplorer items={kit.items} kitSlug={kit.slug} />
 
             {/* In Stock vs Out of Stock Action Controls */}

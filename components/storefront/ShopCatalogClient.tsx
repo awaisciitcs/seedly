@@ -313,10 +313,14 @@ export function ShopCatalogClient({
             </p>
           </div>
           <div className="lg:col-span-4 flex flex-col items-start lg:items-end justify-center">
-            <p className="text-xs text-stone-500 uppercase tracking-wider mb-1">Four 250g Pouches · 1kg Total</p>
-            <p className="font-heading font-bold text-2xl text-neutral-900 mb-4 tabular-nums">PKR 3,450</p>
+            <p className="text-xs text-stone-500 uppercase tracking-wider mb-1">Four 250g Pouches · 1kg Total (~50–60 Servings)</p>
+            <div className="flex items-baseline gap-2 mb-4">
+              <span className="font-heading font-bold text-2xl text-neutral-900 tabular-nums">Rs. 2,850</span>
+              <span className="text-xs text-stone-400 line-through tabular-nums">Rs. 3,320</span>
+              <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full">Save Rs. 470</span>
+            </div>
             <Link
-              href="/kits/complete-routine-kit"
+              href="/kits/complete-cycle-kit"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white hover:bg-black transition-colors shadow-sm w-full sm:w-auto"
             >
               <span>Explore Complete Kit</span>
@@ -325,34 +329,6 @@ export function ShopCatalogClient({
           </div>
         </div>
       </section>
-
-      {/* 6. SLIM TRUST STRIP */}
-      <div className="mt-8 border-t border-gray-200/90 pt-6 pb-2">
-        <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-stone-600">
-          <div className="flex items-center gap-2">
-            <Truck className="h-4 w-4 text-neutral-800 shrink-0" />
-            <span className="font-medium text-neutral-900">Cash on Delivery</span>
-            <span className="text-stone-400">· Nationwide across Pakistan</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-neutral-800 shrink-0" />
-            <span className="font-medium text-neutral-900">JazzCash · EasyPaisa · Bank Transfer</span>
-            <span className="text-stone-400">· Instant verified payment</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4 text-neutral-800 shrink-0" />
-            <span className="font-medium text-neutral-900">WhatsApp Help</span>
-            <a
-              href="https://wa.me/923719055758"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-neutral-900 underline hover:text-black"
-            >
-              0371 9055758
-            </a>
-          </div>
-        </div>
-      </div>
 
       {/* ======================================================== */}
       {/* 7. REFINED PROFESSIONAL LEFT-SIDE FILTER DRAWER */}

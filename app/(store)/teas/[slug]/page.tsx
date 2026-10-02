@@ -52,9 +52,14 @@ export default async function TeaDetailPage(props: {
     notFound();
   }
 
-  const related = (await getProducts({ productType: 'tea', limit: 4 })).filter(
+  const relatedTeas = (await getProducts({ productType: 'tea', limit: 4 })).filter(
     (p) => p.id !== product.id
   );
+  let related = [...relatedTeas];
+  if (related.length < 3) {
+    const seeds = await getProducts({ productType: 'seed', limit: 3 - related.length });
+    related.push(...seeds);
+  }
 
   const jsonLd = {
     '@context': 'https://schema.org',

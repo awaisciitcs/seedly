@@ -241,13 +241,13 @@ export default async function HomePage() {
                     className="object-cover"
                   />
                   <div className="absolute top-4 left-4 rounded-full border border-amber-500/20 bg-amber-500/10 backdrop-blur-md px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-amber-900 shadow-sm">
-                    ✦ 28-Day Complete Routine
+                    ✦ Two Cycles (~50–60 Days)
                   </div>
                 </div>
 
                 <div className="lg:col-span-6 flex flex-col items-start">
                   <div className="rounded-full border border-gray-200/90 bg-[#F5F5F4] px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-neutral-700 shadow-sm mb-4 inline-flex items-center">
-                    All-in-One Box
+                    All-in-One Routine
                   </div>
                   
                   <h2 id="kit-showcase-heading" className="font-heading font-black text-3xl sm:text-4xl lg:text-5xl text-neutral-900 leading-tight tracking-tight">
@@ -255,7 +255,7 @@ export default async function HomePage() {
                   </h2>
 
                   <p className="mt-4 text-sm sm:text-base leading-relaxed text-neutral-600 font-normal">
-                    Pumpkin, flax, sunflower, and sesame. Our complete kit brings all four together in partitioned pouches with a handcrafted wooden scoop and an easy-to-follow printed guide.
+                    Pumpkin, cold-milled flax, sunflower, and sesame. Our complete kit brings all four together in resealable 250g barrier pouches with a handcrafted wooden scoop and an easy-to-follow printed cycle guide.
                   </p>
 
                   <div className="w-full mt-6 rounded-2xl border border-gray-200/90 bg-[#FAFAFA] p-5 shadow-sm">

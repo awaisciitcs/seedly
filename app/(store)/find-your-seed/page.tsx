@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../../../lib/store/cart';
 import { formatPKR } from '../../../lib/utils';
+import { siteConfig } from '../../../lib/config';
 
 interface QuestionOption {
   value: string;
@@ -44,25 +45,25 @@ const questions: Question[] = [
     options: [
       {
         value: 'cycle_hormones',
-        label: 'Cycle & Monthly Balance',
-        description: 'Gentle support for your natural monthly rhythm, easing bloating, and everyday calm.',
+        label: 'Monthly Kitchen Routine',
+        description: 'Nutrient-dense seed pairings for your daily morning breakfast and kitchen routine.',
         iconName: 'moon',
       },
       {
         value: 'digestion_bloat',
-        label: 'Digestive Comfort & Lightness',
-        description: 'Feeling lighter after meals, easing sluggishness, and gentle daily dietary fiber.',
+        label: 'Wholesome Dietary Fiber',
+        description: 'Gentle dietary fiber and plant-based omegas from cold-milled golden flaxseed.',
         iconName: 'leaf',
       },
       {
         value: 'sleep_calm',
-        label: 'Evening Calm & Better Sleep',
-        description: 'Unwinding after a busy day with a soothing, caffeine-free bedtime ritual.',
+        label: 'Evening Calm & Restful Evenings',
+        description: 'Unwinding after a busy day with a soothing, caffeine-free bedtime herbal tisane.',
         iconName: 'sparkles',
       },
       {
         value: 'energy_vitality',
-        label: 'Daily Energy & Natural Glow',
+        label: 'Daily Vitality & Breakfast Nutrition',
         description: 'Nutrient-dense seeds packed with plant protein, minerals, and natural Vitamin E.',
         iconName: 'sun',
       },
@@ -238,22 +239,22 @@ export default function FindYourSeedPage() {
 
       const spearmintItem: RecommendedItem = {
         id: 'prod-spearmint',
-        name: 'Organic Gilgit Spearmint Leaf Tea',
+        name: 'Highland Spearmint Leaf Tea',
         slug: 'spearmint-tea',
         type: 'teas',
         price: 115000,
         badge: isTeaFirst ? 'PRIMARY ROUTINE' : 'RECOMMENDED PAIRING',
         image: '/images/products/spearmint-tea.jpg',
-        reason: 'Crisp high-mountain spearmint, traditionally enjoyed twice daily for soothing digestive comfort and cycle ease.',
+        reason: 'Crisp mountain spearmint, traditionally enjoyed twice daily as a refreshing culinary tisane.',
         isPairing: !isTeaFirst,
       };
 
       return {
         title: isTeaFirst
-          ? 'Suggested Routine: Herbal Cycle Harmony'
+          ? 'Suggested Routine: Herbal Tea Ritual'
           : 'Suggested Routine: 28-Day Seed Cycling',
         explanation: isTeaFirst
-          ? 'Since you prefer warm infusions, we recommend our Organic Gilgit Spearmint Leaf Tea as your lead ritual. Spearmint is a traditional soothing herbal infusion often enjoyed twice daily. You can optionally pair it with our Complete 28-Day Seed Kit to add daily kitchen seeds.'
+          ? 'Since you prefer warm infusions, we recommend our Highland Spearmint Leaf Tea as your lead ritual. Spearmint is a traditional aromatic herbal infusion. You can optionally pair it with our Complete 28-Day Seed Kit to add daily kitchen seeds.'
           : 'Since you prefer a structured food ritual, the Complete 28-Day Kit supplies all 4 raw pantry seeds portioned for both monthly phases, with an engraved wooden measuring scoop and calendar guide. You can optionally pair it with spearmint tea for a soothing daily cup.',
         products: isTeaFirst ? [spearmintItem, seedKitItem] : [seedKitItem, spearmintItem],
       };
@@ -310,20 +311,20 @@ export default function FindYourSeedPage() {
 
       const spearmintItem: RecommendedItem = {
         id: 'prod-spearmint',
-        name: 'Organic Gilgit Spearmint Leaf Tea',
+        name: 'Highland Spearmint Leaf Tea',
         slug: 'spearmint-tea',
         type: 'teas',
         price: 115000,
         badge: isTeaFirst ? 'PRIMARY ROUTINE' : 'RECOMMENDED PAIRING',
         image: '/images/products/spearmint-tea.jpg',
-        reason: 'Pure alpine spearmint leaves to sip warm after meals for refreshing digestive comfort.',
+        reason: 'Pure alpine spearmint leaves to sip warm after meals for refreshing aroma and comfort.',
         isPairing: !isTeaFirst,
       };
 
       return {
-        title: 'Suggested Routine: Daily Digestive Ease',
+        title: 'Suggested Routine: Daily Kitchen Nourishment',
         explanation: isTeaFirst
-          ? 'Organic Gilgit spearmint leaves brew into a crisp, refreshing post-meal tea. You can optionally pair it with cold-milled golden flax seeds to add gentle soluble fiber to your morning breakfast.'
+          ? 'Highland spearmint leaves brew into a crisp, refreshing post-meal tea. You can optionally pair it with cold-milled golden flax seeds to add gentle soluble fiber to your morning breakfast.'
           : 'Cold-milled golden flax seeds provide gentle daily soluble fiber for breakfast bowls. You can optionally pair it with loose spearmint leaves for a refreshing post-meal steep.',
         products: isTeaFirst ? [spearmintItem, flaxItem] : [flaxItem, spearmintItem],
       };
@@ -365,7 +366,7 @@ export default function FindYourSeedPage() {
     const isTeaFirst = ritual === 'warm_tea';
     const sunflowerItem: RecommendedItem = {
       id: 'prod-sunflower',
-      name: 'Organic Raw Sunflower Kernels',
+      name: 'Raw Sunflower Kernels',
       slug: 'sunflower-seeds',
       type: 'seeds',
       price: 72000,
@@ -744,6 +745,13 @@ export default function FindYourSeedPage() {
               >
                 Ask on WhatsApp
               </a>
+            </div>
+
+            <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-4 text-[11px] text-stone-600 leading-relaxed text-start shadow-xs">
+              <strong className="text-neutral-900 block font-semibold mb-1 uppercase tracking-wider">Dietary &amp; Medical Advisory:</strong>
+              <p>
+                All items recommended by Seedly are raw culinary food staples and mountain botanicals for dietary consumption and culinary brewing only. They are not intended to diagnose, treat, cure, or prevent any medical condition. If you are pregnant, breastfeeding, or managing PCOS, thyroid conditions, or endocrine disorders, consult your physician before introducing new dietary seed routines.
+              </p>
             </div>
 
             <p className="text-[11px] text-muted-gray flex items-center justify-center gap-1.5 text-center">

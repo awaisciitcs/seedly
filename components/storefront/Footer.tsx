@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SeedlyLogo } from '../ui/SeedlyLogo';
@@ -20,11 +21,25 @@ const helpLinks = [
   { href: '/returns', label: 'Returns & replacements' },
   { href: '/faq', label: 'Frequently asked questions' },
   { href: '/contact', label: 'Contact us' },
+  { href: '/terms', label: 'Terms of service' },
+  { href: '/privacy', label: 'Privacy policy' },
+  { href: '/product-disclaimer', label: 'Dietary notice' },
 ];
 
 export function Footer({ hideTrustStrip }: { hideTrustStrip?: boolean } = {}) {
   const pathname = usePathname();
   const shouldHideTrustStrip = hideTrustStrip || pathname === '/about';
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail.trim()) return;
+    setSubscribed(true);
+    setTimeout(() => {
+      setNewsletterEmail('');
+    }, 3000);
+  };
 
   return (
     <footer className="border-t border-stone-200 bg-[#FBFBFA] pt-12 md:pt-16 pb-24 lg:pb-12 text-neutral-900">
@@ -69,7 +84,7 @@ export function Footer({ hideTrustStrip }: { hideTrustStrip?: boolean } = {}) {
             </div>
             <div className="min-w-0 text-start">
               <p className="font-heading font-semibold text-xs uppercase tracking-wider text-neutral-900">Helpline WhatsApp</p>
-              <p className="text-[11px] text-stone-600">0371 9055758</p>
+              <p className="text-[11px] text-stone-600">{siteConfig.contact.phone}</p>
             </div>
           </div>
         </div>
@@ -80,10 +95,20 @@ export function Footer({ hideTrustStrip }: { hideTrustStrip?: boolean } = {}) {
           <div className="col-span-2 lg:col-span-1">
             <SeedlyLogo size="lg" />
             <p className="mt-4 max-w-xs text-xs sm:text-sm leading-relaxed text-stone-600 font-normal">
-              Clean raw pantry seeds and high-altitude whole blossom teas, packed fresh in Lahore and dispatched nationwide across Pakistan.
+              Clean raw pantry seeds and high-altitude whole blossom teas, packed fresh in Lahore and dispatched nationwide across Pakistan via TCS and Leopards.
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-neutral-700 shadow-xs">
-              <span>✦ Lahore, Pakistan</span>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-neutral-700 shadow-xs">
+                <span>✦ Lahore, Pakistan</span>
+              </div>
+              <a
+                href={siteConfig.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1 text-[11px] font-medium text-stone-600 hover:text-black hover:border-black transition-colors shadow-xs"
+              >
+                <span>@seedlypk</span>
+              </a>
             </div>
           </div>
 
@@ -117,11 +142,11 @@ export function Footer({ hideTrustStrip }: { hideTrustStrip?: boolean } = {}) {
             </ul>
           </nav>
 
-          <div className="col-span-2 lg:col-span-1">
-            <h3 className="mb-4 font-heading font-semibold text-xs uppercase tracking-wider text-neutral-900">
-              Direct Contact
-            </h3>
-            <div className="space-y-2 text-xs sm:text-sm">
+          <div className="col-span-2 lg:col-span-1 space-y-4">
+            <div>
+              <h3 className="mb-2 font-heading font-semibold text-xs uppercase tracking-wider text-neutral-900">
+                Direct Contact
+              </h3>
               <a
                 href={siteConfig.contact.whatsappUrl}
                 target="_blank"
@@ -129,9 +154,37 @@ export function Footer({ hideTrustStrip }: { hideTrustStrip?: boolean } = {}) {
                 className="inline-flex items-center justify-center gap-2 w-full rounded-full bg-neutral-900 py-2.5 px-4 text-xs font-semibold text-white hover:bg-neutral-800 transition-all shadow-xs"
               >
                 <MessageCircle className="h-4 w-4" />
-                <span>WhatsApp 0371 9055758</span>
+                <span>WhatsApp {siteConfig.contact.phone}</span>
               </a>
-              <p className="text-[11px] text-stone-600 pt-1">{siteConfig.contact.hours}</p>
+              <p className="text-[11px] text-stone-600 pt-1.5">{siteConfig.contact.hours}</p>
+            </div>
+
+            {/* Newsletter Signup */}
+            <div className="pt-2 border-t border-stone-200">
+              <h4 className="font-heading font-semibold text-xs uppercase tracking-wider text-neutral-900 mb-1">Fresh Dispatches</h4>
+              <p className="text-[11px] text-stone-500 mb-2">Seasonal harvest updates, simple kitchen recipes, and storage tips.</p>
+              {subscribed ? (
+                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2 text-xs text-emerald-800 font-medium">
+                  ✓ Subscribed! Thank you for joining our table.
+                </div>
+              ) : (
+                <form onSubmit={handleNewsletterSubmit} className="flex gap-1.5">
+                  <input
+                    type="email"
+                    required
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="flex-1 min-w-0 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-neutral-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                  />
+                  <button
+                    type="submit"
+                    className="rounded-full bg-neutral-900 px-3.5 py-1.5 text-xs font-medium text-white hover:bg-black transition-colors shrink-0"
+                  >
+                    Join
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
@@ -140,7 +193,7 @@ export function Footer({ hideTrustStrip }: { hideTrustStrip?: boolean } = {}) {
         <div className="my-8 rounded-xl border border-stone-200 bg-white p-4 text-[11px] text-stone-600 leading-relaxed shadow-xs text-start">
           <p className="font-semibold text-neutral-900 mb-1 uppercase tracking-wider">Dietary Food Notice &amp; Allergen Advisory:</p>
           <p>
-            All products sold by Seedly are raw agricultural food staples and mountain botanicals for dietary consumption and culinary brewing only. They are not intended to diagnose, treat, cure, or prevent any medical condition. Packed in a facility that also handles tree nuts, sesame seeds, and cereal grains. If you have severe seed or nut allergies or are pregnant, consult your physician before dietary changes.
+            All products sold by Seedly are raw agricultural food staples and mountain botanicals for dietary consumption and culinary brewing only. They are not intended to diagnose, treat, cure, or prevent any medical condition. {siteConfig.disclaimer.facility} If you have severe seed or nut allergies or are pregnant, consult your physician before dietary changes.
           </p>
         </div>
 

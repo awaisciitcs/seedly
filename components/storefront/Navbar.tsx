@@ -16,7 +16,6 @@ const navLinks = [
   { label: 'Kits', href: '/kits' },
   { label: 'Teas', href: '/teas' },
   { label: 'Routine finder', href: '/find-your-seed' },
-  { label: 'Journal', href: '/about#journal' },
   { label: 'Our story', href: '/about' },
 ];
 

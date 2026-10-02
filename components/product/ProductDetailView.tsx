@@ -352,7 +352,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-3 text-xs text-stone-600 flex items-center gap-2 shadow-xs">
               <Truck className="h-4 w-4 text-neutral-700 shrink-0" aria-hidden="true" />
               <span>
-                Flat Rs. 200 delivery · FREE over Rs. 2,500 · Dispatched in 24h from Lahore
+                Flat Rs. {siteConfig.shipping.standardFee} delivery · FREE over Rs. {siteConfig.shipping.freeThreshold.toLocaleString()} · Dispatched in 24h from Lahore
               </span>
             </div>
 
@@ -454,7 +454,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                     <div className="pb-6 pt-1 text-sm leading-relaxed text-stone-600 space-y-4 font-normal">
                       <p>{product.description}</p>
                       
-                      {/* dl grid-cols-[8rem_1fr] gap-y-3: Ingredients, Origin, Product code */}
+                      {/* dl grid-cols-[8rem_1fr] gap-y-3: Ingredients, Origin, Pack size, Product code */}
                       <dl className="grid grid-cols-[8rem_1fr] gap-y-3 pt-3 border-t border-stone-100 text-sm">
                         <dt className="text-stone-600 font-medium">Ingredients</dt>
                         <dd className="text-neutral-900">{product.ingredients}</dd>
@@ -462,9 +462,18 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                         <dt className="text-stone-600 font-medium">Origin</dt>
                         <dd className="text-neutral-900">{originValue}</dd>
 
+                        <dt className="text-stone-600 font-medium">Pack size</dt>
+                        <dd className="text-neutral-900">{selectedVariant?.option_value || (product.weight_grams ? `${product.weight_grams}g pouch` : '250g pouch')}</dd>
+
                         <dt className="text-stone-600 font-medium">Product code</dt>
-                        <dd className="font-mono text-neutral-900 text-xs sm:text-sm">{product.sku || 'SED-FLX-01'}</dd>
+                        <dd className="font-mono text-neutral-900 text-xs sm:text-sm">{selectedVariant?.sku || product.sku || 'SED-FLX-01'}</dd>
                       </dl>
+
+                      {product.slug === 'chamomile-tea' && (
+                        <div className="p-3 bg-amber-50/80 border border-amber-200/80 rounded-xl text-xs text-amber-900">
+                          <strong>{siteConfig.disclaimer.chamomile}</strong>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -838,17 +847,10 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               You might also like
             </h2>
 
-            {/* Desktop / Tablet Grid: grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8 */}
-            <div className="hidden md:grid md:grid-cols-3 gap-x-6 gap-y-8">
+            {/* Responsive Scroller / Grid: one single DOM structure */}
+            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-x-6 md:gap-y-8 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x md:snap-none -mx-5 px-5 md:mx-0 md:px-0">
               {relatedProducts.slice(0, 3).map((p) => (
-                <ProductCard key={p.id} product={p} buttonVariant="secondary" />
-              ))}
-            </div>
-
-            {/* Mobile Snap Scroller: below md, snap-x snap-mandatory, w-[70%] cards */}
-            <div className="md:hidden flex snap-x snap-mandatory gap-4 overflow-x-auto -mx-5 px-5 pb-4">
-              {relatedProducts.slice(0, 3).map((p) => (
-                <div key={p.id} className="w-[70%] shrink-0 snap-start">
+                <div key={p.id} className="w-[75%] sm:w-[50%] md:w-auto shrink-0 md:shrink snap-start md:snap-align-none">
                   <ProductCard product={p} buttonVariant="secondary" />
                 </div>
               ))}
