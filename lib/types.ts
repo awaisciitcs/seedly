@@ -68,6 +68,7 @@ export interface Product {
   review_count?: number;
   is_featured?: boolean;
   badge?: 'BESTSELLER' | 'NEW' | 'POPULAR' | 'LIMITED';
+  phase?: 'follicular' | 'luteal' | null;
 }
 
 export interface KitItem {

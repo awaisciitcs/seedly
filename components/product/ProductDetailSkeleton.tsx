@@ -10,8 +10,8 @@ export function ProductDetailSkeleton() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
         {/* Left Column */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="aspect-square w-full rounded-sm skeleton-shimmer" />
-          <div className="h-16 w-full rounded-sm skeleton-shimmer" />
+          <div className="aspect-square w-full rounded-2xl skeleton-shimmer" />
+          <div className="h-16 w-full rounded-2xl skeleton-shimmer" />
         </div>
 
         {/* Right Column */}

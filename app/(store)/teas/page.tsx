@@ -1,6 +1,6 @@
 import React from 'react';
 import { getProducts } from '../../../lib/services/products';
-import { ProductCard } from '../../../components/product/ProductCard';
+import { TeasCategoryClient } from '../../../components/product/TeasCategoryClient';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -30,24 +30,8 @@ export default async function TeasPage() {
   const teas = await getProducts({ productType: 'tea' });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-10">
-      {/* Category Header */}
-      <div className="motion-enter max-w-2xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-seedly-primary mb-4">The tea shelf</p>
-        <h1 className="font-serif text-4xl sm:text-5xl font-medium text-charcoal">
-          Find your next cup.
-        </h1>
-        <p className="text-base text-muted-gray mt-4 leading-relaxed">
-          Chamomile flowers, spearmint leaves and green tea, ready to brew loose. Explore the flavour notes and find the brewing instructions on each product page.
-        </p>
-      </div>
-
-      {/* 3-Column Balanced Desktop Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-        {teas.map((tea) => (
-          <ProductCard key={tea.id} product={tea} />
-        ))}
-      </div>
+    <div className="mx-auto max-w-7xl px-4 pt-4 pb-12 sm:px-6 sm:pt-6 sm:pb-16 lg:px-8 bg-white min-h-screen">
+      <TeasCategoryClient initialTeas={teas} />
     </div>
   );
 }

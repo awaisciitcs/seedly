@@ -4,6 +4,10 @@
 
 @layer base {
   :root {
+    --font-roboto: 'Roboto', sans-serif;
+    --font-sans: var(--font-roboto);
+    --font-grotesk: var(--font-roboto);
+    --font-serif: var(--font-roboto);
     --background: 44 43% 97%; /* #FAF8F2 cream */
     --foreground: 120 4% 15%; /* #252825 charcoal */
     --ease-out: cubic-bezier(.2, .8, .2, 1);
@@ -15,18 +19,18 @@
   body {
     background-color: #FFF9EE;
     color: #14201A;
-    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+    font-family: var(--font-roboto), 'Roboto', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, .font-heading {
-    font-family: var(--font-grotesk), var(--font-sans), sans-serif;
-    letter-spacing: -0.03em;
+  h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: var(--font-roboto), 'Roboto', sans-serif;
+    letter-spacing: -0.01em;
   }
 
   .font-serif {
-    font-family: var(--font-serif), Georgia, serif;
+    font-family: var(--font-roboto), 'Roboto', sans-serif;
   }
 
   ::selection {
@@ -54,32 +58,32 @@
   }
 
   .button-primary {
-    @apply inline-flex min-h-12 items-center justify-center gap-3 rounded-full border-2 border-ink bg-seed-lime px-7 py-3 text-sm font-bold text-ink shadow-brutal transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-lg active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
+    @apply inline-flex min-h-11 items-center justify-center gap-3 rounded-full bg-black px-7 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:bg-neutral-800 active:translate-y-0 active:shadow-xs;
   }
 
   .button-secondary {
-    @apply inline-flex min-h-12 items-center justify-center gap-3 rounded-full border-2 border-ink bg-white px-7 py-3 text-sm font-bold text-ink shadow-brutal transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-lg active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
+    @apply inline-flex min-h-11 items-center justify-center gap-3 rounded-full border border-gray-200/90 bg-white px-7 py-3 text-sm font-semibold text-gray-900 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:bg-gray-50 active:translate-y-0 active:shadow-xs;
   }
 
   .text-link {
     @apply py-2 text-sm font-semibold text-ink underline underline-offset-[6px] decoration-ink/40 transition-colors hover:decoration-ink;
   }
 
-  /* Neo-Brutalist Core Utilities */
+  /* Clean Studio Core Utilities */
   .btn-brutal {
-    @apply inline-flex items-center justify-center font-bold rounded-full border-2 border-ink shadow-brutal transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-lg active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center font-semibold rounded-full border border-gray-200/90 bg-black text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:bg-neutral-800 active:translate-y-0 active:shadow-sm disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .card-brutal {
-    @apply rounded-[28px] border-2 border-ink shadow-brutal bg-white overflow-hidden transition-all duration-200;
+    @apply rounded-[24px] border border-gray-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.04)] bg-white overflow-hidden transition-all duration-300;
   }
 
   .card-brutal-interactive {
-    @apply rounded-[28px] border-2 border-ink shadow-brutal bg-white overflow-hidden transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg;
+    @apply rounded-[24px] border border-gray-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.04)] bg-white overflow-hidden transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)];
   }
 
   .pill-brutal {
-    @apply rounded-full border-2 border-ink shadow-brutal-sm transition-all;
+    @apply rounded-full border border-gray-200/90 shadow-sm transition-all;
   }
 }
 
@@ -772,4 +776,26 @@ body[data-sticky-bar-active="true"] .mobile-bottom-nav {
     outline: 1px solid CanvasText !important;
     outline-offset: -1px !important;
   }
+}
+
+/* ---- RTL / Urdu Typography & Layout Rules ---- */
+[dir="rtl"],
+[dir="rtl"] * {
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+[dir="rtl"] {
+  font-family: var(--font-urdu), 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif;
+  line-height: 1.85;
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
 }

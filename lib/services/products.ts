@@ -73,6 +73,13 @@ function mapRowToProduct(row: any, reviewStats?: { count: number; avg_rating: nu
     variants,
     rating: reviewStats && reviewStats.count > 0 ? Math.round(reviewStats.avg_rating * 10) / 10 : undefined,
     review_count: reviewStats?.count || 0,
+    phase: row.phase || (
+      row.slug === 'pumpkin-seeds' || row.slug === 'flax-seeds' || row.slug === 'golden-flaxseed'
+        ? 'follicular'
+        : row.slug === 'sunflower-seeds' || row.slug === 'sesame-seeds' || row.slug === 'white-sesame'
+        ? 'luteal'
+        : null
+    ),
   };
 }
 

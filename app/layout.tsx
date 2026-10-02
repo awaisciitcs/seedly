@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Roboto, Space_Grotesk, DM_Sans } from 'next/font/google';
+import { Roboto, Noto_Nastaliq_Urdu } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '../lib/store/cart';
 import { WishlistProvider } from '../lib/store/wishlist';
@@ -7,28 +7,17 @@ import { CartDrawer } from '../components/cart/CartDrawer';
 import { CartToast } from '../components/cart/CartToast';
 import { RouteProgressBar } from '../components/ui/RouteProgressBar';
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-grotesk',
-  display: 'swap',
-});
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
-});
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-serif',
-  display: 'swap',
-});
-
 const roboto = Roboto({
-  weight: ['300', '400', '500', '700'],
+  weight: ['100', '300', '400', '500', '700', '900'],
   subsets: ['latin'],
   variable: '--font-roboto',
+  display: 'swap',
+});
+
+const notoNastaliqUrdu = Noto_Nastaliq_Urdu({
+  subsets: ['arabic'],
+  weight: ['400', '700'],
+  variable: '--font-urdu',
   display: 'swap',
 });
 
@@ -69,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable} ${playfair.variable} ${roboto.variable}`}>
+    <html lang="en" className={`${roboto.variable} ${notoNastaliqUrdu.variable}`}>
       <body className="min-h-screen flex flex-col bg-paper text-ink font-sans selection:bg-seed-lime selection:text-ink">
         <a
           href="#main-content"

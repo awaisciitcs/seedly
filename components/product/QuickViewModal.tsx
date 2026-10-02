@@ -56,23 +56,23 @@ export function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
       role="dialog"
       aria-modal="true"
       aria-label={`Quick view: ${product.name}`}
     >
-      <div className="card-brutal w-full max-w-2xl bg-paper p-6 sm:p-8 animate-fadeIn relative max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-2xl bg-white rounded-3xl border border-gray-200 shadow-2xl p-6 sm:p-8 animate-fadeIn relative max-h-[90vh] overflow-y-auto">
         <button
           type="button"
           onClick={onClose}
-          className="btn-brutal absolute right-5 top-5 h-9 w-9 bg-white text-ink hover:bg-seed-lime"
+          className="absolute right-5 top-5 h-8 w-8 rounded-full border border-gray-200 hover:bg-neutral-100 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
           aria-label="Close quick view"
         >
           <X className="h-4 w-4" />
         </button>
 
         <div className="grid sm:grid-cols-2 gap-6 items-start">
-          <div className="relative aspect-square rounded-[20px] border-2 border-ink overflow-hidden bg-white shadow-brutal-sm">
+          <div className="relative aspect-square rounded-2xl border border-gray-200/80 overflow-hidden bg-[#FBFBFA] shadow-xs">
             <Image
               src={product.image_url}
               alt={product.name}
@@ -83,25 +83,25 @@ export function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps
           </div>
 
           <div className="flex flex-col">
-            <span className="inline-block rounded-full border border-ink bg-seed-lime px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-ink w-fit mb-2 shadow-brutal-sm">
+            <span className="inline-block rounded-full bg-stone-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-stone-700 w-fit mb-2">
               {isKit ? 'Seed Routine Kit' : product.product_type === 'tea' ? 'Mountain Tea' : 'Raw Seeds'}
             </span>
 
-            <h2 className="font-heading font-extrabold text-xl sm:text-2xl text-ink leading-tight">
+            <h2 className="font-heading font-medium text-xl sm:text-2xl text-neutral-900 leading-tight">
               {product.name}
             </h2>
 
-            <p className="mt-2 text-xs sm:text-sm text-muted-gray leading-relaxed">
+            <p className="mt-2 text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
               {product.short_description || product.description}
             </p>
 
             {/* Price */}
             <div className="mt-4 flex items-baseline gap-2">
-              <span className="font-heading font-extrabold text-2xl text-ink tabular-nums">
+              <span className="font-heading font-semibold text-2xl text-neutral-900 tabular-nums">
                 {formatPKR(priceMinor)}
               </span>
               {comparePriceMinor != null && comparePriceMinor > priceMinor && (
-                <span className="text-sm text-muted-gray line-through tabular-nums">
+                <span className="text-sm text-stone-400 line-through tabular-nums font-normal">
                   {formatPKR(comparePriceMinor)}
                 </span>
               )}
@@ -110,7 +110,7 @@ export function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps
             {/* Variant selector if multiple */}
             {activeVariants.length > 1 && (
               <div className="mt-4">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-ink block mb-2">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-700 block mb-2">
                   Select Pack Size:
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -119,10 +119,10 @@ export function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps
                       key={v.id}
                       type="button"
                       onClick={() => setSelectedVariant(v)}
-                      className={`btn-brutal px-3.5 py-1 text-xs ${
+                      className={`px-3 py-1 text-xs rounded-full border transition-all cursor-pointer ${
                         selectedVariant?.id === v.id
-                          ? 'bg-seed-lime text-ink'
-                          : 'bg-white text-ink/80 hover:bg-seed-lime/30'
+                          ? 'border-neutral-900 bg-neutral-900 text-white shadow-xs'
+                          : 'border-gray-200 bg-white text-neutral-800 hover:border-neutral-400'
                       }`}
                     >
                       {v.option_value || `${v.weight_grams}g`}
@@ -138,14 +138,14 @@ export function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps
                 type="button"
                 onClick={handleAdd}
                 disabled={!inStock}
-                className="btn-brutal w-full py-3 bg-seed-lime text-ink text-xs uppercase tracking-wider"
+                className="w-full py-3 rounded-full bg-neutral-900 hover:bg-black text-white text-xs font-semibold uppercase tracking-wider transition-all shadow-xs hover:shadow-md cursor-pointer disabled:opacity-40"
               >
                 {added ? (
-                  <span className="inline-flex items-center gap-1.5 font-extrabold">
+                  <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-400">
                     <Check className="h-4 w-4" /> Added to Basket!
                   </span>
                 ) : inStock ? (
-                  <span className="inline-flex items-center gap-1.5 font-extrabold">
+                  <span className="inline-flex items-center gap-1.5 font-semibold">
                     <ShoppingBag className="h-4 w-4" /> Add to Basket — {formatPKR(priceMinor)}
                   </span>
                 ) : (
@@ -156,7 +156,7 @@ export function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps
               <Link
                 href={href}
                 onClick={onClose}
-                className="btn-brutal w-full py-2.5 bg-white text-ink text-xs uppercase tracking-wider hover:bg-paper"
+                className="w-full py-2.5 rounded-full border border-gray-200 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold uppercase tracking-wider text-center transition-colors cursor-pointer"
               >
                 <span className="inline-flex items-center gap-1">
                   View Full Product Details <ArrowRight className="h-3.5 w-3.5" />
@@ -169,3 +169,5 @@ export function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps
     </div>
   );
 }
+
+export default QuickViewModal;

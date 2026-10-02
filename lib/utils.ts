@@ -6,11 +6,19 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Format paisa (integer minor unit) to Pakistani Rupees (e.g. 125000 -> "Rs. 1,250")
+ * Format paisa (integer minor unit) to Pakistani Rupees (e.g. 68000 -> "Rs. 680")
  */
-export function formatPKR(minor: number = 0): string {
+export function formatPrice(minor: number = 0): string {
   const pkr = Math.floor(minor / 100);
   return `Rs. ${pkr.toLocaleString('en-PK')}`;
+}
+
+export const formatPKR = formatPrice;
+
+export function toSentenceCase(str: string): string {
+  if (!str) return '';
+  const lower = str.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
 export function pkrToMinor(pkr: number): number {

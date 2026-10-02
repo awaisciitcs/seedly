@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Coffee, Thermometer, Clock, Sparkles, Droplets, Info } from 'lucide-react';
+import { Coffee, Thermometer, Clock, Droplets, Info } from 'lucide-react';
 
 interface TeaBrewCalculatorProps {
   teaName: string;
@@ -38,17 +38,17 @@ export function TeaBrewCalculator({
     : 'Pour rolling, freshly boiled water directly over the dried blossoms or leaves to extract full aromatic essential oils.';
 
   return (
-    <div className="p-5 sm:p-6 bg-white rounded-2xl border border-border-gray shadow-subtle space-y-5 my-6">
-      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 border-b border-border-gray/60 pb-4">
+    <div className="p-5 sm:p-6 bg-[#FBFBFA] rounded-2xl border border-gray-200/90 shadow-xs space-y-5 my-6">
+      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 border-b border-gray-200/80 pb-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-seedly-dark bg-seedly-light px-2.5 py-0.5 rounded-full inline-block mb-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-800 bg-stone-200/80 px-2.5 py-0.5 rounded-full inline-block mb-1">
             Interactive Brew Guide
           </span>
-          <h3 className="font-serif text-xl font-medium text-charcoal">
+          <h3 className="font-heading font-medium text-lg sm:text-xl text-neutral-900">
             How many cups are you preparing?
           </h3>
         </div>
-        <p className="text-xs text-muted-gray">
+        <p className="text-xs text-stone-500 font-normal">
           Adjust cups to calculate exact leaf weight &amp; water ratio
         </p>
       </div>
@@ -63,16 +63,16 @@ export function TeaBrewCalculator({
               type="button"
               onClick={() => setCups(count)}
               aria-pressed={isSelected}
-              className={`flex-1 py-3 px-2 rounded-xl border text-center transition-all duration-200 ${
+              className={`flex-1 py-3 px-2 rounded-xl border text-center transition-all duration-200 cursor-pointer shadow-xs ${
                 isSelected
-                  ? 'border-seedly-dark bg-seedly-dark text-white shadow-card font-semibold'
-                  : 'border-border-gray bg-cream/40 text-charcoal hover:bg-cream hover:border-seedly-primary/50'
+                  ? 'border-neutral-900 bg-neutral-900 text-white font-semibold'
+                  : 'border-gray-200 bg-white text-neutral-800 hover:border-neutral-400 font-medium'
               }`}
             >
-              <div className="text-sm font-bold">
+              <div className="text-sm font-semibold">
                 {count} {count === 1 ? 'Cup' : 'Cups'}
               </div>
-              <div className={`text-[11px] mt-0.5 ${isSelected ? 'text-white/80' : 'text-muted-gray'}`}>
+              <div className={`text-[11px] mt-0.5 ${isSelected ? 'text-neutral-300' : 'text-stone-400'}`}>
                 {count * 250} ml
               </div>
             </button>
@@ -83,70 +83,72 @@ export function TeaBrewCalculator({
       {/* Dynamic Results Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
         {/* Leaf Amount */}
-        <div className="p-3.5 bg-cream/50 rounded-xl border border-border-gray/70 space-y-1">
-          <div className="flex items-center gap-1.5 text-xs text-muted-gray font-medium">
-            <Coffee className="w-3.5 h-3.5 text-seedly-primary" />
+        <div className="p-3.5 bg-white rounded-xl border border-gray-200/80 shadow-xs space-y-1">
+          <div className="flex items-center gap-1.5 text-xs text-stone-500 font-normal">
+            <Coffee className="w-3.5 h-3.5 text-neutral-700" />
             <span>Loose Leaf / Flower</span>
           </div>
-          <div className="text-base sm:text-lg font-serif font-bold text-charcoal">
+          <div className="text-base sm:text-lg font-heading font-semibold text-neutral-900">
             {leafGrams} g
           </div>
-          <div className="text-[11px] text-muted-gray">
+          <div className="text-[11px] text-stone-400">
             approx. {teaspoons}
           </div>
         </div>
 
         {/* Water Volume */}
-        <div className="p-3.5 bg-cream/50 rounded-xl border border-border-gray/70 space-y-1">
-          <div className="flex items-center gap-1.5 text-xs text-muted-gray font-medium">
-            <Droplets className="w-3.5 h-3.5 text-blue-600" />
+        <div className="p-3.5 bg-white rounded-xl border border-gray-200/80 shadow-xs space-y-1">
+          <div className="flex items-center gap-1.5 text-xs text-stone-500 font-normal">
+            <Droplets className="w-3.5 h-3.5 text-neutral-700" />
             <span>Water Volume</span>
           </div>
-          <div className="text-base sm:text-lg font-serif font-bold text-charcoal">
+          <div className="text-base sm:text-lg font-heading font-semibold text-neutral-900">
             {waterMl} ml
           </div>
-          <div className="text-[11px] text-muted-gray">
+          <div className="text-[11px] text-stone-400">
             {cups === 4 ? '1 Litre Pot' : `${cups} standard teacup${cups > 1 ? 's' : ''}`}
           </div>
         </div>
 
         {/* Temperature */}
-        <div className="p-3.5 bg-cream/50 rounded-xl border border-border-gray/70 space-y-1">
-          <div className="flex items-center gap-1.5 text-xs text-muted-gray font-medium">
-            <Thermometer className="w-3.5 h-3.5 text-amber-700" />
+        <div className="p-3.5 bg-white rounded-xl border border-gray-200/80 shadow-xs space-y-1">
+          <div className="flex items-center gap-1.5 text-xs text-stone-500 font-normal">
+            <Thermometer className="w-3.5 h-3.5 text-neutral-700" />
             <span>Water Temp</span>
           </div>
-          <div className="text-base sm:text-lg font-serif font-bold text-charcoal">
+          <div className="text-base sm:text-lg font-heading font-semibold text-neutral-900">
             {tempDisplay}
           </div>
-          <div className="text-[11px] text-muted-gray truncate">
+          <div className="text-[11px] text-stone-400 truncate">
             {isGreenTea ? 'Off-boil cooling' : 'Freshly boiled'}
           </div>
         </div>
 
         {/* Steep Time */}
-        <div className="p-3.5 bg-cream/50 rounded-xl border border-border-gray/70 space-y-1">
-          <div className="flex items-center gap-1.5 text-xs text-muted-gray font-medium">
-            <Clock className="w-3.5 h-3.5 text-seedly-dark" />
+        <div className="p-3.5 bg-white rounded-xl border border-gray-200/80 shadow-xs space-y-1">
+          <div className="flex items-center gap-1.5 text-xs text-stone-500 font-normal">
+            <Clock className="w-3.5 h-3.5 text-neutral-700" />
             <span>Steep Time</span>
           </div>
-          <div className="text-base sm:text-lg font-serif font-bold text-charcoal">
+          <div className="text-base sm:text-lg font-heading font-semibold text-neutral-900">
             {steepDisplay}
           </div>
-          <div className="text-[11px] text-muted-gray">
+          <div className="text-[11px] text-stone-400">
             Cover while steeping
           </div>
         </div>
       </div>
 
       {/* Sommelier / Kitchen Advice */}
-      <div className="p-3.5 bg-warm-white rounded-xl border border-border-gray/70 text-xs text-muted-gray leading-relaxed flex items-start gap-2.5">
-        <Info className="w-4 h-4 text-seedly-primary shrink-0 mt-0.5" />
+      <div className="p-3.5 bg-white rounded-xl border border-gray-200/80 text-xs text-stone-600 leading-relaxed flex items-start gap-2.5 shadow-xs">
+        <Info className="w-4 h-4 text-neutral-700 shrink-0 mt-0.5" />
         <div>
-          <strong className="text-charcoal font-semibold">Brewmaster Note: </strong>
+          <strong className="text-neutral-900 font-semibold">Brewmaster Note: </strong>
           {tempTip}
         </div>
       </div>
     </div>
   );
 }
+
+export default TeaBrewCalculator;
