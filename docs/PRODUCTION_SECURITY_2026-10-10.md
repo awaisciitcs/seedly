@@ -13,7 +13,7 @@ This covers security/resilience work accompanying the Supabase CMS integration, 
 - Quote validation batches requested products/variants/kits and omits reviews. Transactions remain price/stock authority. Admin badges use exact HEAD counts instead of capped whole-list downloads.
 - Multipart errors return 400/415/413. Files are capped at 4 MiB plus bounded overhead to fit Vercel's 4.5 MB function request cap. Catalog URLs accept local paths, Unsplash, and the configured public product-images bucket.
 - Basic CSP denies object embeds and foreign bases; framing is same-origin and admin framing denied. This is not a nonce-based script CSP. Private responses remain no-store.
-- GitHub Actions runs Node tests, TypeScript and production advisory checks on push/PR with pinned official action commits, read-only permission and no retained Git credential. Vercel still builds deployments/previews.
+- A GitHub Actions workflow is prepared for Node tests, TypeScript and production advisory checks with pinned official action commits and read-only permissions. It remains local because the connected GitHub credential cannot publish workflow files. Vercel builds deployments/previews.
 
 ## Deployment configuration
 
@@ -22,6 +22,8 @@ Run node scripts/production-readiness.mjs locally or add --production --json wit
 Configure Node 22, intended Supabase project/public key, server-only SUPABASE_SECRET_KEY, separate stable CHECKOUT_SIGNING_SECRET, ORDER_REFERENCE_MODE=sequential in Vercel. Isolate preview environments on staging; never supply production private credentials to untrusted pull-request builds. Apply migrations before code requiring consume_rate_limit and ordering flags. Publish the correct HTTPS origin in Website Content > Site > Config > URL; the preflight verifies this public CMS value.
 
 Admin identities require active Auth UUID links with OWNER/STAFF roles, never editable user metadata. Verify the protected Vercel preview on desktop/mobile before assigning traffic. Do not publish env files/backups. The GitHub deployment request is handled separately; local verification does not certify hosted deployment success. vercel.json pins npm ci and npm run build, with no seed/reset/migration command.
+
+Vercel production builds now run scripts/vercel-build-guard.mjs before Next.js. The guard validates the configured Supabase public/private key boundaries, stable checkout signing secret and sequential order mode, then performs only the public CMS snapshot read to verify the published HTTPS origin. Missing or invalid configuration and unavailable CMS reads fail the build with names and corrective actions, never credential values. Preview and local builds skip this hosted gate; the guard does not load .env.local or run migrations, seeds, orders, storage writes or email delivery. Next.js retains its normal local environment loading.
 
 ## Deferred email
 
