@@ -17,18 +17,18 @@ module.exports = {
         "kit-coral": "#D97706",
         "pistachio-sage": "#F5F5F4",
         seedly: {
-          primary: "#111827",     // Clean obsidian black
-          dark: "#111827",        // Clean obsidian black
-          light: "#F5F5F4",       // Soft alabaster
-          forest: "#111827",      // Primary text
+          primary: "#52705A",     // Clean obsidian black
+          dark: "#203A2E",        // Clean obsidian black
+          light: "#EAF0E9",       // Soft alabaster
+          forest: "#2E4E3C",      // Primary text
           soft: "#F8F8F7",        // Secondary background
           stone: "#F5F5F4",       // Soft neutral surface
         },
-        cream: "#FFFFFF",         // Clean white canvas
+        cream: "#F5F5EF",         // Clean white canvas
         ivory: "#FFFFFF",
-        charcoal: "#111827",      // Obsidian
-        "muted-gray": "#6B7280",  // Refined neutral gray
-        "border-gray": "#E5E7EB", // 1px clean border
+        charcoal: "#252825",      // Obsidian
+        "muted-gray": "#61665F",  // Refined neutral gray
+        "border-gray": "#DEDFD6", // 1px clean border
         sand: "#F5F5F4",
         terracotta: "#D97706",
         honey: "#F59E0B",

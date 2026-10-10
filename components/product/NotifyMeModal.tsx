@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
+import { Dialog } from '@/components/ui/Dialog';
 import { Bell, CheckCircle2, AlertCircle, X } from 'lucide-react';
 
 interface NotifyMeModalProps {
@@ -22,6 +23,7 @@ export function NotifyMeModal({
   sellableTitle,
   itemTitle,
 }: NotifyMeModalProps) {
+  const inputId = useId();
   const displayTitle = sellableTitle || itemTitle || 'Selected Item';
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -75,11 +77,11 @@ export function NotifyMeModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+    <Dialog open={isOpen} onClose={handleClose} title="Restock alert" className="max-w-md">
       <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-gray-200 relative animate-in zoom-in-95 duration-200">
         <button
           onClick={handleClose}
-          className="absolute top-5 right-5 h-8 w-8 rounded-full border border-gray-200 hover:bg-neutral-100 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
+          className="icon-button absolute top-3 right-3"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
@@ -91,9 +93,9 @@ export function NotifyMeModal({
               <CheckCircle2 className="w-6 h-6 text-emerald-600" />
             </div>
             <div className="space-y-1">
-              <h3 className="font-heading font-medium text-xl sm:text-2xl text-neutral-900">You're On The List!</h3>
+              <h3 className="font-heading font-medium text-xl sm:text-2xl text-neutral-900">Request saved</h3>
               <p className="text-xs text-stone-500 leading-relaxed max-w-xs mx-auto font-normal">
-                We'll email <span className="font-semibold text-neutral-900">{email}</span> the moment <strong className="text-neutral-900 font-semibold">{displayTitle}</strong> is replenished and ready for dispatch.
+                Your interest in <strong className="font-semibold">{displayTitle}</strong> has been saved. Contact our team for availability updates.
               </p>
             </div>
             <div className="pt-2">
@@ -110,13 +112,13 @@ export function NotifyMeModal({
             <div className="space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-stone-100 text-stone-700 text-[11px] font-semibold uppercase tracking-wider">
                 <Bell className="w-3 h-3 text-neutral-600" />
-                <span>Restock Notification</span>
+                <span>Restock request</span>
               </div>
               <h3 className="font-heading font-medium text-xl sm:text-2xl text-neutral-900">
                 Notify Me When Available
               </h3>
               <p className="text-xs text-stone-500 leading-relaxed font-normal">
-                <span className="font-semibold text-neutral-900">{displayTitle}</span> is currently out of stock. Leave your email and our Lahore operations desk will notify you immediately once restocked.
+                <span className="font-semibold text-neutral-900">{displayTitle}</span> is currently out of stock. Leave your email to register your interest, or contact our team for availability.
               </p>
             </div>
 
@@ -128,11 +130,14 @@ export function NotifyMeModal({
             )}
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider">
+              <label htmlFor={inputId} className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider">
                 Email Address *
               </label>
               <input
+                id={inputId}
                 type="email"
+                maxLength={254}
+                autoComplete="email"
                 required
                 autoFocus
                 placeholder="your.email@example.com"
@@ -141,7 +146,7 @@ export function NotifyMeModal({
                 className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-xs text-neutral-900 focus:outline-none focus:border-neutral-900 transition-all"
               />
               <p className="text-[11px] text-stone-400 font-normal">
-                We&apos;ll only email you about this specific product restock. Unsubscribe anytime with 1 click.
+                We use your email only for this product availability request.
               </p>
             </div>
 
@@ -152,7 +157,7 @@ export function NotifyMeModal({
                 className="flex-1 py-3 px-4 rounded-full bg-neutral-900 hover:bg-black text-white text-xs font-semibold uppercase tracking-wider transition-all shadow-xs hover:shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 <Bell className="w-3.5 h-3.5" />
-                <span>{loading ? 'Subscribing...' : 'Send Me Restock Alert'}</span>
+                <span>{loading ? 'Subscribing...' : 'Save restock request'}</span>
               </button>
               <button
                 type="button"
@@ -164,8 +169,9 @@ export function NotifyMeModal({
             </div>
           </form>
         )}
+        <a className="inline-block underline text-sm min-h-11 mt-3" href="https://wa.me/923719055758" target="_blank" rel="noopener noreferrer">Ask our team about availability</a>
       </div>
-    </div>
+    </Dialog>
   );
 }
 

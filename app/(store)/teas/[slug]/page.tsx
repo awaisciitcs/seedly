@@ -1,3 +1,7 @@
+import {getContentDocument} from '@/lib/services/content';
+import type {SiteContent} from '@/lib/cms/storefront-types';
+import {getCatalogPrice,hasAvailablePack} from '@/lib/catalog';
+import { serializeStructuredData } from '@/lib/structured-data';
 import React from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -8,37 +12,28 @@ export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await props.params;
+  const {config}=await getContentDocument<SiteContent>('site');
   const product = await getProductBySlug(slug);
-  if (!product) {
+  if (!product || product.product_type !== 'tea') {
     return {
       title: 'Product Not Found | Seedly',
     };
   }
   return {
-    title: `${product.name} | Mountain Herbal Tea | Seedly Pakistan`,
+    title: `${product.name} | ${config.name}`,
     description: product.short_description || product.description,
     alternates: {
-      canonical: `https://seedly.pk/teas/${slug}`,
+      canonical: `${config.url}/teas/${slug}`,
     },
     openGraph: {
-      title: `${product.name} | Seedly Pakistan`,
+      title: `${product.name} | ${config.name}`,
       description: product.short_description || product.description,
       images: product.image_url ? [product.image_url] : [],
     },
   };
 }
 
-export async function generateStaticParams() {
-  try {
-    const products = await getProducts({ productType: 'tea' });
-    return products.map((p) => ({
-      slug: p.slug,
-    }));
-  } catch (err) {
-    console.error('generateStaticParams teas error:', err);
-    return [];
-  }
-}
+export const dynamic = 'force-dynamic';
 
 export const dynamicParams = true;
 
@@ -46,9 +41,10 @@ export default async function TeaDetailPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await props.params;
+  const {config}=await getContentDocument<SiteContent>('site');
   const product = await getProductBySlug(slug);
 
-  if (!product) {
+  if (!product || product.product_type !== 'tea') {
     notFound();
   }
 
@@ -71,39 +67,39 @@ export default async function TeaDetailPage(props: {
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://seedly.pk',
+            item: config.url,
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'Mountain Teas',
-            item: 'https://seedly.pk/teas',
+            item: new URL('/teas',config.url).href,
           },
           {
             '@type': 'ListItem',
             position: 3,
             name: product.name,
-            item: `https://seedly.pk/teas/${product.slug}`,
+            item: `${config.url}/teas/${product.slug}`,
           },
         ],
       },
       {
         '@type': 'Product',
         name: product.name,
-        image: product.image_url.startsWith('http') ? product.image_url : `https://seedly.pk${product.image_url}`,
+        image: product.image_url.startsWith('http') ? product.image_url : `${config.url}${product.image_url}`,
         description: product.short_description || product.description,
         sku: product.sku,
         brand: {
           '@type': 'Brand',
-          name: 'Seedly',
+          name: config.name,
         },
         offers: {
           '@type': 'Offer',
-          url: `https://seedly.pk/teas/${product.slug}`,
+          url: `${config.url}/teas/${product.slug}`,
           priceCurrency: 'PKR',
-          price: (product.price_minor / 100).toFixed(0),
+          price: (getCatalogPrice(product) / 100).toFixed(2),
           availability:
-            (product.variants?.[0]?.inventory_quantity ?? 50) > 0
+            hasAvailablePack(product)
               ? 'https://schema.org/InStock'
               : 'https://schema.org/OutOfStock',
           itemCondition: 'https://schema.org/NewCondition',
@@ -116,7 +112,7 @@ export default async function TeaDetailPage(props: {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeStructuredData(jsonLd) }}
       />
       <ProductDetailView product={product} relatedProducts={related} />
     </>

@@ -1,4 +1,6 @@
 'use client';
+import { useSiteContent } from '@/components/storefront/SiteContentProvider';
+import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -13,13 +15,19 @@ import { NotifyMeModal } from './NotifyMeModal';
 import { PurchaseActions } from './PurchaseActions';
 import { StickyPurchaseBar } from './StickyPurchaseBar';
 import { KitContentsExplorer } from './KitContentsExplorer';
-import { siteConfig } from '../../lib/config';
+import { ProductGallery } from './ProductGallery';
+import { DeliveryNote } from '@/components/storefront/DeliveryNote';
+import { toCartItem } from '@/lib/catalog';
+import { useProductReviews } from '@/hooks/useProductReviews';
 
 interface KitDetailViewProps {
   kit: Kit;
 }
 
 export function KitDetailView({ kit }: KitDetailViewProps) {
+  const cms = useSiteContent<CmsPageContent>('product'); const { copy, links, images } = cms;
+const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
+
   const router = useRouter();
   const { addItem, setIsCartOpen } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -29,8 +37,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
   const mainActionsRef = React.useRef<HTMLDivElement>(null);
 
   // Reviews State
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loadingReviews, setLoadingReviews] = useState(false);
+  const { reviews, loading: loadingReviews, error: reviewsLoadError, retry: retryReviews } = useProductReviews(kit.id);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewSuccessMessage, setReviewSuccessMessage] = useState('');
@@ -42,26 +49,9 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewBody, setReviewBody] = useState('');
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setLoadingReviews(true);
-        const res = await fetch(`/api/reviews?productId=${kit.id}`);
-        const json = await res.json();
-        if (json.data) {
-          setReviews(json.data);
-        }
-      } catch (err) {
-        console.error('Failed to load reviews:', err);
-      } finally {
-        setLoadingReviews(false);
-      }
-    };
-    fetchReviews();
-  }, [kit.id]);
-
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingReview) return;
     setReviewErrorMessage('');
     setReviewSuccessMessage('');
 
@@ -75,12 +65,13 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
       const res = await fetch('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(15000),
         body: JSON.stringify({
           product_id: kit.id,
           product_name: kit.name,
           customer_name: customerName,
           rating: reviewRating,
-          title: reviewTitle || 'Verified Feedback',
+          title: reviewTitle || 'Customer feedback',
           body: reviewBody,
         }),
       });
@@ -109,62 +100,18 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
   const isLowStock = inStock && currentStock <= 5;
   const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
 
-  const handleAddToCart = () => {
-    if (!inStock) {
-      setIsNotifyModalOpen(true);
-      return;
-    }
-    addItem({
-      id: `${kit.id}-kit`,
-      product_id: kit.id,
-      kit_id: kit.id,
-      name: kit.name,
-      slug: kit.slug,
-      variant_label: kit.package_size,
-      price_minor: kit.price_minor,
-      image_url: kit.image_url,
-      quantity,
-      product_type: 'kit',
-      max_quantity: currentStock,
-    });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  };
-
-  const handleBuyNow = () => {
-    if (!inStock) {
-      setIsNotifyModalOpen(true);
-      return;
-    }
-    addItem(
-      {
-        id: `${kit.id}-kit`,
-        product_id: kit.id,
-        kit_id: kit.id,
-        name: kit.name,
-        slug: kit.slug,
-        variant_label: kit.package_size,
-        price_minor: kit.price_minor,
-        image_url: kit.image_url,
-        quantity,
-        product_type: 'kit',
-        max_quantity: currentStock,
-      },
-      { openDrawer: false }
-    );
-    setIsCartOpen(false);
-    router.push('/checkout');
-  };
+  const handleAddToCart = () => { if (!inStock) { setIsNotifyModalOpen(true); return false; } const success = addItem(toCartItem(kit, quantity)); if(success) {setAdded(true);setTimeout(()=>setAdded(false),1500);} return success; };
+  const handleBuyNow = () => { if (!inStock) { setIsNotifyModalOpen(true); return; } if(addItem(toCartItem(kit, quantity), {openDrawer:false})){ setIsCartOpen(false); router.push("/checkout"); } };
 
   const waMessage = encodeURIComponent(`Hi Seedly, I have a question about the ${kit.name}.`);
 
   return (
     <div className="max-w-7xl mx-auto w-full px-5 md:px-8 py-8 sm:py-12 bg-white text-neutral-900">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-stone-400 mb-8">
-        <Link href="/" className="hover:text-black transition-colors">Home</Link>
+      <nav className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-stone-600 mb-8">
+        <Link href={links.href} className="hover:text-black transition-colors">{copy.text_home}</Link>
         <span>/</span>
-        <Link href="/kits" className="capitalize hover:text-black transition-colors">Curated Seed Kits</Link>
+        <Link href={links.href_kits} className="capitalize hover:text-black transition-colors">{copy.text_curated_seed_kits}</Link>
         <span>/</span>
         <span className="text-neutral-900 truncate font-semibold">{kit.name}</span>
       </nav>
@@ -173,41 +120,23 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
         {/* Left Column: Kit Imagery */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-[#FBFBFA] border border-gray-200/90 shadow-xs">
-            <Image
-              src={kit.image_url}
-              alt={kit.name}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-            />
-            {/* Top-Right Badge */}
-            <div className="absolute top-4 right-4 z-10 rounded-full border border-gray-200/90 bg-white/95 backdrop-blur-xs px-3 py-1 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-neutral-800 shadow-xs">
-              PACKED IN LAHORE ✦ DISPATCHED IN 24H
-            </div>
-
-            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-xs px-3.5 py-1 rounded-full border border-gray-200/90 text-xs font-medium text-neutral-800 shadow-xs flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-neutral-900"></span>
-              <span>{kit.package_size || 'Complete Curated Box'}</span>
-            </div>
-          </div>
+          <ProductGallery name={kit.name} image={kit.image_url} images={kit.gallery_images} />
 
           {/* Contextual WhatsApp Consultation */}
           <div className="p-4 rounded-2xl bg-[#FBFBFA] border border-gray-200/90 shadow-xs flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-0.5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-900">Questions about how this routine works?</p>
-              <p className="text-xs text-stone-500 font-normal">Chat with our team on WhatsApp for ingredients, preparation and storage guidance.</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-900">{copy.text_questions_about_how_this_routine_works}</p>
+              <p className="text-xs text-stone-500 font-normal">{copy.text_chat_with_our_team_on_whatsapp_for_ingredients_preparat}</p>
             </div>
-            <a
+            {features.whatsapp&&(<a
               href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 rounded-full bg-white border border-gray-200 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold uppercase tracking-wider shadow-xs shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <MessageCircle className="w-3.5 h-3.5 text-neutral-700" />
-              <span>Ask on WhatsApp</span>
-            </a>
+              <span>{copy.text_ask_on_whatsapp}</span>
+            </a>)}
           </div>
         </div>
 
@@ -217,16 +146,15 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
             {/* Header / Social Proof */}
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="rounded-full bg-stone-100 text-stone-700 px-3 py-1 text-xs font-semibold uppercase tracking-wider">
-                ✦ 14 &amp; 28-Day Routine Kit
-              </span>
+                {copy.text_14_28_day_routine_kit}</span>
 
-              {reviews.length > 0 ? (
+              {features.reviews && reviews.length > 0 ? (
                 <div className="flex items-center gap-1.5 text-xs font-medium text-neutral-800">
                   <div className="flex items-center text-amber-500">
                     <Star className="w-3.5 h-3.5 fill-amber-400 stroke-amber-500 stroke-1" />
                   </div>
                   <span className="font-semibold text-neutral-900">{(reviews.reduce((total, review) => total + review.rating, 0) / reviews.length).toFixed(1)}</span>
-                  <span className="text-stone-400">({reviews.length} reviews)</span>
+                  <span className="text-stone-600">({reviews.length} {copy.text_reviews}</span>
                 </div>
               ) : null}
             </div>
@@ -235,6 +163,8 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
             <h1 className="font-heading font-medium text-3xl sm:text-4xl lg:text-5xl text-neutral-900 leading-tight tracking-tight">
               {kit.name}
             </h1>
+            {features.reviews && (<a href={links.href_reviews} className="inline-flex text-sm underline underline-offset-4">{kit.review_count ? kit.rating?.toFixed(1) + " / 5 · " + kit.review_count + " reviews" : "Read or write a review"}</a>)}
+            <DeliveryNote />
 
             {/* Short descriptor */}
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
@@ -247,24 +177,22 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                 {formatPKR(kit.price_minor)}
               </span>
               {kit.compare_price_minor && (
-                <span className="text-base text-stone-400 line-through tabular-nums font-normal">
+                <span className="text-base text-stone-600 line-through tabular-nums font-normal">
                   {formatPKR(kit.compare_price_minor)}
                 </span>
               )}
               {inStock ? (
                 isLowStock ? (
                   <span className="text-[11px] font-medium uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 px-3 py-0.5 rounded-full">
-                    Low stock — {currentStock} kits left
-                  </span>
+                    {copy.text_low_stock}{currentStock} {copy.text_kits_left}</span>
                 ) : (
                   <span className="text-[11px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-0.5 rounded-full">
-                    In Stock in Lahore
-                  </span>
+                    {copy.text_in_stock_in_lahore}</span>
                 )
               ) : (
                 <span className="text-[11px] font-medium uppercase tracking-wider text-rose-800 bg-rose-50 border border-rose-200 px-3 py-0.5 rounded-full flex items-center gap-1">
                   <Bell className="w-3 h-3 text-rose-700" />
-                  <span>Out of stock</span>
+                  <span>{copy.text_out_of_stock}</span>
                 </span>
               )}
             </div>
@@ -273,13 +201,13 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
             {kit.slug === 'complete-cycle-kit' && (
               <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-3 text-xs text-stone-600 space-y-1 shadow-xs">
                 <div className="flex items-center justify-between text-neutral-900 font-semibold">
-                  <span>Ritual Bundle Value:</span>
-                  <span className="text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[11px]">Save Rs. 470</span>
+                  <span>{copy.text_ritual_bundle_value}</span>
+                  <span className="text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[11px]">{copy.text_save_rs_470}</span>
                 </div>
-                <p>• 4 x 250g Fresh Pouches (Rs. 2,970 individual seed value)</p>
-                <p>• Engraved Wooden Measuring Scoop + Printed Cycle Calendar (Rs. 350 value)</p>
+                <p>{copy.text_4_x_250g_fresh_pouches_rs_2_970_individual_seed_value}</p>
+                <p>{copy.text_engraved_wooden_measuring_scoop_printed_cycle_calendar}</p>
                 <p className="text-[11px] text-stone-500 pt-0.5">
-                  Standalone total: Rs. 3,320 · At 1 tbsp/day, this kit supplies <strong>~50–60 daily servings (approx. two 28-day cycles)</strong>.
+                  {copy.text_standalone_total_rs_3_320_at_1_tbsp_day_this_kit_suppli}<strong>{copy.text_50_60_daily_servings_approx_two_28_day_cycles}</strong>.
                 </p>
               </div>
             )}
@@ -291,14 +219,14 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               <div className="flex items-center gap-2 py-2.5 px-4 bg-[#FBFBFA] border border-gray-200/90 rounded-full text-xs font-normal text-stone-600 shadow-xs">
                 <Truck className="h-4 w-4 text-neutral-700" aria-hidden="true" />
                 <span>
-                  <strong className="text-neutral-900 font-semibold">Flat Rs. 200 delivery</strong> · <strong className="text-neutral-900 font-semibold">FREE</strong> over Rs. 2,500 · Dispatched in 24h from Lahore
-                </span>
+                  <strong className="text-neutral-900 font-semibold">{copy.text_flat_rs_200_delivery}</strong> · <strong className="text-neutral-900 font-semibold">{copy.text_free}</strong> {copy.text_over_rs_2_500_dispatched_in_24h_from_lahore}</span>
               </div>
               {inStock ? (
                 <PurchaseActions
+                  added={added}
                   quantity={quantity}
                   maxQuantity={currentStock}
-                  added={added}
+
                   wishlisted={wishlisted}
                   onQuantityChange={setQuantity}
                   onAdd={handleAddToCart}
@@ -310,11 +238,10 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                   <div className="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl text-xs text-amber-900 space-y-1">
                     <p className="font-semibold uppercase tracking-wider flex items-center gap-1.5">
                       <Bell className="w-4 h-4 text-amber-700" />
-                      <span>Kit currently out of stock</span>
+                      <span>{copy.text_kit_currently_out_of_stock}</span>
                     </p>
                     <p className="text-stone-600 font-normal">
-                      Leave your email and we will let you know when this kit is available.
-                    </p>
+                      {copy.text_leave_your_email_and_we_will_let_you_know_when_this_kit}</p>
                   </div>
 
                   <button
@@ -322,15 +249,15 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                     className="h-12 sm:h-13 w-full rounded-full font-semibold text-xs sm:text-sm uppercase tracking-wider bg-neutral-900 hover:bg-black text-white shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Bell className="w-4 h-4" />
-                    <span>Notify Me When Kit Returns</span>
+                    <span>{copy.text_notify_me_when_kit_returns}</span>
                   </button>
                 </div>
               )}
             </div>
 
             <div className="border-t border-gray-100 pt-5 space-y-2 text-xs font-normal leading-5 text-stone-500">
-              <p>Delivery across Pakistan. <Link href="/shipping" className="underline underline-offset-4 text-neutral-800 hover:text-black">See delivery times and charges</Link>.</p>
-              <p>Check each pack for storage instructions and its best-before date.</p>
+              <p>{copy.text_delivery_across_pakistan}<Link href={links.href_shipping} className="underline underline-offset-4 text-neutral-800 hover:text-black">{copy.text_see_delivery_times_and_charges}</Link>.</p>
+              <p>{copy.text_check_each_pack_for_storage_instructions_and_its_best_b}</p>
               {(kit.slug === 'luteal-blend' || kit.slug === 'complete-cycle-kit') && (
                 <p className="text-amber-900">{siteConfig.disclaimer.sesame}</p>
               )}
@@ -338,9 +265,9 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
 
             {/* Standard Dietary Disclaimer Box */}
             <div className="p-4 bg-[#FBFBFA] rounded-2xl border border-gray-200/90 text-xs text-stone-500 leading-relaxed flex items-start gap-2.5 shadow-xs">
-              <Info className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
+              <Info className="w-4 h-4 text-stone-600 shrink-0 mt-0.5" />
               <div>
-                <strong className="text-neutral-900 font-semibold uppercase tracking-wider block mb-1">Dietary Food Notice: </strong>
+                <strong className="text-neutral-900 font-semibold uppercase tracking-wider block mb-1">{copy.text_dietary_food_notice_2}</strong>
                 {siteConfig.disclaimer.standard}
               </div>
             </div>
@@ -352,8 +279,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
       <div className="mt-16 sm:mt-24 pt-10 border-t border-gray-200 space-y-10">
         <div className="max-w-3xl space-y-3">
           <h2 className="font-heading font-medium text-2xl sm:text-3xl text-neutral-900">
-            How this seed routine works
-          </h2>
+            {copy.text_how_this_seed_routine_works}</h2>
           <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
             {kit.description}
           </p>
@@ -363,11 +289,9 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-6 bg-[#FBFBFA] rounded-2xl border border-gray-200/90 space-y-3 shadow-xs">
             <span className="text-[11px] uppercase font-semibold tracking-wider text-neutral-800 bg-stone-200/80 px-2.5 py-0.5 rounded-full inline-block">
-              Daily Usage
-            </span>
+              {copy.text_daily_usage}</span>
             <h3 className="font-heading font-medium text-lg text-neutral-900">
-              Simple Preparation
-            </h3>
+              {copy.text_simple_preparation}</h3>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
               {kit.usage_instructions}
             </p>
@@ -375,11 +299,9 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
 
           <div className="p-6 bg-[#FBFBFA] rounded-2xl border border-gray-200/90 space-y-3 shadow-xs">
             <span className="text-[11px] uppercase font-semibold tracking-wider text-neutral-800 bg-stone-200/80 px-2.5 py-0.5 rounded-full inline-block">
-              Proper Storage
-            </span>
+              {copy.text_proper_storage}</span>
             <h3 className="font-heading font-medium text-lg text-neutral-900">
-              Protecting Freshness
-            </h3>
+              {copy.text_protecting_freshness}</h3>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
               {kit.storage_instructions}
             </p>
@@ -387,12 +309,12 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
         </div>
 
         {/* Customer Reviews Section */}
-        <div className="pt-8 border-t border-gray-200 space-y-6">
+        {features.reviews && (<div id="reviews" className="pt-8 border-t border-gray-200 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-gray-200">
             <div>
-              <h3 className="font-heading font-medium text-xl text-neutral-900">Customer reviews</h3>
+              <h3 className="font-heading font-medium text-xl text-neutral-900">{copy.text_customer_reviews}</h3>
               <p className="text-xs sm:text-sm text-stone-500 font-normal mt-0.5">
-                {reviews.length > 0
+                {loadingReviews ? 'Loading reviews…' : reviewsLoadError ? 'Reviews are temporarily unavailable.' : reviews.length > 0
                   ? `${reviews.length} review${reviews.length > 1 ? 's' : ''}`
                   : 'Be the first to leave a review for this kit.'}
               </p>
@@ -402,25 +324,28 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               className="px-4 py-2 bg-neutral-900 hover:bg-black text-white rounded-full text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
             >
               <PenLine className="w-3.5 h-3.5" />
-              <span>Write a Review</span>
+              <span>{copy.text_write_a_review_2}</span>
             </button>
           </div>
+
+          {reviewsLoadError && <p role="alert" className="text-sm text-rose-700">{reviewsLoadError} <button type="button" className="min-h-11 underline" onClick={retryReviews}>{copy.text_retry}</button></p>}
+          {reviewSuccessMessage && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{reviewSuccessMessage}</p>}
+          {reviewErrorMessage && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{reviewErrorMessage}</p>}
 
           {/* Form */}
           {showReviewForm && (
             <form onSubmit={handleReviewSubmit} className="p-6 bg-[#FBFBFA] rounded-2xl border border-gray-200 space-y-4">
-              <h5 className="font-heading font-medium text-sm text-neutral-900">Review this kit</h5>
+              <h5 className="font-heading font-medium text-sm text-neutral-900">{copy.text_review_this_kit}</h5>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="kit-review-name" className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                    Your Name *
-                  </label>
+                    {copy.text_your_name}</label>
                   <input
                     id="kit-review-name"
                     name="customerName"
                     type="text"
                     required
-                    placeholder="e.g. Zainab M. (Karachi)"
+                    placeholder={copy.placeholder_e_g_zainab_m_karachi}
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
@@ -428,8 +353,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                 </div>
                 <div>
                   <label htmlFor="kit-review-rating" className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                    Rating
-                  </label>
+                    {copy.text_rating}</label>
                   <select
                     id="kit-review-rating"
                     name="reviewRating"
@@ -437,23 +361,22 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                     onChange={(e) => setReviewRating(Number(e.target.value))}
                     className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
                   >
-                    <option value={5}>★★★★★ (5 - Excellent)</option>
-                    <option value={4}>★★★★☆ (4 - Good)</option>
-                    <option value={3}>★★★☆☆ (3 - Average)</option>
-                    <option value={2}>★★☆☆☆ (2 - Poor)</option>
-                    <option value={1}>★☆☆☆☆ (1 - Very Bad)</option>
+                    <option value={5}>{copy.text_5_excellent}</option>
+                    <option value={4}>{copy.text_4_good}</option>
+                    <option value={3}>{copy.text_3_average}</option>
+                    <option value={2}>{copy.text_2_poor}</option>
+                    <option value={1}>{copy.text_1_very_bad}</option>
                   </select>
                 </div>
               </div>
               <div>
                 <label htmlFor="kit-review-title" className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                  Title
-                </label>
+                  {copy.text_title}</label>
                 <input
                   id="kit-review-title"
                   name="reviewTitle"
                   type="text"
-                  placeholder="e.g. Beautiful packaging and easy to follow"
+                  placeholder={copy.placeholder_e_g_beautiful_packaging_and_easy_to_follow}
                   value={reviewTitle}
                   onChange={(e) => setReviewTitle(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
@@ -461,14 +384,13 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               </div>
               <div>
                 <label htmlFor="kit-review-body" className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                  Review Details *
-                </label>
+                  {copy.text_review_details}</label>
                 <textarea
                   id="kit-review-body"
                   name="reviewBody"
                   required
                   rows={3}
-                  placeholder="How was the experience, taste, and daily convenience?"
+                  placeholder={copy.placeholder_how_was_the_experience_taste_and_daily_convenience}
                   value={reviewBody}
                   onChange={(e) => setReviewBody(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
@@ -480,8 +402,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                   onClick={() => setShowReviewForm(false)}
                   className="px-4 py-2 border border-gray-200 bg-white hover:bg-neutral-50 rounded-full text-xs font-semibold uppercase tracking-wider text-neutral-700 cursor-pointer"
                 >
-                  Cancel
-                </button>
+                  {copy.text_cancel}</button>
                 <button
                   type="submit"
                   disabled={submittingReview}
@@ -502,11 +423,10 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
                     <span className="font-semibold text-neutral-900">{rev.customer_name}</span>
                     {rev.verified_purchase && (
                       <span className="text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full font-medium">
-                        Verified Purchase
-                      </span>
+                        {copy.text_verified_purchase}</span>
                     )}
                   </div>
-                  <span className="text-stone-400 text-xs">{formatDate(rev.created_at)}</span>
+                  <span className="text-stone-600 text-xs">{formatDate(rev.created_at)}</span>
                 </div>
                 <div className="flex text-amber-500 text-sm">
                   {'★'.repeat(rev.rating)}
@@ -517,7 +437,7 @@ export function KitDetailView({ kit }: KitDetailViewProps) {
               </div>
             ))}
           </div>
-        </div>
+        </div>)}
       </div>
 
       {/* Notify Me Modal */}

@@ -259,6 +259,7 @@ export function AdminKitsClient({ initialKits, initialProducts }: AdminKitsClien
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: editingKit.id,
+          expected_updated_at: editingKit.updated_at,
           name: editingKit.name,
           package_size: editingKit.package_size,
           price_pkr: Number(editingKit.price_pkr),

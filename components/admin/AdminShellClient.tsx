@@ -8,6 +8,7 @@ import { CommandPalette } from '@/components/admin/CommandPalette';
 import { OrderDrawer } from '@/components/admin/OrderDrawer';
 import {
   LayoutDashboard,
+  FileText,
   ShoppingBag,
   Package,
   Layers,
@@ -93,7 +94,8 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
 
   // Handle data-fx="lite"
   useEffect(() => {
-    const saved = localStorage.getItem('seedly_admin_fx');
+    let saved: string | null = null;
+    try { saved = localStorage.getItem('seedly_admin_fx'); } catch { /* Effects still work without browser storage. */ }
     if (saved === 'lite') {
       setReduceEffects(true);
       document.documentElement.setAttribute('data-fx', 'lite');
@@ -105,10 +107,10 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
     setReduceEffects(next);
     if (next) {
       document.documentElement.setAttribute('data-fx', 'lite');
-      localStorage.setItem('seedly_admin_fx', 'lite');
+      try { localStorage.setItem('seedly_admin_fx', 'lite'); } catch { /* Optional preference. */ }
     } else {
       document.documentElement.removeAttribute('data-fx');
-      localStorage.removeItem('seedly_admin_fx');
+      try { localStorage.removeItem('seedly_admin_fx'); } catch { /* Optional preference. */ }
     }
   };
 
@@ -180,6 +182,10 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
       ],
     },
     {
+      heading: 'WEBSITE',
+      items: [{ label: 'Website Content', href: '/admin/content', icon: FileText }],
+    },
+    {
       heading: 'ADMIN',
       items: [
         { label: 'Store Settings', href: '/admin/settings', icon: Settings, ownerOnly: true },
@@ -197,6 +203,7 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
     if (pathname.startsWith('/admin/reviews')) return 'Reviews Moderation';
     if (pathname.startsWith('/admin/stock-alerts')) return 'Stock Alerts';
     if (pathname.startsWith('/admin/settings')) return 'Store Settings';
+    if (pathname.startsWith('/admin/content')) return 'Website Content';
     return 'Desk';
   };
 

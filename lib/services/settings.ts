@@ -1,92 +1,104 @@
 import { createPublicClient } from '../supabase/public';
 import { getScopedClient } from '../supabase/admin';
-import { SiteSettings } from '../types';
+import { CustomerStoreSettings, SiteSettings, PaymentMethod } from '../types';
+import { adminEnum, adminNumber, adminText, AdminInputError } from '../admin-validation';
 
-const DEFAULT_SETTINGS: SiteSettings = {
-  store_name: 'Seedly',
-  tagline: 'Raw Seeds & Loose-Leaf Teas',
-  currency: 'PKR',
-  delivery_fee_minor: 20000,
-  free_delivery_threshold_minor: 250000,
-  bank_name: 'Meezan Bank Limited',
-  bank_account_title: 'Seedly Naturals Pakistan',
-  bank_account_number: '0102-0104882910',
-  bank_iban: 'PK36MEZN0001020104882910',
-  jazzcash_number: '0371 9055758',
-  jazzcash_title: 'Seedly Care',
-  easypaisa_number: '0371 9055758',
-  easypaisa_title: 'Seedly Care',
-  whatsapp_number: '+92 371 9055758',
-  support_email: 'care@seedly.pk',
-  serviceable_cities: [
-    'Karachi',
-    'Lahore',
-    'Islamabad',
-    'Rawalpindi',
-    'Faisalabad',
-    'Multan',
-    'Peshawar',
-    'Quetta',
-    'Sialkot',
-    'Gujranwala',
-    'Hyderabad',
-    'Abbottabad',
-    'Gilgit',
-    'Skardu',
-    'Bahawalpur',
-  ],
-};
+const SETTING_KEYS = new Set([
+  'currency', 'delivery_fee_minor', 'free_delivery_threshold_minor',
+  'bank_name', 'bank_account_title', 'bank_account_number', 'bank_iban',
+  'jazzcash_number', 'jazzcash_title', 'easypaisa_number', 'easypaisa_title',
+  'serviceable_cities',
+  'ordering_enabled', 'cod_enabled', 'bank_transfer_enabled', 'wallet_enabled',
+]);
+const BOOLEAN_KEYS = new Set(['ordering_enabled', 'cod_enabled', 'bank_transfer_enabled', 'wallet_enabled']);
+const CMS_MANAGED_KEYS = new Set(['store_name', 'tagline', 'support_email', 'whatsapp_number']);
 
-export async function getSiteSettings(): Promise<SiteSettings> {
-  const supabase = createPublicClient();
-  const { data: rows, error } = await supabase.from('site_settings').select('key, value');
-
-  if (error || !rows) {
-    console.error('Failed to fetch site settings from Supabase:', error);
-    return DEFAULT_SETTINGS;
+/** Supabase is authoritative: never fabricate a payment destination or delivery fee. */
+export async function getSiteSettings(_options: { requireConfigured?: boolean } = {}): Promise<SiteSettings> {
+  const { data: rows, error } = await createPublicClient().from('site_settings').select('key, value');
+  if (error || !rows) throw new Error('Store settings are temporarily unavailable. Please try again.');
+  const map: Record<string, string> = Object.fromEntries(rows.map(row => [row.key, row.value]));
+  const required = (key: string) => {
+    const value = map[key];
+    if (typeof value !== 'string' || !value.trim()) throw new Error('Store settings are incomplete. Please contact the store.');
+    return value.trim();
+  };
+  const amount = (key: string, minimum: number) => {
+    const value = required(key);
+    const amount = Number(value);
+    if (!/^\d+$/.test(value) || !Number.isSafeInteger(amount) || amount < minimum || amount > 100_000_000) {
+      throw new Error('Delivery settings are not configured. Please contact the store.');
+    }
+    return amount;
+  };
+  const flag = (key: string) => {
+    if (!['true', 'false'].includes(map[key])) throw new Error('Ordering controls are not configured. Please contact the store.');
+    return map[key] === 'true';
+  };
+  let cities: unknown;
+  try { cities = JSON.parse(required('serviceable_cities')); } catch { throw new Error('Delivery cities are not configured. Please contact the store.'); }
+  if (!Array.isArray(cities) || !cities.length || cities.length > 100 || cities.some(city => typeof city !== 'string' || !city.trim() || city.length > 100)) {
+    throw new Error('Delivery cities are not configured. Please contact the store.');
   }
-
-  const map: Record<string, string> = {};
-  for (const r of rows) {
-    map[r.key] = r.value;
-  }
-
+  const currency = required('currency');
+  if (currency !== 'PKR') throw new Error('Store currency is not configured.');
   return {
-    store_name: map['store_name'] || DEFAULT_SETTINGS.store_name,
-    tagline: map['tagline'] || DEFAULT_SETTINGS.tagline,
-    currency: map['currency'] || DEFAULT_SETTINGS.currency,
-    delivery_fee_minor: parseInt(map['delivery_fee_minor'] || '20000', 10),
-    free_delivery_threshold_minor: parseInt(map['free_delivery_threshold_minor'] || '250000', 10),
-    bank_name: map['bank_name'] || DEFAULT_SETTINGS.bank_name,
-    bank_account_title: map['bank_account_title'] || DEFAULT_SETTINGS.bank_account_title,
-    bank_account_number: map['bank_account_number'] || DEFAULT_SETTINGS.bank_account_number,
-    bank_iban: map['bank_iban'] || DEFAULT_SETTINGS.bank_iban,
-    jazzcash_number: map['jazzcash_number'] || DEFAULT_SETTINGS.jazzcash_number,
-    jazzcash_title: map['jazzcash_title'] || DEFAULT_SETTINGS.jazzcash_title,
-    easypaisa_number: map['easypaisa_number'] || DEFAULT_SETTINGS.easypaisa_number,
-    easypaisa_title: map['easypaisa_title'] || DEFAULT_SETTINGS.easypaisa_title,
-    whatsapp_number: map['whatsapp_number'] || DEFAULT_SETTINGS.whatsapp_number,
-    support_email: map['support_email'] || DEFAULT_SETTINGS.support_email,
-    serviceable_cities: DEFAULT_SETTINGS.serviceable_cities,
+    store_name: required('store_name'), tagline: map.tagline || '', currency,
+    delivery_fee_minor: amount('delivery_fee_minor', 0),
+    free_delivery_threshold_minor: amount('free_delivery_threshold_minor', 1),
+    bank_name: map.bank_name || '', bank_account_title: map.bank_account_title || '',
+    bank_account_number: map.bank_account_number || '', bank_iban: map.bank_iban || '',
+    jazzcash_number: map.jazzcash_number || '', jazzcash_title: map.jazzcash_title || '',
+    easypaisa_number: map.easypaisa_number || '', easypaisa_title: map.easypaisa_title || '',
+    whatsapp_number: map.whatsapp_number || '', support_email: map.support_email || '',
+    serviceable_cities: [...new Set(cities.map(city => city.trim()))],
+    ordering_enabled: flag('ordering_enabled'), cod_enabled: flag('cod_enabled'),
+    bank_transfer_enabled: flag('bank_transfer_enabled'), wallet_enabled: flag('wallet_enabled'),
   };
 }
 
+export function enabledPaymentMethods(settings: SiteSettings): PaymentMethod[] {
+  const methods: PaymentMethod[] = [];
+  if (settings.cod_enabled) methods.push('COD');
+  if (settings.bank_transfer_enabled && settings.bank_name && settings.bank_account_title && settings.bank_account_number) methods.push('bank_transfer');
+  if (settings.wallet_enabled && (settings.jazzcash_number && settings.jazzcash_title || settings.easypaisa_number && settings.easypaisa_title)) methods.push('wallet_aggregator');
+  return methods;
+}
+
+export async function getCustomerStoreSettings(): Promise<CustomerStoreSettings> {
+  const settings = await getSiteSettings();
+  const { currency, delivery_fee_minor, free_delivery_threshold_minor, bank_name, bank_account_title, bank_account_number, bank_iban, jazzcash_number, jazzcash_title, easypaisa_number, easypaisa_title } = settings;
+  const enabled_payment_methods = enabledPaymentMethods(settings);
+  const ordering_available = Boolean(process.env.SUPABASE_SECRET_KEY) && settings.ordering_enabled && enabled_payment_methods.length > 0;
+  return { currency, delivery_fee_minor, free_delivery_threshold_minor, bank_name, bank_account_title, bank_account_number, bank_iban, jazzcash_number, jazzcash_title, easypaisa_number, easypaisa_title, enabled_payment_methods, receipt_upload_available: ordering_available && enabled_payment_methods.some(method => method !== 'COD'), ordering_available };
+}
+
 export async function updateSiteSettings(settings: Partial<SiteSettings>): Promise<void> {
+  if (Object.keys(settings).some(key => CMS_MANAGED_KEYS.has(key))) {
+    throw new AdminInputError('Manage branding and contact details in Website Content (/admin/content/site). Save a draft, then publish it.');
+  }
   const supabase = await getScopedClient();
   const upserts: { key: string; value: string; updated_at: string }[] = [];
-
   for (const [key, value] of Object.entries(settings)) {
-    upserts.push({
-      key,
-      value: typeof value === 'object' ? JSON.stringify(value) : String(value),
-      updated_at: new Date().toISOString(),
-    });
-  }
-
-  if (upserts.length > 0) {
-    const { error } = await supabase.from('site_settings').upsert(upserts, { onConflict: 'key' });
-    if (error) {
-      throw new Error(`Failed to update site settings: ${error.message}`);
+    if (!SETTING_KEYS.has(key)) throw new AdminInputError('Unknown store setting: ' + key);
+    let validated: string | number | string[] | boolean;
+    if (BOOLEAN_KEYS.has(key)) {
+      if (typeof value !== 'boolean') throw new AdminInputError('Ordering controls must be true or false.');
+      validated = value;
+    } else if (key === 'delivery_fee_minor' || key === 'free_delivery_threshold_minor') {
+      validated = adminNumber(value, key.replaceAll('_', ' '), key === 'free_delivery_threshold_minor' ? 1 : 0, 100_000_000);
+    } else if (key === 'currency') {
+      validated = adminEnum(value, ['PKR'], 'currency');
+    } else if (key === 'serviceable_cities') {
+      if (!Array.isArray(value) || value.length < 1 || value.length > 100) throw new AdminInputError('Provide between 1 and 100 cities.');
+      validated = [...new Set(value.map(city => adminText(city, 'City', 100, true)))];
+    } else {
+      validated = adminText(value, key.replaceAll('_', ' '), 300);
     }
+    upserts.push({ key, value: Array.isArray(validated) ? JSON.stringify(validated) : String(validated), updated_at: new Date().toISOString() });
+  }
+  if (upserts.length) {
+    const { error } = await supabase.from('site_settings').upsert(upserts, { onConflict: 'key' });
+    if (error) throw new Error('Store settings could not be saved. Please try again.');
   }
 }

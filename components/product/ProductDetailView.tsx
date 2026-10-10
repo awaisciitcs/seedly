@@ -1,4 +1,7 @@
 'use client';
+import { useSiteContent } from '@/components/storefront/SiteContentProvider';
+import { ManagedSection } from '@/components/storefront/ManagedSections';
+import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -14,7 +17,10 @@ import { ProductCard } from './ProductCard';
 import { PurchaseActions } from './PurchaseActions';
 import { StickyPurchaseBar } from './StickyPurchaseBar';
 import { TeaBrewCalculator } from './TeaBrewCalculator';
-import { siteConfig } from '../../lib/config';
+import { ProductGallery } from './ProductGallery';
+import { DeliveryNote } from '@/components/storefront/DeliveryNote';
+import { toCartItem } from '@/lib/catalog';
+import { useProductReviews } from '@/hooks/useProductReviews';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -22,6 +28,9 @@ interface ProductDetailViewProps {
 }
 
 export function ProductDetailView({ product, relatedProducts = [] }: ProductDetailViewProps) {
+  const cms = useSiteContent<CmsPageContent>('product'); const { copy, links, images } = cms;
+const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
+
   const router = useRouter();
   const { addItem, setIsCartOpen } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -57,8 +66,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
   const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
 
   // Reviews State
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loadingReviews, setLoadingReviews] = useState(false);
+  const { reviews, loading: loadingReviews, error: reviewsLoadError, retry: retryReviews } = useProductReviews(product.id);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewSuccessMessage, setReviewSuccessMessage] = useState('');
@@ -70,26 +78,9 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewBody, setReviewBody] = useState('');
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setLoadingReviews(true);
-        const res = await fetch(`/api/reviews?productId=${product.id}`);
-        const json = await res.json();
-        if (json.data) {
-          setReviews(json.data);
-        }
-      } catch (err) {
-        console.error('Failed to load reviews:', err);
-      } finally {
-        setLoadingReviews(false);
-      }
-    };
-    fetchReviews();
-  }, [product.id]);
-
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingReview) return;
     setReviewErrorMessage('');
     setReviewSuccessMessage('');
 
@@ -103,12 +94,13 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
       const res = await fetch('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(15000),
         body: JSON.stringify({
           product_id: product.id,
           product_name: product.name,
           customer_name: customerName,
           rating: reviewRating,
-          title: reviewTitle || 'Verified Feedback',
+          title: reviewTitle || 'Customer feedback',
           body: reviewBody,
         }),
       });
@@ -131,52 +123,8 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
     }
   };
 
-  const handleAddToCart = () => {
-    if (!inStock) {
-      setIsNotifyModalOpen(true);
-      return;
-    }
-    addItem({
-      id: `${product.id}-${selectedVariant?.id || 'default'}`,
-      product_id: product.id,
-      variant_id: selectedVariant?.id,
-      name: product.name,
-      slug: product.slug,
-      variant_label: selectedVariant?.option_value,
-      price_minor: priceMinor,
-      image_url: product.image_url,
-      quantity,
-      product_type: product.product_type,
-      max_quantity: currentStock,
-    });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  };
-
-  const handleBuyNow = () => {
-    if (!inStock) {
-      setIsNotifyModalOpen(true);
-      return;
-    }
-    addItem(
-      {
-        id: `${product.id}-${selectedVariant?.id || 'default'}`,
-        product_id: product.id,
-        variant_id: selectedVariant?.id,
-        name: product.name,
-        slug: product.slug,
-        variant_label: selectedVariant?.option_value,
-        price_minor: priceMinor,
-        image_url: product.image_url,
-        quantity,
-        product_type: product.product_type,
-        max_quantity: currentStock,
-      },
-      { openDrawer: false }
-    );
-    setIsCartOpen(false);
-    router.push('/checkout');
-  };
+  const handleAddToCart = () => { if (!inStock) { setIsNotifyModalOpen(true); return false; } const success = addItem(toCartItem(product, quantity, selectedVariant)); if(success) {setAdded(true);setTimeout(()=>setAdded(false),1500);} return success; };
+  const handleBuyNow = () => { if (!inStock) { setIsNotifyModalOpen(true); return; } if(addItem(toCartItem(product, quantity, selectedVariant), {openDrawer:false})){ setIsCartOpen(false); router.push("/checkout"); } };
 
   const waMessage = encodeURIComponent(`Hi Seedly, I have a question about ${product.name}.`);
 
@@ -196,15 +144,15 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
     <div className="bg-white text-neutral-900">
       {/* 0. BREADCRUMB & HERO */}
       <div className="max-w-7xl mx-auto w-full px-5 md:px-8 pt-4 pb-12 md:pb-16">
-        
+
         {/* Breadcrumb: sentence case, matching top nav labels */}
         <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-stone-600 mb-6 sm:mb-8 font-normal">
-          <Link href="/" className="hover:text-black transition-colors">Home</Link>
-          <ChevronRight className="h-3.5 w-3.5 text-stone-400 rtl:rotate-180 shrink-0" aria-hidden="true" />
+          <Link href={links.href} className="hover:text-black transition-colors">{copy.text_home}</Link>
+          <ChevronRight className="h-3.5 w-3.5 text-stone-600 rtl:rotate-180 shrink-0" aria-hidden="true" />
           <Link href={categoryNavHref} className="hover:text-black transition-colors">
             {categoryNavLabel}
           </Link>
-          <ChevronRight className="h-3.5 w-3.5 text-stone-400 rtl:rotate-180 shrink-0" aria-hidden="true" />
+          <ChevronRight className="h-3.5 w-3.5 text-stone-600 rtl:rotate-180 shrink-0" aria-hidden="true" />
           <span className="text-neutral-900 truncate font-medium" aria-current="page">
             {productSentenceTitle}
           </span>
@@ -212,45 +160,34 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
 
         {/* Hero: TwoCol (grid-cols-1 lg:grid-cols-2 lg:gap-x-12 gap-y-10 items-start) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 gap-y-10 items-start">
-          
+
           {/* Left Hero Column: Square gallery image + column-width WhatsApp help card */}
           <div className="w-full space-y-4">
-            <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-[#FBFBFA] border border-stone-200 shadow-xs">
-              <Image
-                src={product.image_url}
-                alt={product.name}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
-            </div>
+            <ProductGallery name={product.name} image={product.image_url} images={product.gallery_images} />
 
             {/* Contextual WhatsApp Help Card: exactly column width */}
             <div className="w-full rounded-xl border border-stone-200 bg-[#FBFBFA] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
               <div className="space-y-0.5 text-start">
                 <p className="text-xs font-semibold uppercase tracking-wider text-neutral-900">
-                  Questions about this product?
-                </p>
+                  {copy.text_questions_about_this_product}</p>
                 <p className="text-xs text-stone-600 font-normal">
-                  Ask our team about ingredients, preparation, or storage.
-                </p>
+                  {copy.text_ask_our_team_about_ingredients_preparation_or_storage}</p>
               </div>
-              <a
+              {features.whatsapp&&(<a
                 href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-neutral-800 text-xs font-semibold uppercase tracking-wider px-4 py-2 shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs self-start sm:self-auto"
               >
                 <MessageCircle className="w-3.5 h-3.5 text-neutral-700" />
-                <span>Ask on WhatsApp</span>
-              </a>
+                <span>{copy.text_ask_on_whatsapp}</span>
+              </a>)}
             </div>
           </div>
 
           {/* Right Hero Column: Steady 16/24px rhythm matching left column height within ~24px */}
           <div className="flex flex-col space-y-4 text-start">
-            
+
             {/* 1. Category Tag */}
             <div>
               <span className="rounded-full bg-stone-100 text-stone-700 px-3 py-1 text-xs font-semibold uppercase tracking-wider inline-block">
@@ -262,6 +199,8 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                   ? 'Highland Green Tea'
                   : product.slug === 'flax-seeds'
                   ? 'Cold-Milled Golden Flax'
+                  : product.product_type === 'tea'
+                  ? 'Tea'
                   : 'Raw Whole Seeds'}
               </span>
             </div>
@@ -270,6 +209,8 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             <h1 className="font-heading font-medium text-3xl sm:text-4xl text-neutral-900 tracking-tight leading-tight">
               {productSentenceTitle}
             </h1>
+            {features.reviews && (<a href={links.href_reviews} className="inline-flex text-sm underline underline-offset-4">{product.review_count ? product.rating?.toFixed(1) + " / 5 · " + product.review_count + " reviews" : "Read or write a review"}</a>)}
+            <DeliveryNote />
 
             {/* 3. Description */}
             <p className="text-sm text-stone-600 leading-relaxed font-normal">
@@ -289,17 +230,15 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               {inStock ? (
                 isLowStock ? (
                   <span className="rounded-full bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 text-xs font-medium">
-                    Low stock — {currentStock} left
-                  </span>
+                    {copy.text_low_stock}{currentStock} {copy.text_left}</span>
                 ) : (
                   <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 text-xs font-medium">
-                    In stock
-                  </span>
+                    {copy.text_in_stock}</span>
                 )
               ) : (
                 <span className="rounded-full bg-rose-50 text-rose-800 border border-rose-200 px-2.5 py-0.5 text-xs font-medium flex items-center gap-1">
                   <Bell className="w-3 h-3 text-rose-700" />
-                  <span>Out of stock</span>
+                  <span>{copy.text_out_of_stock}</span>
                 </span>
               )}
             </div>
@@ -307,8 +246,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             {/* 5. Per-100g Line (updates with selected size) */}
             {selectedVariant && selectedVariant.weight_grams > 0 ? (
               <p className="text-xs text-stone-600 font-normal">
-                {formatPrice(Math.round(priceMinor * 100 / selectedVariant.weight_grams))} per 100g
-              </p>
+                {formatPrice(Math.round(priceMinor * 100 / selectedVariant.weight_grams))} {copy.text_per_100g}</p>
             ) : null}
 
             {/* 6. Pack-size Selector (grid-cols-3, equal tiles, no 'Selected: ...' text) */}
@@ -326,20 +264,19 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                         aria-pressed={isSelected}
                         className={`rounded-xl border p-3 text-center sm:text-start transition-all cursor-pointer shadow-xs min-h-[64px] flex flex-col justify-center ${
                           isSelected
-                            ? 'border-black bg-black text-white'
+                            ? 'border-seedly-dark bg-seedly-dark text-white'
                             : 'border-stone-200 bg-white text-stone-900 hover:border-stone-400'
                         }`}
                       >
-                        <span className="text-xs sm:text-sm font-semibold tracking-tight">{v.option_value}</span>
-                        <span className={`text-[11px] tabular-nums mt-0.5 ${isSelected ? 'text-stone-300' : 'text-stone-600'}`}>
+                        <span className="text-sm sm:text-base font-semibold tracking-tight">{v.option_value}</span>
+                        <span className={`text-sm tabular-nums mt-1 ${isSelected ? 'text-stone-300' : 'text-stone-600'}`}>
                           {formatPrice(v.price_minor)}
                         </span>
                         {!vInStock && (
                           <span className={`text-[9px] font-semibold uppercase mt-0.5 ${
                             isSelected ? 'text-stone-300' : 'text-rose-600'
                           }`}>
-                            Sold out
-                          </span>
+                            {copy.text_sold_out}</span>
                         )}
                       </button>
                     );
@@ -352,17 +289,17 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-3 text-xs text-stone-600 flex items-center gap-2 shadow-xs">
               <Truck className="h-4 w-4 text-neutral-700 shrink-0" aria-hidden="true" />
               <span>
-                Flat Rs. {siteConfig.shipping.standardFee} delivery · FREE over Rs. {siteConfig.shipping.freeThreshold.toLocaleString()} · Dispatched in 24h from Lahore
-              </span>
+                {copy.text_delivery_charges_are_confirmed_in_your_basket_see_deliv}</span>
             </div>
 
             {/* 8 & 9. CTA Row (Stepper, Add to cart flex-1, Wishlist; all h-12) & Buy now (full width h-12) */}
             <div ref={mainActionsRef} className="pt-1">
               {inStock ? (
                 <PurchaseActions
+                  added={added}
                   quantity={quantity}
                   maxQuantity={currentStock}
-                  added={added}
+
                   wishlisted={wishlisted}
                   onQuantityChange={setQuantity}
                   onAdd={handleAddToCart}
@@ -374,11 +311,10 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                   <div className="p-4 bg-amber-50/70 border border-amber-200/80 rounded-xl text-xs text-amber-900 space-y-1">
                     <p className="font-semibold uppercase tracking-wider flex items-center gap-1.5">
                       <Bell className="w-4 h-4 text-amber-700" />
-                      <span>Currently out of stock</span>
+                      <span>{copy.text_currently_out_of_stock}</span>
                     </p>
                     <p className="text-stone-600 font-normal">
-                      Leave your email and we will let you know when this fresh batch is packed.
-                    </p>
+                      {copy.text_leave_your_email_and_we_will_let_you_know_when_this_fre}</p>
                   </div>
 
                   <button
@@ -387,7 +323,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                     className="h-12 w-full rounded-full font-semibold text-xs sm:text-sm uppercase tracking-wider bg-black hover:bg-neutral-800 text-white shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Bell className="w-4 h-4" />
-                    <span>Notify me when available</span>
+                    <span>{copy.text_notify_me_when_available}</span>
                   </button>
                 </div>
               )}
@@ -395,38 +331,34 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
 
             {/* 10. One fine-print row */}
             <div className="pt-2 text-xs text-stone-600 flex items-center gap-2 flex-wrap font-normal">
-              <Link href="/shipping" className="hover:text-black underline underline-offset-4">
-                Delivery times &amp; charges
-              </Link>
+              <Link href={links.href_shipping} className="hover:text-black underline underline-offset-4">
+                {copy.text_delivery_times_charges}</Link>
               <span>·</span>
-              <Link href="/returns" className="hover:text-black underline underline-offset-4">
-                Replacement policy
-              </Link>
+              <Link href={links.href_returns} className="hover:text-black underline underline-offset-4">
+                {copy.text_replacement_policy}</Link>
             </div>
 
             {/* 11. One muted line linking to #dietary-notice */}
             <p className="text-xs text-stone-600 font-normal">
-              Culinary food item, not a medicine.{' '}
-              <a href="#dietary-notice" className="underline underline-offset-4 hover:text-black">
-                Dietary notice
-              </a>
+              {copy.text_culinary_food_item_not_a_medicine}{' '}
+              <a href={links.href_dietary_notice} className="underline underline-offset-4 hover:text-black">
+                {copy.text_dietary_notice}</a>
             </p>
           </div>
         </div>
       </div>
 
       {/* 3. PRODUCT INFORMATION (Section, SectionTitle, then TwoCol) */}
-      <section className="border-t border-stone-200 py-12 md:py-16">
+      <ManagedSection document="product" sectionId="productdetailview_section_01"><section className="border-t border-stone-200 py-12 md:py-16">
         <div className="max-w-7xl mx-auto w-full px-5 md:px-8">
           <h2 className="text-2xl font-medium tracking-tight mb-8 text-neutral-900">
-            Product information
-          </h2>
+            {copy.text_product_information}</h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 gap-y-10 items-start">
-            
+
             {/* Left Column: Accordions with identical py-4 and chevrons on column right edge */}
             <div className="border-t border-stone-200 divide-y divide-stone-200">
-              
+
               {/* Accordion 1: Ingredients & details (open by default) */}
               <div>
                 <button
@@ -436,7 +368,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                   aria-controls="accordion-details"
                   className="flex w-full items-center justify-between py-4 text-start text-base sm:text-lg font-medium text-neutral-900 hover:text-black transition-colors cursor-pointer"
                 >
-                  <span>Ingredients &amp; details</span>
+                  <span>{copy.text_ingredients_details}</span>
                   <ChevronDown
                     className={`h-5 w-5 text-stone-500 transition-transform duration-200 ease-out ms-auto rtl:rotate-180 ${
                       openSections.details ? 'rotate-180 text-black' : 'rotate-0'
@@ -453,19 +385,19 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                   <div className="accordion-inner">
                     <div className="pb-6 pt-1 text-sm leading-relaxed text-stone-600 space-y-4 font-normal">
                       <p>{product.description}</p>
-                      
+
                       {/* dl grid-cols-[8rem_1fr] gap-y-3: Ingredients, Origin, Pack size, Product code */}
                       <dl className="grid grid-cols-[8rem_1fr] gap-y-3 pt-3 border-t border-stone-100 text-sm">
-                        <dt className="text-stone-600 font-medium">Ingredients</dt>
+                        <dt className="text-stone-600 font-medium">{copy.text_ingredients}</dt>
                         <dd className="text-neutral-900">{product.ingredients}</dd>
 
-                        <dt className="text-stone-600 font-medium">Origin</dt>
+                        <dt className="text-stone-600 font-medium">{copy.text_origin}</dt>
                         <dd className="text-neutral-900">{originValue}</dd>
 
-                        <dt className="text-stone-600 font-medium">Pack size</dt>
+                        <dt className="text-stone-600 font-medium">{copy.text_pack_size}</dt>
                         <dd className="text-neutral-900">{selectedVariant?.option_value || (product.weight_grams ? `${product.weight_grams}g pouch` : '250g pouch')}</dd>
 
-                        <dt className="text-stone-600 font-medium">Product code</dt>
+                        <dt className="text-stone-600 font-medium">{copy.text_product_code}</dt>
                         <dd className="font-mono text-neutral-900 text-xs sm:text-sm">{selectedVariant?.sku || product.sku || 'SED-FLX-01'}</dd>
                       </dl>
 
@@ -528,7 +460,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                   aria-controls="accordion-storage"
                   className="flex w-full items-center justify-between py-4 text-start text-base sm:text-lg font-medium text-neutral-900 hover:text-black transition-colors cursor-pointer"
                 >
-                  <span>Keeping it fresh &amp; storage</span>
+                  <span>{copy.text_keeping_it_fresh_storage}</span>
                   <ChevronDown
                     className={`h-5 w-5 text-stone-500 transition-transform duration-200 ease-out ms-auto rtl:rotate-180 ${
                       openSections.storage ? 'rotate-180 text-black' : 'rotate-0'
@@ -545,7 +477,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                   <div className="accordion-inner">
                     <div className="pb-6 pt-1 text-sm leading-relaxed text-stone-600 space-y-3 font-normal">
                       <p>{product.storage_instructions}</p>
-                      <p>Check your pack for its best-before date and reseal it after each use.</p>
+                      <p>{copy.text_check_your_pack_for_its_best_before_date_and_reseal_it}</p>
                     </div>
                   </div>
                 </div>
@@ -560,7 +492,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                   aria-controls="accordion-faqs"
                   className="flex w-full items-center justify-between py-4 text-start text-base sm:text-lg font-medium text-neutral-900 hover:text-black transition-colors cursor-pointer"
                 >
-                  <span>Common questions</span>
+                  <span>{copy.text_common_questions}</span>
                   <ChevronDown
                     className={`h-5 w-5 text-stone-500 transition-transform duration-200 ease-out ms-auto rtl:rotate-180 ${
                       openSections.faqs ? 'rotate-180 text-black' : 'rotate-0'
@@ -578,27 +510,26 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                     <div className="pb-6 pt-1 text-sm leading-relaxed divide-y divide-stone-100 font-normal">
                       {product.product_type === 'tea' && product.caffeine_level && (
                         <div className="pb-4">
-                          <h4 className="text-sm sm:text-base font-medium text-neutral-900">Does it contain caffeine?</h4>
-                          <p className="mt-1 text-stone-600">Caffeine level: {product.caffeine_level}.</p>
+                          <h4 className="text-sm sm:text-base font-medium text-neutral-900">{copy.text_does_it_contain_caffeine}</h4>
+                          <p className="mt-1 text-stone-600">{copy.text_caffeine_level}{product.caffeine_level}.</p>
                         </div>
                       )}
                       <div className="py-4">
-                        <h4 className="text-sm sm:text-base font-medium text-neutral-900">Which pack sizes are available?</h4>
+                        <h4 className="text-sm sm:text-base font-medium text-neutral-900">{copy.text_which_pack_sizes_are_available}</h4>
                         <p className="mt-1 text-stone-600">
                           {activeVariants.map((v) => v.option_value).join(', ') || 'See product label.'}
                         </p>
                       </div>
                       <div className="py-4">
-                        <h4 className="text-sm sm:text-base font-medium text-neutral-900">When will my order arrive?</h4>
+                        <h4 className="text-sm sm:text-base font-medium text-neutral-900">{copy.text_when_will_my_order_arrive}</h4>
                         <p className="mt-1 text-stone-600">
-                          Timings depend on your delivery address. <Link href="/shipping" className="underline underline-offset-4 text-neutral-900">See our delivery estimates</Link>.
+                          {copy.text_timings_depend_on_your_delivery_address}<Link href={links.href_shipping} className="underline underline-offset-4 text-neutral-900">{copy.text_see_our_delivery_estimates}</Link>.
                         </p>
                       </div>
                       <div className="pt-4">
-                        <h4 className="text-sm sm:text-base font-medium text-neutral-900">Have another question?</h4>
+                        <h4 className="text-sm sm:text-base font-medium text-neutral-900">{copy.text_have_another_question}</h4>
                         <p className="mt-1 text-stone-600">
-                          <Link href="/contact" className="underline underline-offset-4 text-neutral-900">Contact the Seedly team</Link> for help with this product or your order.
-                        </p>
+                          <Link href={links.href_contact} className="underline underline-offset-4 text-neutral-900">{copy.text_contact_the_seedly_team}</Link> {copy.text_for_help_with_this_product_or_your_order}</p>
                       </div>
                     </div>
                   </div>
@@ -615,7 +546,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                     aria-controls="accordion-nutrition-mobile"
                     className="flex w-full items-center justify-between py-4 text-start text-base sm:text-lg font-medium text-neutral-900 hover:text-black transition-colors cursor-pointer"
                   >
-                    <span>Nutrition per 28g (typical values)</span>
+                    <span>{copy.text_nutrition_per_28g_typical_values}</span>
                     <ChevronDown
                       className={`h-5 w-5 text-stone-500 transition-transform duration-200 ease-out ms-auto rtl:rotate-180 ${
                         openSections.nutritionMobile ? 'rotate-180 text-black' : 'rotate-0'
@@ -659,8 +590,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               {nutritionEntries.length > 0 && (
                 <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-6 shadow-xs">
                   <h3 className="text-base font-semibold text-neutral-900 mb-4 tracking-tight">
-                    Nutrition per 28g (typical values)
-                  </h3>
+                    {copy.text_nutrition_per_28g_typical_values}</h3>
                   <table className="w-full text-sm">
                     <tbody className="divide-y divide-stone-200">
                       {nutritionEntries.map(([key, val]) => (
@@ -686,24 +616,22 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-5 sm:p-6 mt-10 text-xs text-stone-600 leading-relaxed shadow-xs text-start scroll-mt-24"
           >
             <strong className="text-neutral-900 font-semibold uppercase tracking-wider block mb-1">
-              Dietary Food Notice:
-            </strong>
+              {copy.text_dietary_food_notice}</strong>
             {siteConfig.disclaimer.standard}
           </div>
         </div>
-      </section>
+      </section></ManagedSection>
 
       {/* 4. REVIEWS */}
-      <section className="border-t border-stone-200 py-12 md:py-16">
+      <ManagedSection document="product" sectionId="productdetailview_section_02">{features.reviews && (<section id="reviews" className="border-t border-stone-200 py-12 md:py-16">
         <div className="max-w-7xl mx-auto w-full px-5 md:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div className="text-start">
               <h2 className="text-2xl font-medium tracking-tight text-neutral-900">
-                Customer reviews
-              </h2>
+                {copy.text_customer_reviews}</h2>
               <p className="text-xs sm:text-sm text-stone-600 font-normal mt-1">
-                {reviews.length > 0
-                  ? `${reviews.length} verified review${reviews.length > 1 ? 's' : ''}`
+                {loadingReviews ? 'Loading reviews…' : reviewsLoadError ? 'Reviews are temporarily unavailable.' : reviews.length > 0
+                  ? `${reviews.length} review${reviews.length > 1 ? 's' : ''}`
                   : 'Be the first to share your experience.'}
               </p>
             </div>
@@ -714,38 +642,38 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             >
               <span className="flex items-center gap-1.5">
                 <PenLine className="w-3.5 h-3.5" />
-                <span>Write a review</span>
+                <span>{copy.text_write_a_review}</span>
               </span>
             </button>
           </div>
 
           {/* Success / Error Messages */}
+          {reviewsLoadError && <p role="alert" className="mb-5 text-sm text-rose-700">{reviewsLoadError} <button type="button" className="min-h-11 underline" onClick={retryReviews}>{copy.text_retry}</button></p>}
           {reviewSuccessMessage && (
             <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2 mb-6">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-              <span>{reviewSuccessMessage}</span>
+              <span role="status">{reviewSuccessMessage}</span>
             </div>
           )}
           {reviewErrorMessage && (
             <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs flex items-center gap-2 mb-6">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-              <span>{reviewErrorMessage}</span>
+              <span role="alert">{reviewErrorMessage}</span>
             </div>
           )}
 
           {/* Review Submission Form: Full container width */}
           {showReviewForm && (
             <form onSubmit={handleReviewSubmit} className="p-6 bg-[#FBFBFA] rounded-xl border border-stone-200 space-y-4 mb-8 text-start">
-              <h3 className="font-heading font-medium text-base text-neutral-900">Submit your review</h3>
+              <h3 className="font-heading font-medium text-base text-neutral-900">{copy.text_submit_your_review}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                    Your Name *
-                  </label>
+                    {copy.text_your_name}</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Fatima Ali (Lahore)"
+                    placeholder={copy.placeholder_e_g_fatima_ali_lahore}
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-black"
@@ -753,28 +681,26 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                    Rating
-                  </label>
+                    {copy.text_rating}</label>
                   <select
                     value={reviewRating}
                     onChange={(e) => setReviewRating(Number(e.target.value))}
                     className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-black cursor-pointer"
                   >
-                    <option value={5}>★★★★★ (5 - Excellent)</option>
-                    <option value={4}>★★★★☆ (4 - Good)</option>
-                    <option value={3}>★★★☆☆ (3 - Average)</option>
-                    <option value={2}>★★☆☆☆ (2 - Poor)</option>
-                    <option value={1}>★☆☆☆☆ (1 - Very Bad)</option>
+                    <option value={5}>{copy.text_5_excellent}</option>
+                    <option value={4}>{copy.text_4_good}</option>
+                    <option value={3}>{copy.text_3_average}</option>
+                    <option value={2}>{copy.text_2_poor}</option>
+                    <option value={1}>{copy.text_1_very_bad}</option>
                   </select>
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                  Title
-                </label>
+                  {copy.text_title}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Clean seeds and prompt delivery"
+                  placeholder={copy.placeholder_e_g_clean_seeds_and_prompt_delivery}
                   value={reviewTitle}
                   onChange={(e) => setReviewTitle(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-black"
@@ -782,12 +708,11 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               </div>
               <div>
                 <label className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                  Review Comments *
-                </label>
+                  {copy.text_review_comments}</label>
                 <textarea
                   required
                   rows={3}
-                  placeholder="Share your experience regarding freshness, quality, and routine convenience..."
+                  placeholder={copy.placeholder_share_your_experience_regarding_freshness_quality_and_r}
                   value={reviewBody}
                   onChange={(e) => setReviewBody(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-black"
@@ -799,8 +724,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                   onClick={() => setShowReviewForm(false)}
                   className="px-4 py-2 border border-stone-200 bg-white hover:bg-stone-50 rounded-full text-xs font-semibold uppercase tracking-wider text-neutral-700 cursor-pointer"
                 >
-                  Cancel
-                </button>
+                  {copy.text_cancel}</button>
                 <button
                   type="submit"
                   disabled={submittingReview}
@@ -821,8 +745,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                     <span className="font-semibold text-neutral-900">{rev.customer_name}</span>
                     {rev.verified_purchase && (
                       <span className="text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full font-medium">
-                        Verified Buyer
-                      </span>
+                        {copy.text_verified_buyer}</span>
                     )}
                   </div>
                   <span className="text-stone-600 text-xs">{formatDate(rev.created_at)}</span>
@@ -837,15 +760,14 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
             ))}
           </div>
         </div>
-      </section>
+      </section>)}</ManagedSection>
 
       {/* 5. RELATED PRODUCTS */}
       {relatedProducts && relatedProducts.length > 0 && (
-        <section className="border-t border-stone-200 py-12 md:py-16">
+        <ManagedSection document="product" sectionId="productdetailview_section_03"><section className="border-t border-stone-200 py-12 md:py-16">
           <div className="max-w-7xl mx-auto w-full px-5 md:px-8">
             <h2 className="text-2xl font-medium tracking-tight mb-8 text-neutral-900 text-start">
-              You might also like
-            </h2>
+              {copy.text_you_might_also_like}</h2>
 
             {/* Responsive Scroller / Grid: one single DOM structure */}
             <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-x-6 md:gap-y-8 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x md:snap-none -mx-5 px-5 md:mx-0 md:px-0">
@@ -856,7 +778,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               ))}
             </div>
           </div>
-        </section>
+        </section></ManagedSection>
       )}
 
       {/* Notify Me Modal */}

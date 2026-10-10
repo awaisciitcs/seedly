@@ -1,8 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface SeedlyLogoProps {
   className?: string;
+  brandName?: string;
+  logoUrl?: string;
+  logoAlt?: string;
   iconOnly?: boolean;
   textColor?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -10,6 +14,9 @@ interface SeedlyLogoProps {
 
 export function SeedlyLogo({
   className = '',
+  brandName = 'Seedly',
+  logoUrl = '',
+  logoAlt,
   iconOnly = false,
   textColor = 'text-seedly-dark',
   size = 'md',
@@ -33,7 +40,7 @@ export function SeedlyLogo({
       href="/"
       className={`inline-flex items-center gap-1.5 transition-opacity hover:opacity-90 ${className}`}
     >
-      {iconOnly ? (
+      {logoUrl ? <span className="relative inline-block h-10 w-28 sm:w-36"><Image src={logoUrl} alt={logoAlt || brandName} fill sizes="(max-width:639px) 112px,144px" className="object-contain object-left"/></span> : iconOnly ? (
         <div className={`relative flex items-center justify-center shrink-0 ${iconSizes[size]}`}>
           <svg
             viewBox="0 0 100 100"
@@ -67,7 +74,7 @@ export function SeedlyLogo({
         <span
           className={`font-heading font-extrabold tracking-[-0.04em] lowercase inline-flex items-baseline gap-1 select-none ${textColor} ${textSizes[size]}`}
         >
-          <span>seedly</span>
+          <span>{brandName}</span>
           <svg
             className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-kit-coral fill-current inline-block transform translate-y-[-1px]"
             viewBox="0 0 24 24"

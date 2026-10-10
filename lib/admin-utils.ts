@@ -5,14 +5,15 @@
 const pkrFormatter = new Intl.NumberFormat('en-PK', {
   style: 'currency',
   currency: 'PKR',
-  maximumFractionDigits: 0,
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
 });
 
 /**
  * Format paisa (integer minor unit) to Pakistani Rupees (e.g. 250000 -> "Rs. 2,500")
  */
 export function formatPKR(minorOrMajor: number, isMinor = true): string {
-  const amount = isMinor ? Math.floor(minorOrMajor / 100) : minorOrMajor;
+  const amount = isMinor ? minorOrMajor / 100 : minorOrMajor;
   // Intl format returns "PKR 2,500" or similar; we standardize to "Rs. 2,500"
   const formatted = pkrFormatter.format(amount);
   return formatted.replace('PKR', 'Rs.');

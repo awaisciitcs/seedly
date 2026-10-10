@@ -21,14 +21,23 @@ export function getInitialOrderState(paymentMethod: PaymentMethod, hasReceipt = 
 
 type OrderState = Pick<Order, 'order_status' | 'payment_status' | 'payment_method'>;
 
+const transitions: Record<OrderStatus, readonly OrderStatus[]> = {
+  RECEIVED: ['PROCESSING', 'CANCELLED'], PENDING_PAYMENT: ['PAYMENT_REVIEW', 'CANCELLED'],
+  PAYMENT_REVIEW: ['CANCELLED'], PAID: ['PROCESSING', 'CANCELLED'],
+  PROCESSING: ['PACKED', 'CANCELLED'], PACKED: ['SHIPPED', 'CANCELLED'],
+  SHIPPED: ['DELIVERED'], DELIVERED: ['REFUNDED'], CANCELLED: ['REFUNDED'], REFUNDED: [],
+};
+export function getAllowedOrderStatuses(order: OrderState): readonly OrderStatus[] {
+  return (transitions[order.order_status] || []).filter(status => {
+    if (status === 'REFUNDED') return ['VERIFIED', 'PAID'].includes(order.payment_status);
+    return !['PROCESSING', 'PACKED', 'SHIPPED', 'DELIVERED'].includes(status) || order.payment_method === 'COD' || order.payment_status === 'VERIFIED';
+  });
+}
 export function assertOrderStatusUpdate(order: OrderState, nextStatus: OrderStatus) {
   if (!ORDER_STATUSES.includes(nextStatus)) throw new OrderStatusError('Invalid order status.');
-  const requiresPayment = nextStatus === 'PAID' || (
-    order.payment_method !== 'COD' && ['PROCESSING', 'PACKED', 'SHIPPED', 'DELIVERED'].includes(nextStatus)
-  );
-  if (requiresPayment && order.payment_status !== 'VERIFIED') {
-    throw new OrderStatusError('Verify the payment before updating fulfillment.');
-  }
+  if ((nextStatus === 'PAID' || ['PROCESSING','PACKED','SHIPPED','DELIVERED'].includes(nextStatus)) && order.payment_method !== 'COD' && order.payment_status !== 'VERIFIED') throw new OrderStatusError('Verify the payment before updating fulfillment.');
+  if (nextStatus === order.order_status) return;
+  if (!getAllowedOrderStatuses(order).includes(nextStatus)) throw new OrderStatusError('This status transition is unavailable. Refresh the order before trying again.');
 }
 
 export function getOrderProgress(order: OrderState) {

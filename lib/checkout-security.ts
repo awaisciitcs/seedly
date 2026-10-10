@@ -1,0 +1,53 @@
+import 'server-only';
+import { RequestError } from './request-guards';
+import crypto from 'node:crypto';
+import { quoteFingerprint } from './checkout-validation';
+import type { CheckoutLine } from './types';
+
+function secret() {
+  const value = process.env.CHECKOUT_SIGNING_SECRET || process.env.SUPABASE_SECRET_KEY;
+  if (!value || value.length < 20) throw new Error('Secure checkout is not configured.');
+  return value;
+}
+
+function signature(value: string) { return crypto.createHmac('sha256', secret()).update(value).digest('base64url'); }
+
+export function signCheckoutValue(value: Record<string, unknown>): string {
+  const encoded = Buffer.from(JSON.stringify(value)).toString('base64url');
+  return `${encoded}.${signature(encoded)}`;
+}
+
+export function readCheckoutValue(token: string): Record<string, unknown> {
+  if (typeof token !== 'string' || token.length > 12_000) throw new RequestError('Please refresh your order summary.');
+  const [encoded, signed, extra] = token.split('.');
+  if (!encoded || !signed || extra) throw new RequestError('Please refresh your order summary.');
+  const expected = Buffer.from(signature(encoded));
+  const provided = Buffer.from(signed);
+  if (expected.length !== provided.length || !crypto.timingSafeEqual(expected, provided)) throw new RequestError('Please refresh your order summary.');
+  const value = JSON.parse(Buffer.from(encoded, 'base64url').toString('utf8'));
+  if (!value || typeof value !== 'object' || !Number.isFinite(value.expires) || value.expires < Date.now()) throw new RequestError('Your order summary has expired. Please refresh it before continuing.');
+  return value;
+}
+
+export function createQuoteToken(lines: CheckoutLine[], quote: { total_minor: number; shipping_minor: number; items: { unit_price_minor: number }[] }) {
+  const expires = Date.now() + 5 * 60_000;
+  return { token: signCheckoutValue({ purpose: 'quote', lines: crypto.createHash("sha256").update(quoteFingerprint(lines)).digest("hex"), total: quote.total_minor, shipping: quote.shipping_minor, prices: quote.items.map(i => i.unit_price_minor), expires }), expires_at: new Date(expires).toISOString() };
+}
+
+export function verifyQuoteToken(token: string, lines: CheckoutLine[], quote: { total_minor: number; shipping_minor: number; items: { unit_price_minor: number }[] }) {
+  const value = readCheckoutValue(token);
+  if (value.purpose !== 'quote' || value.lines !== crypto.createHash("sha256").update(quoteFingerprint(lines)).digest("hex")) throw new RequestError('Your basket changed. Please refresh the order summary.');
+  if (value.total !== quote.total_minor || value.shipping !== quote.shipping_minor || JSON.stringify(value.prices) !== JSON.stringify(quote.items.map(i => i.unit_price_minor))) throw new RequestError('Prices or delivery charges changed. Please review the updated total before ordering.');
+}
+
+export function verifyReceiptProof(token: string, checkoutKey: string, path: string) {
+  const value = readCheckoutValue(token);
+  if (value.purpose !== 'receipt' || value.key !== checkoutKey || value.path !== path) throw new RequestError('Please upload the payment receipt again.');
+}
+
+export function createTrackingToken(checkoutKey: string, fingerprint: string) {
+  return crypto.createHmac('sha256', secret()).update(`tracking:${checkoutKey}:${fingerprint}`).digest('hex');
+}
+
+// Private legacy reference for retry lookup; new sequential display numbers are allocated by PostgreSQL.
+export function createCheckoutReference(checkoutKey: string) { return "SED-" + crypto.createHmac("sha256", secret()).update("order:" + checkoutKey).digest("hex").slice(0,24).toUpperCase(); }

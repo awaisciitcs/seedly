@@ -1,5 +1,6 @@
 'use client';
 
+import { getAllowedOrderStatuses } from '@/lib/order-status';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -41,7 +42,7 @@ export default function AdminOrderDetailPage() {
         if (json.data) {
           setOrder(json.data);
           setStatus(json.data.order_status);
-          setCourier(json.data.tracking_courier || 'TCS Express');
+          setCourier(json.data.tracking_courier || '');
           setTrackingNumber(json.data.tracking_number || '');
 
           if (json.data.receipt_path) {
@@ -101,7 +102,7 @@ export default function AdminOrderDetailPage() {
       if (!res.ok) throw new Error(json.error?.message || 'Unable to reject receipt.');
       setOrder(json.data);
       setStatus(json.data.order_status);
-      setMessage('Receipt marked as rejected. Customer has been notified.');
+      setMessage('Payment rejected and order cancelled. Customer message delivery must be checked separately.');
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : 'Unable to reject receipt.');
     } finally {
@@ -335,16 +336,16 @@ export default function AdminOrderDetailPage() {
               onChange={(e) => setStatus(e.target.value)}
               className="glass-input-3d w-full px-4 py-2.5 rounded-xl text-xs bg-botanical-dark text-white"
             >
-              <option value="RECEIVED">RECEIVED (Awaiting preparation)</option>
-              <option value="PENDING_PAYMENT">PENDING_PAYMENT</option>
-              <option value="PAYMENT_REVIEW">PAYMENT_REVIEW</option>
-              <option value="PAID" disabled={order.payment_status !== 'VERIFIED'}>PAID</option>
-              <option value="PROCESSING" disabled={order.payment_method !== 'COD' && order.payment_status !== 'VERIFIED'}>PROCESSING (Preparation in progress)</option>
-              <option value="PACKED" disabled={order.payment_method !== 'COD' && order.payment_status !== 'VERIFIED'}>PACKED (Ready for Courier Pickup)</option>
-              <option value="SHIPPED" disabled={order.payment_method !== 'COD' && order.payment_status !== 'VERIFIED'}>SHIPPED (In Transit)</option>
-              <option value="DELIVERED" disabled={order.payment_method !== 'COD' && order.payment_status !== 'VERIFIED'}>DELIVERED (Completed)</option>
-              <option value="CANCELLED">CANCELLED</option>
-              <option value="REFUNDED">REFUNDED</option>
+              <option value="RECEIVED" disabled={order.order_status !== 'RECEIVED' && !getAllowedOrderStatuses(order).includes('RECEIVED')}>RECEIVED (Awaiting preparation)</option>
+              <option value="PENDING_PAYMENT" disabled={order.order_status !== 'PENDING_PAYMENT' && !getAllowedOrderStatuses(order).includes('PENDING_PAYMENT')}>PENDING_PAYMENT</option>
+              <option value="PAYMENT_REVIEW" disabled={order.order_status !== 'PAYMENT_REVIEW' && !getAllowedOrderStatuses(order).includes('PAYMENT_REVIEW')}>PAYMENT_REVIEW</option>
+              <option value="PAID" disabled={order.order_status !== 'PAID' && !getAllowedOrderStatuses(order).includes('PAID')}>PAID</option>
+              <option value="PROCESSING" disabled={order.order_status !== 'PROCESSING' && !getAllowedOrderStatuses(order).includes('PROCESSING')}>PROCESSING (Preparation in progress)</option>
+              <option value="PACKED" disabled={order.order_status !== 'PACKED' && !getAllowedOrderStatuses(order).includes('PACKED')}>PACKED (Ready for Courier Pickup)</option>
+              <option value="SHIPPED" disabled={order.order_status !== 'SHIPPED' && !getAllowedOrderStatuses(order).includes('SHIPPED')}>SHIPPED (In Transit)</option>
+              <option value="DELIVERED" disabled={order.order_status !== 'DELIVERED' && !getAllowedOrderStatuses(order).includes('DELIVERED')}>DELIVERED (Completed)</option>
+              <option value="CANCELLED" disabled={order.order_status !== 'CANCELLED' && !getAllowedOrderStatuses(order).includes('CANCELLED')}>CANCELLED</option>
+              <option value="REFUNDED" disabled={order.order_status !== 'REFUNDED' && !getAllowedOrderStatuses(order).includes('REFUNDED')}>REFUNDED</option>
             </select>
           </div>
 

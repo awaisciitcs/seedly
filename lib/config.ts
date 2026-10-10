@@ -1,15 +1,16 @@
+// Historical migration and sample-email fixture only. Runtime storefront content comes from Supabase CMS.
 export const siteConfig = {
   name: 'Seedly',
   brandLine: "Pakistan’s Raw Seeds & Mountain Teas",
   description: 'Pure whole raw pantry seeds and high-altitude teas from Pakistan, packed fresh in Lahore. Direct sourcing from Gilgit-Baltistan, Khyber Pakhtunkhwa, and Punjab.',
-  url: 'https://seedly.pk',
+  url: 'https://seedly.softbytes.co.uk',
   contact: {
     phone: '0371 9055758',
     phoneInternational: '+92 371 9055758',
     phoneRaw: '923719055758',
     whatsappUrl: 'https://wa.me/923719055758',
-    email: 'care@seedly.pk',
-    address: 'Plot 42, Block C-2, Gulberg III, Lahore, Punjab, Pakistan',
+    email: 'seedly@softbytes.co.uk',
+    address: '',
     dispatchHub: 'Lahore Packing & Dispatch Hub',
     hours: 'Monday – Saturday: 9:00 AM – 7:00 PM PKT',
   },
@@ -36,7 +37,7 @@ export const siteConfig = {
     chamomile: 'Allergy Caution: Chamomile belongs to the Asteraceae (daisy) plant family. Avoid if you have known allergies to daisies, ragweed, or chrysanthemums.',
     sesame: 'Allergen Notice: Contains Sesame Seeds. Packed in a facility that also handles tree nuts, flax, sunflower, and pumpkin seeds.',
     returnsChangeOfMind: 'For food safety and hygiene reasons, opened food pouches or jars cannot be returned for change of mind.',
-    returnsDamaged: 'If your parcel arrives damaged, unsealed, incorrect, or with any quality issue, send a photo or unboxing video to care@seedly.pk or WhatsApp 0371 9055758 within 7 days of delivery. We will dispatch a free replacement immediately at our expense, or issue a full refund.',
+    returnsDamaged: 'If your parcel arrives damaged, unsealed, incorrect, or with any quality issue, send a photo or unboxing video to seedly@softbytes.co.uk or WhatsApp 0371 9055758 within 7 days of delivery. We will dispatch a free replacement immediately at our expense, or issue a full refund.',
     paymentVerification: 'Cash on Delivery is available nationwide. Mobile wallet transfers (JazzCash, Easypaisa) and bank transfers are verified manually by our Lahore accounts team prior to dispatch.',
     seedCyclingNote: 'Dietary note: Seed cycling is a traditional whole-food culinary practice. Raw seeds supply natural plant minerals, healthy fats, and fiber, but clinical research remains preliminary. If managing endocrine or hormonal conditions, always consult your physician.',
   },

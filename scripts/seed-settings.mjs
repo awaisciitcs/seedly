@@ -1,7 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
-import path from 'path';
+import { localDatabasePath } from './script-config.mjs';
 
-const dbPath = path.join(process.cwd(), 'data', 'seedly.db');
+const dbPath = localDatabasePath({ mutates: true });
 const db = new DatabaseSync(dbPath);
 
 db.exec(`
