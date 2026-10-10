@@ -268,7 +268,6 @@ export default function AdminProductsPage() {
         body: JSON.stringify({
           variant_id: editingVariant.id,
           inventory_quantity: Number(newStock),
-          expected_updated_at: editingVariant.updated_at,
         }),
       });
 
@@ -314,7 +313,6 @@ export default function AdminProductsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: editingProduct.id,
-          expected_updated_at: editingProduct.updated_at,
           name: editingProduct.name,
           category_id: editingProduct.category_id,
           product_type: editingProduct.category_id === 'cat-teas' ? 'tea' : 'seed',
@@ -323,7 +321,6 @@ export default function AdminProductsPage() {
           weight_grams: Number(activeVar.weight_grams),
           variants: editVariants.map((v) => ({
             id: v.id,
-              expected_updated_at: (v as any).expected_updated_at,
             weight_grams: Number(v.weight_grams),
             price_pkr: Number(v.price_pkr),
             compare_price_pkr: v.compare_price_pkr ? Number(v.compare_price_pkr) : null,
@@ -697,7 +694,6 @@ export default function AdminProductsPage() {
                               p.variants && p.variants.length > 0
                                 ? p.variants.map((v: any) => ({
                                     id: v.id,
-                                    expected_updated_at: v.updated_at,
                                     weight_grams: v.weight_grams || 250,
                                     price_pkr: minorToPKR(v.price_minor),
                                     compare_price_pkr: v.compare_price_minor

@@ -1,4 +1,3 @@
-import { readAdminJson, AdminInputError, adminId, adminText } from '@/lib/admin-validation';
 import { NextResponse } from 'next/server';
 import { requireAdmin, AdminAuthError } from '@/lib/auth/require-admin';
 import { updateReviewStatus, deleteReview } from '@/lib/services/reviews';
@@ -12,8 +11,7 @@ export async function PATCH(
   try {
     await requireAdmin();
     const { id } = await props.params;
-    adminId(id, 'review ID');
-    const body = await readAdminJson(request);
+    const body = await request.json();
     const { status } = body;
 
     if (!status || !['APPROVED', 'REJECTED', 'PENDING'].includes(status)) {
@@ -33,11 +31,12 @@ export async function PATCH(
       message: `Review marked as ${status}`,
     });
   } catch (err: any) {
-    if (err instanceof AdminAuthError || err instanceof AdminInputError) {
+    if (err instanceof AdminAuthError) {
       return NextResponse.json({ error: { message: err.message } }, { status: err.status });
     }
     return NextResponse.json(
-      { error: { message: 'This operation is temporarily unavailable. Please try again.' } }, { status: 503 }
+      { error: { message: err?.message || 'Failed to update review status' } },
+      { status: 500 }
     );
   }
 }
@@ -49,7 +48,6 @@ export async function DELETE(
   try {
     await requireAdmin();
     const { id } = await props.params;
-    adminId(id, 'review ID');
     const deleted = await deleteReview(id);
     if (!deleted) {
       return NextResponse.json({ error: { message: 'Review not found' } }, { status: 404 });
@@ -60,11 +58,12 @@ export async function DELETE(
       message: 'Review deleted successfully',
     });
   } catch (err: any) {
-    if (err instanceof AdminAuthError || err instanceof AdminInputError) {
+    if (err instanceof AdminAuthError) {
       return NextResponse.json({ error: { message: err.message } }, { status: err.status });
     }
     return NextResponse.json(
-      { error: { message: 'This operation is temporarily unavailable. Please try again.' } }, { status: 503 }
+      { error: { message: err?.message || 'Failed to delete review' } },
+      { status: 500 }
     );
   }
 }

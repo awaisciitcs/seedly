@@ -1,6 +1,5 @@
 'use client';
 
-import { serializeStructuredData } from '@/lib/structured-data';
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Kit } from '../../lib/types';
@@ -40,7 +39,7 @@ export function KitsCategoryClient({ initialKits }: KitsCategoryClientProps) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: serializeStructuredData({
+            __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'BreadcrumbList',
               itemListElement: [

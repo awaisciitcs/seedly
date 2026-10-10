@@ -12,7 +12,7 @@ interface StickyPurchaseBarProps {
   variantLabel?: string;
   inStock: boolean;
   targetRef: React.RefObject<HTMLElement | null>;
-  onAddToCart: () => boolean;
+  onAddToCart: () => void;
   onNotifyMe?: () => void;
 }
 
@@ -46,11 +46,9 @@ export function StickyPurchaseBar({
         if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
           setIsVisible(true);
           document.body.dataset.stickyBarActive = 'true';
-          window.dispatchEvent(new Event('seedly-sticky-bar'));
         } else {
           setIsVisible(false);
           delete document.body.dataset.stickyBarActive;
-          window.dispatchEvent(new Event("seedly-sticky-bar"));
         }
       },
       {
@@ -73,7 +71,7 @@ export function StickyPurchaseBar({
     }
     if (btnState !== 'idle') return;
 
-    if (!onAddToCart()) return;
+    onAddToCart();
     setBtnState('added');
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
@@ -81,7 +79,6 @@ export function StickyPurchaseBar({
     }, 1500);
   };
 
-  if (!isVisible) return null;
   return (
     <aside
       aria-label="Quick purchase actions"
@@ -119,7 +116,7 @@ export function StickyPurchaseBar({
               onClick={handleAdd}
               disabled={btnState === 'pending'}
               aria-busy={btnState === 'pending'}
-              className="h-11 px-5 rounded-full text-xs font-semibold uppercase tracking-wider bg-black text-white hover:bg-neutral-800 shadow-xs hover:shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              className="h-10 px-5 rounded-full text-xs font-semibold uppercase tracking-wider bg-black text-white hover:bg-neutral-800 shadow-xs hover:shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >
               {btnState === 'pending' ? (
                 <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
@@ -133,7 +130,7 @@ export function StickyPurchaseBar({
             <button
               type="button"
               onClick={onNotifyMe}
-              className="h-11 px-4 rounded-full text-xs font-semibold uppercase tracking-wider border border-stone-200 bg-white text-neutral-900 hover:bg-neutral-50 shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+              className="h-10 px-4 rounded-full text-xs font-semibold uppercase tracking-wider border border-stone-200 bg-white text-neutral-900 hover:bg-neutral-50 shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
             >
               <Bell aria-hidden="true" className="h-3.5 w-3.5" />
               <span>Notify</span>

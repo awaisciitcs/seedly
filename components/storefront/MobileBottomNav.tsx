@@ -1,28 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Store, Compass, Heart, User } from 'lucide-react';
-import { useSiteContent } from './SiteContentProvider';
-import type { SiteContent } from '@/lib/cms/storefront-types';
 import { useWishlist } from '../../lib/store/wishlist';
 
 export function MobileBottomNav() {
   const pathname = usePathname();
- const {mobileNavigation,features}=useSiteContent<SiteContent>('site');
-  const [sticky, setSticky] = useState(false);
-  useEffect(() => { const update = () => setSticky(document.body.dataset.stickyBarActive === "true"); update(); window.addEventListener("seedly-sticky-bar", update); return () => window.removeEventListener("seedly-sticky-bar", update); }, []);
   const { wishlistCount } = useWishlist();
 
-  if (sticky || pathname.startsWith('/cart') || pathname.startsWith('/order') || pathname.startsWith('/admin') || pathname.startsWith('/checkout')) return null;
+  if (pathname.startsWith('/admin') || pathname.startsWith('/checkout')) return null;
 
-  const icons:Record<string,typeof Home>={home:Home,shop:Store,routine:Compass,saved:Heart,orders:User};
- const items=mobileNavigation.filter(item=>(features.routine||item.id!=='routine')&&(features.savedProducts||item.id!=='saved')).map(item=>({...item,icon:icons[item.id]||Store,badge:item.id==='saved'?wishlistCount:undefined}));
+  const items = [
+    { label: 'Home', href: '/', icon: Home },
+    { label: 'Shop', href: '/shop', icon: Store },
+    { label: 'Find yours', href: '/find-your-seed', icon: Compass },
+    { label: 'Saved', href: '/account/wishlist', icon: Heart, badge: wishlistCount },
+    { label: 'Account', href: '/account', icon: User },
+  ];
 
   return (
-    <nav aria-label="Quick navigation" className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border-gray bg-white pb-[env(safe-area-inset-bottom)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden">
-      <div className="grid h-16 px-2" style={{gridTemplateColumns:'repeat('+items.length+', minmax(0,1fr))'}}>
+    <nav aria-label="Quick navigation" className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink bg-paper pb-[env(safe-area-inset-bottom)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden">
+      <div className="grid h-16 grid-cols-5 px-2">
         {items.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;

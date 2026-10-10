@@ -1,7 +1,766 @@
-import {getContentDocument} from '@/lib/services/content';
-import type {SiteContent} from '@/lib/cms/storefront-types';
-import {notFound} from 'next/navigation';
-import { getProducts } from '@/lib/services/products';
-import { getKits } from '@/lib/services/kits';
-import { RoutineFinder } from '@/components/storefront/RoutineFinder';
-export default async function FindYourSeedPage() {const site=await getContentDocument<SiteContent>('site');if(!site.features.routine)notFound(); const [products,kits]=await Promise.all([getProducts(),getKits()]);return <RoutineFinder catalog={[...products,...kits]}/>; }
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import {
+  Compass,
+  Check,
+  RotateCcw,
+  Plus,
+  Moon,
+  Leaf,
+  Sparkles,
+  Sun,
+  Coffee,
+  Utensils,
+  Package,
+  Sprout,
+  Edit2,
+  ShieldCheck,
+} from 'lucide-react';
+import { useCart } from '../../../lib/store/cart';
+import { formatPKR } from '../../../lib/utils';
+import { siteConfig } from '../../../lib/config';
+
+interface QuestionOption {
+  value: string;
+  label: string;
+  description: string;
+  iconName: 'moon' | 'leaf' | 'sparkles' | 'sun' | 'utensils' | 'coffee' | 'package' | 'sprout';
+}
+
+interface Question {
+  id: string;
+  title: string;
+  subtitle: string;
+  options: QuestionOption[];
+}
+
+const questions: Question[] = [
+  {
+    id: 'goal',
+    title: 'What brings you to Seedly today?',
+    subtitle: 'Select what you would most like to support in your daily routine.',
+    options: [
+      {
+        value: 'cycle_hormones',
+        label: 'Monthly Kitchen Routine',
+        description: 'Nutrient-dense seed pairings for your daily morning breakfast and kitchen routine.',
+        iconName: 'moon',
+      },
+      {
+        value: 'digestion_bloat',
+        label: 'Wholesome Dietary Fiber',
+        description: 'Gentle dietary fiber and plant-based omegas from cold-milled golden flaxseed.',
+        iconName: 'leaf',
+      },
+      {
+        value: 'sleep_calm',
+        label: 'Evening Calm & Restful Evenings',
+        description: 'Unwinding after a busy day with a soothing, caffeine-free bedtime herbal tisane.',
+        iconName: 'sparkles',
+      },
+      {
+        value: 'energy_vitality',
+        label: 'Daily Vitality & Breakfast Nutrition',
+        description: 'Nutrient-dense seeds packed with plant protein, minerals, and natural Vitamin E.',
+        iconName: 'sun',
+      },
+    ],
+  },
+  {
+    id: 'ritual',
+    title: 'How do you prefer to take your botanicals?',
+    subtitle: 'The best routine is the one that naturally fits into your daily routine.',
+    options: [
+      {
+        value: 'spoonful_smoothie',
+        label: 'Sprinkled in Food & Smoothies',
+        description: 'Stirred into morning yogurt bowls, oatmeal, shakes, or salads.',
+        iconName: 'utensils',
+      },
+      {
+        value: 'warm_tea',
+        label: 'Sipping a Warm Steeped Infusion',
+        description: 'A comforting cup of pure whole blossom or loose leaf mountain tea.',
+        iconName: 'coffee',
+      },
+      {
+        value: 'complete_ritual',
+        label: 'Structured Monthly Routine Box',
+        description: 'A complete guided kit with calendar and dedicated wooden measuring scoop.',
+        iconName: 'package',
+      },
+    ],
+  },
+  {
+    id: 'experience',
+    title: 'Have you practiced seed cycling or botanical infusions before?',
+    subtitle: 'This helps us tailor the most approachable starting recommendation.',
+    options: [
+      {
+        value: 'beginner',
+        label: 'I am completely new',
+        description: 'Keep it simple with clear daily instructions and zero guesswork.',
+        iconName: 'sprout',
+      },
+      {
+        value: 'intermediate',
+        label: 'I know the basics',
+        description: 'I already incorporate edible seeds or herbal teas occasionally.',
+        iconName: 'leaf',
+      },
+      {
+        value: 'daily_practitioner',
+        label: 'I have an established routine',
+        description: 'Looking for verified unbleached single-origin Pakistani harvests.',
+        iconName: 'sparkles',
+      },
+    ],
+  },
+];
+
+function renderOptionIcon(name: string) {
+  const props = { className: 'w-6 h-6 text-seedly-primary' };
+  switch (name) {
+    case 'moon':
+      return <Moon {...props} />;
+    case 'leaf':
+      return <Leaf {...props} />;
+    case 'sparkles':
+      return <Sparkles {...props} />;
+    case 'sun':
+      return <Sun {...props} />;
+    case 'utensils':
+      return <Utensils {...props} />;
+    case 'coffee':
+      return <Coffee {...props} />;
+    case 'package':
+      return <Package {...props} />;
+    case 'sprout':
+    default:
+      return <Sprout {...props} />;
+  }
+}
+
+interface RecommendedItem {
+  id: string;
+  name: string;
+  slug: string;
+  type: 'kits' | 'teas' | 'seeds';
+  price: number;
+  badge: string;
+  image: string;
+  reason: string;
+  isPairing?: boolean;
+}
+
+export default function FindYourSeedPage() {
+  const { addItem } = useCart();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [completed, setCompleted] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [addedStatus, setAddedStatus] = useState(false);
+  const [isFading, setIsFading] = useState(false);
+
+  const handleSelectOption = (value: string) => {
+    const q = questions[currentStep];
+    const newAnswers = { ...answers, [q.id]: value };
+    setAnswers(newAnswers);
+
+    setIsFading(true);
+    setTimeout(() => {
+      if (currentStep < questions.length - 1) {
+        setCurrentStep((prev) => prev + 1);
+      } else {
+        setCompleted(true);
+        // Initialize with ONLY the primary recommended item selected (optional pairing left unchecked by default)
+        const rec = computeRecommendations(newAnswers);
+        setSelectedIds(rec.products.length > 0 ? [rec.products[0].id] : []);
+      }
+      setIsFading(false);
+    }, 200);
+  };
+
+  const handlePrevQuestion = () => {
+    if (currentStep <= 0) return;
+    setIsFading(true);
+    setTimeout(() => {
+      setCurrentStep((prev) => prev - 1);
+      setIsFading(false);
+    }, 200);
+  };
+
+  const handleReset = () => {
+    setAnswers({});
+    setCurrentStep(0);
+    setCompleted(false);
+    setSelectedIds([]);
+    setAddedStatus(false);
+    setIsFading(false);
+  };
+
+  const handleEditAnswers = () => {
+    setCompleted(false);
+    setCurrentStep(0);
+  };
+
+  const toggleProductSelection = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  // Rule-based recommendation engine matching user format and goal
+  function computeRecommendations(ans: Record<string, string>): {
+    title: string;
+    explanation: string;
+    products: RecommendedItem[];
+  } {
+    const goal = ans.goal || 'cycle_hormones';
+    const ritual = ans.ritual || 'complete_ritual';
+
+    if (goal === 'cycle_hormones') {
+      const isTeaFirst = ritual === 'warm_tea';
+
+      const seedKitItem: RecommendedItem = {
+        id: 'kit-complete',
+        name: 'Complete 28-Day Seed Cycling Ritual Kit',
+        slug: 'complete-cycle-kit',
+        type: 'kits',
+        price: 285000,
+        badge: isTeaFirst ? 'OPTIONAL PAIRING' : 'PRIMARY ROUTINE',
+        image: '/images/products/complete-kit.jpg',
+        reason: 'All 4 raw pantry seeds portioned for both monthly phases, with engraved wooden measuring scoop and tracking calendar.',
+        isPairing: isTeaFirst,
+      };
+
+      const spearmintItem: RecommendedItem = {
+        id: 'prod-spearmint',
+        name: 'Highland Spearmint Leaf Tea',
+        slug: 'spearmint-tea',
+        type: 'teas',
+        price: 115000,
+        badge: isTeaFirst ? 'PRIMARY ROUTINE' : 'RECOMMENDED PAIRING',
+        image: '/images/products/spearmint-tea.jpg',
+        reason: 'Crisp mountain spearmint, traditionally enjoyed twice daily as a refreshing culinary tisane.',
+        isPairing: !isTeaFirst,
+      };
+
+      return {
+        title: isTeaFirst
+          ? 'Suggested Routine: Herbal Tea Ritual'
+          : 'Suggested Routine: 28-Day Seed Cycling',
+        explanation: isTeaFirst
+          ? 'Since you prefer warm infusions, we recommend our Highland Spearmint Leaf Tea as your lead ritual. Spearmint is a traditional aromatic herbal infusion. You can optionally pair it with our Complete 28-Day Seed Kit to add daily kitchen seeds.'
+          : 'Since you prefer a structured food ritual, the Complete 28-Day Kit supplies all 4 raw pantry seeds portioned for both monthly phases, with an engraved wooden measuring scoop and calendar guide. You can optionally pair it with spearmint tea for a soothing daily cup.',
+        products: isTeaFirst ? [spearmintItem, seedKitItem] : [seedKitItem, spearmintItem],
+      };
+    }
+
+    if (goal === 'sleep_calm') {
+      const isTeaFirst = ritual === 'warm_tea' || ritual === 'complete_ritual';
+      const teaItem: RecommendedItem = {
+        id: 'prod-chamomile',
+        name: 'Pure Whole Flower Chamomile Tea',
+        slug: 'chamomile-tea',
+        type: 'teas',
+        price: 125000,
+        badge: isTeaFirst ? 'PRIMARY ROUTINE' : 'RECOMMENDED PAIRING',
+        image: '/images/products/chamomile-tea.jpg',
+        reason: 'Whole dried chamomile blossoms that brew into a fragrant, naturally sweet bedtime cup.',
+        isPairing: !isTeaFirst,
+      };
+
+      const seedItem: RecommendedItem = {
+        id: 'prod-pumpkin',
+        name: 'Raw Pumpkin Seeds',
+        slug: 'pumpkin-seeds',
+        type: 'seeds',
+        price: 95000,
+        badge: isTeaFirst ? 'OPTIONAL PAIRING' : 'PRIMARY ROUTINE',
+        image: '/images/products/pumpkin-seeds.jpg',
+        reason: 'Rich in natural dietary magnesium and plant protein for an easy, grounding evening snack.',
+        isPairing: isTeaFirst,
+      };
+
+      return {
+        title: 'Suggested Routine: Evening Calm & Sleep',
+        explanation: isTeaFirst
+          ? 'Pure whole dried chamomile blossoms steep into an aromatic, peaceful evening cup. You can optionally pair it with mineral-rich raw pumpkin seeds to satisfy evening hunger naturally.'
+          : 'Mineral-rich raw pumpkin seeds provide natural plant protein and dietary magnesium for an easy evening snack. Pair optionally with whole-blossom chamomile tea for a soothing bedtime cup.',
+        products: isTeaFirst ? [teaItem, seedItem] : [seedItem, teaItem],
+      };
+    }
+
+    if (goal === 'digestion_bloat') {
+      const isTeaFirst = ritual === 'warm_tea';
+      const flaxItem: RecommendedItem = {
+        id: 'prod-flax',
+        name: 'Ground Golden Flaxseed (Cold-Milled)',
+        slug: 'flax-seeds',
+        type: 'seeds',
+        price: 68000,
+        badge: isTeaFirst ? 'OPTIONAL PAIRING' : 'PRIMARY ROUTINE',
+        image: '/images/products/flax-seeds.jpg',
+        reason: 'Gentle soluble fiber that stirs easily into morning yogurt or oatmeal for natural daily regularity.',
+        isPairing: isTeaFirst,
+      };
+
+      const spearmintItem: RecommendedItem = {
+        id: 'prod-spearmint',
+        name: 'Highland Spearmint Leaf Tea',
+        slug: 'spearmint-tea',
+        type: 'teas',
+        price: 115000,
+        badge: isTeaFirst ? 'PRIMARY ROUTINE' : 'RECOMMENDED PAIRING',
+        image: '/images/products/spearmint-tea.jpg',
+        reason: 'Pure alpine spearmint leaves to sip warm after meals for refreshing aroma and comfort.',
+        isPairing: !isTeaFirst,
+      };
+
+      return {
+        title: 'Suggested Routine: Daily Kitchen Nourishment',
+        explanation: isTeaFirst
+          ? 'Highland spearmint leaves brew into a crisp, refreshing post-meal tea. You can optionally pair it with cold-milled golden flax seeds to add gentle soluble fiber to your morning breakfast.'
+          : 'Cold-milled golden flax seeds provide gentle daily soluble fiber for breakfast bowls. You can optionally pair it with loose spearmint leaves for a refreshing post-meal steep.',
+        products: isTeaFirst ? [spearmintItem, flaxItem] : [flaxItem, spearmintItem],
+      };
+    }
+
+    // Default: energy_vitality
+    if (ritual === 'complete_ritual') {
+      const kitItem: RecommendedItem = {
+        id: 'kit-complete',
+        name: 'Complete 28-Day Seed Cycling Ritual Kit',
+        slug: 'complete-cycle-kit',
+        type: 'kits',
+        price: 285000,
+        badge: 'PRIMARY ROUTINE',
+        image: '/images/products/complete-kit.jpg',
+        reason: 'Structured all-in-one monthly ritual supplying all 4 raw pantry seeds with engraved wooden measuring scoop and monthly guide.',
+        isPairing: false,
+      };
+
+      const greenTeaItem: RecommendedItem = {
+        id: 'prod-green-tea',
+        name: 'Highland Whole Leaf Green Tea',
+        slug: 'green-tea',
+        type: 'teas',
+        price: 135000,
+        badge: 'RECOMMENDED PAIRING',
+        image: '/images/products/green-tea.jpg',
+        reason: 'Single-estate high-mountain whole leaves with clean, brisk flavour and gentle morning focus.',
+        isPairing: true,
+      };
+
+      return {
+        title: 'Suggested Routine: Complete Monthly Vitality',
+        explanation: 'Because you prefer a structured monthly routine, our Complete 28-Day Kit supplies all four nutrient-dense raw seeds with a measuring scoop and daily guide. You can optionally pair it with high-mountain green tea for clean morning focus.',
+        products: [kitItem, greenTeaItem],
+      };
+    }
+
+    const isTeaFirst = ritual === 'warm_tea';
+    const sunflowerItem: RecommendedItem = {
+      id: 'prod-sunflower',
+      name: 'Raw Sunflower Kernels',
+      slug: 'sunflower-seeds',
+      type: 'seeds',
+      price: 72000,
+      badge: isTeaFirst ? 'OPTIONAL PAIRING' : 'PRIMARY ROUTINE',
+      image: '/images/products/sunflower-seeds.jpg',
+      reason: 'Crisp raw kernels packed with Vitamin E, healthy plant fats, and minerals for daily vitality.',
+      isPairing: isTeaFirst,
+    };
+
+    const greenTeaItem: RecommendedItem = {
+      id: 'prod-green-tea',
+      name: 'Highland Whole Leaf Green Tea',
+      slug: 'green-tea',
+      type: 'teas',
+      price: 135000,
+      badge: isTeaFirst ? 'PRIMARY ROUTINE' : 'RECOMMENDED PAIRING',
+      image: '/images/products/green-tea.jpg',
+      reason: 'Single-estate high-mountain whole leaves with clean, brisk flavour and gentle morning focus.',
+      isPairing: !isTeaFirst,
+    };
+
+    return {
+      title: 'Suggested Routine: Morning Focus & Energy',
+      explanation: isTeaFirst
+        ? 'Highland whole leaf green tea delivers clean, brisk morning focus without jitters. You can optionally pair it with crisp raw sunflower kernels for wholesome plant nourishment.'
+        : 'Crisp raw sunflower kernels provide Vitamin E and plant protein for an easy daily lift. You can optionally pair them with high-mountain green tea for a clean morning cup.',
+      products: isTeaFirst ? [greenTeaItem, sunflowerItem] : [sunflowerItem, greenTeaItem],
+    };
+  }
+
+  const recommendations = computeRecommendations(answers);
+
+  const handleAddSelectedToCart = () => {
+    const toAdd = recommendations.products.filter((p) => selectedIds.includes(p.id));
+    if (toAdd.length === 0) return;
+
+    for (const p of toAdd) {
+      addItem({
+        id: `${p.id}-quiz`,
+        product_id: p.id,
+        kit_id: p.type === 'kits' ? p.id : undefined,
+        name: p.name,
+        slug: p.slug,
+        price_minor: p.price,
+        image_url: p.image,
+        quantity: 1,
+        product_type: p.type === 'kits' ? 'kit' : p.type === 'teas' ? 'tea' : 'seed',
+      });
+    }
+    setAddedStatus(true);
+    setTimeout(() => setAddedStatus(false), 2000);
+  };
+
+  const handleAddPrimaryOnly = () => {
+    const primary = recommendations.products[0];
+    if (!primary) return;
+
+    addItem({
+      id: `${primary.id}-quiz`,
+      product_id: primary.id,
+      kit_id: primary.type === 'kits' ? primary.id : undefined,
+      name: primary.name,
+      slug: primary.slug,
+      price_minor: primary.price,
+      image_url: primary.image,
+      quantity: 1,
+      product_type: primary.type === 'kits' ? 'kit' : primary.type === 'teas' ? 'tea' : 'seed',
+    });
+    setAddedStatus(true);
+    setTimeout(() => setAddedStatus(false), 2000);
+  };
+
+  const currentQ = questions[currentStep];
+  // Calculate completed answer progress based on current step:
+  // Step 0: 0/3 = 0%
+  // Step 1: 1/3 = 33%
+  // Step 2: 2/3 = 67%
+  const progressPercent = Math.round((currentStep / questions.length) * 100);
+
+  const selectedProducts = recommendations.products.filter((p) => selectedIds.includes(p.id));
+  const selectedTotalMinor = selectedProducts.reduce((sum, p) => sum + p.price, 0);
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+      {/* Header */}
+      <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
+        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
+          Find Your Daily Routine
+        </h1>
+        <p className="text-sm text-muted-gray">
+          Three quick questions to match our edible kitchen seeds or loose mountain teas to your everyday habits.
+        </p>
+      </div>
+
+      {!completed ? (
+        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-border-gray shadow-card animate-fadeIn">
+          {/* Progress Indicator */}
+          <div className="mb-8 space-y-2">
+            <div className="flex items-center justify-between text-xs text-muted-gray font-medium">
+              <span>
+                Question {currentStep + 1} of {questions.length}
+              </span>
+              <span>{progressPercent}% Complete</span>
+            </div>
+            <div className="w-full bg-cream h-2 rounded-full overflow-hidden border border-border-gray/50">
+              <div
+                className="bg-seedly-primary h-full progress-scale-x rounded-full"
+                style={{ transform: `scaleX(${progressPercent / 100})` }}
+              />
+            </div>
+          </div>
+
+          {/* Current Question with slide-and-fade */}
+          <div className={`transition-all duration-200 ease-out ${isFading ? 'opacity-0 translate-x-3' : 'opacity-100 translate-x-0'}`}>
+            <div className="space-y-2 mb-8">
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">
+                {currentQ.title}
+              </h2>
+              <p className="text-sm text-muted-gray">{currentQ.subtitle}</p>
+            </div>
+
+            {/* Options Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {currentQ.options.map((opt) => {
+                const selected = answers[currentQ.id] === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => handleSelectOption(opt.value)}
+                    className={`p-5 rounded-2xl border text-left transition-all duration-150 flex flex-col justify-between motion-safe:active:scale-[0.98] hover:shadow-hover ${
+                      selected
+                        ? 'border-seedly-dark bg-seedly-light/60 shadow-subtle'
+                        : 'border-border-gray bg-cream/30 hover:border-seedly-primary hover:bg-cream'
+                    }`}
+                  >
+                    <div className="space-y-3">
+                      <div className="w-10 h-10 rounded-xl bg-white border border-border-gray/80 flex items-center justify-center shadow-subtle">
+                        {renderOptionIcon(opt.iconName)}
+                      </div>
+                      <h3 className="font-serif font-bold text-base text-charcoal">{opt.label}</h3>
+                      <p className="text-xs text-muted-gray leading-relaxed">{opt.description}</p>
+                    </div>
+                    <div className="pt-4 flex items-center justify-end">
+                      <div
+                        className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
+                          selected
+                            ? 'border-seedly-dark bg-seedly-dark text-white'
+                            : 'border-border-gray bg-white'
+                        }`}
+                      >
+                        {selected && (
+                          <svg
+                            className="w-3.5 h-3.5 text-white"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <polyline points="20 6 9 17 4 12" className="motion-draw-check" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Step Navigation & Escape Link on Step 1 */}
+          <div className="mt-8 pt-4 border-t border-border-gray/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+            {currentStep > 0 ? (
+              <button
+                type="button"
+                onClick={handlePrevQuestion}
+                className="text-xs font-semibold text-muted-gray hover:text-charcoal"
+              >
+                ← Back to previous question
+              </button>
+            ) : (
+              <span className="text-xs text-muted-gray">Step 1 of 3</span>
+            )}
+
+            <Link
+              href="/shop"
+              className="text-xs font-semibold text-seedly-dark hover:underline"
+            >
+              Prefer to browse directly? Explore the full catalog →
+            </Link>
+          </div>
+        </div>
+      ) : (
+        /* Results View */
+        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-border-gray shadow-card animate-fadeIn space-y-8">
+          <div className="text-center max-w-xl mx-auto space-y-2">
+            <span className="text-xs uppercase tracking-widest font-semibold text-seedly-primary">
+              Your Matched Routine
+            </span>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
+              {recommendations.title}
+            </h2>
+            <p className="text-sm text-muted-gray leading-relaxed">
+              {recommendations.explanation}
+            </p>
+          </div>
+
+          {/* Recommended Products with Explicit Inclusion Checkboxes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            {recommendations.products.map((prod, index) => {
+              const isSelected = selectedIds.includes(prod.id);
+              const checkboxId = `rec-prod-${prod.id}`;
+              return (
+                <div
+                  key={prod.id}
+                  onClick={() => toggleProductSelection(prod.id)}
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  className={`animate-slideUp rounded-2xl border p-5 flex flex-col justify-between space-y-4 cursor-pointer transition-all ${
+                    isSelected
+                      ? 'border-seedly-dark bg-seedly-light/20 shadow-subtle'
+                      : 'border-border-gray bg-cream/20 opacity-75'
+                  }`}
+                >
+                  <div className="space-y-3">
+                    <div className="relative aspect-video rounded-xl overflow-hidden bg-stone/40 border border-border-gray/50 flex items-center justify-center">
+                      <Image src={prod.image} alt={prod.name} fill className="object-cover" />
+                      <span
+                        className={`absolute top-2 left-2 px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                          prod.isPairing
+                            ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                            : 'bg-seedly-dark text-white'
+                        }`}
+                      >
+                        {prod.badge}
+                      </span>
+                    </div>
+
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-serif font-bold text-base text-charcoal">{prod.name}</h3>
+                        <p className="text-xs text-muted-gray mt-1 leading-relaxed">{prod.reason}</p>
+                      </div>
+                      <div className="shrink-0 mt-1 flex items-center">
+                        <input
+                          id={checkboxId}
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            toggleProductSelection(prod.id);
+                          }}
+                          aria-label={`Include ${prod.name} in basket`}
+                          className="w-5 h-5 rounded border-border-gray text-seedly-dark focus:ring-seedly-primary cursor-pointer accent-seedly-dark"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-border-gray/60 flex items-center justify-between">
+                    <div>
+                      <span className="font-serif font-bold text-base text-charcoal">
+                        {formatPKR(prod.price)}
+                      </span>
+                      {prod.isPairing && (
+                        <span className="block text-[10px] text-muted-gray">Optional Pairing</span>
+                      )}
+                    </div>
+                    <Link
+                      href={`/${prod.type}/${prod.slug}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-xs font-semibold text-seedly-dark hover:underline"
+                    >
+                      View Details →
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Pricing Summary Breakdown */}
+          <div className="p-4 bg-cream rounded-2xl border border-border-gray flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="space-y-0.5 text-center sm:text-left">
+              <span className="text-muted-gray">Selected Items ({selectedProducts.length} of {recommendations.products.length}):</span>
+              <p className="font-semibold text-charcoal">
+                {selectedProducts.map((p) => p.name).join(' + ') || 'None selected'}
+              </p>
+            </div>
+            <div className="text-right">
+              <span className="text-muted-gray block text-[11px]">Combined Total</span>
+              <strong className="font-serif text-lg font-bold text-seedly-dark">
+                {formatPKR(selectedTotalMinor)}
+              </strong>
+            </div>
+          </div>
+
+          {/* Actions: Edit, Retake, and Add buttons */}
+          <div className="pt-4 border-t border-border-gray flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={handleEditAnswers}
+                className="text-xs font-semibold text-muted-gray hover:text-charcoal flex items-center gap-1.5"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+                <span>Edit Choices</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="text-xs font-semibold text-muted-gray hover:text-charcoal flex items-center gap-1.5"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Start Over</span>
+              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto">
+              {recommendations.products.length > 1 && selectedIds.length === 2 && (
+                <button
+                  type="button"
+                  onClick={handleAddPrimaryOnly}
+                  className="w-full sm:w-auto px-5 py-3 rounded-full text-xs font-semibold border border-border-gray hover:bg-cream text-charcoal transition-all"
+                >
+                  Add Primary Item Only ({formatPKR(recommendations.products[0].price)})
+                </button>
+              )}
+
+              <button
+                type="button"
+                disabled={selectedIds.length === 0}
+                onClick={handleAddSelectedToCart}
+                className={`w-full sm:w-auto px-7 py-3.5 rounded-full font-medium text-xs sm:text-sm transition-all shadow-card flex items-center justify-center gap-2 ${
+                  selectedIds.length === 0
+                    ? 'bg-stone text-muted-gray cursor-not-allowed'
+                    : addedStatus
+                    ? 'bg-emerald-700 text-white'
+                    : 'bg-seedly-dark hover:bg-seedly-forest text-white'
+                }`}
+              >
+                {addedStatus ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    <span>Added to Basket!</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4" />
+                    <span>
+                      {selectedIds.length === 0
+                        ? 'Select an Item'
+                        : selectedIds.length === 1
+                        ? `Add to Basket (${formatPKR(selectedTotalMinor)})`
+                        : `Add Both Items (${formatPKR(selectedTotalMinor)})`}
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* WhatsApp consultation & wholesome nutrition notice */}
+          <div className="pt-4 border-t border-border-gray/60 space-y-4">
+            <div className="p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <div className="text-center sm:text-left">
+                <span className="font-bold text-emerald-950 block">Need help deciding on your routine?</span>
+                <span className="text-emerald-800">Chat directly with our team in Lahore for preparation tips and cycle guidance.</span>
+              </div>
+              <a
+                href="https://wa.me/923719055758?text=Hello%20Seedly%20team,%20I%20just%20completed%20the%20Routine%20Finder%20and%20would%20like%20guidance."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full font-semibold transition-colors shrink-0 shadow-subtle"
+              >
+                Ask on WhatsApp
+              </a>
+            </div>
+
+            <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-4 text-[11px] text-stone-600 leading-relaxed text-start shadow-xs">
+              <strong className="text-neutral-900 block font-semibold mb-1 uppercase tracking-wider">Dietary &amp; Medical Advisory:</strong>
+              <p>
+                All items recommended by Seedly are raw culinary food staples and mountain botanicals for dietary consumption and culinary brewing only. They are not intended to diagnose, treat, cure, or prevent any medical condition. If you are pregnant, breastfeeding, or managing PCOS, thyroid conditions, or endocrine disorders, consult your physician before introducing new dietary seed routines.
+              </p>
+            </div>
+
+            <p className="text-[11px] text-muted-gray flex items-center justify-center gap-1.5 text-center">
+              <ShieldCheck className="w-3.5 h-3.5 text-seedly-primary" />
+              <span>Wholesome culinary botanicals. Delivered nationwide across Pakistan via TCS &amp; Leopards.</span>
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

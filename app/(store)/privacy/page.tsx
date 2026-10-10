@@ -1,80 +1,90 @@
-import { getContentDocument } from '@/lib/services/content';
-import { ManagedSection } from '@/components/storefront/ManagedSections';
-import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
-import { getContentMetadata } from '@/lib/cms/metadata';
 import React from 'react';
 import type { Metadata } from 'next';
+import { siteConfig } from '../../../lib/config';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return getContentMetadata('privacy');
-}
+export const metadata: Metadata = {
+  title: 'Privacy Policy | Seedly Pakistan',
+  description:
+    'How Seedly protects and handles your personal information. Safe, transparent customer data practices for nationwide orders in Pakistan.',
+  openGraph: {
+    title: 'Privacy Policy | Seedly Pakistan',
+    description: 'Safe and transparent customer data handling for orders across Pakistan.',
+    url: `${siteConfig.url}/privacy`,
+  },
+};
 
-export default async function PrivacyPage() {
-  const cms = await getContentDocument<CmsPageContent>('privacy'); const { copy, links, images } = cms;
-const siteConfig = (await getContentDocument<SiteContent>('site')).config;
-
+export default function PrivacyPage() {
   return (
     <div className="bg-white text-stone-900">
       <div className="max-w-4xl mx-auto px-5 md:px-8 py-12 md:py-20 space-y-10">
         <header className="max-w-2xl space-y-2">
           <span className="text-xs uppercase tracking-[0.16em] font-semibold text-stone-500">
-            {copy.text_data_protection}</span>
+            Data Protection
+          </span>
           <h1 className="font-heading font-medium text-3xl sm:text-5xl text-stone-900 tracking-tight">
-            {copy.text_privacy_policy}</h1>
+            Privacy Policy
+          </h1>
           <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-normal">
-            {copy.text_how_seedly_respects_handles_and_safeguards_your_custome}</p>
+            How Seedly respects, handles, and safeguards your customer information across our website and delivery network.
+          </p>
         </header>
 
         <div className="rounded-3xl border border-stone-200 bg-white p-6 sm:p-10 space-y-8 text-xs sm:text-sm leading-relaxed text-stone-700 shadow-xs">
-          <ManagedSection document="privacy" sectionId="page_section_01"><section className="space-y-2">
-            <h2 className="font-heading font-medium text-lg text-stone-900">{copy.text_1_information_we_collect}</h2>
+          <section className="space-y-2">
+            <h2 className="font-heading font-medium text-lg text-stone-900">1. Information We Collect</h2>
             <p className="text-stone-600">
-              {copy.text_we_collect_personal_information_necessary_to_deliver_yo}</p>
-          </section></ManagedSection>
+              We collect personal information necessary to deliver your orders and provide helpful customer care: your name, shipping address, landmark, city, email address, mobile contact number, and payment verification references.
+            </p>
+          </section>
 
-          <ManagedSection document="privacy" sectionId="page_section_02"><section className="space-y-2">
-            <h2 className="font-heading font-medium text-lg text-stone-900">{copy.text_2_routine_questionnaire_interactive_tools}</h2>
+          <section className="space-y-2">
+            <h2 className="font-heading font-medium text-lg text-stone-900">2. Routine Questionnaire &amp; Interactive Tools</h2>
             <p className="text-stone-600">
-              {copy.text_when_you_use_our_routine_finder_questionnaire_cycle_cal}</p>
-          </section></ManagedSection>
+              When you use our Routine Finder questionnaire, cycle calendar, or brew guides, any responses you provide are processed in-session or on your device solely to suggest relevant whole-food ingredients and guidance. We never sell, rent, or share your routine questionnaire answers with third parties or advertisers.
+            </p>
+          </section>
 
-          <ManagedSection document="privacy" sectionId="page_section_03"><section className="space-y-2">
-            <h2 className="font-heading font-medium text-lg text-stone-900">{copy.text_3_email_newsletter_communications}</h2>
+          <section className="space-y-2">
+            <h2 className="font-heading font-medium text-lg text-stone-900">3. Email Newsletter &amp; Communications</h2>
             <p className="text-stone-600">
-              {copy.text_if_you_subscribe_to_our_fresh_dispatches_newsletter_we}</p>
-          </section></ManagedSection>
+              If you subscribe to our Fresh Dispatches newsletter, we store your email address solely to send seasonal harvest announcements, pantry recipes, and store updates. You may opt out or unsubscribe at any time via the one-click unsubscribe link at the bottom of every email dispatch.
+            </p>
+          </section>
 
-          <ManagedSection document="privacy" sectionId="page_section_04"><section className="space-y-2">
-            <h2 className="font-heading font-medium text-lg text-stone-900">{copy.text_4_payment_processing_verification}</h2>
+          <section className="space-y-2">
+            <h2 className="font-heading font-medium text-lg text-stone-900">4. Payment Processing &amp; Verification</h2>
             <p className="text-stone-600">
-              {copy.text_seedly_does_not_collect_process_or_store_credit_debit_c}</p>
-          </section></ManagedSection>
+              Seedly does not collect, process, or store credit/debit card numbers or confidential banking passwords. For Cash on Delivery (COD), payment is made directly to the courier rider upon delivery. For manual transfers via JazzCash, Easypaisa, or direct bank transfer (IBFT), payment transaction IDs and verification screenshots are inspected solely by our internal Lahore accounts team to verify settlement prior to parcel dispatch.
+            </p>
+          </section>
 
-          <ManagedSection document="privacy" sectionId="page_section_05"><section className="space-y-2">
-            <h2 className="font-heading font-medium text-lg text-stone-900">{copy.text_5_courier_logistics_partners}</h2>
+          <section className="space-y-2">
+            <h2 className="font-heading font-medium text-lg text-stone-900">5. Courier Logistics Partners</h2>
             <p className="text-stone-600">
-              {copy.text_to_fulfill_your_physical_delivery_we_share_your_recipie}<strong>{copy.text_tcs}</strong> {copy.text_and}<strong>{copy.text_leopards_courier}</strong>{copy.text_they_use_this_data_solely_to_transport_the_parcel_and_s}</p>
-          </section></ManagedSection>
+              To fulfill your physical delivery, we share your recipient name, destination address, and mobile phone number strictly with our contracted courier logistics partners—<strong>TCS</strong> and <strong>Leopards Courier</strong>. They use this data solely to transport the parcel and send you SMS tracking and delivery arrival notifications.
+            </p>
+          </section>
 
-          <ManagedSection document="privacy" sectionId="page_section_06"><section className="space-y-2">
-            <h2 className="font-heading font-medium text-lg text-stone-900">{copy.text_6_cookies_anonymous_analytics}</h2>
+          <section className="space-y-2">
+            <h2 className="font-heading font-medium text-lg text-stone-900">6. Cookies &amp; Anonymous Analytics</h2>
             <p className="text-stone-600">
-              {copy.text_we_use_essential_first_party_cookies_to_remember_your_s}</p>
-          </section></ManagedSection>
+              We use essential first-party cookies to remember your shopping cart items across visits and retain session preferences. We also use privacy-focused, anonymous site telemetry to monitor page loading speed and technical reliability. We do not use third-party behavioral advertising trackers.
+            </p>
+          </section>
 
-          <ManagedSection document="privacy" sectionId="page_section_07"><section className="space-y-2">
-            <h2 className="font-heading font-medium text-lg text-stone-900">{copy.text_7_your_data_rights}</h2>
+          <section className="space-y-2">
+            <h2 className="font-heading font-medium text-lg text-stone-900">7. Your Data Rights</h2>
             <p className="text-stone-600">
-              {copy.text_you_have_the_right_to_request_access_to_correction_of_o}{' '}
+              You have the right to request access to, correction of, or deletion of your customer information at any time. Simply contact our support team via WhatsApp at{' '}
               <a href={siteConfig.contact.whatsappUrl} className="font-semibold text-stone-900 underline underline-offset-4">
                 {siteConfig.contact.phone}
               </a>{' '}
-              {copy.text_or_email}{' '}
+              or email{' '}
               <a href={`mailto:${siteConfig.contact.email}`} className="font-semibold text-stone-900 underline underline-offset-4">
                 {siteConfig.contact.email}
               </a>.
             </p>
-          </section></ManagedSection>
+          </section>
         </div>
       </div>
     </div>

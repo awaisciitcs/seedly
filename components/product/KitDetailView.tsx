@@ -1,6 +1,4 @@
 'use client';
-import { useSiteContent } from '@/components/storefront/SiteContentProvider';
-import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -15,19 +13,13 @@ import { NotifyMeModal } from './NotifyMeModal';
 import { PurchaseActions } from './PurchaseActions';
 import { StickyPurchaseBar } from './StickyPurchaseBar';
 import { KitContentsExplorer } from './KitContentsExplorer';
-import { ProductGallery } from './ProductGallery';
-import { DeliveryNote } from '@/components/storefront/DeliveryNote';
-import { toCartItem } from '@/lib/catalog';
-import { useProductReviews } from '@/hooks/useProductReviews';
+import { siteConfig } from '../../lib/config';
 
 interface KitDetailViewProps {
   kit: Kit;
 }
 
 export function KitDetailView({ kit }: KitDetailViewProps) {
-  const cms = useSiteContent<CmsPageContent>('product'); const { copy, links, images } = cms;
-const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
-
   const router = useRouter();
   const { addItem, setIsCartOpen } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -37,7 +29,8 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
   const mainActionsRef = React.useRef<HTMLDivElement>(null);
 
   // Reviews State
-  const { reviews, loading: loadingReviews, error: reviewsLoadError, retry: retryReviews } = useProductReviews(kit.id);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewSuccessMessage, setReviewSuccessMessage] = useState('');
@@ -49,9 +42,26 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewBody, setReviewBody] = useState('');
 
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setLoadingReviews(true);
+        const res = await fetch(`/api/reviews?productId=${kit.id}`);
+        const json = await res.json();
+        if (json.data) {
+          setReviews(json.data);
+        }
+      } catch (err) {
+        console.error('Failed to load reviews:', err);
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+    fetchReviews();
+  }, [kit.id]);
+
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (submittingReview) return;
     setReviewErrorMessage('');
     setReviewSuccessMessage('');
 
@@ -65,13 +75,12 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
       const res = await fetch('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(15000),
         body: JSON.stringify({
           product_id: kit.id,
           product_name: kit.name,
           customer_name: customerName,
           rating: reviewRating,
-          title: reviewTitle || 'Customer feedback',
+          title: reviewTitle || 'Verified Feedback',
           body: reviewBody,
         }),
       });
@@ -100,18 +109,62 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
   const isLowStock = inStock && currentStock <= 5;
   const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
 
-  const handleAddToCart = () => { if (!inStock) { setIsNotifyModalOpen(true); return false; } const success = addItem(toCartItem(kit, quantity)); if(success) {setAdded(true);setTimeout(()=>setAdded(false),1500);} return success; };
-  const handleBuyNow = () => { if (!inStock) { setIsNotifyModalOpen(true); return; } if(addItem(toCartItem(kit, quantity), {openDrawer:false})){ setIsCartOpen(false); router.push("/checkout"); } };
+  const handleAddToCart = () => {
+    if (!inStock) {
+      setIsNotifyModalOpen(true);
+      return;
+    }
+    addItem({
+      id: `${kit.id}-kit`,
+      product_id: kit.id,
+      kit_id: kit.id,
+      name: kit.name,
+      slug: kit.slug,
+      variant_label: kit.package_size,
+      price_minor: kit.price_minor,
+      image_url: kit.image_url,
+      quantity,
+      product_type: 'kit',
+      max_quantity: currentStock,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleBuyNow = () => {
+    if (!inStock) {
+      setIsNotifyModalOpen(true);
+      return;
+    }
+    addItem(
+      {
+        id: `${kit.id}-kit`,
+        product_id: kit.id,
+        kit_id: kit.id,
+        name: kit.name,
+        slug: kit.slug,
+        variant_label: kit.package_size,
+        price_minor: kit.price_minor,
+        image_url: kit.image_url,
+        quantity,
+        product_type: 'kit',
+        max_quantity: currentStock,
+      },
+      { openDrawer: false }
+    );
+    setIsCartOpen(false);
+    router.push('/checkout');
+  };
 
   const waMessage = encodeURIComponent(`Hi Seedly, I have a question about the ${kit.name}.`);
 
   return (
     <div className="max-w-7xl mx-auto w-full px-5 md:px-8 py-8 sm:py-12 bg-white text-neutral-900">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-stone-600 mb-8">
-        <Link href={links.href} className="hover:text-black transition-colors">{copy.text_home}</Link>
+      <nav className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-stone-400 mb-8">
+        <Link href="/" className="hover:text-black transition-colors">Home</Link>
         <span>/</span>
-        <Link href={links.href_kits} className="capitalize hover:text-black transition-colors">{copy.text_curated_seed_kits}</Link>
+        <Link href="/kits" className="capitalize hover:text-black transition-colors">Curated Seed Kits</Link>
         <span>/</span>
         <span className="text-neutral-900 truncate font-semibold">{kit.name}</span>
       </nav>
@@ -120,23 +173,41 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
         {/* Left Column: Kit Imagery */}
         <div className="lg:col-span-6 space-y-4">
-          <ProductGallery name={kit.name} image={kit.image_url} images={kit.gallery_images} />
+          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-[#FBFBFA] border border-gray-200/90 shadow-xs">
+            <Image
+              src={kit.image_url}
+              alt={kit.name}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
+            {/* Top-Right Badge */}
+            <div className="absolute top-4 right-4 z-10 rounded-full border border-gray-200/90 bg-white/95 backdrop-blur-xs px-3 py-1 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-neutral-800 shadow-xs">
+              PACKED IN LAHORE ✦ DISPATCHED IN 24H
+            </div>
+
+            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-xs px-3.5 py-1 rounded-full border border-gray-200/90 text-xs font-medium text-neutral-800 shadow-xs flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-neutral-900"></span>
+              <span>{kit.package_size || 'Complete Curated Box'}</span>
+            </div>
+          </div>
 
           {/* Contextual WhatsApp Consultation */}
           <div className="p-4 rounded-2xl bg-[#FBFBFA] border border-gray-200/90 shadow-xs flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-0.5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-900">{copy.text_questions_about_how_this_routine_works}</p>
-              <p className="text-xs text-stone-500 font-normal">{copy.text_chat_with_our_team_on_whatsapp_for_ingredients_preparat}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-900">Questions about how this routine works?</p>
+              <p className="text-xs text-stone-500 font-normal">Chat with our team on WhatsApp for ingredients, preparation and storage guidance.</p>
             </div>
-            {features.whatsapp&&(<a
+            <a
               href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 rounded-full bg-white border border-gray-200 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold uppercase tracking-wider shadow-xs shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <MessageCircle className="w-3.5 h-3.5 text-neutral-700" />
-              <span>{copy.text_ask_on_whatsapp}</span>
-            </a>)}
+              <span>Ask on WhatsApp</span>
+            </a>
           </div>
         </div>
 
@@ -146,15 +217,16 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
             {/* Header / Social Proof */}
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="rounded-full bg-stone-100 text-stone-700 px-3 py-1 text-xs font-semibold uppercase tracking-wider">
-                {copy.text_14_28_day_routine_kit}</span>
+                ✦ 14 &amp; 28-Day Routine Kit
+              </span>
 
-              {features.reviews && reviews.length > 0 ? (
+              {reviews.length > 0 ? (
                 <div className="flex items-center gap-1.5 text-xs font-medium text-neutral-800">
                   <div className="flex items-center text-amber-500">
                     <Star className="w-3.5 h-3.5 fill-amber-400 stroke-amber-500 stroke-1" />
                   </div>
                   <span className="font-semibold text-neutral-900">{(reviews.reduce((total, review) => total + review.rating, 0) / reviews.length).toFixed(1)}</span>
-                  <span className="text-stone-600">({reviews.length} {copy.text_reviews}</span>
+                  <span className="text-stone-400">({reviews.length} reviews)</span>
                 </div>
               ) : null}
             </div>
@@ -163,8 +235,6 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
             <h1 className="font-heading font-medium text-3xl sm:text-4xl lg:text-5xl text-neutral-900 leading-tight tracking-tight">
               {kit.name}
             </h1>
-            {features.reviews && (<a href={links.href_reviews} className="inline-flex text-sm underline underline-offset-4">{kit.review_count ? kit.rating?.toFixed(1) + " / 5 · " + kit.review_count + " reviews" : "Read or write a review"}</a>)}
-            <DeliveryNote />
 
             {/* Short descriptor */}
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
@@ -177,22 +247,24 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                 {formatPKR(kit.price_minor)}
               </span>
               {kit.compare_price_minor && (
-                <span className="text-base text-stone-600 line-through tabular-nums font-normal">
+                <span className="text-base text-stone-400 line-through tabular-nums font-normal">
                   {formatPKR(kit.compare_price_minor)}
                 </span>
               )}
               {inStock ? (
                 isLowStock ? (
                   <span className="text-[11px] font-medium uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 px-3 py-0.5 rounded-full">
-                    {copy.text_low_stock}{currentStock} {copy.text_kits_left}</span>
+                    Low stock — {currentStock} kits left
+                  </span>
                 ) : (
                   <span className="text-[11px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-0.5 rounded-full">
-                    {copy.text_in_stock_in_lahore}</span>
+                    In Stock in Lahore
+                  </span>
                 )
               ) : (
                 <span className="text-[11px] font-medium uppercase tracking-wider text-rose-800 bg-rose-50 border border-rose-200 px-3 py-0.5 rounded-full flex items-center gap-1">
                   <Bell className="w-3 h-3 text-rose-700" />
-                  <span>{copy.text_out_of_stock}</span>
+                  <span>Out of stock</span>
                 </span>
               )}
             </div>
@@ -201,13 +273,13 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
             {kit.slug === 'complete-cycle-kit' && (
               <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-3 text-xs text-stone-600 space-y-1 shadow-xs">
                 <div className="flex items-center justify-between text-neutral-900 font-semibold">
-                  <span>{copy.text_ritual_bundle_value}</span>
-                  <span className="text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[11px]">{copy.text_save_rs_470}</span>
+                  <span>Ritual Bundle Value:</span>
+                  <span className="text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[11px]">Save Rs. 470</span>
                 </div>
-                <p>{copy.text_4_x_250g_fresh_pouches_rs_2_970_individual_seed_value}</p>
-                <p>{copy.text_engraved_wooden_measuring_scoop_printed_cycle_calendar}</p>
+                <p>• 4 x 250g Fresh Pouches (Rs. 2,970 individual seed value)</p>
+                <p>• Engraved Wooden Measuring Scoop + Printed Cycle Calendar (Rs. 350 value)</p>
                 <p className="text-[11px] text-stone-500 pt-0.5">
-                  {copy.text_standalone_total_rs_3_320_at_1_tbsp_day_this_kit_suppli}<strong>{copy.text_50_60_daily_servings_approx_two_28_day_cycles}</strong>.
+                  Standalone total: Rs. 3,320 · At 1 tbsp/day, this kit supplies <strong>~50–60 daily servings (approx. two 28-day cycles)</strong>.
                 </p>
               </div>
             )}
@@ -219,14 +291,14 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
               <div className="flex items-center gap-2 py-2.5 px-4 bg-[#FBFBFA] border border-gray-200/90 rounded-full text-xs font-normal text-stone-600 shadow-xs">
                 <Truck className="h-4 w-4 text-neutral-700" aria-hidden="true" />
                 <span>
-                  <strong className="text-neutral-900 font-semibold">{copy.text_flat_rs_200_delivery}</strong> · <strong className="text-neutral-900 font-semibold">{copy.text_free}</strong> {copy.text_over_rs_2_500_dispatched_in_24h_from_lahore}</span>
+                  <strong className="text-neutral-900 font-semibold">Flat Rs. 200 delivery</strong> · <strong className="text-neutral-900 font-semibold">FREE</strong> over Rs. 2,500 · Dispatched in 24h from Lahore
+                </span>
               </div>
               {inStock ? (
                 <PurchaseActions
-                  added={added}
                   quantity={quantity}
                   maxQuantity={currentStock}
-
+                  added={added}
                   wishlisted={wishlisted}
                   onQuantityChange={setQuantity}
                   onAdd={handleAddToCart}
@@ -238,10 +310,11 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                   <div className="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl text-xs text-amber-900 space-y-1">
                     <p className="font-semibold uppercase tracking-wider flex items-center gap-1.5">
                       <Bell className="w-4 h-4 text-amber-700" />
-                      <span>{copy.text_kit_currently_out_of_stock}</span>
+                      <span>Kit currently out of stock</span>
                     </p>
                     <p className="text-stone-600 font-normal">
-                      {copy.text_leave_your_email_and_we_will_let_you_know_when_this_kit}</p>
+                      Leave your email and we will let you know when this kit is available.
+                    </p>
                   </div>
 
                   <button
@@ -249,15 +322,15 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                     className="h-12 sm:h-13 w-full rounded-full font-semibold text-xs sm:text-sm uppercase tracking-wider bg-neutral-900 hover:bg-black text-white shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Bell className="w-4 h-4" />
-                    <span>{copy.text_notify_me_when_kit_returns}</span>
+                    <span>Notify Me When Kit Returns</span>
                   </button>
                 </div>
               )}
             </div>
 
             <div className="border-t border-gray-100 pt-5 space-y-2 text-xs font-normal leading-5 text-stone-500">
-              <p>{copy.text_delivery_across_pakistan}<Link href={links.href_shipping} className="underline underline-offset-4 text-neutral-800 hover:text-black">{copy.text_see_delivery_times_and_charges}</Link>.</p>
-              <p>{copy.text_check_each_pack_for_storage_instructions_and_its_best_b}</p>
+              <p>Delivery across Pakistan. <Link href="/shipping" className="underline underline-offset-4 text-neutral-800 hover:text-black">See delivery times and charges</Link>.</p>
+              <p>Check each pack for storage instructions and its best-before date.</p>
               {(kit.slug === 'luteal-blend' || kit.slug === 'complete-cycle-kit') && (
                 <p className="text-amber-900">{siteConfig.disclaimer.sesame}</p>
               )}
@@ -265,9 +338,9 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
 
             {/* Standard Dietary Disclaimer Box */}
             <div className="p-4 bg-[#FBFBFA] rounded-2xl border border-gray-200/90 text-xs text-stone-500 leading-relaxed flex items-start gap-2.5 shadow-xs">
-              <Info className="w-4 h-4 text-stone-600 shrink-0 mt-0.5" />
+              <Info className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
               <div>
-                <strong className="text-neutral-900 font-semibold uppercase tracking-wider block mb-1">{copy.text_dietary_food_notice_2}</strong>
+                <strong className="text-neutral-900 font-semibold uppercase tracking-wider block mb-1">Dietary Food Notice: </strong>
                 {siteConfig.disclaimer.standard}
               </div>
             </div>
@@ -279,7 +352,8 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
       <div className="mt-16 sm:mt-24 pt-10 border-t border-gray-200 space-y-10">
         <div className="max-w-3xl space-y-3">
           <h2 className="font-heading font-medium text-2xl sm:text-3xl text-neutral-900">
-            {copy.text_how_this_seed_routine_works}</h2>
+            How this seed routine works
+          </h2>
           <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
             {kit.description}
           </p>
@@ -289,9 +363,11 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-6 bg-[#FBFBFA] rounded-2xl border border-gray-200/90 space-y-3 shadow-xs">
             <span className="text-[11px] uppercase font-semibold tracking-wider text-neutral-800 bg-stone-200/80 px-2.5 py-0.5 rounded-full inline-block">
-              {copy.text_daily_usage}</span>
+              Daily Usage
+            </span>
             <h3 className="font-heading font-medium text-lg text-neutral-900">
-              {copy.text_simple_preparation}</h3>
+              Simple Preparation
+            </h3>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
               {kit.usage_instructions}
             </p>
@@ -299,9 +375,11 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
 
           <div className="p-6 bg-[#FBFBFA] rounded-2xl border border-gray-200/90 space-y-3 shadow-xs">
             <span className="text-[11px] uppercase font-semibold tracking-wider text-neutral-800 bg-stone-200/80 px-2.5 py-0.5 rounded-full inline-block">
-              {copy.text_proper_storage}</span>
+              Proper Storage
+            </span>
             <h3 className="font-heading font-medium text-lg text-neutral-900">
-              {copy.text_protecting_freshness}</h3>
+              Protecting Freshness
+            </h3>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
               {kit.storage_instructions}
             </p>
@@ -309,12 +387,12 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
         </div>
 
         {/* Customer Reviews Section */}
-        {features.reviews && (<div id="reviews" className="pt-8 border-t border-gray-200 space-y-6">
+        <div className="pt-8 border-t border-gray-200 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-gray-200">
             <div>
-              <h3 className="font-heading font-medium text-xl text-neutral-900">{copy.text_customer_reviews}</h3>
+              <h3 className="font-heading font-medium text-xl text-neutral-900">Customer reviews</h3>
               <p className="text-xs sm:text-sm text-stone-500 font-normal mt-0.5">
-                {loadingReviews ? 'Loading reviews…' : reviewsLoadError ? 'Reviews are temporarily unavailable.' : reviews.length > 0
+                {reviews.length > 0
                   ? `${reviews.length} review${reviews.length > 1 ? 's' : ''}`
                   : 'Be the first to leave a review for this kit.'}
               </p>
@@ -324,28 +402,25 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
               className="px-4 py-2 bg-neutral-900 hover:bg-black text-white rounded-full text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
             >
               <PenLine className="w-3.5 h-3.5" />
-              <span>{copy.text_write_a_review_2}</span>
+              <span>Write a Review</span>
             </button>
           </div>
-
-          {reviewsLoadError && <p role="alert" className="text-sm text-rose-700">{reviewsLoadError} <button type="button" className="min-h-11 underline" onClick={retryReviews}>{copy.text_retry}</button></p>}
-          {reviewSuccessMessage && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{reviewSuccessMessage}</p>}
-          {reviewErrorMessage && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{reviewErrorMessage}</p>}
 
           {/* Form */}
           {showReviewForm && (
             <form onSubmit={handleReviewSubmit} className="p-6 bg-[#FBFBFA] rounded-2xl border border-gray-200 space-y-4">
-              <h5 className="font-heading font-medium text-sm text-neutral-900">{copy.text_review_this_kit}</h5>
+              <h5 className="font-heading font-medium text-sm text-neutral-900">Review this kit</h5>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="kit-review-name" className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                    {copy.text_your_name}</label>
+                    Your Name *
+                  </label>
                   <input
                     id="kit-review-name"
                     name="customerName"
                     type="text"
                     required
-                    placeholder={copy.placeholder_e_g_zainab_m_karachi}
+                    placeholder="e.g. Zainab M. (Karachi)"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
@@ -353,7 +428,8 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                 </div>
                 <div>
                   <label htmlFor="kit-review-rating" className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                    {copy.text_rating}</label>
+                    Rating
+                  </label>
                   <select
                     id="kit-review-rating"
                     name="reviewRating"
@@ -361,22 +437,23 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                     onChange={(e) => setReviewRating(Number(e.target.value))}
                     className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
                   >
-                    <option value={5}>{copy.text_5_excellent}</option>
-                    <option value={4}>{copy.text_4_good}</option>
-                    <option value={3}>{copy.text_3_average}</option>
-                    <option value={2}>{copy.text_2_poor}</option>
-                    <option value={1}>{copy.text_1_very_bad}</option>
+                    <option value={5}>★★★★★ (5 - Excellent)</option>
+                    <option value={4}>★★★★☆ (4 - Good)</option>
+                    <option value={3}>★★★☆☆ (3 - Average)</option>
+                    <option value={2}>★★☆☆☆ (2 - Poor)</option>
+                    <option value={1}>★☆☆☆☆ (1 - Very Bad)</option>
                   </select>
                 </div>
               </div>
               <div>
                 <label htmlFor="kit-review-title" className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                  {copy.text_title}</label>
+                  Title
+                </label>
                 <input
                   id="kit-review-title"
                   name="reviewTitle"
                   type="text"
-                  placeholder={copy.placeholder_e_g_beautiful_packaging_and_easy_to_follow}
+                  placeholder="e.g. Beautiful packaging and easy to follow"
                   value={reviewTitle}
                   onChange={(e) => setReviewTitle(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
@@ -384,13 +461,14 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
               </div>
               <div>
                 <label htmlFor="kit-review-body" className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-                  {copy.text_review_details}</label>
+                  Review Details *
+                </label>
                 <textarea
                   id="kit-review-body"
                   name="reviewBody"
                   required
                   rows={3}
-                  placeholder={copy.placeholder_how_was_the_experience_taste_and_daily_convenience}
+                  placeholder="How was the experience, taste, and daily convenience?"
                   value={reviewBody}
                   onChange={(e) => setReviewBody(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
@@ -402,7 +480,8 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                   onClick={() => setShowReviewForm(false)}
                   className="px-4 py-2 border border-gray-200 bg-white hover:bg-neutral-50 rounded-full text-xs font-semibold uppercase tracking-wider text-neutral-700 cursor-pointer"
                 >
-                  {copy.text_cancel}</button>
+                  Cancel
+                </button>
                 <button
                   type="submit"
                   disabled={submittingReview}
@@ -423,10 +502,11 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                     <span className="font-semibold text-neutral-900">{rev.customer_name}</span>
                     {rev.verified_purchase && (
                       <span className="text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full font-medium">
-                        {copy.text_verified_purchase}</span>
+                        Verified Purchase
+                      </span>
                     )}
                   </div>
-                  <span className="text-stone-600 text-xs">{formatDate(rev.created_at)}</span>
+                  <span className="text-stone-400 text-xs">{formatDate(rev.created_at)}</span>
                 </div>
                 <div className="flex text-amber-500 text-sm">
                   {'★'.repeat(rev.rating)}
@@ -437,7 +517,7 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
               </div>
             ))}
           </div>
-        </div>)}
+        </div>
       </div>
 
       {/* Notify Me Modal */}

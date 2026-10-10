@@ -1,9 +1,6 @@
 'use client';
-import { useSiteContent } from '@/components/storefront/SiteContentProvider';
-import { ManagedSection } from '@/components/storefront/ManagedSections';
-import type { CmsPageContent, SiteContent, ProductContent } from '@/lib/cms/storefront-types';
 
-import React, { useId, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { KitItem } from '../../lib/types';
@@ -23,29 +20,75 @@ interface ItemDetails {
   image: string;
 }
 
+const POUCH_METADATA: Record<string, ItemDetails> = {
+  'pumpkin-seeds': {
+    phase: 'Phase 1: Follicular Phase',
+    timing: 'Days 1 to 14 of cycle',
+    nutrients: ['High Bioavailable Zinc', 'Magnesium', 'Plant Phytosterols'],
+    intakeGuide: '1 tablespoon daily, gently chewed or blended into warm porridge or fresh salads.',
+    slug: 'pumpkin-seeds',
+    image: '/images/products/pumpkin-seeds.jpg',
+  },
+  'flax-seeds': {
+    phase: 'Phase 1: Follicular Phase',
+    timing: 'Days 1 to 14 of cycle',
+    nutrients: ['High Omega-3 (ALA)', 'Dietary Lignans', 'Prebiotic Fiber'],
+    intakeGuide: '1 tablespoon daily, freshly milled or cracked for optimal nutrient absorption.',
+    slug: 'flax-seeds',
+    image: '/images/products/flax-seeds.jpg',
+  },
+  'sunflower-seeds': {
+    phase: 'Phase 2: Luteal Phase',
+    timing: 'Days 15 to 28 of cycle',
+    nutrients: ['Vitamin E (Alpha-Tocopherol)', 'Selenium', 'B-Complex Vitamins'],
+    intakeGuide: '1 tablespoon daily, sprinkled raw over yogurt, fruit bowls, or wholesome smoothies.',
+    slug: 'sunflower-seeds',
+    image: '/images/products/sunflower-seeds.jpg',
+  },
+  'sesame-seeds': {
+    phase: 'Phase 2: Luteal Phase',
+    timing: 'Days 15 to 28 of cycle',
+    nutrients: ['High Dietary Calcium', 'Sesamin Lignans', 'Copper & Zinc'],
+    intakeGuide: '1 tablespoon daily, unhulled or lightly crushed into breakfast bowls.',
+    slug: 'sesame-seeds',
+    image: '/images/products/sesame-seeds.jpg',
+  },
+};
 
+function getMetadata(productName: string): ItemDetails {
+  const lower = productName.toLowerCase();
+  if (lower.includes('pumpkin')) return POUCH_METADATA['pumpkin-seeds'];
+  if (lower.includes('flax')) return POUCH_METADATA['flax-seeds'];
+  if (lower.includes('sunflower')) return POUCH_METADATA['sunflower-seeds'];
+  if (lower.includes('sesame')) return POUCH_METADATA['sesame-seeds'];
 
-
+  return {
+    phase: 'Daily Wellness Routine',
+    timing: 'Take consistently throughout cycle',
+    nutrients: ['Whole Food Essential Fatty Acids', 'Natural Micronutrients'],
+    intakeGuide: '1 to 2 tablespoons daily with wholesome meals.',
+    slug: 'pumpkin-seeds',
+    image: '/images/products/pumpkin-seeds.jpg',
+  };
+}
 
 export function KitContentsExplorer({ items }: KitContentsExplorerProps) {
-  const cms = useSiteContent<ProductContent>('product'); const { copy, links, images } = cms;
-const getMetadata=(name:string)=>cms.pouchGuides.find(guide=>name.toLowerCase().includes(guide.id.split('-')[0]));
-
-  const instanceId = useId();
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   if (!items || items.length === 0) return null;
 
   const currentItem = items[selectedIndex] || items[0];
-  const meta = getMetadata(currentItem.product_name); if (!meta) return null;
+  const meta = getMetadata(currentItem.product_name);
 
   return (
-    <ManagedSection document="product" sectionId="kitcontentsexplorer_section_01"><section aria-labelledby="kit-contents-heading" className="border-y border-gray-100 py-6 space-y-5">
+    <section aria-labelledby="kit-contents-heading" className="border-y border-gray-100 py-6 space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
         <h2 id="kit-contents-heading" className="font-heading font-medium text-xl sm:text-2xl text-neutral-900">
-          {copy.text_what_s_inside_this_kit}</h2>
+          What&apos;s inside this kit?
+        </h2>
         <span className="text-xs text-stone-500 font-normal">
-          {copy.text_click_any_pouch_to_explore_routine_phase_ingredients}</span>
+          Click any pouch to explore routine phase &amp; ingredients
+        </span>
       </div>
 
       {/* Pouch Selector Tabs */}
@@ -56,18 +99,17 @@ const getMetadata=(name:string)=>cms.pouchGuides.find(guide=>name.toLowerCase().
       >
         {items.map((item, idx) => {
           const isSelected = selectedIndex === idx;
-          const itemMeta = getMetadata(item.product_name); if(!itemMeta) return null;
+          const itemMeta = getMetadata(item.product_name);
 
           return (
             <button
               key={item.id}
               role="tab"
-              id={`pouch-tab-${instanceId}-${idx}`}
+              id={`pouch-tab-${idx}`}
               aria-selected={isSelected}
-              aria-controls={`pouch-panel-${instanceId}-${idx}`}
+              aria-controls={`pouch-panel-${idx}`}
               tabIndex={isSelected ? 0 : -1}
               onClick={() => setSelectedIndex(idx)}
-              onKeyDown={event => { const next = event.key === "ArrowRight" ? (idx+1)%items.length : event.key === "ArrowLeft" ? (idx-1+items.length)%items.length : event.key === "Home" ? 0 : event.key === "End" ? items.length-1 : -1; if(next>=0){event.preventDefault();setSelectedIndex(next);const buttons=event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("button");buttons?.[next]?.focus();} }}
               className={`group relative flex flex-col items-start p-3 rounded-2xl border text-left transition-all duration-200 cursor-pointer shadow-xs ${
                 isSelected
                   ? 'border-neutral-900 bg-neutral-900 text-white'
@@ -90,7 +132,7 @@ const getMetadata=(name:string)=>cms.pouchGuides.find(guide=>name.toLowerCase().
                     {item.product_name}
                   </p>
                   <p className={`text-[11px] mt-0.5 font-normal ${isSelected ? 'text-stone-300' : 'text-stone-500'}`}>
-                    {item.quantity}{copy.text_times}{item.variant_name || '250g'}
+                    {item.quantity}&times; {item.variant_name || '250g'}
                   </p>
                 </div>
               </div>
@@ -108,9 +150,8 @@ const getMetadata=(name:string)=>cms.pouchGuides.find(guide=>name.toLowerCase().
       {/* Selected Pouch Detail Dossier */}
       <div
         role="tabpanel"
-        id={`pouch-panel-${instanceId}-${selectedIndex}`}
-        aria-labelledby={`pouch-tab-${instanceId}-${selectedIndex}`}
-        tabIndex={0}
+        id={`pouch-panel-${selectedIndex}`}
+        aria-labelledby={`pouch-tab-${selectedIndex}`}
         className="rounded-2xl border border-gray-200/90 p-5 sm:p-6 bg-[#FBFBFA] shadow-xs space-y-4"
       >
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-gray-200/80">
@@ -127,7 +168,7 @@ const getMetadata=(name:string)=>cms.pouchGuides.find(guide=>name.toLowerCase().
               {currentItem.product_name}
             </h3>
             <p className="text-xs text-stone-600 font-normal">
-              {copy.text_pack_size_2}<strong className="font-semibold text-neutral-900">{currentItem.variant_name || '250g hermetic sealed pouch'}</strong> {copy.text_quantity}{currentItem.quantity})
+              Pack Size: <strong className="font-semibold text-neutral-900">{currentItem.variant_name || '250g hermetic sealed pouch'}</strong> (Quantity: {currentItem.quantity})
             </p>
           </div>
 
@@ -135,7 +176,7 @@ const getMetadata=(name:string)=>cms.pouchGuides.find(guide=>name.toLowerCase().
             href={`/seeds/${meta.slug}`}
             className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-neutral-900 hover:underline underline-offset-4 shrink-0"
           >
-            <span>{copy.text_view_single_pouch}</span>
+            <span>View single pouch</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -145,7 +186,7 @@ const getMetadata=(name:string)=>cms.pouchGuides.find(guide=>name.toLowerCase().
           <div className="space-y-1.5 bg-white p-4 rounded-xl border border-gray-200/80 shadow-xs">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-neutral-900 uppercase tracking-wider">
               <HeartPulse className="w-3.5 h-3.5 text-neutral-700" />
-              <span>{copy.text_kitchen_serving_suggestion}</span>
+              <span>Recommended Daily Intake</span>
             </div>
             <p className="text-xs leading-relaxed text-stone-600 font-normal">
               {meta.intakeGuide}
@@ -156,7 +197,7 @@ const getMetadata=(name:string)=>cms.pouchGuides.find(guide=>name.toLowerCase().
           <div className="space-y-1.5 bg-white p-4 rounded-xl border border-gray-200/80 shadow-xs">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-neutral-900 uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-neutral-700" />
-              <span>{copy.text_nutrients}</span>
+              <span>Key Nutrients &amp; Action</span>
             </div>
             <ul className="space-y-1 text-xs text-stone-600 font-normal">
               {meta.nutrients.map((n, i) => (
@@ -169,7 +210,7 @@ const getMetadata=(name:string)=>cms.pouchGuides.find(guide=>name.toLowerCase().
           </div>
         </div>
       </div>
-    </section></ManagedSection>
+    </section>
   );
 }
 

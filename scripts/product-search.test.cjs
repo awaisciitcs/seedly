@@ -26,7 +26,7 @@ function loadSource(file, dependencies = {}) {
   return module.exports;
 }
 
-const mapping = loadSource('lib/product-search.ts', { './catalog': loadSource('lib/catalog.ts') });
+const mapping = loadSource('lib/product-search.ts');
 const seed = {
   id: 'seed', name: 'Raw Pumpkin Seeds', slug: 'pumpkin-seeds', product_type: 'seed',
   image_url: '/images/products/pumpkin-seeds.jpg', price_minor: 45000, weight_grams: 250,
@@ -52,7 +52,6 @@ function route(products = [seed, tea], kits = [kit]) {
     '../../../lib/services/products': { getProducts: (options) => select(products, options) },
     '../../../lib/services/kits': { getKits: (options) => select(kits, options) },
     '../../../lib/product-search': mapping,
-    '@/lib/catalog': loadSource('lib/catalog.ts'),
   }).GET;
 }
 
@@ -114,7 +113,6 @@ test('service failures return a safe message for the retry state', async () => {
     '../../../lib/services/products': { getProducts: () => { throw Error('private database detail'); } },
     '../../../lib/services/kits': { getKits: () => [] },
     '../../../lib/product-search': mapping,
-    '@/lib/catalog': loadSource('lib/catalog.ts'),
   }).GET;
   const result = await get(new Request('http://localhost/api/search?q=pumpkin'));
   assert.equal(result.status, 500);

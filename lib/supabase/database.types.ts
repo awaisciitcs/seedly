@@ -7,8 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
@@ -420,42 +418,6 @@ export type Database = {
           },
         ]
       }
-      order_stock_reservations: {
-        Row: {
-          order_id: string
-          quantity: number
-          released_at: string | null
-          variant_id: string
-        }
-        Insert: {
-          order_id: string
-          quantity: number
-          released_at?: string | null
-          variant_id: string
-        }
-        Update: {
-          order_id?: string
-          quantity?: number
-          released_at?: string | null
-          variant_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "order_stock_reservations_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "order_stock_reservations_variant_id_fkey"
-            columns: ["variant_id"]
-            isOneToOne: false
-            referencedRelation: "product_variants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       orders: {
         Row: {
           admin_note: string | null
@@ -802,142 +764,6 @@ export type Database = {
           },
         ]
       }
-      site_change_events: {
-        Row: {
-          created_at: string
-          event_id: number
-          topic: string
-        }
-        Insert: {
-          created_at?: string
-          event_id?: never
-          topic?: string
-        }
-        Update: {
-          created_at?: string
-          event_id?: never
-          topic?: string
-        }
-        Relationships: []
-      }
-      site_content_drafts: {
-        Row: {
-          content: Json
-          definition_slug: string
-          kind: string
-          route: string | null
-          slug: string
-          title: string
-          updated_at: string
-          updated_by: string | null
-          version: number
-        }
-        Insert: {
-          content: Json
-          definition_slug: string
-          kind: string
-          route?: string | null
-          slug: string
-          title: string
-          updated_at?: string
-          updated_by?: string | null
-          version: number
-        }
-        Update: {
-          content?: Json
-          definition_slug?: string
-          kind?: string
-          route?: string | null
-          slug?: string
-          title?: string
-          updated_at?: string
-          updated_by?: string | null
-          version?: number
-        }
-        Relationships: []
-      }
-      site_content_revisions: {
-        Row: {
-          action: string
-          content: Json
-          created_at: string
-          created_by: string | null
-          id: string
-          slug: string
-          title: string
-          version: number
-        }
-        Insert: {
-          action: string
-          content: Json
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          slug: string
-          title: string
-          version: number
-        }
-        Update: {
-          action?: string
-          content?: Json
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          slug?: string
-          title?: string
-          version?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "site_content_revisions_slug_fkey"
-            columns: ["slug"]
-            isOneToOne: false
-            referencedRelation: "site_content_drafts"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
-      site_documents: {
-        Row: {
-          content: Json
-          kind: string
-          published_at: string
-          route: string | null
-          slug: string
-          title: string
-          updated_at: string
-          version: number
-        }
-        Insert: {
-          content: Json
-          kind: string
-          published_at?: string
-          route?: string | null
-          slug: string
-          title: string
-          updated_at?: string
-          version: number
-        }
-        Update: {
-          content?: Json
-          kind?: string
-          published_at?: string
-          route?: string | null
-          slug?: string
-          title?: string
-          updated_at?: string
-          version?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "site_documents_slug_fkey"
-            columns: ["slug"]
-            isOneToOne: true
-            referencedRelation: "site_content_drafts"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
       site_settings: {
         Row: {
           key: string
@@ -1081,37 +907,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      allocate_checkout_order_reference: {
-        Args: { p_checkout_reference: string; p_request_fingerprint: string }
-        Returns: string
-      }
-      claim_order_emails: { Args: { p_limit?: number }; Returns: Json }
-      consume_rate_limit: {
-        Args: { p_bucket: string; p_limit: number; p_window_seconds: number }
-        Returns: Json
-      }
-      create_order_secure_transactional: {
-        Args: {
-          p_customer_email: string
-          p_customer_name: string
-          p_customer_phone: string
-          p_expected_quote: Json
-          p_idempotency_key: string
-          p_items: Json
-          p_order_id: string
-          p_order_number: string
-          p_payment_method: string
-          p_receipt_path: string
-          p_request_fingerprint: string
-          p_shipping_address: string
-          p_shipping_city: string
-          p_shipping_notes: string
-          p_shipping_postal_code: string
-          p_shipping_province: string
-          p_tracking_token_hash: string
-        }
-        Returns: Json
-      }
       create_order_transactional: {
         Args: {
           p_customer_email: string
@@ -1133,70 +928,27 @@ export type Database = {
         }
         Returns: Json
       }
-      find_checkout_order_reference: {
-        Args: { p_checkout_reference: string; p_request_fingerprint: string }
-        Returns: string
-      }
-      finish_order_email: {
-        Args: {
-          p_claim_token: string
-          p_error_code?: string
-          p_id: string
-          p_provider_id?: string
-          p_status: string
-        }
-        Returns: boolean
-      }
-      get_site_content_snapshot: { Args: never; Returns: Json }
       is_admin: { Args: never; Returns: boolean }
       is_owner: { Args: never; Returns: boolean }
-      lookup_order_with_capability: {
-        Args: { p_order_number: string; p_token?: string; p_verify?: string }
-        Returns: Json
-      }
-      mutate_site_content: {
-        Args: {
-          p_action: string
-          p_content?: Json
-          p_expected_version: number
-          p_revision_id?: string
-          p_slug: string
-          p_title?: string
-        }
-        Returns: Json
-      }
-      prepare_order_email: {
-        Args: { p_claim_token: string; p_id: string; p_message: Json }
-        Returns: Json
-      }
-      save_admin_catalog: {
-        Args: {
-          p_children?: Json
-          p_create?: boolean
-          p_document: Json
-          p_kind: string
-        }
-        Returns: Json
-      }
       update_order_fulfillment_transactional: {
         Args: {
-          p_actor_id?: string
-          p_actor_type?: string
-          p_courier_name?: string
-          p_notes?: string
+          p_actor_id: string
+          p_actor_type: string
+          p_courier_name: string
+          p_notes: string
           p_order_id: string
           p_order_status: string
-          p_tracking_number?: string
+          p_tracking_number: string
         }
         Returns: Json
       }
       update_order_payment_transactional: {
         Args: {
-          p_actor_id?: string
-          p_actor_type?: string
-          p_notes?: string
+          p_actor_id: string
+          p_actor_type: string
+          p_notes: string
           p_order_id: string
-          p_order_status?: string
+          p_order_status: string
           p_payment_status: string
         }
         Returns: Json
@@ -1210,126 +962,3 @@ export type Database = {
     }
   }
 }
-
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
-
-export type Tables<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
-    }
-    ? R
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
-
-export type TablesInsert<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
-    }
-    ? I
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
-
-export type TablesUpdate<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
-    }
-    ? U
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
-
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never) = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
-export const Constants = {
-  public: {
-    Enums: {},
-  },
-} as const

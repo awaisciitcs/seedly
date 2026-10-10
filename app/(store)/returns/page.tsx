@@ -1,31 +1,35 @@
-import { getContentDocument } from '@/lib/services/content';
-import { ManagedSection } from '@/components/storefront/ManagedSections';
-import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
-import { getContentMetadata } from '@/lib/cms/metadata';
 import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ShieldCheck, MessageCircle, Mail, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { siteConfig } from '../../../lib/config';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return getContentMetadata('returns');
-}
+export const metadata: Metadata = {
+  title: '7-Day Return & Replacement Policy | Seedly Pakistan',
+  description:
+    'Our fresh botanical guarantee. 7-day free replacements for damaged, unsealed, or quality-compromised parcels. Direct refunds via JazzCash, Easypaisa, or Bank Transfer.',
+  openGraph: {
+    title: '7-Day Return & Replacement Policy | Seedly Pakistan',
+    description: '7-day replacement guarantee covering freshness, quality, and transit damage across Pakistan.',
+    url: `${siteConfig.url}/returns`,
+  },
+};
 
-export default async function ReturnsPage() {
-  const cms = await getContentDocument<CmsPageContent>('returns'); const { copy, links, images } = cms;
-const siteConfig = (await getContentDocument<SiteContent>('site')).config;
-
+export default function ReturnsPage() {
   return (
     <div className="bg-white text-stone-900">
       <div className="max-w-4xl mx-auto px-5 md:px-8 py-12 md:py-20 space-y-12">
         {/* Page Header */}
         <header className="text-center max-w-2xl mx-auto space-y-3">
           <span className="text-xs uppercase tracking-[0.16em] font-semibold text-stone-500">
-            {copy.text_customer_assurance}</span>
+            Customer Assurance
+          </span>
           <h1 className="font-heading font-medium text-3xl sm:text-5xl text-stone-900 tracking-tight">
-            {copy.text_7_day_quality_replacement_policy}</h1>
+            7-Day Quality &amp; Replacement Policy
+          </h1>
           <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-normal">
-            {copy.text_your_confidence_in_the_freshness_integrity_and_safety_o}</p>
+            Your confidence in the freshness, integrity, and safety of our seeds and botanical teas is our highest standard.
+          </p>
         </header>
 
         {/* Guarantee Banner */}
@@ -34,7 +38,8 @@ const siteConfig = (await getContentDocument<SiteContent>('site')).config;
             <ShieldCheck className="w-6 h-6 shrink-0 text-emerald-800 mt-0.5" />
             <div className="space-y-1.5 text-xs sm:text-sm">
               <h2 className="font-heading font-medium text-lg text-stone-900">
-                {copy.text_7_day_quality_freshness_guarantee}</h2>
+                7-Day Quality &amp; Freshness Guarantee
+              </h2>
               <p className="text-stone-600 leading-relaxed">
                 {siteConfig.disclaimer.returnsDamaged}
               </p>
@@ -48,30 +53,34 @@ const siteConfig = (await getContentDocument<SiteContent>('site')).config;
           <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-start gap-3 text-amber-950">
             <AlertCircle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <strong className="font-semibold block text-xs sm:text-sm">{copy.text_food_safety_notice_change_of_mind}</strong>
+              <strong className="font-semibold block text-xs sm:text-sm">Food Safety Notice (Change of Mind):</strong>
               <p className="text-xs sm:text-sm text-amber-900/90 leading-relaxed">
-                {siteConfig.disclaimer.returnsChangeOfMind} {copy.text_once_an_airtight_barrier_pouch_or_botanical_seal_has_be}</p>
+                {siteConfig.disclaimer.returnsChangeOfMind} Once an airtight barrier pouch or botanical seal has been broken, we cannot accept returns or restock the product.
+              </p>
             </div>
           </div>
 
           {/* Eligible Claims */}
-          <ManagedSection document="returns" sectionId="page_section_01"><section className="space-y-3">
+          <section className="space-y-3">
             <h2 className="font-heading font-medium text-xl text-stone-900">
-              {copy.text_eligible_claims_for_free_replacement_or_refund}</h2>
+              Eligible Claims for Free Replacement or Refund
+            </h2>
             <ul className="space-y-2 text-stone-600 list-disc pl-5">
-              <li>{copy.text_item_arrived_damaged_crushed_leaking_or_with_a_broken_c}</li>
-              <li>{copy.text_verified_quality_or_freshness_issue_such_as_unexpected}</li>
-              <li>{copy.text_incorrect_seed_variety_tea_blend_or_routine_kit_receive}</li>
-              <li>{copy.text_verified_packaging_defect_such_as_pouch_tear_or_comprom}</li>
+              <li>Item arrived damaged, crushed, leaking, or with a broken courier seal during transit.</li>
+              <li>Verified quality or freshness issue (such as unexpected staleness, off-odour, or rancidity reported within 7 days of delivery).</li>
+              <li>Incorrect seed variety, tea blend, or routine kit received compared to your confirmed invoice.</li>
+              <li>Verified packaging defect (such as pouch tear or compromised resealable zipper upon unboxing).</li>
             </ul>
-          </section></ManagedSection>
+          </section>
 
           {/* How to Initiate a Claim */}
-          <ManagedSection document="returns" sectionId="page_section_02"><section className="space-y-3">
+          <section className="space-y-3">
             <h2 className="font-heading font-medium text-xl text-stone-900">
-              {copy.text_how_to_initiate_a_claim}</h2>
+              How to Initiate a Claim
+            </h2>
             <p className="text-stone-600">
-              {copy.text_please_contact_our_customer_care_team_within}<strong>{copy.text_7_days_of_delivery}</strong> {copy.text_with_your_order_number_e_g_sed_xxxxxx_and_1_2_clear_pho}</p>
+              Please contact our customer care team within <strong>7 days of delivery</strong> with your order number (e.g. SED-XXXXXX) and 1–2 clear photographs or an unboxing video showing the affected item:
+            </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <a
@@ -84,7 +93,7 @@ const siteConfig = (await getContentDocument<SiteContent>('site')).config;
                   <MessageCircle className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="block font-semibold text-xs">{copy.text_whatsapp_helpline}</span>
+                  <span className="block font-semibold text-xs">WhatsApp Helpline</span>
                   <span className="text-xs text-stone-500">{siteConfig.contact.phone}</span>
                 </div>
               </a>
@@ -97,21 +106,22 @@ const siteConfig = (await getContentDocument<SiteContent>('site')).config;
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="block font-semibold text-xs">{copy.text_email_support}</span>
+                  <span className="block font-semibold text-xs">Email Support</span>
                   <span className="text-xs text-stone-500">{siteConfig.contact.email}</span>
                 </div>
               </a>
             </div>
-          </section></ManagedSection>
+          </section>
 
           {/* Refund Methods */}
-          <ManagedSection document="returns" sectionId="page_section_03"><section className="space-y-2 pt-2 border-t border-stone-100">
+          <section className="space-y-2 pt-2 border-t border-stone-100">
             <h2 className="font-heading font-medium text-xl text-stone-900">
-              {copy.text_refund_methods_timelines}</h2>
+              Refund Methods &amp; Timelines
+            </h2>
             <p className="text-stone-600 leading-relaxed">
-              {copy.text_if_an_immediate_replacement_is_not_preferred_an_approve}<strong>{copy.text_2_3_business_days}</strong>{copy.text_for_cash_on_delivery_cod_orders_refunds_are_transferred}<strong>{copy.text_jazzcash}</strong>, <strong>{copy.text_easypaisa}</strong>{copy.text_or}<strong>{copy.text_pakistani_online_bank_transfer_ibft}</strong>.
+              If an immediate replacement is not preferred, an approved refund will be processed back to your chosen payment method within <strong>2–3 business days</strong>. For Cash on Delivery (COD) orders, refunds are transferred directly via <strong>JazzCash</strong>, <strong>Easypaisa</strong>, or <strong>Pakistani online bank transfer (IBFT)</strong>.
             </p>
-          </section></ManagedSection>
+          </section>
         </div>
       </div>
     </div>

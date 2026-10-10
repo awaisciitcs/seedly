@@ -1,7 +1,6 @@
 import { DatabaseSync } from 'node:sqlite';
 import fs from 'node:fs';
 import path from 'node:path';
-import { localDatabasePath, privateExportPath } from './script-config.mjs';
 import crypto from 'node:crypto';
 
 // Migration script from SQLite data/seedly.db to Supabase PostgreSQL
@@ -26,12 +25,12 @@ function escapeSql(val) {
 }
 
 export function generateMigrationSql() {
-  const dbPath = localDatabasePath();
+  const dbPath = path.join(process.cwd(), 'data', 'seedly.db');
   if (!fs.existsSync(dbPath)) {
     throw new Error(`Authoritative SQLite database not found at ${dbPath}`);
   }
 
-  const db = new DatabaseSync(dbPath, { readOnly: true });
+  const db = new DatabaseSync(dbPath);
   const sqlStatements = [];
 
   sqlStatements.push('-- Migration Dump from SQLite data/seedly.db to Supabase Postgres');
@@ -456,10 +455,8 @@ export function generateMigrationSql() {
 if (process.argv[1] && process.argv[1].endsWith('migrate-to-supabase.mjs')) {
   console.log('Generating migration SQL dump from SQLite...');
   const { sql, counts } = generateMigrationSql();
-  const outputDirectory = privateExportPath(process.env.SEEDLY_MIGRATION_EXPORT_DIR);
-  fs.mkdirSync(outputDirectory, { recursive: true, mode: 0o700 });
-  const outputPath = path.join(outputDirectory, 'migration-dump-' + Date.now() + '.sql');
-  fs.writeFileSync(outputPath, sql, { encoding: 'utf8', flag: 'wx', mode: 0o600 });
+  const outputPath = path.join(process.cwd(), 'scripts', 'migration-dump.sql');
+  fs.writeFileSync(outputPath, sql, 'utf8');
   console.log('Migration SQL generated successfully at:', outputPath);
   console.log('Row counts to migrate:', counts);
 }

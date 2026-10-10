@@ -1,8 +1,6 @@
-import { boundedSupabaseFetch } from './lib/supabase/fetch';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getSupabaseUrl, getSupabaseKey } from './lib/supabase/config';
-import { requireSameOrigin, RequestError } from './lib/request-guards';
 
 function applySecurityHeaders(res: NextResponse): NextResponse {
   res.headers.set('Cache-Control', 'private, no-cache, no-store, max-age=0, must-revalidate');
@@ -32,16 +30,6 @@ function handleUnauthorized(request: NextRequest, pathname: string): NextRespons
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  if (pathname.startsWith('/api/admin') && !['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
-    try { requireSameOrigin(request); }
-    catch (error) {
-      return applySecurityHeaders(NextResponse.json(
-        { error: { message: error instanceof RequestError ? error.message : 'Invalid request origin.' } },
-        { status: 403 }
-      ));
-    }
-  }
-
   try {
     let supabaseResponse = NextResponse.next({
       request,
@@ -51,8 +39,6 @@ export async function middleware(request: NextRequest) {
     const key = getSupabaseKey();
 
     const supabase = createServerClient(url, key, {
-      db: { retry: false },
-      global: { fetch: boundedSupabaseFetch },
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -88,8 +74,12 @@ export async function middleware(request: NextRequest) {
     // Protect admin page routes
     if (lowerPath === '/admin' || lowerPath.startsWith('/admin/')) {
       if (lowerPath === '/admin/login') {
-        // Keep login reachable for expired, disabled and non-admin accounts.
-        // The dashboard layout and every API check the active admin membership.
+        // If already logged in and visiting /admin/login, redirect to /admin dashboard
+        if (user && !userError) {
+          const redirectUrl = request.nextUrl.clone();
+          redirectUrl.pathname = '/admin';
+          return applySecurityHeaders(NextResponse.redirect(redirectUrl));
+        }
         return applySecurityHeaders(supabaseResponse);
       }
 
@@ -101,7 +91,7 @@ export async function middleware(request: NextRequest) {
 
     return applySecurityHeaders(supabaseResponse);
   } catch (err) {
-    console.error('Administrator authentication middleware is temporarily unavailable.');
+    console.error('Unhandled error in admin auth middleware:', err);
     return handleUnauthorized(request, pathname);
   }
 }

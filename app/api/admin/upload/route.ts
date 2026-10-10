@@ -1,10 +1,7 @@
-import { MAX_UPLOAD_FILE_BYTES, MAX_UPLOAD_BODY_BYTES } from '@/lib/upload-limits';
-import { readAdminJson, AdminInputError, adminId, adminText } from '@/lib/admin-validation';
 import { NextResponse } from 'next/server';
 import crypto from 'node:crypto';
 import { requireAdmin, AdminAuthError } from '@/lib/auth/require-admin';
-import { getScopedClient } from '@/lib/supabase/admin';
-import { readMultipart, requireSameOrigin } from '@/lib/request-guards';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +14,7 @@ function detectImageType(buffer: Buffer, originalName?: string): { ext: string; 
   }
 
   // PNG: 89 50 4E 47
-  if (buffer.subarray(0,8).equals(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a]))) {
+  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
     return { ext: '.png', mime: 'image/png' };
   }
 
@@ -37,8 +34,24 @@ function detectImageType(buffer: Buffer, originalName?: string): { ext: string; 
   }
 
   // GIF: 47 49 46 38
-  if (buffer.subarray(0,6).toString('ascii') === 'GIF87a' || buffer.subarray(0,6).toString('ascii') === 'GIF89a') {
+  if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x38) {
     return { ext: '.gif', mime: 'image/gif' };
+  }
+
+  // SVG: starts with <svg or <?xml (or filename ends with .svg)
+  const prefix = buffer.slice(0, 100).toString('utf-8').trim().toLowerCase();
+  if (prefix.includes('<svg') || prefix.startsWith('<?xml') || originalName?.toLowerCase().endsWith('.svg')) {
+    return { ext: '.svg', mime: 'image/svg+xml' };
+  }
+
+  // Fallback to extension check if buffer is valid
+  if (originalName) {
+    const lower = originalName.toLowerCase();
+    if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return { ext: '.jpg', mime: 'image/jpeg' };
+    if (lower.endsWith('.png')) return { ext: '.png', mime: 'image/png' };
+    if (lower.endsWith('.webp')) return { ext: '.webp', mime: 'image/webp' };
+    if (lower.endsWith('.svg')) return { ext: '.svg', mime: 'image/svg+xml' };
+    if (lower.endsWith('.gif')) return { ext: '.gif', mime: 'image/gif' };
   }
 
   return null;
@@ -48,17 +61,16 @@ export async function POST(request: Request) {
   try {
     await requireAdmin();
 
-    requireSameOrigin(request);
-    const formData = await readMultipart(request, MAX_UPLOAD_BODY_BYTES);
+    const formData = await request.formData();
     const file = (formData.get('file') || formData.get('image')) as File | null;
 
-    if (!(file instanceof File) || file.size === 0) {
+    if (!file) {
       return NextResponse.json({ error: { message: 'No image file provided' } }, { status: 400 });
     }
 
-    // Size limit 4MB
-    if (file.size > MAX_UPLOAD_FILE_BYTES) {
-      return NextResponse.json({ error: { message: 'Image size exceeds 4MB limit' } }, { status: 400 });
+    // Size limit 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: { message: 'Image size exceeds 10MB limit' } }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
@@ -67,7 +79,7 @@ export async function POST(request: Request) {
     const fileType = detectImageType(buffer, file.name);
     if (!fileType) {
       return NextResponse.json(
-        { error: { message: 'Invalid image format. Supported formats: JPG, PNG, WebP, and GIF.' } },
+        { error: { message: 'Invalid image format. Supported formats: JPG, PNG, WebP, SVG, and GIF.' } },
         { status: 400 }
       );
     }
@@ -79,7 +91,7 @@ export async function POST(request: Request) {
       .slice(0, 30);
     const storagePath = `catalog/${Date.now()}-${cleanBaseName}-${crypto.randomBytes(4).toString('hex')}${fileType.ext}`;
 
-    const supabase = await getScopedClient();
+    const supabase = createAdminClient();
     const { error: uploadError } = await supabase.storage
       .from('product-images')
       .upload(storagePath, buffer, {
@@ -90,7 +102,7 @@ export async function POST(request: Request) {
     if (uploadError) {
       console.error('Supabase storage product image upload error:', uploadError);
       return NextResponse.json(
-        { error: { message: 'Image storage is temporarily unavailable. Please try again.' } },
+        { error: { message: `Storage upload failed: ${uploadError.message}` } },
         { status: 500 }
       );
     }
@@ -107,10 +119,10 @@ export async function POST(request: Request) {
       },
     });
   } catch (error: any) {
-    if (error instanceof AdminAuthError || error instanceof AdminInputError) {
+    if (error instanceof AdminAuthError) {
       return NextResponse.json({ error: { message: error.message } }, { status: error.status });
     }
     console.error('Admin image upload error:', error);
-    return NextResponse.json({ error: { message: 'Image upload failed. Please check the file and try again.' } }, { status: 500 });
+    return NextResponse.json({ error: { message: error.message || 'Image upload failed' } }, { status: 500 });
   }
 }

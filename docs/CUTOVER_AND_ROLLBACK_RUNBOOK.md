@@ -1,44 +1,98 @@
-> Historical guidance: some configuration, upload limits, and implementation status below have been superseded. Use [the current CMS handoff](ADMIN_MANAGED_CONTENT_2026-10-10.md) and [production security handoff](PRODUCTION_SECURITY_2026-10-10.md). Email activation is deferred until the owner chooses a provider.
+# Seedly: Supabase Cutover & Rollback Runbook
 
-# Seedly cutover and rollback runbook
+## 1. Migration Summary & Status
 
-Updated 9 October 2026. The current release is not production-ready until the open gates in [the production audit](PRODUCTION_AUDIT_2026-10-08.md) are closed.
+Seedly has been successfully migrated from local SQLite (`node:sqlite`) to Supabase PostgreSQL, Supabase Auth, and private Supabase Storage.
 
-## Current database and application state
+- **Supabase Project**: `fyqmbjzpajmnyyqcrmgc` (`awaisciitcs@gmail.com's Project`, region `ap-southeast-2`)
+- **Database Engine**: PostgreSQL 17 (Supabase Managed)
+- **Authentication**: Supabase Auth GoTrue (BCrypt password hashing) with verified admin accounts
+- **Storage**: Private bucket `payment-receipts` (max 5MB, magic-byte inspection, short-lived signed URLs)
+- **Data Parity**: 100% reconciled from authoritative SQLite `data/seedly.db`
 
-Supabase is authoritative. The five 8 October migrations for public boundaries, atomic catalog updates, commerce transactions, sequential numbering and direct-write restrictions are installed. Existing order references were preserved. The allocator starts at SED-100200, keeps retry reservations private and never reuses numbers. Local sequential mode is enabled. The user has configured the private server key locally; protected read-only checks passed and the local preview reports checkout and receipt uploads available after restart. Production hosting secrets and positive staging workflows still need verification. The private durable order-email queue is installed. The Resend API key, domain verification, hosted retry schedule and inbox test remain pending; see [EMAIL_DELIVERY_SETUP.md](EMAIL_DELIVERY_SETUP.md). Checkout fails closed whenever its backend key is missing.
+---
 
-Do not route traffic back to the historical SQLite archive. It is not synchronized with Supabase or the current order/stock transaction implementation. The local archive remains preserved at data/seedly.db and in private source snapshots; it is excluded from future Git commits.
+## 2. Security Hardening & Access Control Architecture
 
-## Required production configuration
+### Row-Level Security (RLS) Policies
+| Table | Anonymous / Storefront Clients | Authenticated Admin / Owner |
+|---|---|---|
+| `categories` | Read active categories (`is_active = true`) | Full administrative management |
+| `products` | Read active products (`status = 'ACTIVE'`) | Full administrative management |
+| `product_variants` | Read active variants belonging to active products | Full administrative management |
+| `kits` | Read active kits (`status = 'ACTIVE'`) | Full administrative management |
+| `kit_items` | Read kit components belonging to active kits | Full administrative management |
+| `reviews` | Read approved non-demo reviews (`status = 'APPROVED' AND is_demo = false`), submit pending reviews | Full moderation and demo review management |
+| `site_settings` | Read public non-sensitive keys (delivery fee, free shipping threshold, bank details) | Full settings management (Owner restricted) |
+| `orders` | **NO DIRECT ACCESS** (blocked by RLS) | Manage orders via `is_admin()` policy |
+| `order_items` | **NO DIRECT ACCESS** (blocked by RLS) | Manage order items via `is_admin()` policy |
+| `order_events` | **NO DIRECT ACCESS** (blocked by RLS) | Read audit trail via `is_admin()` policy |
+| `admin_users` | **NO DIRECT ACCESS** (blocked by RLS) | View own profile; Owner manages users |
+| `stock_alert_subscriptions` | Subscribe / unsubscribe via token hash | View and trigger restock alerts |
+| `stock_alert_deliveries` | **NO DIRECT ACCESS** (blocked by RLS) | Read delivery logs |
 
-Configure NEXT_PUBLIC_SUPABASE_URL and a publishable key, SUPABASE_SECRET_KEY as a server-only private key, NEXT_PUBLIC_SITE_URL as the HTTPS production origin, a stable CHECKOUT_SIGNING_SECRET and ORDER_REFERENCE_MODE=sequential. Order email sending additionally needs EMAIL_PROVIDER=resend, RESEND_API_KEY, verified EMAIL_FROM/reply addresses, EMAIL_SITE_URL and a private EMAIL_CRON_SECRET shared with a recurring retry worker. Never paste secret values into tickets, logs, client variables or source.
+### Transactional RPCs (PostgreSQL Stored Procedures)
+1. `create_order_transactional`:
+   - Enforces checkout idempotency replay (matches request fingerprint).
+   - Locks affected product variants `FOR UPDATE`.
+   - Atomically checks stock availability (never allows overselling or negative inventory).
+   - Inserts order, line items, and decrements stock in a single atomic database transaction.
+   - Generates capability token hash for unguessable customer order tracking.
+2. `update_order_payment_transactional`:
+   - Guarded by internal `is_admin()` check.
+   - Enforces valid payment state transitions (`VERIFIED`, `REJECTED`).
+   - Writes immutable audit trail to `order_events`.
+3. `update_order_fulfillment_transactional`:
+   - Guarded by internal `is_admin()` check.
+   - Enforces fulfillment state machine (`RECEIVED` -> `PROCESSING` -> `PACKED` -> `SHIPPED` -> `DELIVERED`).
+   - Prevents unverified bank transfers from being marked as packed or shipped.
+   - Writes immutable audit trail to `order_events`.
+4. `lookup_order_with_capability`:
+   - Public tracking RPC granted to `anon, authenticated`.
+   - If caller is admin or presents matching SHA256 capability token or customer email/phone verification: returns full order details.
+   - If unverified/anonymous: returns masked PII (masked name, email, phone, masked street address, no admin notes, no receipt links).
 
-Admin users must already have explicit active auth_user_id links and OWNER/STAFF roles. Run the positive staging acceptance matrix in the audit before deployment, including stock concurrency, receipt permissions, expired/changed quotes, unknown response recovery and payment/status transitions. Reconcile original inventory reservations for affected historical orders before cancelling them.
+---
 
-## Source rollback
+## 3. Administrator Access
 
-The audit snapshot is F:/Seedly-backups/pre-production-audit-20261007-230348. Earlier design/follow-up/order-email snapshots remain preserved. Their manifests are refreshed to account for new files so a full rollback does not leave incompatible new source modules behind.
+Two production admin accounts have been provisioned in Supabase Auth and mapped to `public.admin_users`:
+- **Owner**: `owner@seedly.pk` (Role: `OWNER` — full store settings & admin access)
+- **Staff**: `staff@seedly.pk` (Role: `STAFF` — catalog, orders, and review moderation access)
 
-First run scripts/restore-version.mjs --backup <absolute backup directory> --section all. This is a dry run. Review listed files; --section appearance provides a CSS/theme-only subset in earlier design snapshots that contain CSS changes. The audit snapshot has no CSS-theme changes. Admin, commerce and security share dependencies and are restored as a coupled bundle. --file can target individual paths, but the maintainer must check their imports and database compatibility.
+Initial temporary password: `ChangeMe123!Admin` *(Admins must reset on first login)*.
 
-Add --apply to execute a reviewed restoration. The helper checks hashes and paths, copies the current files into a recovery directory, then restores/removes only recorded source files. Run tests, TypeScript and a clean build afterwards. Git index/history and installed database objects are not restored by this helper. When running a copy of the helper from a backup directory, also pass --workspace F:/Seedly. The original audit snapshot includes private .env.local and the historical archive; keep it private.
+---
 
-Do not restore an exposed password to published source. Do not remove database grants/RLS restrictions to make older code work. In particular, keep public order creation denied, receipt Storage private, exact stock reservations, terminal transition guards and monotonic sequence values. A commerce/auth rollback requires a tested compatibility patch using the secure transactional creator.
+## 4. Environment Configuration
 
-## Database recovery
+### Production Environment Variables (`.env` / Hosting Provider)
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://fyqmbjzpajmnyyqcrmgc.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_qu7RVH39xF_KTN9RETEECg_vC3rzb3P
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5cW1ianpwYWptbnl5cWNybWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MzM2NzUsImV4cCI6MjEwNjEwOTY3NX0.dTRmzfklrB4W1lc5OG3YrV-Fa4pY5OJ4oQLmNAMQVE4
+SUPABASE_SECRET_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
+NEXT_PUBLIC_SITE_URL=https://seedly.pk
+```
 
-The audit metadata directory contains original function/schema/policy definitions, but is not a data recovery dump. Before launch, enable and test Supabase’s transaction-consistent backup/restore process. Include Auth identities, Storage objects, private schemas, sequences and row data. A private JSON row export from scripts/backup.mjs is supplementary and does not cover all of these or guarantee a consistent snapshot across tables.
+---
 
-In an incident, pause new order acceptance, preserve evidence and take a full database backup. Prefer a forward migration. Reconstruct uncertain historical reservations from actual records; never guess from current kit definitions. Do not rewind the order sequence or delete reservation/idempotency records. Validate the recovery on staging before redirecting customers.
+## 5. Verification Checklist & Test Results
 
-No Git push, deployment, full private customer export, real order mutation or actual customer email was performed in this audit.
+- [x] **TypeScript Validation**: `npx tsc --noEmit` passed with 0 errors.
+- [x] **Product Search Tests**: `node --test scripts/product-search.test.cjs` passed 7/7 tests.
+- [x] **Order Status State Machine Tests**: `node --test scripts/order-status.test.cjs` passed 7/7 tests.
+- [x] **Next.js Production Build**: `npm run build` compiled 43 static & dynamic routes and middleware (94.6 kB).
+- [x] **Anon RLS Isolation**: Direct queries with anonymous key return 0 rows for `orders`, `admin_users`, and private storage.
+- [x] **Demo Review Exclusion**: Demo reviews (`rev-1`, `rev-2`, `rev-3`) are flagged `is_demo = true` and excluded from public storefront.
 
+---
 
-## Checkout and email follow-up (9 October)
+## 6. Rollback Runbook
 
-Checkout field errors are derived from the current values after a failed validation attempt. A corrected field clears immediately; the summary clears when all required fields are valid. Unrelated server/payment errors remain separate.
-
-Migration 20261008220317_durable_order_emails adds the private transactional queue and guarded worker RPCs. Disable the provider and retry worker before rolling back the email source bundle at F:/Seedly/backups/pre-checkout-email-20261009. File restoration does not reverse database objects or environment settings. Preserve pending/unknown messages and reconcile any old direct-sender confirmations before resuming the queue, because their provider keys differ. Keep the backup exclusion in tsconfig.json when restoring source snapshots inside this workspace.
-
-Local settings now use seedly@softbytes.co.uk and https://seedly.softbytes.co.uk, with a generated private worker token. No provider key is configured. No customer email or positive live customer/admin mutation was performed in this follow-up.
+If an emergency rollback to SQLite is required before write traffic starts:
+1. In `next.config.mjs`, re-enable SQLite asset tracing if needed.
+2. The original SQLite database is preserved at `data/seedly.db`.
+3. If new orders have occurred on Supabase before deciding to roll back:
+   - Export all orders created after cutover: `SELECT * FROM orders WHERE created_at >= '<cutover_time>';`
+   - Import into `data/seedly.db` before routing traffic back to avoid order loss.

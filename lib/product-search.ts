@@ -1,4 +1,3 @@
-import { getDefaultVariant } from './catalog';
 import type { Kit, Product } from './types';
 
 export interface ProductSearchResult {
@@ -30,7 +29,8 @@ export function toSearchResult(item: Product | Kit): ProductSearchResult {
     };
   }
 
-  const variant = getDefaultVariant(item);
+  const variants = item.variants?.filter((variant) => variant.status === 'ACTIVE') || [];
+  const variant = variants.find((candidate) => candidate.weight_grams === item.weight_grams) || variants[0];
   const weight = variant?.weight_grams ?? item.weight_grams;
 
   return {

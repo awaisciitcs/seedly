@@ -1,4 +1,3 @@
-import { readAdminJson, AdminInputError, adminId, adminText } from '@/lib/admin-validation';
 import { NextResponse } from 'next/server';
 import { requireAdmin, AdminAuthError } from '@/lib/auth/require-admin';
 import { getScopedClient } from '@/lib/supabase/admin';
@@ -36,21 +35,22 @@ export async function GET(request: Request) {
 
     if (error || !data?.signedUrl) {
       return NextResponse.json(
-        { error: { message: 'Receipt could not be accessed. Please check its recorded path.' } },
+        { error: { message: error?.message || 'Failed to generate secure receipt access link.' } },
         { status: 404 }
       );
     }
 
     return NextResponse.json({ url: data.signedUrl });
   } catch (error: any) {
-    if (error instanceof AdminAuthError || error instanceof AdminInputError) {
+    if (error instanceof AdminAuthError) {
       return NextResponse.json(
         { error: { message: error.message } },
         { status: error.status }
       );
     }
     return NextResponse.json(
-      { error: { message: 'This operation is temporarily unavailable. Please try again.' } }, { status: 503 }
+      { error: { message: error?.message || 'Internal server error' } },
+      { status: 500 }
     );
   }
 }

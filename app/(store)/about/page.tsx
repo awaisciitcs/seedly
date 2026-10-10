@@ -1,27 +1,40 @@
-import { getContentDocument } from '@/lib/services/content';
-import { ManagedSection, ManagedSections } from '@/components/storefront/ManagedSections';
-import type { CmsPageContent, SiteContent, AboutContent } from '@/lib/cms/storefront-types';
-import { getContentMetadata } from '@/lib/cms/metadata';
-import { serializeStructuredData } from '@/lib/structured-data';
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Metadata } from 'next';
 import { ArrowRight, MapPin, Sparkles, Package, Truck } from 'lucide-react';
+import { siteConfig } from '../../../lib/config';
 import { getProducts } from '../../../lib/services/products';
 import { getKits } from '../../../lib/services/kits';
+import { ourStoryEn } from '../../../content/our-story';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return getContentMetadata('about');
-}
+export const metadata: Metadata = {
+  title: 'Our story | Seedly',
+  description:
+    'Get to know the Seedly collection: pantry seeds, loose-leaf teas and seed cycling kits, with ingredients, pack sizes and preparation details on every product page.',
+  openGraph: {
+    title: 'Our story | Seedly',
+    description:
+      'Get to know the Seedly collection: pantry seeds, loose-leaf teas and seed cycling kits, with ingredients, pack sizes and preparation details on every product page.',
+    url: `${siteConfig.url}/about`,
+    siteName: 'Seedly',
+    locale: 'en_PK',
+    images: [
+      {
+        url: `${siteConfig.url}/images/hero/seedly-hero-lifestyle.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'Seedly everyday pantry ingredients',
+      },
+    ],
+    type: 'website',
+  },
+};
 
 export default async function AboutPage() {
-  const cms = await getContentDocument<AboutContent>('about'); const { copy, links, images } = cms;
-const site = await getContentDocument<SiteContent>('site'); const siteConfig=site.config;
+  const content = ourStoryEn;
 
-  const content = cms.story;
-
-  // Product imagery follows the current published catalog.
+  // Read one product image per category from existing data layer (with safe fallbacks)
   const [seeds, teas, kits] = await Promise.all([
     getProducts({ productType: 'seed', limit: 1 }),
     getProducts({ productType: 'tea', limit: 1 }),
@@ -29,9 +42,9 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
   ]);
 
   const categoryImages: Record<string, string | undefined> = {
-    seeds: seeds[0]?.image_url,
-    teas: teas[0]?.image_url,
-    kits: kits[0]?.image_url,
+    seeds: seeds[0]?.image_url || '/images/products/pumpkin-seeds.jpg',
+    teas: teas[0]?.image_url || '/images/products/chamomile-tea.jpg',
+    kits: kits[0]?.image_url || '/images/products/complete-kit.jpg',
   };
 
   const stepIcons = [MapPin, Sparkles, Package, Truck];
@@ -39,10 +52,15 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
   const organizationJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: siteConfig.name,
+    name: 'Seedly',
     url: siteConfig.url,
-    ...(site.brand.logoUrl ? {logo:new URL(site.brand.logoUrl,siteConfig.url).href} : {}),
-    ...(siteConfig.contact.address ? {address:{'@type':'PostalAddress',streetAddress:siteConfig.contact.address}} : {}),
+    logo: `${siteConfig.url}/logo/seedly-logo.jpg`,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Lahore',
+      addressRegion: 'Punjab',
+      addressCountry: 'PK',
+    },
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: siteConfig.contact.phoneInternational,
@@ -55,14 +73,14 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
     <div className="bg-white text-neutral-900">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeStructuredData(organizationJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
 
       {/* 1. HERO (TwoCol, items-center, py-16 md:py-20) */}
-      <ManagedSections document="about" sections={{"page_section_01":(<ManagedSection document="about" sectionId="page_section_01"><section className="py-16 md:py-20">
+      <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto w-full px-5 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 gap-y-10 items-center">
-
+            
             {/* Left Hero Column */}
             <div className="text-start max-w-xl">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] rtl:tracking-normal text-stone-500 mb-4 block">
@@ -76,13 +94,13 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
               </p>
               <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 <Link
-                  href={links.href_shop}
+                  href="/shop"
                   className="h-12 rounded-full px-7 bg-black hover:bg-neutral-800 text-white font-semibold text-xs sm:text-sm uppercase tracking-wider inline-flex items-center justify-center transition-colors shadow-xs"
                 >
                   {content.hero.primaryCta}
                 </Link>
                 <Link
-                  href={links.href_find_your_seed}
+                  href="/find-your-seed"
                   className="h-12 rounded-full px-7 border border-black bg-white hover:bg-black hover:text-white text-neutral-900 font-semibold text-xs sm:text-sm uppercase tracking-wider inline-flex items-center justify-center transition-colors shadow-xs"
                 >
                   {content.hero.secondaryCta}
@@ -94,8 +112,8 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
             <div className="w-full">
               <div className="relative aspect-[5/4] w-full rounded-xl overflow-hidden bg-stone-100 border border-stone-200/80 shadow-xs">
                 <Image
-                  src={images.src_images_hero_seedly_hero_lifestyle_jpg}
-                  alt={copy.alt_seedly_pumpkin_seeds_sesame_and_chamomile_on_a_kitchen}
+                  src="/images/hero/seedly-hero-lifestyle.jpg"
+                  alt="Seedly pumpkin seeds, sesame and chamomile on a kitchen table"
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 50vw"
@@ -106,10 +124,13 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
 
           </div>
         </div>
-      </section></ManagedSection>),"page_section_02":(<ManagedSection document="about" sectionId="page_section_02"><section className="py-12 md:py-16 border-t border-stone-200">
+      </section>
+
+      {/* 2. WHY SEEDLY (Section, border-t, TwoCol) */}
+      <section className="py-12 md:py-16 border-t border-stone-200">
         <div className="max-w-7xl mx-auto w-full px-5 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 gap-y-10 items-start">
-
+            
             {/* Left Column */}
             <div className="text-start">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] rtl:tracking-normal text-stone-500 mb-3 block">
@@ -124,8 +145,18 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
             <div className="text-start text-lg text-stone-700 leading-relaxed space-y-5 font-normal">
               <p>{content.whySeedly.paragraph1}</p>
               <p>{content.whySeedly.paragraph2}</p>
-
+              
               <div className="pt-2 flex items-center gap-3">
+                {content.whySeedly.founderAvatar && (
+                  <div className="relative h-10 w-10 rounded-full overflow-hidden bg-stone-200 border border-stone-300 shrink-0">
+                    <Image
+                      src={content.whySeedly.founderAvatar}
+                      alt="Founder"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
                 <span className="font-medium text-neutral-900 text-sm">
                   {content.whySeedly.signature}
                 </span>
@@ -134,7 +165,10 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
 
           </div>
         </div>
-      </section></ManagedSection>),"page_section_03":(<ManagedSection document="about" sectionId="page_section_03"><section className="border-t border-stone-200 bg-[#FBFBFA] py-12 md:py-16">
+      </section>
+
+      {/* 3. SOURCE TO POUCH (Section, border-t, full-bleed off-white band matching trust-strip) */}
+      <section className="border-t border-stone-200 bg-[#FBFBFA] py-12 md:py-16">
         <div className="max-w-7xl mx-auto w-full px-5 md:px-8">
           <h2 className="font-heading font-medium text-2xl sm:text-3xl text-neutral-900 tracking-tight mb-10 text-start">
             {content.sourceToPouch.h2}
@@ -175,16 +209,19 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
             })}
           </div>
         </div>
-      </section></ManagedSection>),"page_section_04":(<ManagedSection document="about" sectionId="page_section_04"><section className="py-12 md:py-16 border-t border-stone-200 bg-white">
-        <div className="max-w-7xl mx-auto w-full px-5 md:px-8">
+      </section>
 
+      {/* 4. COLLECTION (Section, border-t) */}
+      <section className="py-12 md:py-16 border-t border-stone-200 bg-white">
+        <div className="max-w-7xl mx-auto w-full px-5 md:px-8">
+          
           {/* Header Row */}
           <div className="flex items-baseline justify-between mb-8 sm:mb-10 text-start">
             <h2 className="font-heading font-medium text-2xl sm:text-3xl text-neutral-900 tracking-tight">
               {content.collection.h2}
             </h2>
             <Link
-              href={links.href_shop}
+              href="/shop"
               className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-neutral-900 hover:text-black underline underline-offset-4 transition-colors"
             >
               {content.collection.shopAll}
@@ -287,7 +324,10 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
           </div>
 
         </div>
-      </section></ManagedSection>),"page_section_05":(<ManagedSection document="about" sectionId="page_section_05"><section className="bg-neutral-900 text-white py-16 md:py-24">
+      </section>
+
+      {/* 5. CLOSING CTA (full-bleed dark background matching announcement bar) */}
+      <section className="bg-neutral-900 text-white py-16 md:py-24">
         <div className="max-w-7xl mx-auto w-full px-5 md:px-8">
           <div className="max-w-xl mx-auto text-center space-y-4">
             <h2 className="font-heading font-medium text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-tight">
@@ -298,13 +338,13 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-4">
               <Link
-                href={links.href_seeds}
+                href="/seeds"
                 className="h-12 rounded-full px-7 bg-white text-neutral-900 hover:bg-stone-100 font-semibold text-xs sm:text-sm uppercase tracking-wider inline-flex items-center justify-center transition-colors shadow-xs"
               >
                 {content.closingCta.primaryCta}
               </Link>
               <Link
-                href={links.href_find_your_seed}
+                href="/find-your-seed"
                 className="h-12 rounded-full px-7 border border-white text-white hover:bg-white hover:text-neutral-900 font-semibold text-xs sm:text-sm uppercase tracking-wider inline-flex items-center justify-center transition-colors shadow-xs"
               >
                 {content.closingCta.secondaryCta}
@@ -322,19 +362,7 @@ const site = await getContentDocument<SiteContent>('site'); const siteConfig=sit
             </div>
           </div>
         </div>
-      </section></ManagedSection>)}}/>
-
-      {/* 2. WHY SEEDLY (Section, border-t, TwoCol) */}
-
-
-      {/* 3. SOURCE TO POUCH (Section, border-t, full-bleed off-white band matching trust-strip) */}
-
-
-      {/* 4. COLLECTION (Section, border-t) */}
-
-
-      {/* 5. CLOSING CTA (full-bleed dark background matching announcement bar) */}
-
+      </section>
 
     </div>
   );

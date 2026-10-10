@@ -1,18 +1,12 @@
-import { enforcePublicRateLimit, rateLimitHeaders } from '@/lib/public-rate-limit';
-import { scheduleOrderEmails } from '@/lib/email/schedule';
 import { NextResponse } from 'next/server';
 import { createOrder } from '../../../lib/services/orders';
-import { parseCheckoutLines } from '@/lib/checkout-validation';
-import { readJson, requireSameOrigin, RequestError } from '@/lib/request-guards';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
-    requireSameOrigin(request);
-    const body = await readJson(request);
+    const body = await request.json();
     const idempotencyHeader = request.headers.get('Idempotency-Key');
-    if(idempotencyHeader && body.idempotency_key && idempotencyHeader !== body.idempotency_key)throw new RequestError('Checkout identity does not match.');
 
     const {
       customer_name,
@@ -26,32 +20,25 @@ export async function POST(request: Request) {
       payment_method,
       receipt_path,
       idempotency_key,
-      quote_token,
-      receipt_proof,
       items,
     } = body;
 
-    if ([customer_name, customer_email, customer_phone, shipping_address, shipping_city].some(value => typeof value !== 'string' || !value.trim() || value.length > 500)) {
+    if (!customer_name || !customer_email || !customer_phone || !shipping_address || !shipping_city) {
       return NextResponse.json(
         { error: { message: 'Missing required customer and delivery fields.' } },
         { status: 400 }
       );
     }
-    const name = String(customer_name).trim();
-    const email = String(customer_email).trim().toLowerCase();
-    const phone = String(customer_phone).trim();
-    const address = String(shipping_address).trim();
-    const city = String(shipping_city).trim();
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(customer_email.trim())) {
       return NextResponse.json(
         { error: { message: 'Please provide a valid email address.' } },
         { status: 400 }
       );
     }
 
-    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+    const cleanPhone = customer_phone.replace(/[\s\-\(\)]/g, '');
     const phoneRegex = /^((\+92)|(0092)|(92)|0)?(3[0-9]{9})$/;
     if (!phoneRegex.test(cleanPhone)) {
       return NextResponse.json(
@@ -60,7 +47,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (address.length < 8 || name.length < 2) {
+    if (shipping_address.trim().length < 8) {
       return NextResponse.json(
         { error: { message: 'Shipping address is too short. Please provide full street/house details.' } },
         { status: 400 }
@@ -81,8 +68,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const checkoutItems = parseCheckoutLines(items);
-    for (const item of checkoutItems) {
+    for (const item of items) {
       if (!item || typeof item !== 'object') {
         return NextResponse.json(
           { error: { message: 'Invalid item in basket.' } },
@@ -104,36 +90,35 @@ export async function POST(request: Request) {
       }
     }
 
-    if (typeof payment_method !== 'string' || !['COD', 'bank_transfer', 'wallet_aggregator'].includes(payment_method)) {
+    if (!['COD', 'bank_transfer', 'wallet_aggregator'].includes(payment_method)) {
       return NextResponse.json({ error: { message: 'Please select a valid payment method.' } }, { status: 400 });
     }
 
-    await enforcePublicRateLimit(request, 'orders');
     const result = await createOrder({
-      customer_name: name, customer_email: email, customer_phone: cleanPhone,
-      shipping_address: address, shipping_city: city,
-      shipping_province: typeof shipping_province === 'string' ? shipping_province.trim().slice(0, 100) : 'Punjab',
-      shipping_postal_code: typeof shipping_postal_code === 'string' ? shipping_postal_code.slice(0, 20) : '',
-      shipping_notes: typeof shipping_notes === 'string' ? shipping_notes.slice(0, 1000) : '',
-      payment_method: payment_method as 'COD' | 'bank_transfer' | 'wallet_aggregator',
-      receipt_path: typeof receipt_path === 'string' ? receipt_path : undefined,
-      receipt_proof: typeof receipt_proof === 'string' ? receipt_proof : undefined,
-      quote_token: typeof quote_token === 'string' ? quote_token : undefined,
-      idempotency_key: idempotencyHeader || (typeof idempotency_key === 'string' ? idempotency_key : undefined),
-      items: checkoutItems,
+      customer_name,
+      customer_email,
+      customer_phone,
+      shipping_address,
+      shipping_city,
+      shipping_province: shipping_province || 'Punjab',
+      shipping_postal_code,
+      shipping_notes,
+      payment_method,
+      receipt_path,
+      idempotency_key: idempotencyHeader || idempotency_key,
+      items,
     });
 
-    scheduleOrderEmails();
     return NextResponse.json({
-      data: { order_number: result.order.order_number, total_minor: result.order.total_minor, order_status: result.order.order_status, payment_status: result.order.payment_status },
+      data: result.order,
       tracking_token: result.trackingToken,
       is_idempotent_replay: result.isIdempotentReplay,
-    }, {headers: {"Cache-Control":"no-store"}});
+    });
   } catch (error: any) {
     console.error('Order creation error:', error);
     return NextResponse.json(
-      { error: { message: error instanceof RequestError ? error.message : 'We could not confirm your order. Retry with the same details to recover it safely.' } },
-      { status: error instanceof RequestError ? error.status : 500, headers: rateLimitHeaders(error) }
+      { error: { message: error.message || 'Failed to place order.' } },
+      { status: 500 }
     );
   }
 }

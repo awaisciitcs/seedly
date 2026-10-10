@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { restoreWishlist } from '../wishlist-state';
 
 interface WishlistContextType {
   wishlistIds: string[];
@@ -20,7 +19,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     try {
       const saved = localStorage.getItem('seedly_wishlist');
       if (saved) {
-        setWishlistIds(restoreWishlist(JSON.parse(saved)));
+        setWishlistIds(JSON.parse(saved));
       }
     } catch {
       // ignore
@@ -42,7 +41,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     setWishlistIds((prev) =>
       prev.includes(productId)
         ? prev.filter((id) => id !== productId)
-        : restoreWishlist([...prev, productId])
+        : [...prev, productId]
     );
   };
 

@@ -33,7 +33,7 @@ function AdminLoginForm() {
     setError('');
 
     const cleanEmail = email.trim().toLowerCase();
-    const cleanPassword = password;
+    const cleanPassword = password.trim();
 
     if (!cleanEmail || !cleanPassword) {
       setError('Please provide your admin email and password.');

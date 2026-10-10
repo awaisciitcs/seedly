@@ -1,7 +1,3 @@
-import {getContentDocument} from '@/lib/services/content';
-import type {SiteContent} from '@/lib/cms/storefront-types';
-import {getCatalogPrice,hasAvailablePack} from '@/lib/catalog';
-import { serializeStructuredData } from '@/lib/structured-data';
 import React from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -12,28 +8,37 @@ export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await props.params;
-  const {config}=await getContentDocument<SiteContent>('site');
   const product = await getProductBySlug(slug);
-  if (!product || product.product_type !== 'seed') {
+  if (!product) {
     return {
       title: 'Product Not Found | Seedly',
     };
   }
   return {
-    title: `${product.name} | ${config.name}`,
+    title: `${product.name} (250g) | Pure Kitchen Seeds | Seedly Pakistan`,
     description: product.short_description || product.description,
     alternates: {
-      canonical: `${config.url}/seeds/${slug}`,
+      canonical: `https://seedly.pk/seeds/${slug}`,
     },
     openGraph: {
-      title: `${product.name} | ${config.name}`,
+      title: `${product.name} | Seedly Pakistan`,
       description: product.short_description || product.description,
       images: product.image_url ? [product.image_url] : [],
     },
   };
 }
 
-export const dynamic = 'force-dynamic';
+export async function generateStaticParams() {
+  try {
+    const products = await getProducts({ productType: 'seed' });
+    return products.map((p) => ({
+      slug: p.slug,
+    }));
+  } catch (err) {
+    console.error('generateStaticParams seeds error:', err);
+    return [];
+  }
+}
 
 export const dynamicParams = true;
 
@@ -41,10 +46,9 @@ export default async function SeedDetailPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await props.params;
-  const {config}=await getContentDocument<SiteContent>('site');
   const product = await getProductBySlug(slug);
 
-  if (!product || product.product_type !== 'seed') {
+  if (!product) {
     notFound();
   }
 
@@ -62,39 +66,39 @@ export default async function SeedDetailPage(props: {
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: config.url,
+            item: 'https://seedly.pk',
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'Raw Pantry Seeds',
-            item: new URL('/seeds',config.url).href,
+            item: 'https://seedly.pk/seeds',
           },
           {
             '@type': 'ListItem',
             position: 3,
             name: product.name,
-            item: `${config.url}/seeds/${product.slug}`,
+            item: `https://seedly.pk/seeds/${product.slug}`,
           },
         ],
       },
       {
         '@type': 'Product',
         name: product.name,
-        image: product.image_url.startsWith('http') ? product.image_url : `${config.url}${product.image_url}`,
+        image: product.image_url.startsWith('http') ? product.image_url : `https://seedly.pk${product.image_url}`,
         description: product.short_description || product.description,
         sku: product.sku,
         brand: {
           '@type': 'Brand',
-          name: config.name,
+          name: 'Seedly',
         },
         offers: {
           '@type': 'Offer',
-          url: `${config.url}/seeds/${product.slug}`,
+          url: `https://seedly.pk/seeds/${product.slug}`,
           priceCurrency: 'PKR',
-          price: (getCatalogPrice(product) / 100).toFixed(2),
+          price: (product.price_minor / 100).toFixed(0),
           availability:
-            hasAvailablePack(product)
+            (product.variants?.[0]?.inventory_quantity ?? 50) > 0
               ? 'https://schema.org/InStock'
               : 'https://schema.org/OutOfStock',
           itemCondition: 'https://schema.org/NewCondition',
@@ -107,7 +111,7 @@ export default async function SeedDetailPage(props: {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeStructuredData(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ProductDetailView product={product} relatedProducts={related} />
     </>

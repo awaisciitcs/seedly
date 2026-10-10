@@ -22,7 +22,7 @@ export function CartToast() {
     <aside
       aria-label="Basket update notification"
       aria-live="polite"
-      className="cart-toast fixed left-4 right-4 z-50 mx-auto max-w-sm rounded-2xl border border-neutral-800 bg-neutral-900 p-3 text-white shadow-2xl transition-all animate-slideUp md:hidden"
+      className="fixed bottom-20 left-4 right-4 z-50 mx-auto max-w-sm rounded-2xl border border-neutral-800 bg-neutral-900 p-3 text-white shadow-2xl transition-all animate-slideUp md:hidden"
     >
       <div className="flex items-center gap-3">
         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-neutral-800 border border-neutral-700">
@@ -55,7 +55,7 @@ export function CartToast() {
             dismissToast();
             setIsCartOpen(true);
           }}
-          className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-neutral-900 transition-colors hover:bg-neutral-100 active:scale-95 cursor-pointer shadow-xs"
+          className="flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-neutral-900 transition-colors hover:bg-neutral-100 active:scale-95 cursor-pointer shadow-xs"
         >
           <ShoppingBag className="h-3.5 w-3.5" />
           <span>View</span>
@@ -65,7 +65,7 @@ export function CartToast() {
           type="button"
           onClick={dismissToast}
           aria-label="Dismiss notification"
-          className="icon-button ml-1 text-neutral-300 hover:text-white"
+          className="ml-1 text-neutral-400 hover:text-white transition-colors cursor-pointer"
         >
           <X className="h-4 w-4" />
         </button>

@@ -1,34 +1,62 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin, AdminAuthError } from '@/lib/auth/require-admin';
-import { getScopedClient } from '@/lib/supabase/admin';
+import { getOrders } from '@/lib/services/orders';
+import { getProducts } from '@/lib/services/products';
+import { getAllStockSubscriptions } from '@/lib/services/stockAlerts';
 import { getQueueAge } from '@/lib/admin-utils';
+
 export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await requireAdmin();
-    const client = await getScopedClient();
-    // Exact HEAD counts do not download customer records or stop at the REST row cap.
-    const [receipts, packing, stock, alerts, total, oldest] = await Promise.all([
-      client.from('orders').select('id', { count: 'exact', head: true }).neq('payment_method', 'COD').eq('payment_status', 'UNDER_REVIEW'),
-      client.from('orders').select('id', { count: 'exact', head: true }).or('order_status.in.(PAID,PROCESSING),and(payment_method.eq.COD,order_status.eq.RECEIVED)'),
-      client.from('product_variants').select('id,products!inner(status)', { count: 'exact', head: true }).eq('status', 'ACTIVE').eq('products.status', 'ACTIVE').lte('inventory_quantity', 30),
-      client.from('stock_alert_subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
-      client.from('orders').select('id', { count: 'exact', head: true }),
-      client.from('orders').select('created_at').neq('payment_method', 'COD').eq('payment_status', 'UNDER_REVIEW').order('created_at', { ascending: true }).limit(1),
+
+    const [orders, products, stockAlerts] = await Promise.all([
+      getOrders(),
+      getProducts(),
+      getAllStockSubscriptions(),
     ]);
-    if ([receipts, packing, stock, alerts, total, oldest].some(result => result.error) ||
-      [receipts, packing, stock, alerts, total].some(result => !Number.isSafeInteger(result.count))) {
-      throw new Error('Queue counts unavailable.');
+
+    const pendingReceiptOrders = orders.filter(
+      (o) => o.payment_method !== 'COD' && o.payment_status === 'UNDER_REVIEW'
+    );
+
+    const ordersToPack = orders.filter(
+      (o) => (o.order_status === 'PAID' || o.order_status === 'PROCESSING')
+    );
+
+    const lowStockVariants = products.flatMap((p) =>
+      (p.variants || []).filter((v: any) => v.inventory_quantity <= 30)
+    );
+
+    const activeAlerts = stockAlerts.filter((s) => s.status === 'ACTIVE');
+
+    // Find oldest pending receipt
+    let oldestReceiptAge: string | null = null;
+    let oldestReceiptDate: string | null = null;
+    if (pendingReceiptOrders.length > 0) {
+      const sorted = [...pendingReceiptOrders].sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+      oldestReceiptDate = sorted[0].created_at;
+      oldestReceiptAge = getQueueAge(sorted[0].created_at);
     }
-    const oldestReceiptDate = oldest.data?.[0]?.created_at || null;
-    return NextResponse.json({ data: {
-      pendingReceiptsCount: receipts.count, oldestReceiptDate,
-      oldestReceiptAge: oldestReceiptDate ? getQueueAge(oldestReceiptDate) : null,
-      ordersToPackCount: packing.count, lowStockCount: stock.count,
-      stockAlertsCount: alerts.count, totalOrdersCount: total.count,
-    } });
-  } catch (error) {
-    return NextResponse.json({ error: { message: error instanceof AdminAuthError ? error.message : 'Queue counts are temporarily unavailable. Please try again.' } },
-      { status: error instanceof AdminAuthError ? error.status : 503 });
+
+    return NextResponse.json({
+      data: {
+        pendingReceiptsCount: pendingReceiptOrders.length,
+        oldestReceiptAge,
+        oldestReceiptDate,
+        ordersToPackCount: ordersToPack.length,
+        lowStockCount: lowStockVariants.length,
+        stockAlertsCount: activeAlerts.length,
+        totalOrdersCount: orders.length,
+      },
+    });
+  } catch (error: any) {
+    if (error instanceof AdminAuthError) {
+      return NextResponse.json({ error: { message: error.message } }, { status: error.status });
+    }
+    return NextResponse.json({ error: { message: error?.message || 'Server error' } }, { status: 500 });
   }
 }

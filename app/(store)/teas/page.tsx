@@ -1,25 +1,37 @@
-import { getContentDocument } from '@/lib/services/content';
-import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
-import { getContentMetadata } from '@/lib/cms/metadata';
-import React, { Suspense } from 'react';
-import { ShopCatalogClient } from '@/components/storefront/ShopCatalogClient';
+import React from 'react';
 import { getProducts } from '../../../lib/services/products';
 import { TeasCategoryClient } from '../../../components/product/TeasCategoryClient';
 import type { Metadata } from 'next';
 
-// Catalog edits must appear without waiting for a deployment or static-cache refresh.
-export const dynamic = 'force-dynamic';
-
-export async function generateMetadata(): Promise<Metadata> {
-  return getContentMetadata('teas');
-}
+export const metadata: Metadata = {
+  title: 'Loose-Leaf Tea & Herbal Tea | Seedly Pakistan',
+  description:
+    'Shop loose chamomile flowers, spearmint and green tea. Find flavour notes, caffeine information and brewing instructions on each product page.',
+  openGraph: {
+    title: 'Loose-Leaf Tea & Herbal Tea | Seedly Pakistan',
+    description:
+      'Loose chamomile flowers, spearmint and green tea, with flavour notes and brewing instructions to help you choose.',
+    url: 'https://seedly.pk/teas',
+    siteName: 'Seedly',
+    locale: 'en_PK',
+    type: 'website',
+    images: [
+      {
+        url: '/images/products/chamomile-tea.jpg',
+        width: 800,
+        height: 800,
+        alt: 'Seedly whole flower chamomile tea',
+      },
+    ],
+  },
+};
 
 export default async function TeasPage() {
-  const cms = await getContentDocument<CmsPageContent>('teas'); const { copy, links, images } = cms;
-
   const teas = await getProducts({ productType: 'tea' });
 
   return (
-    <Suspense fallback={<div className="store-container py-20">{copy.text_loading_products}</div>}><ShopCatalogClient initialItems={teas} lockedCategory="teas" title={copy.title_loose_teas} description={copy.description_explore_flavours_caffeine_levels_and_brewing_instructio} /></Suspense>
+    <div className="mx-auto max-w-7xl px-4 pt-4 pb-12 sm:px-6 sm:pt-6 sm:pb-16 lg:px-8 bg-white min-h-screen">
+      <TeasCategoryClient initialTeas={teas} />
+    </div>
   );
 }

@@ -1,4 +1,3 @@
-import { readAdminJson, AdminInputError, adminId, adminText } from '@/lib/admin-validation';
 import { NextResponse } from 'next/server';
 import { requireAdmin, AdminAuthError } from '@/lib/auth/require-admin';
 
@@ -19,14 +18,15 @@ export async function GET() {
       },
     });
   } catch (error: any) {
-    if (error instanceof AdminAuthError || error instanceof AdminInputError) {
+    if (error instanceof AdminAuthError) {
       return NextResponse.json(
         { error: { message: error.message } },
         { status: error.status }
       );
     }
     return NextResponse.json(
-      { error: { message: 'This operation is temporarily unavailable. Please try again.' } }, { status: 503 }
+      { error: { message: error?.message || 'Internal server error' } },
+      { status: 500 }
     );
   }
 }

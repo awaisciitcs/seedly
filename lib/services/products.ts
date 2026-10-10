@@ -1,7 +1,5 @@
-import { getScopedClient } from '../supabase/admin';
 import { createPublicClient } from '../supabase/public';
 import { Product, ProductVariant } from '../types';
-import { normalizeSearch } from '../catalog';
 
 function sortVariants(variants: any[]): ProductVariant[] {
   return [...variants].sort((a, b) => {
@@ -46,7 +44,6 @@ function mapRowToProduct(row: any, reviewStats?: { count: number; avg_rating: nu
 
   return {
     id: row.id,
-    updated_at: row.updated_at,
     category_id: row.category_id,
     name: row.name,
     slug: row.slug,
@@ -93,9 +90,8 @@ export async function getProducts(options?: {
   search?: string;
   sort?: string; // 'price-asc' | 'price-desc' | 'newest' | 'rating'
   limit?: number;
-  includeReviews?: boolean;
 }): Promise<Product[]> {
-  const supabase = options?.status !== undefined && options.status !== 'ACTIVE' ? await getScopedClient() : createPublicClient();
+  const supabase = createPublicClient();
 
   let query = supabase.from('products').select(`
     *,
@@ -120,8 +116,8 @@ export async function getProducts(options?: {
   }
 
   if (options?.search) {
-    const s = normalizeSearch(options.search);
-    query = query.or(`name.ilike.%${s}%,short_description.ilike.%${s}%,ingredients.ilike.%${s}%,sku.ilike.%${s}%`);
+    const s = options.search;
+    query = query.or(`name.ilike.%${s}%,short_description.ilike.%${s}%,ingredients.ilike.%${s}%`);
   }
 
   // Sorting
@@ -143,11 +139,10 @@ export async function getProducts(options?: {
 
   if (error || !rows) {
     console.error('Failed to fetch products from Supabase:', error);
-    throw new Error('Products are temporarily unavailable. Please try again.');
+    return [];
   }
 
   // Fetch approved non-demo review statistics
-  if (options?.includeReviews === false) return rows.map(row => mapRowToProduct(row));
   const { data: revRows } = await supabase
     .from('reviews')
     .select('product_id, rating')
@@ -184,8 +179,9 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     .eq('slug', slug)
     .single();
 
-  if (error && error.code !== 'PGRST116') throw new Error('Catalog details are temporarily unavailable.');
-  if (!row) return null;
+  if (error || !row) {
+    return null;
+  }
 
   const { data: revRows } = await supabase
     .from('reviews')
@@ -215,8 +211,9 @@ export async function getProductById(id: string): Promise<Product | null> {
     .eq('id', id)
     .single();
 
-  if (error && error.code !== 'PGRST116') throw new Error('Catalog details are temporarily unavailable.');
-  if (!row) return null;
+  if (error || !row) {
+    return null;
+  }
 
   const { data: revRows } = await supabase
     .from('reviews')

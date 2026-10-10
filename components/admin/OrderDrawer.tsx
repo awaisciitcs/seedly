@@ -22,8 +22,6 @@ import {
   Check,
 } from 'lucide-react';
 import { Order, OrderStatus } from '@/lib/types';
-import { Dialog } from '@/components/ui/Dialog';
-import { getAllowedOrderStatuses, PAYMENT_METHOD_LABELS } from '@/lib/order-status';
 import { formatPKR, formatPKTDateTime } from '@/lib/admin-utils';
 
 export function OrderDrawer({
@@ -45,9 +43,6 @@ export function OrderDrawer({
   const [receiptZoomed, setReceiptZoomed] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
   const [note, setNote] = useState('');
-  const [courier, setCourier] = useState('');
-  const [trackingNumber, setTrackingNumber] = useState('');
-  const [loadError, setLoadError] = useState('');
 
   // Fetch full order when opened
   useEffect(() => {
@@ -55,21 +50,17 @@ export function OrderDrawer({
 
     let isCurrent = true;
     setLoading(true);
-    setOrder(null);
-    setLoadError('');
     setReceiptUrl(null);
     setBankReference('');
 
     async function fetchOrderDetails() {
       try {
-        const res = await fetch(`/api/admin/orders/${orderId}`, { signal: AbortSignal.timeout(15000) });
+        const res = await fetch(`/api/admin/orders/${orderId}`);
         if (res.ok) {
           const json = await res.json();
           if (isCurrent && json?.data) {
             const ord = json.data;
             setOrder(ord);
-            setCourier(ord.tracking_courier || '');
-            setTrackingNumber(ord.tracking_number || '');
             setNote(ord.admin_note || '');
 
             // Fetch secure signed receipt URL if order has a receipt
@@ -87,9 +78,9 @@ export function OrderDrawer({
               }
             }
           }
-        } else if (isCurrent) setLoadError('Order details could not be loaded. Close this panel and try again.');
+        }
       } catch (err) {
-        if (isCurrent) setLoadError('Order details are temporarily unavailable. Close this panel and try again.');
+        console.error('Failed to fetch order in drawer:', err);
       } finally {
         if (isCurrent) setLoading(false);
       }
@@ -110,7 +101,8 @@ export function OrderDrawer({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          admin_note: [bankReference.trim() ? 'Bank reference: ' + bankReference.trim() : '', note.trim()].filter(Boolean).join(' — '),
+          bankReference: bankReference.trim() || undefined,
+          adminNote: note.trim() || undefined,
         }),
       });
       if (res.ok) {
@@ -164,9 +156,9 @@ export function OrderDrawer({
     setActionLoading(true);
     try {
       const res = await fetch(`/api/admin/orders/${order.id}/status`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus, courier: courier.trim(), tracking_number: trackingNumber.trim(), note: note.trim() }),
+        body: JSON.stringify({ status: newStatus }),
       });
       if (res.ok) {
         const json = await res.json();
@@ -191,9 +183,20 @@ export function OrderDrawer({
   const waNumber = cleanPhone.startsWith('92') ? cleanPhone : `92${cleanPhone.replace(/^0+/, '')}`;
 
   return (
-    <Dialog open={isOpen} onClose={onClose} title="Order details" className="cart-dialog !bg-transparent">
-      <div className="glass w-full h-full p-6 overflow-y-auto border-l border-white/20">
-          {loadError ? <div role="alert" className="p-6 text-white"><p>{loadError}</p><button onClick={onClose} className="glass-btn-3d mt-4 px-4 py-2">Close</button></div> : loading || !order ? (
+    <div className="fixed inset-0 z-50 overflow-hidden">
+      {/* Dim Scrim */}
+      <div
+        className="absolute inset-0 bg-[#021a10]/60 backdrop-blur-[6px] transition-opacity duration-240"
+        onClick={onClose}
+      />
+
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
+        <div
+          className="glass w-screen max-w-2xl rounded-l-3xl p-6 flex flex-col justify-between overflow-y-auto border-l border-white/20 transition-transform duration-240"
+          data-elev="overlay"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {loading || !order ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-8 h-8 text-lime animate-spin" />
               <p className="text-xs text-botanical-sage">Loading order details...</p>
@@ -208,7 +211,7 @@ export function OrderDrawer({
                       #{order.order_number}
                     </h2>
                     <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/15">
-                      {PAYMENT_METHOD_LABELS[order.payment_method]}
+                      {order.payment_method === 'COD' ? 'Cash on Delivery' : 'Meezan Bank Transfer'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-botanical-sage">
@@ -231,7 +234,6 @@ export function OrderDrawer({
                   <button
                     type="button"
                     onClick={onClose}
-                    aria-label="Close order details"
                     className="p-2 rounded-xl glass-inset text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                   >
                     <X className="w-4 h-4" />
@@ -387,7 +389,7 @@ export function OrderDrawer({
                         </div>
                       </div>
 
-                      {['PENDING','UNDER_REVIEW'].includes(order.payment_status) && ['PENDING_PAYMENT','PAYMENT_REVIEW'].includes(order.order_status) && (
+                      {order.payment_status === 'UNDER_REVIEW' && (
                         <div className="flex items-center gap-2 pt-2">
                           <button
                             type="button"
@@ -463,14 +465,9 @@ export function OrderDrawer({
                 <span className="text-xs font-bold uppercase tracking-wider text-botanical-sage">
                   Fulfillment Status: {order.order_status}
                 </span>
-                {order.order_status === 'PACKED' && <div className="grid gap-3 sm:grid-cols-2 py-3">
-  <label className="text-xs text-botanical-sage">Courier<input value={courier} onChange={e => setCourier(e.target.value)} maxLength={100} className="glass-input-3d w-full mt-1 px-3 py-2 rounded-xl" placeholder="Courier name" /></label>
-  <label className="text-xs text-botanical-sage">Tracking number<input value={trackingNumber} onChange={e => setTrackingNumber(e.target.value)} maxLength={160} className="glass-input-3d w-full mt-1 px-3 py-2 rounded-xl" placeholder="Courier tracking number" /></label>
-</div>}
 
                 <div className="flex flex-wrap items-center gap-2">
-                  {getAllowedOrderStatuses(order).includes('PROCESSING') && (<button type="button" onClick={() => handleStatusChange('PROCESSING')} disabled={actionLoading} className="btn-keycap py-2 px-4 text-xs font-bold">Start preparation</button>)}
-                  {getAllowedOrderStatuses(order).includes('PACKED') && (
+                  {order.order_status === 'PAID' && (
                     <button
                       type="button"
                       onClick={() => handleStatusChange('PACKED')}
@@ -481,7 +478,7 @@ export function OrderDrawer({
                       <span>Mark as Packed</span>
                     </button>
                   )}
-                  {getAllowedOrderStatuses(order).includes('SHIPPED') && (
+                  {order.order_status === 'PACKED' && (
                     <button
                       type="button"
                       onClick={() => handleStatusChange('SHIPPED')}
@@ -492,7 +489,7 @@ export function OrderDrawer({
                       <span>Dispatch &amp; Ship</span>
                     </button>
                   )}
-                  {getAllowedOrderStatuses(order).includes('DELIVERED') && (
+                  {order.order_status === 'SHIPPED' && (
                     <button
                       type="button"
                       onClick={() => handleStatusChange('DELIVERED')}
@@ -507,7 +504,8 @@ export function OrderDrawer({
               </div>
             </div>
           )}
+        </div>
       </div>
-    </Dialog>
+    </div>
   );
 }

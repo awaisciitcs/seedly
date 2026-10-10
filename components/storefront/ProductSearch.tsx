@@ -1,13 +1,10 @@
 'use client';
-import { useSiteContent } from './SiteContentProvider';
-import type { SiteContent } from '@/lib/cms/storefront-types';
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Loader2, Search, X } from 'lucide-react';
-import { Dialog } from '@/components/ui/Dialog';
 import type { ProductSearchResponse } from '../../lib/product-search';
 import { formatPKR } from '../../lib/utils';
 
@@ -16,9 +13,8 @@ interface ProductSearchProps {
 }
 
 export function ProductSearch({ onClose }: ProductSearchProps) {
- const {copy,links,images}=useSiteContent<SiteContent>('site');
-
   const router = useRouter();
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const latestTerm = useRef('');
@@ -31,6 +27,20 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
   const term = query.trim();
   const resultsHref = term ? '/shop?search=' + encodeURIComponent(term) : '/shop';
 
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previousOverflow = document.body.style.overflow;
+    dialog?.showModal();
+    inputRef.current?.focus();
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      dialog?.close();
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+    };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -41,7 +51,7 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
     // A short debounce keeps typing responsive without requesting every keystroke.
     const timeout = setTimeout(async () => {
       try {
-        const result = await fetch('/api/search?q=' + encodeURIComponent(term), { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) });
+        const result = await fetch('/api/search?q=' + encodeURIComponent(term), { signal: controller.signal });
         if (!result.ok) throw new Error('Search unavailable');
         const data: ProductSearchResponse = await result.json();
         if (isCurrent()) {
@@ -84,47 +94,51 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
   };
 
   return (
-    <Dialog open onClose={onClose} title="Search products" className="search-dialog">
+    <dialog
+      ref={dialogRef}
+      id="catalog-search"
+      aria-labelledby="catalog-search-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+      className="motion-search fixed inset-x-0 bottom-auto top-4 m-0 mx-auto max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-hidden rounded-[28px] border-2 border-ink bg-paper p-0 text-ink shadow-brutal-xl backdrop:bg-ink/50 backdrop:backdrop-blur-xs sm:top-[10vh] sm:max-h-[80dvh]"
+    >
       <div className="flex max-h-[calc(100dvh_-_2rem_-_4px)] flex-col sm:max-h-[calc(80dvh_-_4px)]">
         <div className="shrink-0 px-4 pt-4 sm:px-6 sm:pt-6">
           <div className="mb-3 flex items-center justify-between gap-4">
-            <h2 id="catalog-search-title" className="font-heading font-medium text-lg text-ink">{copy.text_search_seedly_pantry}</h2>
+            <h2 id="catalog-search-title" className="font-heading font-extrabold text-lg text-ink">Search Seedly Pantry</h2>
             <button
               type="button"
               onClick={onClose}
               aria-label="Close search"
-              className="icon-button"
+              className="btn-brutal h-9 w-9 bg-white text-ink hover:bg-seed-lime"
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
           <form role="search" onSubmit={viewResults}>
-            <label htmlFor="catalog-search-input" className="sr-only">{copy.text_search_products}</label>
-            <div className="flex items-center gap-3 rounded-xl border border-border-gray bg-white px-4 transition-colors focus-within:ring-2 focus-within:ring-seed-lime">
+            <label htmlFor="catalog-search-input" className="sr-only">Search products</label>
+            <div className="flex items-center gap-3 rounded-full border-2 border-ink bg-white px-5 shadow-brutal-sm transition-colors focus-within:ring-2 focus-within:ring-seed-lime">
               <Search className="h-5 w-5 shrink-0 text-ink" aria-hidden="true" />
               <input
                 ref={inputRef}
-                data-autofocus
                 id="catalog-search-input"
                 name="search"
                 type="search"
                 value={query}
                 onChange={(event) => changeQuery(event.target.value)}
                 onKeyDown={(event) => {
-                  if (event.nativeEvent.isComposing) return;
-                  if (event.key === 'Escape') {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    onClose();
-                    return;
-                  }
-                  if (!items.length) return;
+                  if (event.nativeEvent.isComposing || !items.length) return;
                   if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
                     event.preventDefault();
                     resultRefs.current[event.key === 'ArrowDown' ? 0 : items.length - 1]?.focus();
                   }
                 }}
-                placeholder={copy.placeholder_search_seeds_kits_and_teas}
+                placeholder="Search seeds, kits and teas"
                 autoComplete="off"
                 spellCheck={false}
                 maxLength={100}
@@ -147,7 +161,7 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
               )}
             </div>
           </form>
-          <p id="catalog-search-hint" className="sr-only">{copy.text_results_update_as_you_type_use_the_arrow_keys_to_browse}</p>
+          <p id="catalog-search-hint" className="sr-only">Results update as you type. Use the arrow keys to browse products, Enter to open, and Escape to close.</p>
           <div className="flex min-h-12 items-center justify-between gap-3 text-xs text-muted-gray">
             <p role="status" aria-live="polite" aria-atomic="true" className="break-words [overflow-wrap:anywhere]">
               {isSearching ? 'Searching...' : error ? 'Unable to load products' : term ? total + (total === 1 ? ' result' : ' results') + ' for \u201c' + term + '\u201d' : 'Explore the range'}
@@ -170,10 +184,10 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
                 </div>
               ))}
             </div>
-          ) : error ? (
+          ) : error && !response ? (
             <div className="px-4 py-10 text-center">
-              <p className="text-sm text-muted-gray">{copy.text_we_couldn_t_load_products_please_try_again}</p>
-              <button type="button" onClick={() => setRetry((value) => value + 1)} className="mt-4 min-h-11 rounded-full border border-border-gray px-5 text-sm font-medium transition-colors hover:bg-cream">{copy.text_try_again}</button>
+              <p className="text-sm text-muted-gray">We couldn&apos;t load products. Please try again.</p>
+              <button type="button" onClick={() => setRetry((value) => value + 1)} className="mt-4 min-h-11 rounded-full border border-border-gray px-5 text-sm font-medium transition-colors hover:bg-cream">Try again</button>
             </div>
           ) : items.length ? (
             <ul aria-label={term ? 'Matching products' : 'Products to explore'} className={isSearching ? 'opacity-80 transition-opacity duration-150' : 'opacity-100 transition-opacity duration-150'}>
@@ -196,7 +210,7 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
                       <Image src={item.image} alt="" fill sizes="80px" className="object-cover" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="mb-1 text-xs text-muted-gray">{item.category}{item.size && <> {copy.text_middot}{item.size}</>}</p>
+                      <p className="mb-1 text-xs text-muted-gray">{item.category}{item.size && <> &middot; {item.size}</>}</p>
                       <p className="text-sm font-medium leading-snug text-seedly-dark sm:text-base">{item.name}</p>
                       <p className="mt-1.5 text-sm tabular-nums text-charcoal">{formatPKR(item.priceMinor)}</p>
                     </div>
@@ -207,8 +221,8 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
             </ul>
           ) : (
             <div className="px-4 py-10 text-center">
-              <p className="font-medium text-seedly-dark">{copy.text_no_products_found}</p>
-              <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-muted-gray">{copy.text_try_a_product_or_ingredient_like_pumpkin_flax_or_chamom}</p>
+              <p className="font-medium text-seedly-dark">No products found</p>
+              <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-muted-gray">Try a product or ingredient, like pumpkin, flax or chamomile.</p>
               <div className="mt-5 flex flex-wrap justify-center gap-2">
                 {['Pumpkin', 'Flax', 'Chamomile'].map((suggestion) => (
                   <button key={suggestion} type="button" onClick={() => { changeQuery(suggestion); inputRef.current?.focus(); }} className="min-h-11 rounded-full border border-border-gray px-4 text-sm transition-colors hover:border-seedly-primary hover:bg-cream">{suggestion}</button>
@@ -225,6 +239,6 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
           </Link>
         </div>
       </div>
-    </Dialog>
+    </dialog>
   );
 }

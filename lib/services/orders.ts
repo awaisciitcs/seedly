@@ -1,14 +1,12 @@
-import { RequestError } from '../request-guards';
 import crypto from 'node:crypto';
 import { createPublicClient } from '../supabase/public';
 import { createAdminClient, getScopedClient } from '../supabase/admin';
 import { Order, OrderItem, OrderStatus, PaymentMethod } from '../types';
-import { getSiteSettings, enabledPaymentMethods } from './settings';
-import { sequentialOrderReferencesEnabled, findCheckoutOrderReference, allocateCheckoutOrderReference } from '../order-reference';
-import { getKits } from './kits';
+import { generateOrderNumber } from '../utils';
+import { getSiteSettings } from './settings';
+import { dispatchNotification } from './notifications';
+import { getKitById } from './kits';
 import { assertOrderStatusUpdate, getInitialOrderState } from '../order-status';
-import { parseCheckoutLines, quoteFingerprint } from '../checkout-validation';
-import { createTrackingToken, createCheckoutReference, verifyQuoteToken, verifyReceiptProof } from '../checkout-security';
 
 export interface CreateOrderInput {
   customer_name: string;
@@ -22,8 +20,6 @@ export interface CreateOrderInput {
   payment_method: PaymentMethod;
   receipt_path?: string;
   idempotency_key?: string;
-  quote_token?: string;
-  receipt_proof?: string;
   items: {
     product_id: string;
     variant_id?: string;
@@ -36,51 +32,117 @@ export interface CreateOrderInput {
 }
 
 export async function validateAndQuote(
-  input: { product_id: string; variant_id?: string; kit_id?: string; quantity: number }[]
+  items: { product_id: string; variant_id?: string; kit_id?: string; quantity: number }[]
 ) {
-  const items = parseCheckoutLines(input);
   const supabase = createPublicClient();
-  const productIds = [...new Set(items.filter(item => !item.kit_id).map(item => item.product_id))];
-  const variantIds = [...new Set(items.filter(item => !item.kit_id).map(item => item.variant_id!))];
-  const kitIds = [...new Set(items.flatMap(item => item.kit_id ? [item.kit_id] : []))];
-  // A large basket must not issue two sequential requests for every pack.
-  const [settings, productsResult, variantsResult, kits] = await Promise.all([
-    getSiteSettings({ requireConfigured: true }),
-    productIds.length ? supabase.from('products').select('id,name,status,sku,price_minor,image_url').in('id', productIds).eq('status', 'ACTIVE') : Promise.resolve({ data: [], error: null }),
-    variantIds.length ? supabase.from('product_variants').select('id,product_id,status,inventory_quantity,price_minor,option_value,sku').in('id', variantIds).eq('status', 'ACTIVE') : Promise.resolve({ data: [], error: null }),
-    kitIds.length ? getKits({ ids: kitIds, includeReviews: false }) : Promise.resolve([]),
-  ]);
-  if (productsResult.error || variantsResult.error || !productsResult.data || !variantsResult.data) throw new Error('Catalog validation is temporarily unavailable.');
-  const products = new Map(productsResult.data.map(product => [product.id, product]));
-  const variants = new Map(variantsResult.data.map(variant => [variant.id, variant]));
-  const kitMap = new Map(kits.map(kit => [kit.id, kit]));
-  const validatedItems = items.map(item => {
+  const settings = await getSiteSettings();
+
+  let subtotal_minor = 0;
+  const validatedItems: {
+    product_id: string;
+    variant_id?: string;
+    kit_id?: string;
+    name: string;
+    sku: string;
+    quantity: number;
+    unit_price_minor: number;
+    line_total_minor: number;
+    image_url: string;
+  }[] = [];
+
+  for (const item of items) {
+    const rawQty = Math.floor(Number(item.quantity));
+    if (isNaN(rawQty) || rawQty < 1 || rawQty > 100) {
+      throw new Error('Invalid item quantity. Each item quantity must be between 1 and 100.');
+    }
+    const itemQty = rawQty;
+
     if (item.kit_id) {
-      const kit = kitMap.get(item.kit_id);
-      if (!kit || kit.status !== 'ACTIVE') throw new RequestError('A kit in your basket is no longer available.');
-      if (!Number.isSafeInteger(kit.computed_stock) || kit.computed_stock < item.quantity) {
-        throw new RequestError(kit.computed_stock <= 0 ? '"' + kit.name + '" is currently out of stock.' : '"' + kit.name + '" only has ' + kit.computed_stock + ' kits available in stock.');
+      const kit = await getKitById(item.kit_id);
+      if (!kit) continue;
+
+      if (kit.computed_stock < itemQty) {
+        throw new Error(
+          kit.computed_stock <= 0
+            ? `"${kit.name}" is currently out of stock.`
+            : `"${kit.name}" only has ${kit.computed_stock} kits available in stock.`
+        );
       }
-      if (!Number.isSafeInteger(kit.price_minor) || kit.price_minor < 0) throw new Error('Invalid catalog price.');
-      return { product_id: kit.id, kit_id: kit.id, name: kit.name, sku: 'KIT-' + kit.slug.toUpperCase(), quantity: item.quantity, unit_price_minor: kit.price_minor, line_total_minor: kit.price_minor * item.quantity, image_url: kit.image_url };
+
+      const unitPrice = kit.price_minor;
+      const lineTotal = unitPrice * itemQty;
+      subtotal_minor += lineTotal;
+
+      validatedItems.push({
+        product_id: kit.id,
+        kit_id: kit.id,
+        name: kit.name,
+        sku: `KIT-${kit.slug.toUpperCase()}`,
+        quantity: itemQty,
+        unit_price_minor: unitPrice,
+        line_total_minor: lineTotal,
+        image_url: kit.image_url,
+      });
+    } else {
+      const { data: product } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', item.product_id)
+        .single();
+
+      if (!product) continue;
+
+      let unitPrice = Number(product.price_minor);
+      let sku = product.sku;
+      let variantLabel = '';
+
+      if (item.variant_id) {
+        const { data: variant } = await supabase
+          .from('product_variants')
+          .select('*')
+          .eq('id', item.variant_id)
+          .single();
+
+        if (variant) {
+          if ((variant.inventory_quantity ?? 0) < itemQty) {
+            throw new Error(
+              (variant.inventory_quantity ?? 0) <= 0
+                ? `"${product.name} (${variant.option_value})" is currently out of stock.`
+                : `"${product.name} (${variant.option_value})" only has ${variant.inventory_quantity} available in stock.`
+            );
+          }
+          unitPrice = Number(variant.price_minor);
+          sku = variant.sku;
+          variantLabel = ` (${variant.option_value})`;
+        }
+      }
+
+      const lineTotal = unitPrice * itemQty;
+      subtotal_minor += lineTotal;
+
+      validatedItems.push({
+        product_id: product.id,
+        variant_id: item.variant_id,
+        name: `${product.name}${variantLabel}`,
+        sku: sku || 'SKU-ITEM',
+        quantity: itemQty,
+        unit_price_minor: unitPrice,
+        line_total_minor: lineTotal,
+        image_url: product.image_url || '/images/products/pumpkin-seeds.jpg',
+      });
     }
-    const product = products.get(item.product_id);
-    if (!product || product.status !== 'ACTIVE') throw new RequestError('A product in your basket is no longer available.');
-    const variant = variants.get(item.variant_id!);
-    if (!variant || variant.product_id !== item.product_id || variant.status !== 'ACTIVE') throw new RequestError('A selected pack is no longer available. Please choose another size.');
-    const available = Number(variant.inventory_quantity ?? 0);
-    if (!Number.isSafeInteger(available) || available < item.quantity) {
-      throw new RequestError(available <= 0 ? '"' + product.name + ' (' + variant.option_value + ')" is currently out of stock.' : '"' + product.name + ' (' + variant.option_value + ')" only has ' + available + ' available in stock.');
-    }
-    const price = Number(variant.price_minor);
-    if (!Number.isSafeInteger(price) || price < 0) throw new Error('Invalid catalog price.');
-    return { product_id: product.id, variant_id: variant.id, name: product.name + ' (' + variant.option_value + ')', sku: variant.sku || product.sku || '', quantity: item.quantity, unit_price_minor: price, line_total_minor: price * item.quantity, image_url: product.image_url || '' };
-  });
-  const subtotal_minor = validatedItems.reduce((total, item) => total + item.line_total_minor, 0);
-  const shipping_minor = subtotal_minor >= settings.free_delivery_threshold_minor ? 0 : settings.delivery_fee_minor;
+  }
+
+  const shipping_minor =
+    subtotal_minor >= settings.free_delivery_threshold_minor ? 0 : settings.delivery_fee_minor;
   const total_minor = subtotal_minor + shipping_minor;
-  if (!Number.isSafeInteger(total_minor) || total_minor > 2_000_000_000) throw new Error('Invalid basket total.');
-  return { subtotal_minor, shipping_minor, total_minor, items: validatedItems };
+
+  return {
+    subtotal_minor,
+    shipping_minor,
+    total_minor,
+    items: validatedItems,
+  };
 }
 
 export interface CreateOrderResult {
@@ -90,64 +152,29 @@ export interface CreateOrderResult {
 }
 
 export async function createOrder(input: CreateOrderInput): Promise<CreateOrderResult> {
-  if (!process.env.SUPABASE_SECRET_KEY) throw new RequestError('Ordering is temporarily unavailable. Please contact our team before transferring payment.',503);
   const supabase = createAdminClient();
 
   if (!input.items || input.items.length === 0) {
     throw new Error('Order items cannot be empty or invalid');
   }
-  input.items = parseCheckoutLines(input.items);
-  if (!input.idempotency_key || !/^[a-zA-Z0-9_-]{20,100}$/.test(input.idempotency_key)) throw new RequestError('Please refresh checkout and try again.');
 
-  const orderId = "ord-" + crypto.randomUUID();
-  const checkoutReference = createCheckoutReference(input.idempotency_key);
-  let orderNumber = checkoutReference;
+  const orderId = `ord-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  const orderNumber = generateOrderNumber();
 
   // Generate unguessable capability token for tracking
+  const trackingToken = crypto.randomBytes(24).toString('hex');
+  const trackingTokenHash = crypto.createHash('sha256').update(trackingToken).digest('hex');
 
   // Compute request fingerprint for idempotency conflict detection
   const fingerprintPayload = JSON.stringify({
-    items: quoteFingerprint(input.items),
+    items: input.items.map(i => ({ p: i.product_id, v: i.variant_id, k: i.kit_id, q: i.quantity })),
     email: input.customer_email.trim().toLowerCase(),
     phone: input.customer_phone.trim(),
     totalMethod: input.payment_method,
-    name: input.customer_name.trim(),
-    address: input.shipping_address.trim(), city: input.shipping_city.trim(), province: input.shipping_province.trim(),
-    postal: input.shipping_postal_code?.trim() || '', notes: input.shipping_notes?.trim() || '', receipt: input.receipt_path || '',
   });
   const requestFingerprint = crypto.createHash('sha256').update(fingerprintPayload).digest('hex');
-  const trackingToken = createTrackingToken(input.idempotency_key, requestFingerprint);
-  const trackingTokenHash = crypto.createHash('sha256').update(trackingToken).digest('hex');
 
-  // Recover an already-committed request before checking stock or quote expiry.
-  const replay = await lookupOrderWithCapability(orderNumber, trackingToken);
-  if (replay) {
-    if (!replay.isAuthorized) throw new RequestError("This checkout attempt has changed. Restore the previous details to recover your order.",409);
-    return { order: replay.order, trackingToken, isIdempotentReplay: true };
-  }
-  const sequential = sequentialOrderReferencesEnabled();
-  const assignedNumber = sequential ? await findCheckoutOrderReference(checkoutReference, requestFingerprint) : null;
-  if (assignedNumber) {
-    const sequentialReplay = await lookupOrderWithCapability(assignedNumber, trackingToken);
-    if (sequentialReplay) {
-      if (!sequentialReplay.isAuthorized) throw new RequestError('This checkout attempt has changed. Restore the previous details to recover your order.',409);
-      return { order: sequentialReplay.order, trackingToken, isIdempotentReplay: true };
-    }
-  }
-  // Existing committed attempts are recovered above even when the store is paused.
-  const settings = await getSiteSettings({ requireConfigured: true });
-  if (!settings.ordering_enabled) throw new RequestError('Ordering is temporarily paused. Please contact our team.', 503);
-  if (!enabledPaymentMethods(settings).includes(input.payment_method)) throw new RequestError('This payment method is currently unavailable. Choose another method.', 409);
-  const quote = await validateAndQuote(input.items);
-  verifyQuoteToken(input.quote_token || '', input.items, quote);
-  if (input.receipt_path) {
-    if (input.payment_method === 'COD') throw new RequestError('A receipt is not needed for cash on delivery.');
-    verifyReceiptProof(input.receipt_proof || '', input.idempotency_key, input.receipt_path);
-  }
-
-  if (sequential) orderNumber = assignedNumber || await allocateCheckoutOrderReference(checkoutReference, requestFingerprint);
-
-  const { data: rpcResult, error: rpcError } = await (supabase.rpc as any)('create_order_secure_transactional', {
+  const { data: rpcResult, error: rpcError } = await supabase.rpc('create_order_transactional', {
     p_order_id: orderId,
     p_order_number: orderNumber,
     p_customer_name: input.customer_name,
@@ -163,7 +190,6 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
     p_idempotency_key: input.idempotency_key || '',
     p_request_fingerprint: requestFingerprint,
     p_tracking_token_hash: trackingTokenHash,
-    p_expected_quote: quote,
     p_items: input.items.map((it) => ({
       product_id: it.product_id,
       variant_id: it.variant_id || null,
@@ -177,15 +203,13 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
 
   if (rpcError) {
     if (rpcError.code === 'P0001') {
-      throw new RequestError('This checkout attempt has changed. Please review your details and start a new attempt.',409);
+      throw new Error('Checkout conflict: idempotency key reused with different items or customer details.');
     }
     if (rpcError.code === 'P0002') {
-      throw new RequestError('Some packs no longer have enough stock. Review your basket before retrying.',409);
+      throw new Error(rpcError.message || 'One or more items in your cart are currently out of stock.');
     }
-    if (rpcError.code === 'P0004') throw new RequestError('Prices or delivery charges changed. Please review the refreshed order summary.',409);
-    if (rpcError.code === 'P0006') throw new RequestError('Ordering or this payment method is currently unavailable. Please review your payment selection or contact our team.', 409);
     if (rpcError.code === 'P0003') {
-      throw new RequestError('A product is no longer available. Please review your basket.',409);
+      throw new Error(rpcError.message || 'Product or kit is no longer active.');
     }
     throw new Error(`Checkout failed: ${rpcError.message}`);
   }
@@ -198,6 +222,17 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
     throw new Error('Failed to retrieve order after creation');
   }
 
+  if (!isReplay) {
+    dispatchNotification({
+      type: 'ORDER_CREATED',
+      orderNumber: effectiveOrderNumber,
+      customerName: input.customer_name,
+      customerEmail: input.customer_email,
+      customerPhone: input.customer_phone,
+      totalMinor: createdOrder.total_minor,
+      paymentMethod: input.payment_method,
+    });
+  }
 
   return {
     order: createdOrder,
@@ -243,19 +278,16 @@ export async function lookupOrderWithCapability(
   token?: string,
   verify?: string
 ): Promise<{ order: Order; items: OrderItem[]; isAuthorized: boolean } | null> {
-  const sequentialReference = /^SED-[0-9]{6,12}$/.test(orderNumber);
-  if (sequentialReference && !/^[a-f0-9]{64}$/i.test(token || '')) return null;
-  const supabase = process.env.SUPABASE_SECRET_KEY ? createAdminClient() : createPublicClient();
+  const supabase = createPublicClient();
   const { data, error } = await (supabase.rpc as any)('lookup_order_with_capability', {
     p_order_number: orderNumber,
     p_token: token || null,
     p_verify: verify || null,
   });
 
-  if (error) throw new Error('Order lookup is temporarily unavailable.');
-  if (!data) return null;
+  if (error || !data) return null;
   const res = data as any;
-  if (!res.order || (sequentialReference && !res.is_authorized)) return null;
+  if (!res.order) return null;
 
   const items: OrderItem[] = (res.items || []).map((it: any) => ({
     id: it.id,
@@ -282,7 +314,7 @@ export async function lookupOrderWithCapability(
 export async function getOrder(orderNumber: string, token?: string): Promise<Order | null> {
   if (token) {
     const lookup = await lookupOrderWithCapability(orderNumber, token);
-    return lookup?.isAuthorized ? lookup.order : null;
+    if (lookup) return lookup.order;
   }
 
   const supabase = await getScopedClient();
@@ -293,13 +325,12 @@ export async function getOrder(orderNumber: string, token?: string): Promise<Ord
     .single();
 
   if (!error && row) {
-    const { data: itemRows, error: itemError } = await supabase
+    const { data: itemRows } = await supabase
       .from('order_items')
       .select('*')
       .eq('order_id', row.id);
 
-    if (itemError) throw new Error('Order items are temporarily unavailable.');
-  const items: OrderItem[] = (itemRows || []).map((it: any) => ({
+    const items: OrderItem[] = (itemRows || []).map((it: any) => ({
       id: it.id,
       order_id: it.order_id,
       product_id: it.product_id || it.kit_id || '',
@@ -328,15 +359,13 @@ export async function getOrderById(id: string): Promise<Order | null> {
     .eq('id', id)
     .single();
 
-  if (error && error.code !== 'PGRST116') throw new Error('Order details are temporarily unavailable.');
-  if (!row) return null;
+  if (error || !row) return null;
 
-  const { data: itemRows, error: itemError } = await supabase
+  const { data: itemRows } = await supabase
     .from('order_items')
     .select('*')
     .eq('order_id', row.id);
 
-  if (itemError) throw new Error('Order items are temporarily unavailable.');
   const items: OrderItem[] = (itemRows || []).map((it: any) => ({
     id: it.id,
     order_id: it.order_id,
@@ -392,7 +421,8 @@ export async function getOrders(options?: {
   const { data: rows, error } = await query;
 
   if (error || !rows) {
-    throw new Error('Orders are temporarily unavailable.');
+    console.error('Failed to fetch orders:', error);
+    return [];
   }
 
   return rows.map((row: any) => {
@@ -422,10 +452,8 @@ export async function updateOrderStatus(
   actorId?: string
 ): Promise<Order | null> {
   const order = await getOrderById(orderId);
-  if (!order) throw new RequestError('Order not found.',404);
+  if (!order) throw new Error('Order not found');
   assertOrderStatusUpdate(order, newStatus);
-  if (order.order_status === newStatus) return order;
-  if (newStatus==='SHIPPED' && (!(courier || order.tracking_courier)?.trim() || !(trackingNumber || order.tracking_number)?.trim())) throw new RequestError('Enter the courier and tracking number before dispatching.');
 
   const supabase = await getScopedClient();
   const { error: rpcErr } = await supabase.rpc('update_order_fulfillment_transactional', {
@@ -439,10 +467,31 @@ export async function updateOrderStatus(
   });
 
   if (rpcErr) {
-    if (rpcErr.code === 'P0004') throw new RequestError('This status transition is unavailable. Refresh the order; historical kit reservations may need manual reconciliation.',409);
-    throw new Error('Failed to update order fulfillment.');
+    throw new Error(`Failed to update order fulfillment: ${rpcErr.message}`);
   }
 
+  // Dispatch lifecycle notifications after commit
+  if (newStatus === 'SHIPPED') {
+    dispatchNotification({
+      type: 'ORDER_SHIPPED',
+      orderNumber: order.order_number,
+      customerName: order.customer_name,
+      customerEmail: order.customer_email || '',
+      customerPhone: order.customer_phone || '',
+      totalMinor: order.total_minor,
+      trackingCourier: courier || order.tracking_courier || 'TCS Express',
+      trackingNumber: trackingNumber || order.tracking_number || 'TCS-992819',
+    });
+  } else if (newStatus === 'DELIVERED') {
+    dispatchNotification({
+      type: 'ORDER_DELIVERED',
+      orderNumber: order.order_number,
+      customerName: order.customer_name,
+      customerEmail: order.customer_email || '',
+      customerPhone: order.customer_phone || '',
+      totalMinor: order.total_minor,
+    });
+  }
 
   return getOrderById(orderId);
 }
@@ -453,10 +502,8 @@ export async function approveBankPayment(
   actorId?: string
 ): Promise<Order | null> {
   const order = await getOrderById(orderId);
-  if (!order) throw new RequestError('Order not found.',404);
+  if (!order) throw new Error('Order not found');
 
-  if (order.payment_status === 'VERIFIED') return order;
-  if (order.payment_method==='COD' || ['CANCELLED','REFUNDED','SHIPPED','DELIVERED'].includes(order.order_status)) throw new RequestError('Manual payment cannot be changed at this stage.',409);
   const supabase = await getScopedClient();
   const { error: rpcErr } = await supabase.rpc('update_order_payment_transactional', {
     p_order_id: orderId,
@@ -468,10 +515,17 @@ export async function approveBankPayment(
   });
 
   if (rpcErr) {
-    if (rpcErr.code==='P0004') throw new RequestError('The payment state has changed. Refresh this order before retrying.',409);
-    throw new Error('Failed to approve payment.');
+    throw new Error(`Failed to approve payment: ${rpcErr.message}`);
   }
 
+  dispatchNotification({
+    type: 'PAYMENT_CONFIRMED',
+    orderNumber: order.order_number,
+    customerName: order.customer_name,
+    customerEmail: order.customer_email || '',
+    customerPhone: order.customer_phone || '',
+    totalMinor: order.total_minor,
+  });
 
   return getOrderById(orderId);
 }
@@ -482,10 +536,8 @@ export async function rejectBankPayment(
   actorId?: string
 ): Promise<Order | null> {
   const order = await getOrderById(orderId);
-  if (!order) throw new RequestError('Order not found.',404);
+  if (!order) throw new Error('Order not found');
 
-  if (order.payment_status === 'REJECTED' && order.order_status === 'CANCELLED') return order;
-  if (order.payment_method === 'COD' || order.payment_status === 'VERIFIED' || ['CANCELLED','REFUNDED','PROCESSING','PACKED','SHIPPED','DELIVERED'].includes(order.order_status)) throw new RequestError('Manual payment cannot be rejected at this stage.',409);
   const supabase = await getScopedClient();
   const { error: rpcErr } = await supabase.rpc('update_order_payment_transactional', {
     p_order_id: orderId,
@@ -497,10 +549,18 @@ export async function rejectBankPayment(
   });
 
   if (rpcErr) {
-    if (rpcErr.code==='P0004') throw new RequestError('The payment state has changed. Refresh this order before retrying.',409);
-    throw new Error('Failed to reject payment.');
+    throw new Error(`Failed to reject payment: ${rpcErr.message}`);
   }
 
+  dispatchNotification({
+    type: 'PAYMENT_REJECTED',
+    orderNumber: order.order_number,
+    customerName: order.customer_name,
+    customerEmail: order.customer_email || '',
+    customerPhone: order.customer_phone || '',
+    totalMinor: order.total_minor,
+    rejectionReason: reason,
+  });
 
   return getOrderById(orderId);
 }

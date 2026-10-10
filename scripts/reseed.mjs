@@ -1,7 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
-import { localDatabasePath } from './script-config.mjs';
+import path from 'path';
 
-const dbPath = localDatabasePath({ mutates: true });
+const dbPath = path.join(process.cwd(), 'data', 'seedly.db');
 const db = new DatabaseSync(dbPath);
 
 console.log('Clearing old catalog and seeding authentic packaging and product dossiers...');

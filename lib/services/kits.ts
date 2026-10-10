@@ -1,7 +1,5 @@
-import { getScopedClient } from '../supabase/admin';
 import { createPublicClient } from '../supabase/public';
 import { Kit, KitItem } from '../types';
-import { normalizeSearch } from '../catalog';
 
 function mapRowToKit(row: any, reviewStats?: { count: number; avg_rating: number }): Kit {
   const itemsRaw = (row.kit_items || []).sort(
@@ -33,8 +31,6 @@ function mapRowToKit(row: any, reviewStats?: { count: number; avg_rating: number
 
   return {
     id: row.id,
-    category_id: row.category_id,
-    updated_at: row.updated_at,
     name: row.name,
     slug: row.slug,
     short_description: row.short_description || '',
@@ -49,7 +45,6 @@ function mapRowToKit(row: any, reviewStats?: { count: number; avg_rating: number
     storage_instructions: row.storage_instructions || '',
     compliance_status: row.compliance_status || 'APPROVED',
     image_url: row.image_url,
-    gallery_images: Array.isArray(row.gallery_images) ? row.gallery_images.filter((image:unknown)=>typeof image==="string") : [],
     badge: row.badge || undefined,
     is_featured: Boolean(row.is_featured),
     seo_title: row.seo_title || undefined,
@@ -61,9 +56,8 @@ function mapRowToKit(row: any, reviewStats?: { count: number; avg_rating: number
   };
 }
 
-export async function getKits(options?: {
-  ids?: string[]; status?: string; search?: string; includeReviews?: boolean }): Promise<Kit[]> {
-  const supabase = options?.status !== undefined && options.status !== 'ACTIVE' ? await getScopedClient() : createPublicClient();
+export async function getKits(options?: { status?: string; search?: string }): Promise<Kit[]> {
+  const supabase = createPublicClient();
   let query = supabase.from('kits').select(`
     *,
     kit_items (
@@ -72,11 +66,6 @@ export async function getKits(options?: {
       product_variants ( option_value, inventory_quantity )
     )
   `);
-
-  if (options?.ids) {
-    if (!options.ids.length) return [];
-    query = query.in('id', options.ids);
-  }
 
   if (options?.status !== undefined) {
     if (options.status !== '') {
@@ -87,7 +76,7 @@ export async function getKits(options?: {
   }
 
   if (options?.search) {
-    const s = normalizeSearch(options.search);
+    const s = options.search;
     query = query.or(`name.ilike.%${s}%,short_description.ilike.%${s}%,ingredients.ilike.%${s}%`);
   }
 
@@ -97,11 +86,10 @@ export async function getKits(options?: {
 
   if (error || !rows) {
     console.error('Failed to fetch kits:', error);
-    throw new Error('Kits are temporarily unavailable. Please try again.');
+    return [];
   }
 
   // Fetch approved non-demo reviews for kits
-  if (options?.includeReviews === false) return rows.map(row => mapRowToKit(row));
   const { data: revRows } = await supabase
     .from('reviews')
     .select('kit_id, rating')
@@ -141,8 +129,9 @@ export async function getKitBySlug(slug: string): Promise<Kit | null> {
     .eq('slug', slug)
     .single();
 
-  if (error && error.code !== 'PGRST116') throw new Error('Catalog details are temporarily unavailable.');
-  if (!row) return null;
+  if (error || !row) {
+    return null;
+  }
 
   const { data: revRows } = await supabase
     .from('reviews')
@@ -175,8 +164,9 @@ export async function getKitById(id: string): Promise<Kit | null> {
     .eq('id', id)
     .single();
 
-  if (error && error.code !== 'PGRST116') throw new Error('Catalog details are temporarily unavailable.');
-  if (!row) return null;
+  if (error || !row) {
+    return null;
+  }
 
   const { data: revRows } = await supabase
     .from('reviews')

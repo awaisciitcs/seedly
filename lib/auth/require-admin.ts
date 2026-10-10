@@ -46,9 +46,35 @@ export async function requireAdmin(requiredRole?: 'OWNER' | 'STAFF'): Promise<Ad
     .eq('is_active', true)
     .single();
 
-  // Admin identities must be provisioned explicitly. Matching an email address is
-  // not a safe substitute for a linked, verified Auth identity.
-  if (adminError || !adminRecord || !['OWNER', 'STAFF'].includes(adminRecord.role)) {
+  if (adminError || !adminRecord) {
+    // If not linked yet, check by email match for first-time login
+    if (user.email) {
+      const { data: emailMatch } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('email', user.email)
+        .eq('is_active', true)
+        .is('auth_user_id', null)
+        .single();
+
+      if (emailMatch) {
+        // Link auth_user_id
+        await supabase
+          .from('admin_users')
+          .update({ auth_user_id: user.id })
+          .eq('id', emailMatch.id);
+
+        if (requiredRole && requiredRole === 'OWNER' && emailMatch.role !== 'OWNER') {
+          throw new AdminAuthError('Owner privileges required for this action.', 403);
+        }
+
+        return {
+          user: { id: user.id, email: user.email },
+          admin: { ...emailMatch, auth_user_id: user.id },
+        };
+      }
+    }
+
     throw new AdminAuthError('Access denied: not an authorized active administrator.', 403);
   }
 

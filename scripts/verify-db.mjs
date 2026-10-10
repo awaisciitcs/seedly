@@ -1,10 +1,10 @@
 import { DatabaseSync } from 'node:sqlite';
-import { localDatabasePath } from './script-config.mjs';
+import path from 'path';
 
 console.log('=== SEEDLY DATABASE & LOGIC VERIFICATION ===\n');
 
-const dbPath = localDatabasePath({ mutates: false });
-const db = new DatabaseSync(dbPath, { readOnly: true });
+const dbPath = path.join(process.cwd(), 'data', 'seedly.db');
+const db = new DatabaseSync(dbPath);
 
 // 1. Verify Products
 console.log('[1/4] Checking products catalog in database...');

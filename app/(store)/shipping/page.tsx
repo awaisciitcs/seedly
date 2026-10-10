@@ -1,68 +1,77 @@
-import { getContentDocument } from '@/lib/services/content';
-import { ManagedSection } from '@/components/storefront/ManagedSections';
-import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
-import { getContentMetadata } from '@/lib/cms/metadata';
-import { DeliveryNote } from '@/components/storefront/DeliveryNote';
 import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { Truck, Clock, ShieldCheck, MapPin, Banknote, MessageCircle } from 'lucide-react';
+import { siteConfig } from '../../../lib/config';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return getContentMetadata('shipping');
-}
+export const metadata: Metadata = {
+  title: 'Shipping & Nationwide Delivery Policy | Seedly Pakistan',
+  description:
+    `Flat Rs. ${siteConfig.shipping.standardFee} delivery across Pakistan, FREE on orders of Rs. ${siteConfig.shipping.freeThreshold.toLocaleString()} or more. Daily dispatch from Lahore via TCS and Leopards Courier.`,
+  openGraph: {
+    title: 'Shipping & Delivery Policy | Seedly Pakistan',
+    description:
+      `Flat Rs. ${siteConfig.shipping.standardFee} delivery, FREE on orders over Rs. ${siteConfig.shipping.freeThreshold.toLocaleString()}. Reliable dispatch via TCS and Leopards Courier.`,
+    url: `${siteConfig.url}/shipping`,
+  },
+};
 
-export default async function ShippingPage() {
-  const cms = await getContentDocument<CmsPageContent>('shipping'); const { copy, links, images } = cms;
-const siteConfig = (await getContentDocument<SiteContent>('site')).config;
-
+export default function ShippingPage() {
   return (
     <div className="bg-white text-stone-900">
       <div className="max-w-4xl mx-auto px-5 md:px-8 py-12 md:py-20 space-y-12">
         {/* Page Header */}
         <header className="text-center max-w-2xl mx-auto space-y-3">
           <span className="text-xs uppercase tracking-[0.16em] font-semibold text-stone-500">
-            {copy.text_nationwide_logistics}</span>
+            Nationwide Logistics
+          </span>
           <h1 className="font-heading font-medium text-3xl sm:text-5xl text-stone-900 tracking-tight">
-            {copy.text_shipping_delivery_policy}</h1>
+            Shipping &amp; Delivery Policy
+          </h1>
           <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-normal">
-            {copy.text_carefully_packaged_raw_pantry_seeds_and_mountain_teas_d}</p>
+            Carefully packaged raw pantry seeds and mountain teas dispatched daily from our central Lahore hub across all serviceable areas in Pakistan.
+          </p>
         </header>
 
         {/* 3 Overview Highlights */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="rounded-2xl border border-stone-200 bg-[#FBFBFA] p-6 space-y-2.5 shadow-xs">
             <Truck className="w-5 h-5 text-stone-800 mb-1" />
-            <h2 className="font-heading font-medium text-base text-stone-900">{copy.text_delivery_charges}</h2>
-            <DeliveryNote />
+            <h2 className="font-heading font-medium text-base text-stone-900">Delivery Charges</h2>
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              <strong>FREE nationwide delivery</strong> on all orders of <strong>Rs. {siteConfig.shipping.freeThreshold.toLocaleString()} or more</strong>. For orders under Rs. {siteConfig.shipping.freeThreshold.toLocaleString()}, shipping is a flat <strong>Rs. {siteConfig.shipping.standardFee}</strong> nationwide.
+            </p>
           </div>
 
           <div className="rounded-2xl border border-stone-200 bg-[#FBFBFA] p-6 space-y-2.5 shadow-xs">
             <Clock className="w-5 h-5 text-stone-800 mb-1" />
-            <h2 className="font-heading font-medium text-base text-stone-900">{copy.text_daily_dispatch_cutoff}</h2>
+            <h2 className="font-heading font-medium text-base text-stone-900">Daily Dispatch Cutoff</h2>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-              {copy.text_our_team_prepares_orders_during_business_days_bank_and}</p>
+              Orders placed before <strong>3:00 PM PKT (Monday to Saturday)</strong> are dispatched same day from Lahore. Orders placed after 3:00 PM or on Sundays ship on the next business morning.
+            </p>
           </div>
 
           <div className="rounded-2xl border border-stone-200 bg-[#FBFBFA] p-6 space-y-2.5 shadow-xs">
             <ShieldCheck className="w-5 h-5 text-stone-800 mb-1" />
-            <h2 className="font-heading font-medium text-base text-stone-900">{copy.text_courier_partners}</h2>
+            <h2 className="font-heading font-medium text-base text-stone-900">Courier Partners</h2>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-              {copy.text_we_partner_exclusively_with}<strong>{copy.text_tcs}</strong> {copy.text_and}<strong>{copy.text_leopards_courier}</strong> {copy.text_for_secure_door_to_door_delivery_with_sms_status_notifi}</p>
+              We partner exclusively with <strong>TCS</strong> and <strong>Leopards Courier</strong> for secure door-to-door delivery with SMS status notifications and parcel tracking.
+            </p>
           </div>
         </div>
 
         {/* Delivery Timelines Table */}
-        <ManagedSection document="shipping" sectionId="page_section_01"><section aria-labelledby="timelines-heading" className="rounded-3xl border border-stone-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
+        <section aria-labelledby="timelines-heading" className="rounded-3xl border border-stone-200 bg-white p-6 sm:p-8 shadow-xs space-y-6">
           <h2 id="timelines-heading" className="font-heading font-medium text-xl sm:text-2xl text-stone-900">
-            {copy.text_estimated_delivery_timelines}</h2>
+            Estimated Delivery Timelines
+          </h2>
           <div className="overflow-x-auto">
             <table className="w-full text-xs sm:text-sm text-start border-collapse">
               <thead>
                 <tr className="border-b border-stone-200 text-stone-900 font-semibold bg-[#FBFBFA]">
-                  <th className="py-3.5 px-4 text-start">{copy.text_destination_region}</th>
-                  <th className="py-3.5 px-4 text-start">{copy.text_expected_transit_window}</th>
-                  <th className="py-3.5 px-4 text-start">{copy.text_courier_network}</th>
+                  <th className="py-3.5 px-4 text-start">Destination Region</th>
+                  <th className="py-3.5 px-4 text-start">Expected Transit Window</th>
+                  <th className="py-3.5 px-4 text-start">Courier Network</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100 text-stone-600">
@@ -70,45 +79,49 @@ const siteConfig = (await getContentDocument<SiteContent>('site')).config;
                   <tr key={idx} className="hover:bg-stone-50/50 transition-colors">
                     <td className="py-3.5 px-4 font-medium text-stone-900">{timeline.area}</td>
                     <td className="py-3.5 px-4 font-semibold text-emerald-800">{timeline.time}</td>
-                    <td className="py-3.5 px-4">{copy.text_tcs_leopards_courier}</td>
+                    <td className="py-3.5 px-4">TCS / Leopards Courier</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <p className="text-xs text-stone-500">
-            {copy.text_remote_addresses_or_extreme_seasonal_weather_conditions}</p>
-        </section></ManagedSection>
+            * Remote addresses or extreme seasonal weather conditions may occasionally add 24–48 hours to transit windows.
+          </p>
+        </section>
 
         {/* Packaging & Payment Verification */}
-        <ManagedSection document="shipping" sectionId="page_section_02"><section className="rounded-3xl border border-stone-200 bg-[#FBFBFA] p-6 sm:p-8 space-y-6 text-xs sm:text-sm leading-relaxed text-stone-700 shadow-xs">
+        <section className="rounded-3xl border border-stone-200 bg-[#FBFBFA] p-6 sm:p-8 space-y-6 text-xs sm:text-sm leading-relaxed text-stone-700 shadow-xs">
           <div className="space-y-2">
             <h2 className="font-heading font-medium text-lg text-stone-900 flex items-center gap-2">
               <Banknote className="w-4 h-4 text-stone-800" />
-              <span>{copy.text_cash_on_delivery_cod_payment_verification}</span>
+              <span>Cash on Delivery (COD) &amp; Payment Verification</span>
             </h2>
             <p className="text-stone-600 leading-relaxed">
-              {copy.text_cash_on_delivery_is_available_across_all_serviceable_de}<strong>{siteConfig.contact.phone}</strong> {copy.text_to_confirm_your_delivery_address_prior_to_handing_parce}</p>
+              Cash on Delivery is available across all serviceable delivery zones in Pakistan. Please ensure the exact cash amount is ready for the courier rider upon delivery. For first-time customers or high-value orders, our care team may reach out via WhatsApp at <strong>{siteConfig.contact.phone}</strong> to confirm your delivery address prior to handing parcels over to TCS or Leopards.
+            </p>
             <p className="text-stone-600 leading-relaxed">
-              {copy.text_for_online_bank_transfers_ibft_jazzcash_or_easypaisa_ou}</p>
+              For online bank transfers (IBFT), JazzCash, or Easypaisa, our accounts team manually verifies the transaction ID or payment screenshot before releasing your parcel to dispatch.
+            </p>
           </div>
 
           <div className="space-y-2 pt-2 border-t border-stone-200/60">
             <h2 className="font-heading font-medium text-lg text-stone-900 flex items-center gap-2">
               <MapPin className="w-4 h-4 text-stone-800" />
-              <span>{copy.text_airtight_packaging_transit_protection}</span>
+              <span>Airtight Packaging &amp; Transit Protection</span>
             </h2>
             <p className="text-stone-600 leading-relaxed">
-              {copy.text_all_raw_seeds_are_heat_sealed_in_thick_food_grade_moist}</p>
+              All raw seeds are heat-sealed in thick, food-grade moisture-barrier pouches with tamper-evident tear notches and press-to-close airtight locks. Loose-leaf chamomile flowers and delicate botanicals are protected inside sturdy, bubble-cushioned outer boxes to prevent crushing during transit.
+            </p>
           </div>
 
           <div className="space-y-2 pt-2 border-t border-stone-200/60">
             <h2 className="font-heading font-medium text-lg text-stone-900 flex items-center gap-2">
               <MessageCircle className="w-4 h-4 text-emerald-700" />
-              <span>{copy.text_order_tracking_delivery_support}</span>
+              <span>Order Tracking &amp; Delivery Support</span>
             </h2>
             <p className="text-stone-600 leading-relaxed">
-              {copy.text_courier_details_appear_on_your_order_tracking_page_when}{' '}
+              Once your package leaves our Lahore dispatch hub, you will receive a tracking link via WhatsApp and SMS. For order status inquiries, reach out directly to our customer care team on WhatsApp at{' '}
               <a
                 href={siteConfig.contact.whatsappUrl}
                 target="_blank"
@@ -117,7 +130,7 @@ const siteConfig = (await getContentDocument<SiteContent>('site')).config;
               >
                 {siteConfig.contact.phone}
               </a>{' '}
-              {copy.text_or_email}{' '}
+              or email{' '}
               <a
                 href={`mailto:${siteConfig.contact.email}`}
                 className="text-stone-900 font-semibold underline underline-offset-4 hover:text-stone-600"
@@ -126,7 +139,7 @@ const siteConfig = (await getContentDocument<SiteContent>('site')).config;
               </a>.
             </p>
           </div>
-        </section></ManagedSection>
+        </section>
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 'use client';
 
-import { Dialog } from '@/components/ui/Dialog';
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -35,7 +34,6 @@ const STATIC_PAGES: SearchResult[] = [
   { id: 'p-cust', type: 'page', title: 'Customer Directory', subtitle: 'Customer spend and order histories', url: '/admin/customers' },
   { id: 'p-rev', type: 'page', title: 'Review Moderation', subtitle: 'Customer testimonials and star ratings', url: '/admin/reviews' },
   { id: 'p-alerts', type: 'page', title: 'Back-in-Stock Alerts', subtitle: 'Subscriber waitlists & restock dispatches', url: '/admin/stock-alerts' },
-  { id: 'p-content', type: 'page', title: 'Website Content', subtitle: 'Edit pages, navigation, images, SEO, and the routine finder', url: '/admin/content' },
   { id: 'p-sett', type: 'page', title: 'Store Settings', subtitle: 'Meezan bank, JazzCash, delivery rates', url: '/admin/settings' },
 ];
 
@@ -82,14 +80,12 @@ export function CommandPalette({
 
   // Dynamic search query debounce
   useEffect(() => {
-    if (!isOpen) return;
     if (!query.trim()) {
       setResults(STATIC_PAGES);
       setSelectedIndex(0);
       return;
     }
 
-    const controller = new AbortController();
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
@@ -100,7 +96,7 @@ export function CommandPalette({
         );
 
         // Fetch orders matching query
-        const orderRes = await fetch(`/api/admin/orders?search=${encodeURIComponent(query)}`, { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) });
+        const orderRes = await fetch(`/api/admin/orders?search=${encodeURIComponent(query)}`);
         let orderMatches: SearchResult[] = [];
         if (orderRes.ok) {
           const json = await orderRes.json();
@@ -116,7 +112,7 @@ export function CommandPalette({
         }
 
         // Fetch products matching query
-        const prodRes = await fetch(`/api/admin/products?search=${encodeURIComponent(query)}`, { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) });
+        const prodRes = await fetch(`/api/products?search=${encodeURIComponent(query)}`);
         let prodMatches: SearchResult[] = [];
         if (prodRes.ok) {
           const json = await prodRes.json();
@@ -131,18 +127,17 @@ export function CommandPalette({
           }));
         }
 
-        if (controller.signal.aborted) return;
         setResults([...matchingPages, ...orderMatches, ...prodMatches]);
         setSelectedIndex(0);
       } catch (err) {
         console.error('Command search error:', err);
       } finally {
-        if (!controller.signal.aborted) setLoading(false);
+        setLoading(false);
       }
     }, 200);
 
-    return () => { clearTimeout(timer); controller.abort(); };
-  }, [query, isOpen]);
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const handleSelect = (item: SearchResult) => {
     onClose();
@@ -154,7 +149,6 @@ export function CommandPalette({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!results.length && ['ArrowDown','ArrowUp','Enter'].includes(e.key)) { e.preventDefault(); return; }
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setSelectedIndex((prev) => (prev + 1) % results.length);
@@ -172,7 +166,7 @@ export function CommandPalette({
   if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onClose={onClose} title="Search administration" className="search-dialog !bg-transparent">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-[#021a10]/55 backdrop-blur-sm animate-in fade-in duration-200">
       <div
         className="glass w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl border border-white/20 animate-in zoom-in-95 duration-150"
         data-elev="overlay"
@@ -182,8 +176,6 @@ export function CommandPalette({
         <div className="flex items-center px-4 py-3.5 border-b border-white/10 gap-3">
           <Search className="w-5 h-5 text-botanical-sage shrink-0" />
           <input
-            data-autofocus
-            aria-label="Search administration"
             ref={inputRef}
             type="text"
             value={query}
@@ -277,6 +269,6 @@ export function CommandPalette({
           </div>
         </div>
       </div>
-    </Dialog>
+    </div>
   );
 }

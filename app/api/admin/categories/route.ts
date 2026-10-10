@@ -1,4 +1,3 @@
-import { readAdminJson, AdminInputError, adminId, adminText } from '@/lib/admin-validation';
 import { NextResponse } from 'next/server';
 import { requireAdmin, AdminAuthError } from '@/lib/auth/require-admin';
 import { getScopedClient } from '@/lib/supabase/admin';
@@ -21,9 +20,9 @@ export async function GET() {
 
     return NextResponse.json({ data: categories || [] });
   } catch (error: any) {
-    if (error instanceof AdminAuthError || error instanceof AdminInputError) {
+    if (error instanceof AdminAuthError) {
       return NextResponse.json({ error: { message: error.message } }, { status: error.status });
     }
-    return NextResponse.json({ error: { message: 'This operation is temporarily unavailable. Please try again.' } }, { status: 503 });
+    return NextResponse.json({ error: { message: error.message || 'Error fetching categories' } }, { status: 500 });
   }
 }
