@@ -9,7 +9,8 @@ import { CartToast } from '../components/cart/CartToast';
 import { RouteProgressBar } from '../components/ui/RouteProgressBar';
 
 const roboto = Roboto({
-  weight: ['400', '500', '700'],
+  weight: 'variable',
+  style: ['normal', 'italic'],
   subsets: ['latin'],
   variable: '--font-roboto',
   display: 'swap',

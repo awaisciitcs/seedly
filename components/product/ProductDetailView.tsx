@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Product, ProductVariant, Review } from '../../lib/types';
+import { Product, Review } from '../../lib/types';
 import { formatPrice, formatDate, toSentenceCase } from '../../lib/utils';
 import { useCart } from '../../lib/store/cart';
 import { useWishlist } from '../../lib/store/wishlist';
@@ -20,14 +20,16 @@ import { TeaBrewCalculator } from './TeaBrewCalculator';
 import { ProductGallery } from './ProductGallery';
 import { DeliveryNote } from '@/components/storefront/DeliveryNote';
 import { toCartItem } from '@/lib/catalog';
+import { activeCatalogVariants, resolveCatalogVariant } from '@/lib/catalog-filters';
 import { useProductReviews } from '@/hooks/useProductReviews';
 
 interface ProductDetailViewProps {
   product: Product;
   relatedProducts?: Product[];
+  initialVariantId?: string;
 }
 
-export function ProductDetailView({ product, relatedProducts = [] }: ProductDetailViewProps) {
+export function ProductDetailView({ product, relatedProducts = [], initialVariantId }: ProductDetailViewProps) {
   const cms = useSiteContent<CmsPageContent>('product'); const { copy, links, images } = cms;
 const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
 
@@ -35,11 +37,10 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
   const { addItem, setIsCartOpen } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  const activeVariants = product.variants?.filter((variant) => variant.status === 'ACTIVE') || [];
-  const defaultVar = activeVariants.find((variant) => variant.weight_grams === product.weight_grams)
-    || activeVariants.find((variant) => variant.weight_grams === 250)
-    || activeVariants[0];
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(defaultVar);
+  const activeVariants = activeCatalogVariants(product);
+  const [selectedVariantId, setSelectedVariantId] = useState(resolveCatalogVariant(product,initialVariantId)?.id);
+  const selectedVariant = resolveCatalogVariant(product,selectedVariantId);
+  useEffect(()=>{setSelectedVariantId(resolveCatalogVariant(product,initialVariantId)?.id);setQuantity(1);},[product.id,initialVariantId]);
   const [quantity, setQuantity] = useState(1);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     details: true,
@@ -260,7 +261,7 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                       <button
                         key={v.id}
                         type="button"
-                        onClick={() => { setSelectedVariant(v); setQuantity(1); }}
+                        onClick={() => { setSelectedVariantId(v.id); setQuantity(1); }}
                         aria-pressed={isSelected}
                         className={`rounded-xl border p-3 text-center sm:text-start transition-all cursor-pointer shadow-xs min-h-[64px] flex flex-col justify-center ${
                           isSelected

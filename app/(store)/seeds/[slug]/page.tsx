@@ -39,8 +39,11 @@ export const dynamicParams = true;
 
 export default async function SeedDetailPage(props: {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{variant?: string | string[]}>;
 }) {
   const { slug } = await props.params;
+  const search = await props.searchParams;
+  const initialVariantId = typeof search?.variant === 'string' ? search.variant : undefined;
   const {config}=await getContentDocument<SiteContent>('site');
   const product = await getProductBySlug(slug);
 
@@ -109,7 +112,7 @@ export default async function SeedDetailPage(props: {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeStructuredData(jsonLd) }}
       />
-      <ProductDetailView product={product} relatedProducts={related} />
+      <ProductDetailView product={product} relatedProducts={related} initialVariantId={initialVariantId} />
     </>
   );
 }

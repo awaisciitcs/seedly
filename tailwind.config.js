@@ -51,6 +51,7 @@ module.exports = {
         heading: ["var(--font-roboto)", "Roboto", "sans-serif"],
         grotesk: ["var(--font-roboto)", "Roboto", "sans-serif"],
         serif: ["var(--font-roboto)", "Roboto", "sans-serif"],
+        mono: ["var(--font-roboto)", "Roboto", "sans-serif"],
       },
       boxShadow: {
         xs: "0 1px 2px rgba(0, 0, 0, 0.04)",

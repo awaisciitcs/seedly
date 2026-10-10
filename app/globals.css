@@ -7,6 +7,7 @@
     --font-sans: var(--font-roboto);
     --font-grotesk: var(--font-roboto);
     --font-serif: var(--font-roboto);
+    --font-mono: var(--font-roboto);
     --background: 44 43% 97%; /* #FAF8F2 cream */
     --foreground: 120 4% 15%; /* #252825 charcoal */
     --ease-out: cubic-bezier(.2, .8, .2, 1);
@@ -30,6 +31,10 @@
 
   .font-serif {
     font-family: var(--font-roboto), 'Roboto', sans-serif;
+  }
+
+  .font-mono {
+    font-variant-numeric: tabular-nums;
   }
 
   ::selection {
@@ -785,7 +790,7 @@ body[data-sticky-bar-active="true"] .mobile-bottom-nav {
 }
 
 [dir="rtl"] {
-  font-family: var(--font-urdu), 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif;
+  font-family: var(--font-roboto), 'Roboto', 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', sans-serif;
   line-height: 1.85;
   direction: rtl;
   text-align: right;
