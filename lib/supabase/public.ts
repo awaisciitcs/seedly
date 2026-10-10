@@ -1,3 +1,4 @@
+import { boundedSupabaseFetch } from './fetch';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
 import { getSupabaseUrl, getSupabaseKey } from './config';
@@ -8,6 +9,8 @@ export function createPublicClient() {
   const key = getSupabaseKey();
 
   return createSupabaseClient<Database>(url, key, {
+    db: { retry: false },
+    global: { fetch: boundedSupabaseFetch },
     auth: {
       persistSession: false,
       autoRefreshToken: false,

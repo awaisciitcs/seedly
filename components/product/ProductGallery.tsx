@@ -1,0 +1,14 @@
+'use client';
+import { useState } from 'react';
+import Image from 'next/image';
+import { X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Dialog } from '@/components/ui/Dialog';
+import { DepthSurface } from '@/components/ui/DepthSurface';
+export function ProductGallery({ name,image,images=[] }: {name:string;image:string;images?:string[]}) {
+  const gallery = [...new Set([image,...images].filter(Boolean))]; const [index,setIndex]=useState(0); const [zoom,setZoom]=useState(false); const [start,setStart]=useState<number|null>(null);
+  const move=(step:number)=>setIndex(old=>(old+step+gallery.length)%gallery.length);
+  return <div><DepthSurface strength={3} className="gallery-depth aspect-square rounded-2xl"><button type="button" className="relative h-full w-full overflow-hidden rounded-2xl bg-cream block" onClick={()=>setZoom(true)} aria-label={'Enlarge photo of '+name} onTouchStart={e=>setStart(e.touches[0].clientX)} onTouchEnd={e=>{if(start!==null && gallery.length>1 && Math.abs(e.changedTouches[0].clientX-start)>50)move(e.changedTouches[0].clientX<start?1:-1);setStart(null);}}><Image key={gallery[index] || image} src={gallery[index] || image} alt={name + ' — photo ' + (index+1)} fill priority sizes="(max-width:1023px) 92vw, 46vw" className="object-cover gallery-photo-enter"/><span className="absolute bottom-4 right-4 bg-white rounded-full p-3"><ZoomIn size={18}/></span></button></DepthSurface>
+    {gallery.length>1 && <div className="flex gap-3 mt-3 overflow-x-auto pb-2" aria-label="Product photos">{gallery.map((src,i)=><button type="button" key={src} aria-label={'View photo '+(i+1)} aria-pressed={index===i} onClick={()=>setIndex(i)} className={'relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border-2 '+(i===index?'border-seedly-dark':'border-transparent')}><Image src={src} alt="" fill sizes="80px" className="object-cover"/></button>)}</div>}
+    <Dialog open={zoom} onClose={()=>setZoom(false)} title={name+' product photos'} className="gallery-dialog"><div className="p-4"><div className="flex justify-between items-center mb-3"><span className="text-sm">{index+1} / {gallery.length}</span><button type="button" className="icon-button" aria-label="Close enlarged photo" onClick={()=>setZoom(false)}><X/></button></div><div className="relative h-[65dvh]"><Image key={gallery[index] || image} src={gallery[index] || image} alt={name} fill sizes="(max-width:1023px) 90vw, 900px" className="object-contain gallery-photo-enter"/></div>{gallery.length>1 && <div className="flex justify-center gap-4 mt-3"><button type="button" className="icon-button" aria-label="Previous photo" onClick={()=>move(-1)}><ChevronLeft/></button><button type="button" className="icon-button" aria-label="Next photo" onClick={()=>move(1)}><ChevronRight/></button></div>}</div></Dialog>
+  </div>;
+}

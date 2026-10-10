@@ -6,29 +6,37 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "seed": "node scripts/seed.mjs",
-    "backup": "node scripts/backup.mjs"
+    "seed": "node scripts/reseed.mjs",
+    "backup": "node scripts/backup.mjs",
+    "test": "node --test scripts/*.test.cjs",
+    "typecheck": "tsc --noEmit",
+    "email:worker": "node scripts/email-worker.mjs"
   },
   "engines": {
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.12.7",
-    "@supabase/supabase-js": "^2.117.2",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.475.0",
-    "next": "^15.1.7",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.0.1"
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.117.2",
+    "clsx": "2.1.1",
+    "lucide-react": "0.475.0",
+    "next": "15.5.27",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwind-merge": "3.7.0"
   },
   "devDependencies": {
-    "@types/node": "^22.13.4",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.5.2",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.3"
+    "@types/node": "22.20.4",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "autoprefixer": "10.6.1",
+    "postcss": "8.5.28",
+    "tailwindcss": "3.4.19",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "postcss": "$postcss",
+    "postcss-selector-parser": "7.1.6",
+    "source-map-js": "1.2.2"
   }
 }

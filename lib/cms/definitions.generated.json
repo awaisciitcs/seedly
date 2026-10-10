@@ -1,0 +1,6877 @@
+[
+  {
+    "slug": "home",
+    "title": "Home",
+    "description": "Website content and search information for Home.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_the_seedly_pantry",
+            "label": "The seedly pantry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_good_ingredients",
+            "label": "Good ingredients",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_everyday_rituals",
+            "label": "Everyday rituals",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_whole_seeds_thoughtful_seed_kits_and_loose_teas_find_th",
+            "label": "Whole seeds thoughtful seed kits and loose teas find th",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_explore_the_pantry",
+            "label": "Explore the pantry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_find_your_routine",
+            "label": "Find your routine",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_a_little_care_for_your",
+            "label": "A little care for your",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_everyday_pantry",
+            "label": "Everyday pantry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "alt_seeds_and_a_cup_of_tea_on_a_kitchen_table",
+            "label": "Seeds and a cup of tea on a kitchen table",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "text_find_your_everyday_favourites",
+            "label": "Find your everyday favourites",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_shop_all_products",
+            "label": "Shop all products",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_pantry_essentials",
+            "label": "Pantry essentials",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_browse_the_collection",
+            "label": "Browse the collection",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_a_routine_made_simple",
+            "label": "A routine made simple",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_see_what_s_inside",
+            "label": "See what s inside",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_food_for_your_routine_no_medical_promises",
+            "label": "Food for your routine no medical promises",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_our_story",
+            "label": "Our story",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_a_pantry_you_can_get_to_know",
+            "label": "A pantry you can get to know",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_we_re_a_pantry_shop_based_in_lahore_bringing_seeds_and",
+            "label": "We re a pantry shop based in lahore bringing seeds and",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_meet_seedly",
+            "label": "Meet seedly",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href_shop",
+            "label": "Shop",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_find_your_seed",
+            "label": "Find your seed",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_about",
+            "label": "About",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": [
+          {
+            "key": "src_images_hero_seedly_hero_jpg",
+            "label": "Images hero seedly hero jpg",
+            "type": "image",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 6,
+        "max": 6,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                },
+                {
+                  "value": "page_section_02",
+                  "label": "page section 02"
+                },
+                {
+                  "value": "page_section_03",
+                  "label": "page section 03"
+                },
+                {
+                  "value": "page_section_04",
+                  "label": "page section 04"
+                },
+                {
+                  "value": "testimonials",
+                  "label": "testimonials"
+                },
+                {
+                  "value": "page_section_05",
+                  "label": "page section 05"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      {
+        "key": "collections",
+        "label": "Collections",
+        "type": "list",
+        "min": 0,
+        "max": 100,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "title",
+              "label": "Title",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "text",
+              "label": "Text",
+              "type": "textarea",
+              "required": true,
+              "maxLength": 16000
+            },
+            {
+              "key": "href",
+              "label": "Href",
+              "type": "url",
+              "required": true,
+              "maxLength": 2048
+            },
+            {
+              "key": "image",
+              "label": "Image",
+              "type": "image",
+              "required": true,
+              "maxLength": 2048
+            }
+          ]
+        }
+      },
+      {
+        "key": "featuredKitSlug",
+        "label": "Featured Kit Slug",
+        "type": "text",
+        "required": true,
+        "maxLength": 500
+      }
+    ]
+  },
+  {
+    "slug": "about",
+    "title": "Our story",
+    "description": "Website content and search information for Our story.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "alt_seedly_pumpkin_seeds_sesame_and_chamomile_on_a_kitchen",
+            "label": "Seedly pumpkin seeds sesame and chamomile on a kitchen",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "alt_founder",
+            "label": "Founder",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href_shop",
+            "label": "Shop",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_find_your_seed",
+            "label": "Find your seed",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_seeds",
+            "label": "Seeds",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": [
+          {
+            "key": "src_images_hero_seedly_hero_lifestyle_jpg",
+            "label": "Images hero seedly hero lifestyle jpg",
+            "type": "image",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "hero",
+            "label": "Hero",
+            "type": "image",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 5,
+        "max": 5,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                },
+                {
+                  "value": "page_section_02",
+                  "label": "page section 02"
+                },
+                {
+                  "value": "page_section_03",
+                  "label": "page section 03"
+                },
+                {
+                  "value": "page_section_04",
+                  "label": "page section 04"
+                },
+                {
+                  "value": "page_section_05",
+                  "label": "page section 05"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      {
+        "key": "story",
+        "label": "Story",
+        "type": "object",
+        "fields": [
+          {
+            "key": "hero",
+            "label": "Hero",
+            "type": "object",
+            "fields": [
+              {
+                "key": "eyebrow",
+                "label": "Eyebrow",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "h1",
+                "label": "H1",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "lead",
+                "label": "Lead",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "primaryCta",
+                "label": "Primary Cta",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "secondaryCta",
+                "label": "Secondary Cta",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              }
+            ]
+          },
+          {
+            "key": "whySeedly",
+            "label": "Why Seedly",
+            "type": "object",
+            "fields": [
+              {
+                "key": "eyebrow",
+                "label": "Eyebrow",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "h2",
+                "label": "H2",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "paragraph1",
+                "label": "Paragraph1",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "paragraph2",
+                "label": "Paragraph2",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "signature",
+                "label": "Signature",
+                "type": "text",
+                "required": false,
+                "maxLength": 500
+              }
+            ]
+          },
+          {
+            "key": "sourceToPouch",
+            "label": "Source To Pouch",
+            "type": "object",
+            "fields": [
+              {
+                "key": "h2",
+                "label": "H2",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "steps",
+                "label": "Steps",
+                "type": "list",
+                "min": 0,
+                "max": 100,
+                "item": {
+                  "key": "item",
+                  "label": "Item",
+                  "type": "object",
+                  "fields": [
+                    {
+                      "key": "step",
+                      "label": "Step",
+                      "type": "text",
+                      "required": true,
+                      "maxLength": 500
+                    },
+                    {
+                      "key": "title",
+                      "label": "Title",
+                      "type": "text",
+                      "required": true,
+                      "maxLength": 500
+                    },
+                    {
+                      "key": "text",
+                      "label": "Text",
+                      "type": "textarea",
+                      "required": true,
+                      "maxLength": 16000
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "key": "collection",
+            "label": "Collection",
+            "type": "object",
+            "fields": [
+              {
+                "key": "h2",
+                "label": "H2",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "shopAll",
+                "label": "Shop All",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "cards",
+                "label": "Cards",
+                "type": "list",
+                "min": 0,
+                "max": 100,
+                "item": {
+                  "key": "item",
+                  "label": "Item",
+                  "type": "object",
+                  "fields": [
+                    {
+                      "key": "id",
+                      "label": "Id",
+                      "type": "text",
+                      "required": true,
+                      "maxLength": 500
+                    },
+                    {
+                      "key": "title",
+                      "label": "Title",
+                      "type": "text",
+                      "required": true,
+                      "maxLength": 500
+                    },
+                    {
+                      "key": "description",
+                      "label": "Description",
+                      "type": "textarea",
+                      "required": true,
+                      "maxLength": 16000
+                    },
+                    {
+                      "key": "count",
+                      "label": "Count",
+                      "type": "text",
+                      "required": false,
+                      "maxLength": 500
+                    },
+                    {
+                      "key": "linkText",
+                      "label": "Link Text",
+                      "type": "textarea",
+                      "required": true,
+                      "maxLength": 16000
+                    },
+                    {
+                      "key": "href",
+                      "label": "Href",
+                      "type": "url",
+                      "required": true,
+                      "maxLength": 2048
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "key": "closingCta",
+            "label": "Closing Cta",
+            "type": "object",
+            "fields": [
+              {
+                "key": "h2",
+                "label": "H2",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "sub",
+                "label": "Sub",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "primaryCta",
+                "label": "Primary Cta",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "secondaryCta",
+                "label": "Secondary Cta",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "whatsappCta",
+                "label": "Whatsapp Cta",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "faq",
+    "title": "Frequently asked questions",
+    "description": "Website content and search information for Frequently asked questions.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_answers_guidance",
+            "label": "Answers guidance",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_frequently_asked_questions",
+            "label": "Frequently asked questions",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_clear_facts_on_our_smallholder_sourcing_cold_milling_st",
+            "label": "Clear facts on our smallholder sourcing cold milling st",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_still_have_a_question",
+            "label": "Still have a question",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_our_lahore_pantry_team_is_available_monday_to_saturday",
+            "label": "Our lahore pantry team is available monday to saturday",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_whatsapp",
+            "label": "Whatsapp",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_contact_care_team",
+            "label": "Contact care team",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href_contact",
+            "label": "Contact",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 1,
+        "max": 1,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      {
+        "key": "items",
+        "label": "Items",
+        "type": "list",
+        "min": 0,
+        "max": 100,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "category",
+              "label": "Category",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "question",
+              "label": "Question",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "answer",
+              "label": "Answer",
+              "type": "textarea",
+              "required": true,
+              "maxLength": 16000
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "contact",
+    "title": "Contact Seedly",
+    "description": "Website content and search information for Contact Seedly.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_customer_care",
+            "label": "Customer care",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_contact_seedly",
+            "label": "Contact seedly",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_a_question_about_your_order_choosing_seeds_or_brewing_y",
+            "label": "A question about your order choosing seeds or brewing y",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_ways_to_get_in_touch",
+            "label": "Ways to get in touch",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_whatsapp",
+            "label": "Whatsapp",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_instant_order_assistance_address_confirmations_and_pers",
+            "label": "Instant order assistance address confirmations and pers",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_message_on_whatsapp",
+            "label": "Message on whatsapp",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_phone",
+            "label": "Phone",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_speak_directly_with_our_care_desk_during_customer_servi",
+            "label": "Speak directly with our care desk during customer servi",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_email",
+            "label": "Email",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_write_to_us_with_parcel_photographs_feedback_or_wholesa",
+            "label": "Write to us with parcel photographs feedback or wholesa",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_inquiring_about_an_existing_order",
+            "label": "Inquiring about an existing order",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_please_include_your_order_number_e_g_sed_xxxxxx_and_you",
+            "label": "Please include your order number e g sed xxxxxx and you",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_customer_care_hours",
+            "label": "Customer care hours",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_shipping_delivery",
+            "label": "Shipping delivery",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery_areas_flat_charges_and_estimated_timings",
+            "label": "Delivery areas flat charges and estimated timings",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_returns_replacements",
+            "label": "Returns replacements",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_7_day_guarantee_details_and_how_to_initiate_a_claim",
+            "label": "7 day guarantee details and how to initiate a claim",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_frequently_asked_questions",
+            "label": "Frequently asked questions",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_answers_about_cold_milled_seeds_brewing_and_storage",
+            "label": "Answers about cold milled seeds brewing and storage",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href_shipping",
+            "label": "Shipping",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_returns",
+            "label": "Returns",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_faq",
+            "label": "Faq",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 1,
+        "max": 1,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "shipping",
+    "title": "shipping",
+    "description": "Website content and search information for shipping.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_nationwide_logistics",
+            "label": "Nationwide logistics",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_shipping_delivery_policy",
+            "label": "Shipping delivery policy",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_carefully_packaged_raw_pantry_seeds_and_mountain_teas_d",
+            "label": "Carefully packaged raw pantry seeds and mountain teas d",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery_charges",
+            "label": "Delivery charges",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_daily_dispatch_cutoff",
+            "label": "Daily dispatch cutoff",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_our_team_prepares_orders_during_business_days_bank_and",
+            "label": "Our team prepares orders during business days bank and",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_courier_partners",
+            "label": "Courier partners",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_we_partner_exclusively_with",
+            "label": "We partner exclusively with",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_tcs",
+            "label": "Tcs",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_and",
+            "label": "And",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_leopards_courier",
+            "label": "Leopards courier",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_for_secure_door_to_door_delivery_with_sms_status_notifi",
+            "label": "For secure door to door delivery with sms status notifi",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_estimated_delivery_timelines",
+            "label": "Estimated delivery timelines",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_destination_region",
+            "label": "Destination region",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_expected_transit_window",
+            "label": "Expected transit window",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_courier_network",
+            "label": "Courier network",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_tcs_leopards_courier",
+            "label": "Tcs leopards courier",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_remote_addresses_or_extreme_seasonal_weather_conditions",
+            "label": "Remote addresses or extreme seasonal weather conditions",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_cash_on_delivery_cod_payment_verification",
+            "label": "Cash on delivery cod payment verification",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_cash_on_delivery_is_available_across_all_serviceable_de",
+            "label": "Cash on delivery is available across all serviceable de",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_to_confirm_your_delivery_address_prior_to_handing_parce",
+            "label": "To confirm your delivery address prior to handing parce",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_for_online_bank_transfers_ibft_jazzcash_or_easypaisa_ou",
+            "label": "For online bank transfers ibft jazzcash or easypaisa ou",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_airtight_packaging_transit_protection",
+            "label": "Airtight packaging transit protection",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_all_raw_seeds_are_heat_sealed_in_thick_food_grade_moist",
+            "label": "All raw seeds are heat sealed in thick food grade moist",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_order_tracking_delivery_support",
+            "label": "Order tracking delivery support",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_courier_details_appear_on_your_order_tracking_page_when",
+            "label": "Courier details appear on your order tracking page when",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_or_email",
+            "label": "Or email",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 2,
+        "max": 2,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                },
+                {
+                  "value": "page_section_02",
+                  "label": "page section 02"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "returns",
+    "title": "returns",
+    "description": "Website content and search information for returns.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_customer_assurance",
+            "label": "Customer assurance",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_7_day_quality_replacement_policy",
+            "label": "7 day quality replacement policy",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_confidence_in_the_freshness_integrity_and_safety_o",
+            "label": "Your confidence in the freshness integrity and safety o",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_7_day_quality_freshness_guarantee",
+            "label": "7 day quality freshness guarantee",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_food_safety_notice_change_of_mind",
+            "label": "Food safety notice change of mind",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_once_an_airtight_barrier_pouch_or_botanical_seal_has_be",
+            "label": "Once an airtight barrier pouch or botanical seal has be",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_eligible_claims_for_free_replacement_or_refund",
+            "label": "Eligible claims for free replacement or refund",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_item_arrived_damaged_crushed_leaking_or_with_a_broken_c",
+            "label": "Item arrived damaged crushed leaking or with a broken c",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_verified_quality_or_freshness_issue_such_as_unexpected",
+            "label": "Verified quality or freshness issue such as unexpected",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_incorrect_seed_variety_tea_blend_or_routine_kit_receive",
+            "label": "Incorrect seed variety tea blend or routine kit receive",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_verified_packaging_defect_such_as_pouch_tear_or_comprom",
+            "label": "Verified packaging defect such as pouch tear or comprom",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_how_to_initiate_a_claim",
+            "label": "How to initiate a claim",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_please_contact_our_customer_care_team_within",
+            "label": "Please contact our customer care team within",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_7_days_of_delivery",
+            "label": "7 days of delivery",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_with_your_order_number_e_g_sed_xxxxxx_and_1_2_clear_pho",
+            "label": "With your order number e g sed xxxxxx and 1 2 clear pho",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_whatsapp_helpline",
+            "label": "Whatsapp helpline",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_email_support",
+            "label": "Email support",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_refund_methods_timelines",
+            "label": "Refund methods timelines",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_if_an_immediate_replacement_is_not_preferred_an_approve",
+            "label": "If an immediate replacement is not preferred an approve",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_2_3_business_days",
+            "label": "2 3 business days",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_for_cash_on_delivery_cod_orders_refunds_are_transferred",
+            "label": "For cash on delivery cod orders refunds are transferred",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_jazzcash",
+            "label": "Jazzcash",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_easypaisa",
+            "label": "Easypaisa",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_or",
+            "label": "Or",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_pakistani_online_bank_transfer_ibft",
+            "label": "Pakistani online bank transfer ibft",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 3,
+        "max": 3,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                },
+                {
+                  "value": "page_section_02",
+                  "label": "page section 02"
+                },
+                {
+                  "value": "page_section_03",
+                  "label": "page section 03"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "privacy",
+    "title": "privacy",
+    "description": "Website content and search information for privacy.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_data_protection",
+            "label": "Data protection",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_privacy_policy",
+            "label": "Privacy policy",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_how_seedly_respects_handles_and_safeguards_your_custome",
+            "label": "How seedly respects handles and safeguards your custome",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_1_information_we_collect",
+            "label": "1 information we collect",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_we_collect_personal_information_necessary_to_deliver_yo",
+            "label": "We collect personal information necessary to deliver yo",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_2_routine_questionnaire_interactive_tools",
+            "label": "2 routine questionnaire interactive tools",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_when_you_use_our_routine_finder_questionnaire_cycle_cal",
+            "label": "When you use our routine finder questionnaire cycle cal",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_3_email_newsletter_communications",
+            "label": "3 email newsletter communications",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_if_you_subscribe_to_our_fresh_dispatches_newsletter_we",
+            "label": "If you subscribe to our fresh dispatches newsletter we",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_4_payment_processing_verification",
+            "label": "4 payment processing verification",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_seedly_does_not_collect_process_or_store_credit_debit_c",
+            "label": "Seedly does not collect process or store credit debit c",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_5_courier_logistics_partners",
+            "label": "5 courier logistics partners",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_to_fulfill_your_physical_delivery_we_share_your_recipie",
+            "label": "To fulfill your physical delivery we share your recipie",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_tcs",
+            "label": "Tcs",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_and",
+            "label": "And",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_leopards_courier",
+            "label": "Leopards courier",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_they_use_this_data_solely_to_transport_the_parcel_and_s",
+            "label": "They use this data solely to transport the parcel and s",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_6_cookies_anonymous_analytics",
+            "label": "6 cookies anonymous analytics",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_we_use_essential_first_party_cookies_to_remember_your_s",
+            "label": "We use essential first party cookies to remember your s",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_7_your_data_rights",
+            "label": "7 your data rights",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_you_have_the_right_to_request_access_to_correction_of_o",
+            "label": "You have the right to request access to correction of o",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_or_email",
+            "label": "Or email",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 7,
+        "max": 7,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                },
+                {
+                  "value": "page_section_02",
+                  "label": "page section 02"
+                },
+                {
+                  "value": "page_section_03",
+                  "label": "page section 03"
+                },
+                {
+                  "value": "page_section_04",
+                  "label": "page section 04"
+                },
+                {
+                  "value": "page_section_05",
+                  "label": "page section 05"
+                },
+                {
+                  "value": "page_section_06",
+                  "label": "page section 06"
+                },
+                {
+                  "value": "page_section_07",
+                  "label": "page section 07"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "terms",
+    "title": "terms",
+    "description": "Website content and search information for terms.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_legal_terms",
+            "label": "Legal terms",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_terms_of_service",
+            "label": "Terms of service",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_straightforward_terms_governing_catalog_orders_nationwi",
+            "label": "Straightforward terms governing catalog orders nationwi",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_1_orders_address_verification",
+            "label": "1 orders address verification",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_when_you_place_an_order_on_seedly_pk_you_will_receive_a",
+            "label": "When you place an order on seedly pk you will receive a",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_2_pricing_payment_options",
+            "label": "2 pricing payment options",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_all_prices_are_listed_in_pakistani_rupees_pkr_and_inclu",
+            "label": "All prices are listed in pakistani rupees pkr and inclu",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_3_nationwide_courier_dispatch",
+            "label": "3 nationwide courier dispatch",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_orders_placed_by_3_00_pm_pkt_monday_to_saturday_are_dis",
+            "label": "Orders placed by 3 00 pm pkt monday to saturday are dis",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_tcs",
+            "label": "Tcs",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_and",
+            "label": "And",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_leopards_courier",
+            "label": "Leopards courier",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_expected_transit_times_are",
+            "label": "Expected transit times are",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_current_delivery_charges_and_any_free_delivery_threshol",
+            "label": "Current delivery charges and any free delivery threshol",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_4_7_day_replacement_guarantee_food_safety_returns",
+            "label": "4 7 day replacement guarantee food safety returns",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_5_food_notice_dietary_status",
+            "label": "5 food notice dietary status",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_6_customer_care_inquiries",
+            "label": "6 customer care inquiries",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_for_any_questions_regarding_these_terms_your_order_stat",
+            "label": "For any questions regarding these terms your order stat",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_whatsapp",
+            "label": "Whatsapp",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_or_email",
+            "label": "Or email",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 6,
+        "max": 6,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                },
+                {
+                  "value": "page_section_02",
+                  "label": "page section 02"
+                },
+                {
+                  "value": "page_section_03",
+                  "label": "page section 03"
+                },
+                {
+                  "value": "page_section_04",
+                  "label": "page section 04"
+                },
+                {
+                  "value": "page_section_05",
+                  "label": "page section 05"
+                },
+                {
+                  "value": "page_section_06",
+                  "label": "page section 06"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "product-disclaimer",
+    "title": "product disclaimer",
+    "description": "Website content and search information for product disclaimer.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_consumer_safety_compliance",
+            "label": "Consumer safety compliance",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_product_dietary_disclaimer",
+            "label": "Product dietary disclaimer",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_important_consumer_clarity_regarding_raw_culinary_seeds",
+            "label": "Important consumer clarity regarding raw culinary seeds",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_standard_food_notice",
+            "label": "Standard food notice",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_scope_of_culinary_nutritional_content",
+            "label": "Scope of culinary nutritional content",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_information_presented_on_our_website_packaging_pouches",
+            "label": "Information presented on our website packaging pouches",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_medical_endocrine_advisory",
+            "label": "Medical endocrine advisory",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_allergen_advisories",
+            "label": "Allergen advisories",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_facility_allergen_statement",
+            "label": "Facility allergen statement",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_sesame_seeds_major_allergen",
+            "label": "Sesame seeds major allergen",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_chamomile_blossoms_asteraceae_daisy_family",
+            "label": "Chamomile blossoms asteraceae daisy family",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_questions_product_safety",
+            "label": "Questions product safety",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_if_you_have_specific_ingredient_questions_dietary_sensi",
+            "label": "If you have specific ingredient questions dietary sensi",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_whatsapp",
+            "label": "Whatsapp",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_or_email",
+            "label": "Or email",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 4,
+        "max": 4,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                },
+                {
+                  "value": "page_section_02",
+                  "label": "page section 02"
+                },
+                {
+                  "value": "page_section_03",
+                  "label": "page section 03"
+                },
+                {
+                  "value": "page_section_04",
+                  "label": "page section 04"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "shop",
+    "title": "shop",
+    "description": "Website content and search information for shop.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_loading_the_pantry",
+            "label": "Loading the pantry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 1,
+        "max": 1,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page",
+                  "label": "page"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "seeds",
+    "title": "seeds",
+    "description": "Website content and search information for seeds.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_loading_products",
+            "label": "Loading products",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "title_raw_pantry_seeds",
+            "label": "Title raw pantry seeds",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description_pumpkin_flax_sunflower_and_sesame_for_breakfast_baking",
+            "label": "Description pumpkin flax sunflower and sesame for breakfast baking",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 1,
+        "max": 1,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page",
+                  "label": "page"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "kits",
+    "title": "kits",
+    "description": "Website content and search information for kits.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_loading_products",
+            "label": "Loading products",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "title_seed_kits",
+            "label": "Title seed kits",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description_compare_seed_pairings_pack_contents_and_current_prices",
+            "label": "Description compare seed pairings pack contents and current prices",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 1,
+        "max": 1,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page",
+                  "label": "page"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "teas",
+    "title": "teas",
+    "description": "Website content and search information for teas.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_loading_products",
+            "label": "Loading products",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "title_loose_teas",
+            "label": "Title loose teas",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description_explore_flavours_caffeine_levels_and_brewing_instructio",
+            "label": "Description explore flavours caffeine levels and brewing instructio",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 1,
+        "max": 1,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page",
+                  "label": "page"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "cart",
+    "title": "Your basket",
+    "description": "Website content and search information for Your basket.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_continue_shopping",
+            "label": "Continue shopping",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_basket",
+            "label": "Basket",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_checkout",
+            "label": "Checkout",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_pantry_coming_together",
+            "label": "Your pantry coming together",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_basket",
+            "label": "Your basket",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_a_few_good_ingredients_a_little_care_for_your_everyday",
+            "label": "A few good ingredients a little care for your everyday",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_removed",
+            "label": "Removed",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_undo",
+            "label": "Undo",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_loading_your_basket",
+            "label": "Loading your basket",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_good_things_start_here",
+            "label": "Good things start here",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_basket_is_ready_for_its_first_favourite_discover_w",
+            "label": "Your basket is ready for its first favourite discover w",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_explore_the_pantry",
+            "label": "Explore the pantry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_raw_seeds",
+            "label": "Raw seeds",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_loose_teas",
+            "label": "Loose teas",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_seed_kits",
+            "label": "Seed kits",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_selection",
+            "label": "Your selection",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_a_question_about_your_basket",
+            "label": "A question about your basket",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_we_can_help_with_ingredients_sizes_and_delivery",
+            "label": "We can help with ingredients sizes and delivery",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_talk_to_seedly",
+            "label": "Talk to seedly",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_order_summary",
+            "label": "Order summary",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_retry",
+            "label": "Retry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_refresh_total",
+            "label": "Refresh total",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_subtotal",
+            "label": "Subtotal",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery",
+            "label": "Delivery",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_free",
+            "label": "Free",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_remove_unavailable_packs_to_continue",
+            "label": "Remove unavailable packs to continue",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_continue_to_checkout",
+            "label": "Continue to checkout",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_prices_and_availability_are_confirmed_at_checkout",
+            "label": "Prices and availability are confirmed at checkout",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_guest_checkout_no_account_needed",
+            "label": "Guest checkout no account needed",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery_across_pakistan",
+            "label": "Delivery across pakistan",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_choose_your_payment_method_at_checkout_transfer_payment",
+            "label": "Choose your payment method at checkout transfer payment",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery_returns_information",
+            "label": "Delivery returns information",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href_shop",
+            "label": "Shop",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_seeds",
+            "label": "Seeds",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_teas",
+            "label": "Teas",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_kits",
+            "label": "Kits",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_contact",
+            "label": "Contact",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_checkout",
+            "label": "Checkout",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_shipping",
+            "label": "Shipping",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 1,
+        "max": 1,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "checkout",
+    "title": "Checkout",
+    "description": "Website content and search information for Checkout.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_optional",
+            "label": "Optional",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_loading_your_basket",
+            "label": "Loading your basket",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_basket_is_empty",
+            "label": "Your basket is empty",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_explore_the_shop",
+            "label": "Explore the shop",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_back_to_basket",
+            "label": "Back to basket",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_checkout",
+            "label": "Checkout",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_a_few_details_and_your_pantry_order_is_on_its_way_no_ac",
+            "label": "A few details and your pantry order is on its way no ac",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_1_contact_details",
+            "label": "1 contact details",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_2_delivery_address",
+            "label": "2 delivery address",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_city_town",
+            "label": "City town",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_province_region",
+            "label": "Province region",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery_instructions",
+            "label": "Delivery instructions",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_optional_2",
+            "label": "Optional 2",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_3_payment_method",
+            "label": "3 payment method",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_retry",
+            "label": "Retry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_wallet_provider",
+            "label": "Wallet provider",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_iban",
+            "label": "Iban",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_transfer_amount",
+            "label": "Transfer amount",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_payment_will_remain_under_review_until_confirmed_b",
+            "label": "Your payment will remain under review until confirmed b",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_account_details_are_unavailable_choose_cash_on_delivery",
+            "label": "Account details are unavailable choose cash on delivery",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_transaction_id_optional",
+            "label": "Transaction id optional",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_payment_receipt",
+            "label": "Payment receipt",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_remove_receipt",
+            "label": "Remove receipt",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_we_will_recover_the_original_submitted_basket_and_total",
+            "label": "We will recover the original submitted basket and total",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_items",
+            "label": "Items",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_edit_basket",
+            "label": "Edit basket",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_qty",
+            "label": "Qty",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_update_total",
+            "label": "Update total",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_subtotal",
+            "label": "Subtotal",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery",
+            "label": "Delivery",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_total",
+            "label": "Total",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_checking_current_prices_and_stock",
+            "label": "Checking current prices and stock",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_please_correct_the_highlighted_fields",
+            "label": "Please correct the highlighted fields",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_ordering_is_temporarily_unavailable_please",
+            "label": "Ordering is temporarily unavailable please",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_contact_our_team",
+            "label": "Contact our team",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_before_transferring_payment",
+            "label": "Before transferring payment",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_by_placing_your_order_you_agree_to_our",
+            "label": "By placing your order you agree to our",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_terms",
+            "label": "Terms",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_and",
+            "label": "And",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery_policy",
+            "label": "Delivery policy",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_need_help_with_your_order",
+            "label": "Need help with your order",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href_shop",
+            "label": "Shop",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_cart",
+            "label": "Cart",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_contact",
+            "label": "Contact",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_terms",
+            "label": "Terms",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_shipping",
+            "label": "Shipping",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 3,
+        "max": 3,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                },
+                {
+                  "value": "page_section_02",
+                  "label": "page section 02"
+                },
+                {
+                  "value": "page_section_03",
+                  "label": "page section 03"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "account",
+    "title": "Orders & saved items",
+    "description": "Website content and search information for Orders & saved items.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_orders_saved_items",
+            "label": "Orders saved items",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_track_your_delivery_or_revisit_the_products_you_saved_o",
+            "label": "Track your delivery or revisit the products you saved o",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_track_an_order",
+            "label": "Track an order",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_pantry_picks",
+            "label": "Your pantry picks",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_view_saved_products",
+            "label": "View saved products",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_find_a_routine",
+            "label": "Find a routine",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_need_to_change_delivery_details",
+            "label": "Need to change delivery details",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_contact_our_team",
+            "label": "Contact our team",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href_account_wishlist",
+            "label": "Account wishlist",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_find_your_seed",
+            "label": "Find your seed",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_contact",
+            "label": "Contact",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 2,
+        "max": 2,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page_section_01",
+                  "label": "page section 01"
+                },
+                {
+                  "value": "page_section_02",
+                  "label": "page section 02"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "wishlist",
+    "title": "Saved products",
+    "description": "Website content and search information for Saved products.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_saved_products",
+            "label": "Saved products",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_favourites_are_saved_on_this_device_clearing_brows",
+            "label": "Your favourites are saved on this device clearing brows",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_loading_your_saved_products",
+            "label": "Loading your saved products",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_try_again",
+            "label": "Try again",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_some_saved_products_are_no_longer_listed_in_the_shop",
+            "label": "Some saved products are no longer listed in the shop",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_tap_a_product_s_heart_to_save_it_for_later",
+            "label": "Tap a product s heart to save it for later",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_explore_the_pantry",
+            "label": "Explore the pantry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href_shop",
+            "label": "Shop",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 1,
+        "max": 1,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page",
+                  "label": "page"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "order",
+    "title": "Order tracking",
+    "description": "Website content and search information for Order tracking.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "text_view_your_order_securely",
+            "label": "View your order securely",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_open_the_full_confirmation_link_from_checkout_or_your_o",
+            "label": "Open the full confirmation link from checkout or your o",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_if_you_no_longer_have_the_link_contact_our_team_for_hel",
+            "label": "If you no longer have the link contact our team for hel",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_contact_customer_care",
+            "label": "Contact customer care",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_enter_a_confirmation_link",
+            "label": "Enter a confirmation link",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_order_reference",
+            "label": "Order reference",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_order_contact",
+            "label": "Order contact",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_mobile",
+            "label": "Mobile",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_general_status_and_package_tracking_are_shown_below",
+            "label": "General status and package tracking are shown below",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_payment_under_review",
+            "label": "Payment under review",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_our_team_is_verifying_your_payment_preparation_updates",
+            "label": "Our team is verifying your payment preparation updates",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_dispatched_with",
+            "label": "Dispatched with",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_tracking_number",
+            "label": "Tracking number",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_package_is_currently_on_the_delivery_route",
+            "label": "Your package is currently on the delivery route",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_fulfillment_timeline",
+            "label": "Fulfillment timeline",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_personal_delivery_details_protected",
+            "label": "Personal delivery details protected",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_delivery_address_and_contact_details_are_private_u",
+            "label": "Your delivery address and contact details are private u",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_need_help_finding_your_confirmation",
+            "label": "Need help finding your confirmation",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery_destination",
+            "label": "Delivery destination",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_note",
+            "label": "Note",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_phone",
+            "label": "Phone",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_payment_summary",
+            "label": "Payment summary",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_payment_method",
+            "label": "Payment method",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_payment_status",
+            "label": "Payment status",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_order_date",
+            "label": "Order date",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_order_items",
+            "label": "Order items",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_quantity",
+            "label": "Quantity",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_subtotal",
+            "label": "Subtotal",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_nationwide_delivery",
+            "label": "Nationwide delivery",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_total_amount",
+            "label": "Total amount",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_chat_on_whatsapp_regarding_order",
+            "label": "Chat on whatsapp regarding order",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_continue_browsing_catalog",
+            "label": "Continue browsing catalog",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href_contact",
+            "label": "Contact",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_account",
+            "label": "Account",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_shop",
+            "label": "Shop",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 1,
+        "max": 1,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "page",
+                  "label": "page"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "routine",
+    "title": "Routine finder",
+    "description": "Website content and search information for Routine finder.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_the_routine_finder",
+            "label": "The routine finder",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_a_little_ritual",
+            "label": "A little ritual",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_a_little_more_you",
+            "label": "A little more you",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_three_simple_questions_a_few_pantry_favourites_chosen_a",
+            "label": "Three simple questions a few pantry favourites chosen a",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_pantry_shortlist",
+            "label": "Your pantry shortlist",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_a_starting_point_for_your_everyday_ritual_explore_each",
+            "label": "A starting point for your everyday ritual explore each",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_no_matching_products_are_available_right_now",
+            "label": "No matching products are available right now",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_explore_the_pantry",
+            "label": "Explore the pantry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_find_another_routine",
+            "label": "Find another routine",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_explore_all_products",
+            "label": "Explore all products",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_question",
+            "label": "Question",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_of",
+            "label": "Of",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_back",
+            "label": "Back",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_made_for_your_kitchen_preferences_this_is_a_food_guide",
+            "label": "Made for your kitchen preferences this is a food guide",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href_shop",
+            "label": "Shop",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 2,
+        "max": 2,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "routinefinder_section_01",
+                  "label": "routinefinder section 01"
+                },
+                {
+                  "value": "routinefinder_section_02",
+                  "label": "routinefinder section 02"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      {
+        "key": "questions",
+        "label": "Questions",
+        "type": "list",
+        "min": 3,
+        "max": 3,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "maxLength": 30,
+              "options": [
+                {
+                  "value": "category",
+                  "label": "Category"
+                },
+                {
+                  "value": "moment",
+                  "label": "Moment"
+                },
+                {
+                  "value": "quantity",
+                  "label": "Quantity"
+                }
+              ]
+            },
+            {
+              "key": "step",
+              "label": "Step",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "title",
+              "label": "Title",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "description",
+              "label": "Description",
+              "type": "textarea",
+              "required": true,
+              "maxLength": 16000
+            },
+            {
+              "key": "options",
+              "label": "Options",
+              "type": "list",
+              "min": 1,
+              "max": 20,
+              "item": {
+                "key": "item",
+                "label": "Item",
+                "type": "object",
+                "fields": [
+                  {
+                    "key": "value",
+                    "label": "Value",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "label",
+                    "label": "Label",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "detail",
+                    "label": "Detail",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "image",
+                    "label": "Image",
+                    "type": "image",
+                    "required": false,
+                    "maxLength": 2048
+                  },
+                  {
+                    "key": "icon",
+                    "label": "Icon",
+                    "type": "select",
+                    "required": true,
+                    "maxLength": 30,
+                    "options": [
+                      {
+                        "value": "sprout",
+                        "label": "Sprout"
+                      },
+                      {
+                        "value": "coffee",
+                        "label": "Coffee"
+                      },
+                      {
+                        "value": "layers",
+                        "label": "Layers"
+                      },
+                      {
+                        "value": "sunrise",
+                        "label": "Sunrise"
+                      },
+                      {
+                        "value": "cooking",
+                        "label": "Cooking"
+                      },
+                      {
+                        "value": "leaf",
+                        "label": "Leaf"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "key": "recommendationRules",
+        "label": "Recommendation Rules",
+        "type": "object",
+        "fields": [
+          {
+            "key": "breakfast",
+            "label": "Breakfast",
+            "type": "list",
+            "min": 0,
+            "max": 100,
+            "item": {
+              "key": "item",
+              "label": "Item",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            }
+          },
+          {
+            "key": "cooking",
+            "label": "Cooking",
+            "type": "list",
+            "min": 0,
+            "max": 100,
+            "item": {
+              "key": "item",
+              "label": "Item",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            }
+          },
+          {
+            "key": "cup",
+            "label": "Cup",
+            "type": "list",
+            "min": 0,
+            "max": 100,
+            "item": {
+              "key": "item",
+              "label": "Item",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            }
+          }
+        ]
+      },
+      {
+        "key": "categoryRules",
+        "label": "Category Rules",
+        "type": "object",
+        "fields": [
+          {
+            "key": "seeds",
+            "label": "Seeds",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "tea",
+            "label": "Tea",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "kit",
+            "label": "Kit",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          }
+        ]
+      },
+      {
+        "key": "resultCounts",
+        "label": "Result Counts",
+        "type": "object",
+        "fields": [
+          {
+            "key": "simple",
+            "label": "Simple",
+            "type": "number",
+            "min": 0,
+            "max": 1000000000
+          },
+          {
+            "key": "variety",
+            "label": "Variety",
+            "type": "number",
+            "min": 0,
+            "max": 1000000000
+          }
+        ]
+      }
+    ],
+    "routineOptions": {
+      "category": [
+        "seeds",
+        "tea",
+        "kit"
+      ],
+      "moment": [
+        "breakfast",
+        "cooking",
+        "cup"
+      ],
+      "quantity": [
+        "simple",
+        "variety"
+      ]
+    }
+  },
+  {
+    "slug": "product",
+    "title": "Product details",
+    "description": "Website content and search information for Product details.",
+    "kind": "page",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_home",
+            "label": "Home",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_questions_about_this_product",
+            "label": "Questions about this product",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_ask_our_team_about_ingredients_preparation_or_storage",
+            "label": "Ask our team about ingredients preparation or storage",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_ask_on_whatsapp",
+            "label": "Ask on whatsapp",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_low_stock",
+            "label": "Low stock",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_left",
+            "label": "Left",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_in_stock",
+            "label": "In stock",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_out_of_stock",
+            "label": "Out of stock",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_per_100g",
+            "label": "Per 100g",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_sold_out",
+            "label": "Sold out",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery_charges_are_confirmed_in_your_basket_see_deliv",
+            "label": "Delivery charges are confirmed in your basket see deliv",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_currently_out_of_stock",
+            "label": "Currently out of stock",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_leave_your_email_and_we_will_let_you_know_when_this_fre",
+            "label": "Leave your email and we will let you know when this fre",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_notify_me_when_available",
+            "label": "Notify me when available",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery_times_charges",
+            "label": "Delivery times charges",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_replacement_policy",
+            "label": "Replacement policy",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_culinary_food_item_not_a_medicine",
+            "label": "Culinary food item not a medicine",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_dietary_notice",
+            "label": "Dietary notice",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_product_information",
+            "label": "Product information",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_ingredients_details",
+            "label": "Ingredients details",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_ingredients",
+            "label": "Ingredients",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_origin",
+            "label": "Origin",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_pack_size",
+            "label": "Pack size",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_product_code",
+            "label": "Product code",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_keeping_it_fresh_storage",
+            "label": "Keeping it fresh storage",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_check_your_pack_for_its_best_before_date_and_reseal_it",
+            "label": "Check your pack for its best before date and reseal it",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_common_questions",
+            "label": "Common questions",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_does_it_contain_caffeine",
+            "label": "Does it contain caffeine",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_caffeine_level",
+            "label": "Caffeine level",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_which_pack_sizes_are_available",
+            "label": "Which pack sizes are available",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_when_will_my_order_arrive",
+            "label": "When will my order arrive",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_timings_depend_on_your_delivery_address",
+            "label": "Timings depend on your delivery address",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_see_our_delivery_estimates",
+            "label": "See our delivery estimates",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_have_another_question",
+            "label": "Have another question",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_contact_the_seedly_team",
+            "label": "Contact the seedly team",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_for_help_with_this_product_or_your_order",
+            "label": "For help with this product or your order",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_nutrition_per_28g_typical_values",
+            "label": "Nutrition per 28g typical values",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_dietary_food_notice",
+            "label": "Dietary food notice",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_customer_reviews",
+            "label": "Customer reviews",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_write_a_review",
+            "label": "Write a review",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_retry",
+            "label": "Retry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_submit_your_review",
+            "label": "Submit your review",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_your_name",
+            "label": "Your name",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "placeholder_e_g_fatima_ali_lahore",
+            "label": "Placeholder e g fatima ali lahore",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "text_rating",
+            "label": "Rating",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_5_excellent",
+            "label": "5 excellent",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_4_good",
+            "label": "4 good",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_3_average",
+            "label": "3 average",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_2_poor",
+            "label": "2 poor",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_1_very_bad",
+            "label": "1 very bad",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_title",
+            "label": "Title",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "placeholder_e_g_clean_seeds_and_prompt_delivery",
+            "label": "Placeholder e g clean seeds and prompt delivery",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "text_review_comments",
+            "label": "Review comments",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "placeholder_share_your_experience_regarding_freshness_quality_and_r",
+            "label": "Placeholder share your experience regarding freshness quality and r",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "text_cancel",
+            "label": "Cancel",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_verified_buyer",
+            "label": "Verified buyer",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_you_might_also_like",
+            "label": "You might also like",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_curated_seed_kits",
+            "label": "Curated seed kits",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_questions_about_how_this_routine_works",
+            "label": "Questions about how this routine works",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_chat_with_our_team_on_whatsapp_for_ingredients_preparat",
+            "label": "Chat with our team on whatsapp for ingredients preparat",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_14_28_day_routine_kit",
+            "label": "14 28 day routine kit",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_reviews",
+            "label": "Reviews",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_kits_left",
+            "label": "Kits left",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_in_stock_in_lahore",
+            "label": "In stock in lahore",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_ritual_bundle_value",
+            "label": "Ritual bundle value",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_save_rs_470",
+            "label": "Save rs 470",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_4_x_250g_fresh_pouches_rs_2_970_individual_seed_value",
+            "label": "4 x 250g fresh pouches rs 2 970 individual seed value",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_engraved_wooden_measuring_scoop_printed_cycle_calendar",
+            "label": "Engraved wooden measuring scoop printed cycle calendar",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_standalone_total_rs_3_320_at_1_tbsp_day_this_kit_suppli",
+            "label": "Standalone total rs 3 320 at 1 tbsp day this kit suppli",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_50_60_daily_servings_approx_two_28_day_cycles",
+            "label": "50 60 daily servings approx two 28 day cycles",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_flat_rs_200_delivery",
+            "label": "Flat rs 200 delivery",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_free",
+            "label": "Free",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_over_rs_2_500_dispatched_in_24h_from_lahore",
+            "label": "Over rs 2 500 dispatched in 24h from lahore",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_kit_currently_out_of_stock",
+            "label": "Kit currently out of stock",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_leave_your_email_and_we_will_let_you_know_when_this_kit",
+            "label": "Leave your email and we will let you know when this kit",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_notify_me_when_kit_returns",
+            "label": "Notify me when kit returns",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_delivery_across_pakistan",
+            "label": "Delivery across pakistan",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_see_delivery_times_and_charges",
+            "label": "See delivery times and charges",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_check_each_pack_for_storage_instructions_and_its_best_b",
+            "label": "Check each pack for storage instructions and its best b",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_dietary_food_notice_2",
+            "label": "Dietary food notice 2",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_how_this_seed_routine_works",
+            "label": "How this seed routine works",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_daily_usage",
+            "label": "Daily usage",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_simple_preparation",
+            "label": "Simple preparation",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_proper_storage",
+            "label": "Proper storage",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_protecting_freshness",
+            "label": "Protecting freshness",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_write_a_review_2",
+            "label": "Write a review 2",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_review_this_kit",
+            "label": "Review this kit",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "placeholder_e_g_zainab_m_karachi",
+            "label": "Placeholder e g zainab m karachi",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "placeholder_e_g_beautiful_packaging_and_easy_to_follow",
+            "label": "Placeholder e g beautiful packaging and easy to follow",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "text_review_details",
+            "label": "Review details",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "placeholder_how_was_the_experience_taste_and_daily_convenience",
+            "label": "Placeholder how was the experience taste and daily convenience",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "text_verified_purchase",
+            "label": "Verified purchase",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_interactive_brew_guide",
+            "label": "Interactive brew guide",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_how_many_cups_are_you_preparing",
+            "label": "How many cups are you preparing",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_adjust_cups_to_calculate_exact_leaf_weight_water_ratio",
+            "label": "Adjust cups to calculate exact leaf weight water ratio",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_ml",
+            "label": "Ml",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_loose_leaf_flower",
+            "label": "Loose leaf flower",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_g",
+            "label": "G",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_approx",
+            "label": "Approx",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_water_volume",
+            "label": "Water volume",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_water_temp",
+            "label": "Water temp",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_steep_time",
+            "label": "Steep time",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_cover_while_steeping",
+            "label": "Cover while steeping",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_brewmaster_note",
+            "label": "Brewmaster note",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_what_s_inside_this_kit",
+            "label": "What s inside this kit",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_click_any_pouch_to_explore_routine_phase_ingredients",
+            "label": "Click any pouch to explore routine phase ingredients",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_times",
+            "label": "Times",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_pack_size_2",
+            "label": "Pack size 2",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_quantity",
+            "label": "Quantity",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_view_single_pouch",
+            "label": "View single pouch",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_kitchen_serving_suggestion",
+            "label": "Kitchen serving suggestion",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_nutrients",
+            "label": "Nutrients",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": [
+          {
+            "key": "href",
+            "label": "Href",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_reviews",
+            "label": "Reviews",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_shipping",
+            "label": "Shipping",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_returns",
+            "label": "Returns",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_dietary_notice",
+            "label": "Dietary notice",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_contact",
+            "label": "Contact",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "href_kits",
+            "label": "Kits",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          }
+        ]
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 4,
+        "max": 4,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "select",
+              "required": true,
+              "options": [
+                {
+                  "value": "productdetailview_section_01",
+                  "label": "productdetailview section 01"
+                },
+                {
+                  "value": "productdetailview_section_02",
+                  "label": "productdetailview section 02"
+                },
+                {
+                  "value": "productdetailview_section_03",
+                  "label": "productdetailview section 03"
+                },
+                {
+                  "value": "kitcontentsexplorer_section_01",
+                  "label": "kitcontentsexplorer section 01"
+                }
+              ],
+              "maxLength": 80
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      {
+        "key": "pouchGuides",
+        "label": "Pouch Guides",
+        "type": "list",
+        "min": 0,
+        "max": 100,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "phase",
+              "label": "Phase",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "timing",
+              "label": "Timing",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "nutrients",
+              "label": "Nutrients",
+              "type": "list",
+              "min": 0,
+              "max": 100,
+              "item": {
+                "key": "item",
+                "label": "Item",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              }
+            },
+            {
+              "key": "intakeGuide",
+              "label": "Intake Guide",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "slug",
+              "label": "Slug",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "image",
+              "label": "Image",
+              "type": "image",
+              "required": true,
+              "maxLength": 2048
+            }
+          ]
+        }
+      },
+      {
+        "key": "brewGuides",
+        "label": "Brew Guides",
+        "type": "list",
+        "min": 0,
+        "max": 100,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "gramsPerCup",
+              "label": "Grams Per Cup",
+              "type": "number",
+              "min": 0.1,
+              "max": 1000000000
+            },
+            {
+              "key": "waterMlPerCup",
+              "label": "Water Ml Per Cup",
+              "type": "number",
+              "min": 0.1,
+              "max": 1000000000
+            },
+            {
+              "key": "temp",
+              "label": "Temp",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "steep",
+              "label": "Steep",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "tip",
+              "label": "Tip",
+              "type": "textarea",
+              "required": true,
+              "maxLength": 16000
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "slug": "site",
+    "title": "Site settings",
+    "description": "Shared website settings.",
+    "kind": "global",
+    "fields": [
+      {
+        "key": "config",
+        "label": "Config",
+        "type": "object",
+        "fields": [
+          {
+            "key": "name",
+            "label": "Name",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "brandLine",
+            "label": "Brand Line",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "url",
+            "label": "Url",
+            "type": "url",
+            "required": true,
+            "maxLength": 2048
+          },
+          {
+            "key": "contact",
+            "label": "Contact",
+            "type": "object",
+            "fields": [
+              {
+                "key": "phone",
+                "label": "Phone",
+                "type": "text",
+                "required": false,
+                "maxLength": 500
+              },
+              {
+                "key": "phoneInternational",
+                "label": "Phone International",
+                "type": "text",
+                "required": false,
+                "maxLength": 500
+              },
+              {
+                "key": "phoneRaw",
+                "label": "Phone Raw",
+                "type": "text",
+                "required": false,
+                "maxLength": 500
+              },
+              {
+                "key": "whatsappUrl",
+                "label": "Whatsapp Url",
+                "type": "url",
+                "required": false,
+                "maxLength": 2048
+              },
+              {
+                "key": "email",
+                "label": "Email",
+                "type": "text",
+                "required": false,
+                "maxLength": 500
+              },
+              {
+                "key": "address",
+                "label": "Address",
+                "type": "text",
+                "required": false,
+                "maxLength": 500
+              },
+              {
+                "key": "dispatchHub",
+                "label": "Dispatch Hub",
+                "type": "text",
+                "required": false,
+                "maxLength": 500
+              },
+              {
+                "key": "hours",
+                "label": "Hours",
+                "type": "text",
+                "required": false,
+                "maxLength": 500
+              }
+            ]
+          },
+          {
+            "key": "social",
+            "label": "Social",
+            "type": "object",
+            "fields": [
+              {
+                "key": "instagram",
+                "label": "Instagram",
+                "type": "text",
+                "required": false,
+                "maxLength": 500
+              },
+              {
+                "key": "facebook",
+                "label": "Facebook",
+                "type": "text",
+                "required": false,
+                "maxLength": 500
+              }
+            ]
+          },
+          {
+            "key": "shipping",
+            "label": "Shipping",
+            "type": "object",
+            "fields": [
+              {
+                "key": "freeThreshold",
+                "label": "Free Threshold",
+                "type": "number",
+                "min": 0,
+                "max": 1000000000,
+                "readOnly": true,
+                "help": "Reference only. Set actual delivery fees and thresholds in Settings."
+              },
+              {
+                "key": "standardFee",
+                "label": "Standard Fee",
+                "type": "number",
+                "min": 0,
+                "max": 1000000000,
+                "readOnly": true,
+                "help": "Reference only. Set actual delivery fees and thresholds in Settings."
+              },
+              {
+                "key": "cutoffTime",
+                "label": "Cutoff Time",
+                "type": "text",
+                "required": true,
+                "maxLength": 500
+              },
+              {
+                "key": "couriers",
+                "label": "Couriers",
+                "type": "list",
+                "min": 0,
+                "max": 100,
+                "item": {
+                  "key": "item",
+                  "label": "Item",
+                  "type": "text",
+                  "required": true,
+                  "maxLength": 500
+                }
+              },
+              {
+                "key": "timelines",
+                "label": "Timelines",
+                "type": "list",
+                "min": 0,
+                "max": 100,
+                "item": {
+                  "key": "item",
+                  "label": "Item",
+                  "type": "object",
+                  "fields": [
+                    {
+                      "key": "area",
+                      "label": "Area",
+                      "type": "text",
+                      "required": true,
+                      "maxLength": 500
+                    },
+                    {
+                      "key": "time",
+                      "label": "Time",
+                      "type": "text",
+                      "required": true,
+                      "maxLength": 500
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "key": "disclaimer",
+            "label": "Disclaimer",
+            "type": "object",
+            "fields": [
+              {
+                "key": "standard",
+                "label": "Standard",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "facility",
+                "label": "Facility",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "medicalConsultation",
+                "label": "Medical Consultation",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "chamomile",
+                "label": "Chamomile",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "sesame",
+                "label": "Sesame",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "returnsChangeOfMind",
+                "label": "Returns Change Of Mind",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "returnsDamaged",
+                "label": "Returns Damaged",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "paymentVerification",
+                "label": "Payment Verification",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              },
+              {
+                "key": "seedCyclingNote",
+                "label": "Seed Cycling Note",
+                "type": "textarea",
+                "required": true,
+                "maxLength": 16000
+              }
+            ]
+          },
+          {
+            "key": "brewing",
+            "label": "Brewing",
+            "type": "object",
+            "fields": [
+              {
+                "key": "chamomile",
+                "label": "Chamomile",
+                "type": "object",
+                "fields": [
+                  {
+                    "key": "dose",
+                    "label": "Dose",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "water",
+                    "label": "Water",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "temp",
+                    "label": "Temp",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "time",
+                    "label": "Time",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "cups",
+                    "label": "Cups",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  }
+                ]
+              },
+              {
+                "key": "spearmint",
+                "label": "Spearmint",
+                "type": "object",
+                "fields": [
+                  {
+                    "key": "dose",
+                    "label": "Dose",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "water",
+                    "label": "Water",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "temp",
+                    "label": "Temp",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "time",
+                    "label": "Time",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "cups",
+                    "label": "Cups",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  }
+                ]
+              },
+              {
+                "key": "greenTea",
+                "label": "Green Tea",
+                "type": "object",
+                "fields": [
+                  {
+                    "key": "dose",
+                    "label": "Dose",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "water",
+                    "label": "Water",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "temp",
+                    "label": "Temp",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "time",
+                    "label": "Time",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  },
+                  {
+                    "key": "cups",
+                    "label": "Cups",
+                    "type": "text",
+                    "required": true,
+                    "maxLength": 500
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "kitMath",
+            "label": "Kit Math",
+            "type": "object",
+            "fields": [
+              {
+                "key": "complete",
+                "label": "Complete",
+                "type": "object",
+                "fields": [
+                  {
+                    "key": "seedsValue",
+                    "label": "Seeds Value",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "extrasValue",
+                    "label": "Extras Value",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "totalValue",
+                    "label": "Total Value",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "price",
+                    "label": "Price",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "savingsTotal",
+                    "label": "Savings Total",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "savingsSeedsOnly",
+                    "label": "Savings Seeds Only",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "durationDescription",
+                    "label": "Duration Description",
+                    "type": "textarea",
+                    "required": true,
+                    "maxLength": 16000
+                  }
+                ]
+              },
+              {
+                "key": "follicular",
+                "label": "Follicular",
+                "type": "object",
+                "fields": [
+                  {
+                    "key": "seedsValue",
+                    "label": "Seeds Value",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "price",
+                    "label": "Price",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "savings",
+                    "label": "Savings",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "durationDescription",
+                    "label": "Duration Description",
+                    "type": "textarea",
+                    "required": true,
+                    "maxLength": 16000
+                  }
+                ]
+              },
+              {
+                "key": "luteal",
+                "label": "Luteal",
+                "type": "object",
+                "fields": [
+                  {
+                    "key": "seedsValue",
+                    "label": "Seeds Value",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "price",
+                    "label": "Price",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "savings",
+                    "label": "Savings",
+                    "type": "number",
+                    "min": 0,
+                    "max": 1000000000
+                  },
+                  {
+                    "key": "durationDescription",
+                    "label": "Duration Description",
+                    "type": "textarea",
+                    "required": true,
+                    "maxLength": 16000
+                  }
+                ]
+              }
+            ],
+            "readOnly": true,
+            "help": "Reference only. Set actual pack prices and contents in Kits."
+          }
+        ]
+      },
+      {
+        "key": "features",
+        "label": "Features",
+        "type": "object",
+        "fields": [
+          {
+            "key": "routine",
+            "label": "Routine",
+            "type": "boolean"
+          },
+          {
+            "key": "reviews",
+            "label": "Reviews",
+            "type": "boolean"
+          },
+          {
+            "key": "announcements",
+            "label": "Announcements",
+            "type": "boolean"
+          },
+          {
+            "key": "savedProducts",
+            "label": "Saved Products",
+            "type": "boolean"
+          },
+          {
+            "key": "whatsapp",
+            "label": "Whatsapp",
+            "type": "boolean"
+          },
+          {
+            "key": "search",
+            "label": "Search",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "key": "header",
+        "label": "Header",
+        "type": "object",
+        "fields": [
+          {
+            "key": "shopLinks",
+            "label": "Shop Links",
+            "type": "list",
+            "min": 0,
+            "max": 100,
+            "item": {
+              "key": "item",
+              "label": "Item",
+              "type": "object",
+              "fields": [
+                {
+                  "key": "label",
+                  "label": "Label",
+                  "type": "text",
+                  "required": true,
+                  "maxLength": 500
+                },
+                {
+                  "key": "href",
+                  "label": "Href",
+                  "type": "url",
+                  "required": true,
+                  "maxLength": 2048
+                }
+              ]
+            }
+          },
+          {
+            "key": "exploreLinks",
+            "label": "Explore Links",
+            "type": "list",
+            "min": 0,
+            "max": 100,
+            "item": {
+              "key": "item",
+              "label": "Item",
+              "type": "object",
+              "fields": [
+                {
+                  "key": "label",
+                  "label": "Label",
+                  "type": "text",
+                  "required": true,
+                  "maxLength": 500
+                },
+                {
+                  "key": "href",
+                  "label": "Href",
+                  "type": "url",
+                  "required": true,
+                  "maxLength": 2048
+                }
+              ]
+            }
+          },
+          {
+            "key": "tagline",
+            "label": "Tagline",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "searchLabel",
+            "label": "Search Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "savedLabel",
+            "label": "Saved Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "basketLabel",
+            "label": "Basket Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "trackLabel",
+            "label": "Track Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "mobileSearchLabel",
+            "label": "Mobile Search Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "mobileShopLabel",
+            "label": "Mobile Shop Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "mobileExploreLabel",
+            "label": "Mobile Explore Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "mobileTrackLabel",
+            "label": "Mobile Track Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "mobileAccountLabel",
+            "label": "Mobile Account Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "mobileContactLabel",
+            "label": "Mobile Contact Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          }
+        ]
+      },
+      {
+        "key": "footer",
+        "label": "Footer",
+        "type": "object",
+        "fields": [
+          {
+            "key": "intro",
+            "label": "Intro",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "storyLabel",
+            "label": "Story Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "groups",
+            "label": "Groups",
+            "type": "list",
+            "min": 0,
+            "max": 100,
+            "item": {
+              "key": "item",
+              "label": "Item",
+              "type": "object",
+              "fields": [
+                {
+                  "key": "title",
+                  "label": "Title",
+                  "type": "text",
+                  "required": true,
+                  "maxLength": 500
+                },
+                {
+                  "key": "links",
+                  "label": "Links",
+                  "type": "list",
+                  "min": 0,
+                  "max": 100,
+                  "item": {
+                    "key": "item",
+                    "label": "Item",
+                    "type": "object",
+                    "fields": [
+                      {
+                        "key": "label",
+                        "label": "Label",
+                        "type": "text",
+                        "required": true,
+                        "maxLength": 500
+                      },
+                      {
+                        "key": "href",
+                        "label": "Href",
+                        "type": "url",
+                        "required": true,
+                        "maxLength": 2048
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "helpTitle",
+            "label": "Help Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "whatsappLabel",
+            "label": "Whatsapp Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "guidanceLabel",
+            "label": "Guidance Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "foodNotice",
+            "label": "Food Notice",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "copyrightLocation",
+            "label": "Copyright Location",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "privacyLabel",
+            "label": "Privacy Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "termsLabel",
+            "label": "Terms Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "instagramLabel",
+            "label": "Instagram Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          }
+        ]
+      },
+      {
+        "key": "announcement",
+        "label": "Announcement",
+        "type": "object",
+        "fields": [
+          {
+            "key": "deliveryTemplate",
+            "label": "Delivery Template",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "deliveryFallback",
+            "label": "Delivery Fallback",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "paymentLabel",
+            "label": "Payment Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          }
+        ]
+      },
+      {
+        "key": "delivery",
+        "label": "Delivery",
+        "type": "object",
+        "fields": [
+          {
+            "key": "template",
+            "label": "Template",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "fallback",
+            "label": "Fallback",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "linkLabel",
+            "label": "Link Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          }
+        ]
+      },
+      {
+        "key": "mobileNavigation",
+        "label": "Mobile Navigation",
+        "type": "list",
+        "min": 0,
+        "max": 100,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "label",
+              "label": "Label",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "href",
+              "label": "Href",
+              "type": "url",
+              "required": true,
+              "maxLength": 2048
+            }
+          ]
+        }
+      },
+      {
+        "key": "testimonials",
+        "label": "Testimonials",
+        "type": "object",
+        "fields": [
+          {
+            "key": "eyebrow",
+            "label": "Eyebrow",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "subtitle",
+            "label": "Subtitle",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "topPick",
+            "label": "Top Pick",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "reviewLabel",
+            "label": "Review Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "instagramLabel",
+            "label": "Instagram Label",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "instagramHandle",
+            "label": "Instagram Handle",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "empty",
+            "label": "Empty",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "unavailable",
+            "label": "Unavailable",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          }
+        ]
+      },
+      {
+        "key": "copy",
+        "label": "Copy",
+        "type": "object",
+        "fields": [
+          {
+            "key": "text_search_seedly_pantry",
+            "label": "Search seedly pantry",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_search_products",
+            "label": "Search products",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "placeholder_search_seeds_kits_and_teas",
+            "label": "Placeholder search seeds kits and teas",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "text_results_update_as_you_type_use_the_arrow_keys_to_browse",
+            "label": "Results update as you type use the arrow keys to browse",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_we_couldn_t_load_products_please_try_again",
+            "label": "We couldn t load products please try again",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_try_again",
+            "label": "Try again",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_middot",
+            "label": "Middot",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_no_products_found",
+            "label": "No products found",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_try_a_product_or_ingredient_like_pumpkin_flax_or_chamom",
+            "label": "Try a product or ingredient like pumpkin flax or chamom",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          },
+          {
+            "key": "text_track_your_order",
+            "label": "Track your order",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "links",
+        "label": "Links",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "images",
+        "label": "Images",
+        "type": "object",
+        "fields": []
+      },
+      {
+        "key": "brand",
+        "label": "Brand",
+        "type": "object",
+        "fields": [
+          {
+            "key": "logoUrl",
+            "label": "Logo Url",
+            "type": "image",
+            "required": false,
+            "maxLength": 2048
+          },
+          {
+            "key": "logoAlt",
+            "label": "Logo Alt",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "page-template",
+    "title": "New page template",
+    "description": "Shared website settings.",
+    "kind": "config",
+    "fields": [
+      {
+        "key": "seo",
+        "label": "Seo",
+        "type": "object",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text",
+            "required": true,
+            "maxLength": 500
+          },
+          {
+            "key": "description",
+            "label": "Description",
+            "type": "textarea",
+            "required": true,
+            "maxLength": 16000
+          }
+        ]
+      },
+      {
+        "key": "title",
+        "label": "Title",
+        "type": "text",
+        "required": true,
+        "maxLength": 500
+      },
+      {
+        "key": "intro",
+        "label": "Intro",
+        "type": "textarea",
+        "required": false,
+        "maxLength": 16000
+      },
+      {
+        "key": "sections",
+        "label": "Sections",
+        "type": "list",
+        "min": 0,
+        "max": 100,
+        "item": {
+          "key": "item",
+          "label": "Item",
+          "type": "object",
+          "fields": [
+            {
+              "key": "id",
+              "label": "Id",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "title",
+              "label": "Title",
+              "type": "text",
+              "required": true,
+              "maxLength": 500
+            },
+            {
+              "key": "body",
+              "label": "Body",
+              "type": "textarea",
+              "required": false,
+              "maxLength": 16000
+            },
+            {
+              "key": "image",
+              "label": "Image",
+              "type": "image",
+              "required": false,
+              "maxLength": 2048
+            },
+            {
+              "key": "linkLabel",
+              "label": "Link Label",
+              "type": "text",
+              "required": false,
+              "maxLength": 500
+            },
+            {
+              "key": "href",
+              "label": "Href",
+              "type": "url",
+              "required": false,
+              "maxLength": 2048
+            },
+            {
+              "key": "enabled",
+              "label": "Enabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

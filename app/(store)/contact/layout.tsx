@@ -1,20 +1,4 @@
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Customer Care & WhatsApp Helpline | Seedly Pakistan',
-  description:
-    'Have questions about seed cycling, brewing temperatures, or your order? Connect directly with our Lahore care team via WhatsApp or email.',
-  openGraph: {
-    title: 'Customer Care & WhatsApp Helpline | Seedly Pakistan',
-    description: 'Connect directly with our Lahore care team via WhatsApp 0371 9055758 or email care@seedly.pk.',
-    images: ['/images/hero/seedly-hero.jpg'],
-  },
-};
-
-export default function ContactLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <>{children}</>;
-}
+import type { ReactNode } from 'react';
+import {getContentMetadata} from '@/lib/cms/metadata';
+export async function generateMetadata(){return getContentMetadata('contact');}
+export default function PageLayout({children}:{children:ReactNode}){return children;}

@@ -1,56 +1,30 @@
+import {getContentDocument} from '@/lib/services/content';
+import type {SiteContent,HomeContent} from '@/lib/cms/storefront-types';
 import type { Metadata } from 'next';
-import { Roboto, Noto_Nastaliq_Urdu } from 'next/font/google';
+import { Roboto } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '../lib/store/cart';
 import { WishlistProvider } from '../lib/store/wishlist';
-import { CartDrawer } from '../components/cart/CartDrawer';
 import { CartToast } from '../components/cart/CartToast';
 import { RouteProgressBar } from '../components/ui/RouteProgressBar';
 
 const roboto = Roboto({
-  weight: ['100', '300', '400', '500', '700', '900'],
+  weight: ['400', '500', '700'],
   subsets: ['latin'],
   variable: '--font-roboto',
   display: 'swap',
 });
 
-const notoNastaliqUrdu = Noto_Nastaliq_Urdu({
-  subsets: ['arabic'],
-  weight: ['400', '700'],
-  variable: '--font-urdu',
-  display: 'swap',
-});
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://seedly.pk'),
-  title: {
-    default: 'Seedly — Pakistan’s Raw Seeds & Mountain Teas',
-    template: '%s | Seedly',
-  },
-  description:
-    'Pure whole raw pantry seeds, 14-day & 28-day routine kits, and high-altitude mountain teas delivered nationwide across Pakistan. Packed fresh in Lahore.',
-  icons: {
-    icon: '/logo/seedly-logo.jpg',
-    apple: '/logo/seedly-logo.jpg',
-  },
-  openGraph: {
-    title: 'Seedly — Pakistan’s Raw Seeds & Mountain Teas',
-    description:
-      'Raw seeds and herbal teas for eating and brewing, packed fresh in Lahore from growers in Gilgit-Baltistan, KP and Punjab.',
-    url: 'https://seedly.pk',
-    siteName: 'Seedly',
-    locale: 'en_PK',
-    type: 'website',
-    images: [
-      {
-        url: '/images/hero/seedly-hero.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Seedly raw seeds and whole blossom mountain teas',
-      },
-    ],
-  },
-};
+export async function generateMetadata():Promise<Metadata>{
+ try{
+ const [site,home]=await Promise.all([getContentDocument<SiteContent>('site'),getContentDocument<HomeContent>('home')]);
+ const title=site.config.name+' ? '+site.config.brandLine;
+ const image=home.images.src_images_hero_seedly_hero_jpg;
+ return {metadataBase:new URL(site.config.url),title:{default:title,template:'%s'},description:site.config.description,...(site.brand.logoUrl?{icons:{icon:site.brand.logoUrl,apple:site.brand.logoUrl}}:{}),openGraph:{title,description:site.config.description,url:site.config.url,siteName:site.config.name,locale:'en_PK',type:'website',...(image?{images:[{url:image,alt:home.copy.alt_seeds_and_a_cup_of_tea_on_a_kitchen_table}]}:{})}};
+ }catch{return {};}
+}
+
 
 export default function RootLayout({
   children,
@@ -58,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${roboto.variable} ${notoNastaliqUrdu.variable}`}>
+    <html lang="en" className={`${roboto.variable}`}>
       <body className="min-h-screen flex flex-col bg-paper text-ink font-sans selection:bg-seed-lime selection:text-ink">
         <a
           href="#main-content"
@@ -68,9 +42,7 @@ export default function RootLayout({
         </a>
         <CartProvider>
           <WishlistProvider>
-            <RouteProgressBar />
             {children}
-            <CartDrawer />
             <CartToast />
           </WishlistProvider>
         </CartProvider>

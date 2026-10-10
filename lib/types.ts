@@ -1,7 +1,7 @@
 export type ProductType = 'seed' | 'kit' | 'tea';
 export type ProductStatus = 'ACTIVE' | 'DRAFT' | 'ARCHIVED';
 export type OrderStatus = 'RECEIVED' | 'PENDING_PAYMENT' | 'PAYMENT_REVIEW' | 'PAID' | 'PROCESSING' | 'PACKED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
-export type PaymentStatus = 'PENDING' | 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED' | 'FAILED';
+export type PaymentStatus = 'PENDING' | 'UNDER_REVIEW' | 'VERIFIED' | 'PAID' | 'REJECTED' | 'FAILED' | 'REFUNDED';
 export type PaymentMethod = 'wallet_aggregator' | 'bank_transfer' | 'COD';
 export type AdminRole = 'Owner' | 'Staff';
 
@@ -25,7 +25,8 @@ export interface ProductVariant {
   compare_price_minor?: number;
   weight_grams: number;
   inventory_quantity: number;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+  updated_at?: string;
 }
 
 export interface Product {
@@ -69,6 +70,7 @@ export interface Product {
   is_featured?: boolean;
   badge?: 'BESTSELLER' | 'NEW' | 'POPULAR' | 'LIMITED';
   phase?: 'follicular' | 'luteal' | null;
+  updated_at?: string;
 }
 
 export interface KitItem {
@@ -82,6 +84,8 @@ export interface KitItem {
 }
 
 export interface Kit {
+  category_id?: string;
+  updated_at?: string;
   id: string;
   name: string;
   slug: string;
@@ -182,6 +186,10 @@ export interface Review {
 }
 
 export interface SiteSettings {
+  ordering_enabled: boolean;
+  cod_enabled: boolean;
+  bank_transfer_enabled: boolean;
+  wallet_enabled: boolean;
   store_name: string;
   tagline: string;
   currency: string;
@@ -198,6 +206,27 @@ export interface SiteSettings {
   whatsapp_number: string;
   support_email: string;
   serviceable_cities: string[];
+}
+
+export type CustomerStoreSettings = Pick<SiteSettings,
+  'currency' | 'delivery_fee_minor' | 'free_delivery_threshold_minor' |
+  'bank_name' | 'bank_account_title' | 'bank_account_number' | 'bank_iban' |
+  'jazzcash_number' | 'jazzcash_title' | 'easypaisa_number' | 'easypaisa_title'> & { receipt_upload_available: boolean; ordering_available: boolean; enabled_payment_methods: PaymentMethod[] };
+
+export interface CheckoutLine {
+  product_id: string;
+  variant_id?: string;
+  kit_id?: string;
+  quantity: number;
+}
+
+export interface CheckoutQuote {
+  subtotal_minor: number;
+  shipping_minor: number;
+  total_minor: number;
+  items: (CheckoutLine & { name: string; unit_price_minor: number; line_total_minor: number; image_url: string; sku: string })[];
+  token: string;
+  expires_at: string;
 }
 
 export interface StockAlertSubscription {
@@ -223,7 +252,7 @@ export interface StockAlertDelivery {
   notification_type: 'CONFIRMATION' | 'RESTOCK' | 'ADMIN_ALERT';
   status: 'SENT' | 'FAILED';
   attempt_count: number;
-  sent_at: string;
+  sent_at: string | null;
   error_message?: string;
 }
 

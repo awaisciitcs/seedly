@@ -10,8 +10,7 @@ export async function GET(request: Request) {
     const idsParam = searchParams.get('ids');
     const typeParam = searchParams.get('type');
 
-    const products = await getProducts();
-    const kits = await getKits();
+    const [products,kits] = await Promise.all([getProducts({includeReviews:false}),getKits({includeReviews:false})]);
 
     let combined: any[] = [...products, ...kits];
 
@@ -36,7 +35,7 @@ export async function GET(request: Request) {
   } catch (error: any) {
     console.error('API /api/products error:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to fetch products' },
+      { success: false, error: 'Products are temporarily unavailable. Please try again.' },
       { status: 500 }
     );
   }

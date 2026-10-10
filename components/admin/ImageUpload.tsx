@@ -1,215 +1,89 @@
 'use client';
-
-import React, { useState, useRef } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import Image from 'next/image';
-import { UploadCloud, X, Loader2, Link2, Check, AlertCircle, Image as ImageIcon } from 'lucide-react';
+import { UploadCloud, X, Loader2, Link2, Check, AlertCircle } from 'lucide-react';
+import { MAX_UPLOAD_FILE_BYTES } from '@/lib/upload-limits';
 
 interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
   label?: string;
   helperText?: string;
+  onUploadingChange?: (uploading: boolean) => void;
 }
-
-export function ImageUpload({
-  value,
-  onChange,
-  label = 'Product Image',
-  helperText = 'Upload JPG, PNG, WebP, SVG up to 10MB',
-}: ImageUploadProps) {
+function safeImage(value: string): boolean {
+  if (!value || value.includes('#') || value.length > 2048 || /[\\\s\u0000-\u001f]/.test(value)) return false;
+  if (/^\/(?!\/)/.test(value)) return true;
+  try {
+    const url = new URL(value);
+    let storageHost = 'fyqmbjzpajmnyyqcrmgc.supabase.co';
+    try { storageHost = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://' + storageHost).hostname; } catch { /* Config is checked server-side. */ }
+    return url.protocol === 'https:' && !url.username && !url.password && !url.port && !url.hash
+      && (url.hostname === 'images.unsplash.com' || url.hostname === storageHost && url.pathname.startsWith('/storage/v1/object/public/product-images/'));
+  } catch { return false; }
+}
+export function ImageUpload({ value, onChange, label = 'Product Image', helperText = 'Upload JPG, PNG, WebP or GIF up to 4MB', onUploadingChange }: ImageUploadProps) {
+  const id = useId();
   const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
+  const [previewFailed, setPreviewFailed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleUpload = async (file: File) => {
-    setErrorMsg('');
-    if (!file) return;
-
-    // Validate size (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      setErrorMsg('Image file size exceeds 10MB.');
-      return;
-    }
-
-    setIsUploading(true);
+  const controllerRef = useRef<AbortController | null>(null);
+  const generation = useRef(0);
+  const uploadingRef = useRef(false);
+  const callbackRef = useRef(onUploadingChange); callbackRef.current = onUploadingChange;
+  const validImage = safeImage(value);
+  function notifyUploading(next: boolean) {
+    if (uploadingRef.current !== next) { uploadingRef.current = next; callbackRef.current?.(next); }
+    setIsUploading(next);
+  }
+  function cancelUpload() { generation.current++; controllerRef.current?.abort(); controllerRef.current = null; notifyUploading(false); }
+  useEffect(() => { setPreviewFailed(false); }, [value]);
+  useEffect(() => () => {
+    generation.current++; controllerRef.current?.abort();
+    if (uploadingRef.current) { uploadingRef.current = false; callbackRef.current?.(false); }
+  }, []);
+  async function handleUpload(file: File) {
+    setErrorMsg(''); cancelUpload();
+    if (!file || file.size === 0) { setErrorMsg('Choose a non-empty image file.'); return; }
+    if (file.size > MAX_UPLOAD_FILE_BYTES) { setErrorMsg('Image file size exceeds 4MB.'); return; }
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) { setErrorMsg('Use a JPG, PNG, WebP, or GIF image.'); return; }
+    controllerRef.current?.abort();
+    const current = ++generation.current;
+    const controller = new AbortController(); controllerRef.current = controller;
+    notifyUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const res = await fetch('/api/admin/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const json = await res.json();
-      if (!res.ok) {
-        throw new Error(json.error?.message || 'Failed to upload image');
-      }
-
-      if (json.data?.url) {
-        onChange(json.data.url);
-      }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Error uploading image');
+      const formData = new FormData(); formData.append('file', file);
+      const response = await fetch('/api/admin/upload', { method: 'POST', body: formData, credentials: 'same-origin', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(30000)]) });
+      const json = await response.json().catch(() => null);
+      if (current !== generation.current || controller.signal.aborted) return;
+      if (!response.ok) throw new Error(json?.error?.message || 'Image upload failed. Please try again.');
+      const url = json?.data?.url;
+      if (typeof url !== 'string' || !safeImage(url)) throw new Error('The image service returned an invalid image URL. Please try again.');
+      setPreviewFailed(false); onChange(url);
+    } catch (cause) {
+      if (current === generation.current && !controller.signal.aborted) setErrorMsg(cause instanceof Error && cause.name !== 'TimeoutError' ? cause.message : 'Image upload timed out. Please try again.');
     } finally {
-      setIsUploading(false);
+      if (current === generation.current) { controllerRef.current = null; notifyUploading(false); }
     }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleUpload(file);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleUpload(file);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="block font-semibold text-white/90 text-xs">{label}</label>
-        <button
-          type="button"
-          onClick={() => setShowUrlInput(!showUrlInput)}
-          className="text-[11px] text-lime/90 hover:text-lime flex items-center gap-1 transition-colors"
-        >
-          <Link2 className="w-3 h-3" />
-          <span>{showUrlInput ? 'Switch to file upload' : 'Enter URL instead'}</span>
-        </button>
+  }
+  function clearImage() { cancelUpload(); setErrorMsg(''); onChange(''); }
+  const visibleError = errorMsg || (value && !validImage ? 'Use a local image path, an Unsplash HTTPS image, or this store?s public Supabase product image URL.' : '');
+  return <div className="min-w-0 space-y-2">
+    <div className="flex flex-wrap items-center justify-between gap-2"><label htmlFor={showUrlInput ? id + '-url' : id + '-file'} className="block text-xs font-semibold text-white/90">{label}</label><button type="button" disabled={isUploading} aria-pressed={showUrlInput} onClick={() => setShowUrlInput(!showUrlInput)} className="flex min-h-8 items-center gap-1 text-[11px] text-lime/90 transition-colors hover:text-lime disabled:opacity-50"><Link2 size={13} />{showUrlInput ? 'Switch to file upload' : 'Enter URL instead'}</button></div>
+    {visibleError && <div role="alert" className="flex items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-950/70 p-2.5 text-xs text-rose-300"><AlertCircle size={16} className="shrink-0" /><span>{visibleError}</span></div>}
+    {showUrlInput ? <div className="flex min-w-0 items-center gap-2"><input id={id + '-url'} type="text" inputMode="url" placeholder="/images/? or https://?" value={value} disabled={isUploading} maxLength={2048} aria-describedby={id + '-help'} aria-invalid={!!value && !validImage} onChange={event => { cancelUpload(); setErrorMsg(''); onChange(event.target.value); }} className="glass-input-3d min-h-11 min-w-0 flex-1 rounded-xl px-3 text-xs" />{value && <button type="button" onClick={clearImage} aria-label={'Clear ' + label} className="glass-btn-3d flex min-h-11 min-w-11 items-center justify-center rounded-xl text-rose-300"><X size={17} /></button>}</div>
+      : value ? <div className="flex flex-wrap items-center gap-3 overflow-hidden rounded-2xl border border-white/20 bg-black/30 p-2">
+        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-white/5">{validImage && !previewFailed ? <Image src={value} alt={label + ' preview'} fill sizes="64px" className="object-cover" onError={() => setPreviewFailed(true)} /> : <span className="flex h-full items-center justify-center p-2 text-center text-[10px] text-botanical-sage">Preview unavailable</span>}</div>
+        <div className="min-w-0 flex-1"><div className="flex items-center gap-1.5 text-xs font-medium text-emerald-300"><Check size={15} /><span>{isUploading ? 'Replacing image?' : 'Image selected'}</span></div><p className="mt-1 truncate font-mono text-[10px] text-botanical-sage" title={value}>{value}</p></div>
+        <div className="flex items-center gap-1.5"><button type="button" disabled={isUploading} onClick={() => fileInputRef.current?.click()} className="glass-btn-3d inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-3 text-xs text-white disabled:opacity-50">{isUploading && <Loader2 size={15} className="animate-spin" />}{isUploading ? 'Uploading?' : 'Replace'}</button><button type="button" onClick={clearImage} aria-label={'Remove ' + label} className="glass-btn-3d flex min-h-11 min-w-11 items-center justify-center rounded-lg text-rose-300"><X size={17} /></button></div>
       </div>
-
-      {errorMsg && (
-        <div className="p-2.5 bg-rose-950/70 border border-rose-500/40 text-rose-300 rounded-xl text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
-
-      {showUrlInput ? (
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            placeholder="e.g. /images/products/pumpkin-seeds.svg or https://..."
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className="glass-input-3d flex-1 px-3 py-2 rounded-xl text-xs"
-          />
-          {value && (
-            <button
-              type="button"
-              onClick={() => onChange('')}
-              className="glass-btn-3d p-2 rounded-xl text-rose-300 hover:text-white"
-              title="Clear"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-      ) : (
-        <div>
-          {value ? (
-            /* Uploaded Preview State */
-            <div className="relative group rounded-2xl overflow-hidden border border-white/20 bg-black/40 p-2 flex items-center gap-3">
-              <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 border border-white/10 shrink-0">
-                <Image
-                  src={value}
-                  alt="Product preview"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-              <div className="min-w-0 flex-1 space-y-1">
-                <div className="flex items-center gap-1.5 text-xs text-emerald-300 font-medium">
-                  <Check className="w-3.5 h-3.5 text-lime" />
-                  <span>Image uploaded</span>
-                </div>
-                <p className="text-[10px] text-botanical-sage font-mono truncate" title={value}>
-                  {value}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-1.5 pr-2">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="glass-btn-3d px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-white/90 hover:text-white"
-                >
-                  {isUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Replace'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onChange('')}
-                  className="glass-btn-3d p-1.5 rounded-lg text-rose-300 hover:text-white"
-                  title="Remove image"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          ) : (
-            /* Dropzone / Upload Trigger State */
-            <div
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onClick={() => !isUploading && fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
-                isDragging
-                  ? 'border-lime bg-lime/10 shadow-[0_0_15px_rgba(183,228,89,0.3)]'
-                  : 'border-white/20 hover:border-lime/60 bg-white/[0.02] hover:bg-white/[0.05]'
-              }`}
-            >
-              {isUploading ? (
-                <div className="flex flex-col items-center gap-2 py-2">
-                  <Loader2 className="w-6 h-6 text-lime animate-spin" />
-                  <span className="text-xs text-botanical-sage">Uploading image to CDN...</span>
-                </div>
-              ) : (
-                <>
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-lime shadow-[0_0_10px_rgba(74,222,128,0.2)]">
-                    <UploadCloud className="w-5 h-5" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs font-semibold text-white">
-                      Click to upload <span className="text-botanical-sage font-normal">or drag &amp; drop</span>
-                    </p>
-                    <p className="text-[10px] text-botanical-sage mt-0.5">{helperText}</p>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/svg+xml,image/gif"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-        </div>
-      )}
-    </div>
-  );
+      : <button type="button" disabled={isUploading} aria-describedby={id + '-help'} onClick={() => fileInputRef.current?.click()} onDrop={event => { event.preventDefault(); setIsDragging(false); const file = event.dataTransfer.files[0]; if (file) void handleUpload(file); }} onDragOver={event => { event.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} className={'flex min-h-32 w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 transition-colors disabled:cursor-wait ' + (isDragging ? 'border-lime bg-lime/10' : 'border-white/20 bg-white/[0.02] hover:border-lime/60 hover:bg-white/[0.05]')}>
+        {isUploading ? <><Loader2 size={24} className="animate-spin text-lime" /><span role="status" className="text-xs text-botanical-sage">Uploading image?</span></> : <><span className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-lime"><UploadCloud size={21} /></span><span className="text-xs font-semibold text-white">Click to upload <span className="font-normal text-botanical-sage">or drag &amp; drop</span></span></>}
+      </button>}
+    <p id={id + '-help'} className="text-[10px] leading-relaxed text-botanical-sage">{helperText}</p>
+    <input id={id + '-file'} ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" aria-label={label} disabled={isUploading} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void handleUpload(file); }} className="hidden" />
+  </div>;
 }

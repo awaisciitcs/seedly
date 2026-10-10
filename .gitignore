@@ -49,3 +49,8 @@ next-env.d.ts
 
 
 
+
+# Private archives and exported customer records
+/data/*.db
+/scripts/*dump*.sql
+/supabase/.temp/

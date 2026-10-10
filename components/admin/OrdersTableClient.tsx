@@ -15,6 +15,7 @@ import {
   ExternalLink,
   ShieldCheck,
 } from 'lucide-react';
+import { csvDocument } from '@/lib/csv';
 import { Order } from '@/lib/types';
 import { formatPKR, formatPKTDateTime, isTestOrder } from '@/lib/admin-utils';
 import { OrderDrawer } from '@/components/admin/OrderDrawer';
@@ -113,23 +114,23 @@ export function OrdersTableClient({
     const rows = displayOrders.map((o) => [
       o.order_number,
       formatPKTDateTime(o.created_at).dateOnly,
-      `"${o.customer_name}"`,
-      `"${o.customer_phone}"`,
-      `"${o.shipping_city}"`,
+      o.customer_name,
+      o.customer_phone,
+      o.shipping_city,
       o.payment_method,
       o.payment_status,
       o.order_status,
-      Math.floor(o.total_minor / 100),
+      o.total_minor / 100,
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
+    const url = URL.createObjectURL(new Blob([csvDocument([headers, ...rows])], { type: 'text/csv;charset=utf-8' }));
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `seedly_orders_${Date.now()}.csv`);
+    link.href = url;
+    link.download = 'seedly_orders_' + Date.now() + '.csv';
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   return (

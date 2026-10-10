@@ -1,3 +1,4 @@
+import { boundedSupabaseFetch } from './fetch';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { Database } from './database.types';
@@ -9,6 +10,8 @@ export async function createClient() {
   const key = getSupabaseKey();
 
   return createServerClient<Database>(url, key, {
+    db: { retry: false },
+    global: { fetch: boundedSupabaseFetch },
     cookies: {
       getAll() {
         return cookieStore.getAll();

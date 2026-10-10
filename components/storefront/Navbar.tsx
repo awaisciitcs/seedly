@@ -1,259 +1,193 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SeedlyLogo } from '../ui/SeedlyLogo';
-import { useCart } from '../../lib/store/cart';
-import { useWishlist } from '../../lib/store/wishlist';
-import { Search, ShoppingBag, Heart, Menu, X, ArrowRight, Truck } from 'lucide-react';
+import { ArrowUpRight, Heart, Menu, PackageCheck, Search, ShoppingBag, UserRound, X } from 'lucide-react';
+import { useCart } from '@/lib/store/cart';
+import { SeedlyLogo } from '@/components/ui/SeedlyLogo';
+import { Dialog } from '@/components/ui/Dialog';
 import { ProductSearch } from './ProductSearch';
+import { useSiteContent } from './SiteContentProvider';
+import type { SiteContent } from '@/lib/cms/storefront-types';
 import { TrackOrderModal } from './TrackOrderModal';
 
-const navLinks = [
-  { label: 'Shop all', href: '/shop' },
-  { label: 'Seeds', href: '/seeds' },
-  { label: 'Kits', href: '/kits' },
-  { label: 'Teas', href: '/teas' },
-  { label: 'Routine finder', href: '/find-your-seed' },
-  { label: 'Our story', href: '/about' },
-];
 
 export function Navbar() {
-  const pathname = usePathname();
-  const { itemCount, setIsCartOpen, cartBump } = useCart();
-  const { wishlistCount } = useWishlist();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [trackOrderOpen, setTrackOrderOpen] = useState(false);
-  const [language, setLanguage] = useState<'EN' | 'UR'>('EN');
-  const [scrolled, setScrolled] = useState(false);
-  const menuButton = useRef<HTMLButtonElement>(null);
-  const searchButton = useRef<HTMLButtonElement>(null);
+ const {header,features,config,brand}=useSiteContent<SiteContent>('site');
+ const shopLinks=header.shopLinks;
+ const exploreLinks=header.exploreLinks.filter(link=>features.routine||link.href!=='/find-your-seed');
+  const path = usePathname();
+  const { itemCount, isCartOpen, setIsCartOpen } = useCart();
+  const [menu, setMenu] = useState(false);
+  const [search, setSearch] = useState(false);
+  const [track, setTrack] = useState(false);
+  const searchButtonRef = useRef<HTMLButtonElement>(null);
+  const isCurrent = (href: string) => path === href || path.startsWith(href + '/');
 
   useEffect(() => {
-    setMobileMenuOpen(false);
-    setSearchOpen(false);
-  }, [pathname]);
+    setMenu(false);
+    setSearch(false);
+    setTrack(false);
+  }, [path]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const closeMobileMenu = () => { if (desktop.matches) setMenu(false); };
+    desktop.addEventListener('change', closeMobileMenu);
+    return () => desktop.removeEventListener('change', closeMobileMenu);
   }, []);
 
-  const toggleLanguage = () => {
-    setLanguage((prev) => (prev === 'EN' ? 'UR' : 'EN'));
-  };
+  useEffect(() => {
+    const openSearch = (event: KeyboardEvent) => {
+      const target = event.target;
+      if (
+        !features.search || event.key !== '/' || event.defaultPrevented || event.repeat || event.isComposing ||
+        event.ctrlKey || event.altKey || event.metaKey ||
+        (target instanceof HTMLElement && (target.isContentEditable || target.closest('input, textarea, select, [role="textbox"]'))) ||
+        document.querySelector('dialog[open]')
+      ) return;
+      event.preventDefault();
+      searchButtonRef.current?.focus({ preventScroll: true });
+      setSearch(true);
+    };
+    document.addEventListener('keydown', openSearch);
+    return () => document.removeEventListener('keydown', openSearch);
+  }, [features.search]);
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-gray-200/90 transition-shadow duration-200">
-      <div className="max-w-7xl mx-auto w-full px-5 md:px-8">
-        <div className="grid grid-cols-[1fr_auto_1fr] h-16 sm:h-20 items-center gap-2 sm:gap-4">
-          
-          {/* Mobile menu trigger + Logo start */}
-          <div className="flex items-center gap-2.5 sm:gap-3 justify-self-start">
-            <button
-              ref={menuButton}
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(!mobileMenuOpen);
-                setSearchOpen(false);
-              }}
-              className="h-9 w-9 rounded-full border border-gray-200 bg-white text-stone-800 hover:text-black hover:bg-stone-50 flex items-center justify-center lg:hidden shadow-xs cursor-pointer"
-              aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+    <header className="site-header">
+      <div className="store-container site-header-main">
+        <button
+          type="button"
+          className="site-header-icon site-header-menu"
+          aria-label="Open navigation"
+          aria-expanded={menu}
+          aria-haspopup="dialog"
+          onClick={() => setMenu(true)}
+        >
+          <Menu size={22} strokeWidth={1.7} aria-hidden="true" />
+        </button>
 
-            {/* Logo: seedly ♥ */}
-            <SeedlyLogo size="md" className="shrink-0" />
-          </div>
-
-          {/* Center Navigation / Shop Search Input */}
-          <div className="justify-self-center">
-            {pathname === '/shop' ? (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const form = e.currentTarget;
-                  const input = form.elements.namedItem('search') as HTMLInputElement;
-                  const params = new URLSearchParams(window.location.search);
-                  if (input?.value?.trim()) {
-                    params.set('search', input.value.trim());
-                  } else {
-                    params.delete('search');
-                  }
-                  window.location.href = `/shop?${params.toString()}`;
-                }}
-                className="hidden md:flex w-64 lg:w-96"
-                role="search"
-              >
-                <div className="relative w-full">
-                  <Search className="absolute start-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 pointer-events-none" />
-                  <input
-                    type="search"
-                    name="search"
-                    placeholder="Search the pantry..."
-                    aria-label="Search the pantry"
-                    className="w-full rounded-full border border-gray-200 bg-stone-50/70 py-2 ps-10 pe-4 text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:outline-none focus:bg-white focus:border-stone-400 shadow-xs transition-colors"
-                  />
-                </div>
-              </form>
-            ) : (
-              <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-1 xl:gap-2">
-                {navLinks.map((link) => {
-                  const active = pathname === link.href;
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      aria-current={active ? 'page' : undefined}
-                      className={`rounded-full px-3.5 py-1.5 text-xs xl:text-sm font-medium tracking-tight transition-all duration-150 ${
-                        active
-                          ? 'bg-black text-white shadow-xs font-semibold'
-                          : 'text-stone-700 hover:text-black hover:bg-stone-100/70'
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            )}
-          </div>
-
-          {/* Right Action Utilities */}
-          <div className="flex items-center justify-end gap-2 sm:gap-3 justify-self-end">
-            
-            {/* Search Circle Button (Hidden on /shop desktop since search is inline) */}
-            {pathname !== '/shop' && (
-              <button
-                ref={searchButton}
-                type="button"
-                onClick={() => {
-                  setSearchOpen(!searchOpen);
-                  setMobileMenuOpen(false);
-                }}
-                className="h-9 w-9 rounded-full border border-gray-200 bg-white text-stone-700 hover:text-black hover:bg-stone-50 flex items-center justify-center shadow-xs cursor-pointer transition-colors"
-                aria-label={searchOpen ? 'Close search' : 'Search products'}
-                aria-expanded={searchOpen}
-              >
-                <Search className="h-4 w-4" />
-              </button>
-            )}
-
-            {/* Language Switcher EN | UR */}
-            {pathname !== '/shop' && (
-              <button
-                type="button"
-                onClick={toggleLanguage}
-                title={`Switch language (current: ${language})`}
-                className="hidden sm:inline-flex rounded-full border border-gray-200 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider bg-white text-stone-800 hover:bg-stone-50 shadow-xs cursor-pointer transition-colors"
-              >
-                <span className={language === 'EN' ? 'text-black font-bold' : 'text-stone-400'}>EN</span>
-                <span className="mx-1 text-stone-300">|</span>
-                <span className={language === 'UR' ? 'text-black font-bold' : 'text-stone-400'}>UR</span>
-              </button>
-            )}
-
-            {/* Track Order Link */}
-            {pathname !== '/shop' && (
-              <button
-                type="button"
-                onClick={() => setTrackOrderOpen(true)}
-                aria-label="Track order"
-                className="hidden md:inline-flex items-center justify-center h-9 xl:h-auto px-2.5 xl:px-1.5 xl:py-1 rounded-full xl:rounded-none border border-gray-200 xl:border-0 bg-white xl:bg-transparent text-xs font-semibold uppercase tracking-wider text-stone-700 hover:text-black hover:underline underline-offset-4 whitespace-nowrap transition-colors cursor-pointer shadow-xs xl:shadow-none"
-              >
-                <Truck className="h-4 w-4 xl:hidden text-stone-700" aria-hidden="true" />
-                <span className="hidden xl:inline">Track order</span>
-              </button>
-            )}
-
-            {/* Wishlist Circle Button */}
-            <Link
-              href="/account/wishlist"
-              className="relative hidden sm:flex h-9 w-9 rounded-full border border-gray-200 bg-white text-stone-700 hover:text-black hover:bg-stone-50 items-center justify-center shadow-xs transition-colors"
-              aria-label={`Wishlist${wishlistCount > 0 ? `, ${wishlistCount} saved items` : ''}`}
-            >
-              <Heart className="h-4 w-4" />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-1 -end-1 h-4 min-w-[16px] px-1 rounded-full bg-amber-600 text-white text-[9px] font-bold flex items-center justify-center">
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
-
-            {/* Cart Button: Circular button with badge */}
-            <button
-              type="button"
-              onClick={() => setIsCartOpen(true)}
-              className={`relative flex h-9 w-9 rounded-full border border-gray-200 items-center justify-center bg-white text-stone-800 hover:text-black hover:bg-stone-50 shadow-xs transition-all cursor-pointer ${
-                cartBump ? 'scale-105 bg-stone-100' : ''
-              }`}
-              aria-label={`Open basket, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`}
-            >
-              <ShoppingBag className="h-4 w-4" />
-              {itemCount > 0 && (
-                <span className="absolute -top-1 -end-1 h-4 min-w-[16px] px-1 rounded-full bg-black text-white text-[9px] font-bold flex items-center justify-center tabular-nums">
-                  {itemCount}
-                </span>
-              )}
-            </button>
-          </div>
+        <div className="site-header-brand">
+          <SeedlyLogo brandName={config.name} logoUrl={brand.logoUrl} logoAlt={brand.logoAlt} size="lg" className="site-header-logo" />
+          <p className="site-header-tagline">{header.tagline}</p>
         </div>
 
-        {searchOpen && <ProductSearch onClose={() => setSearchOpen(false)} />}
+        {features.search && <button
+          ref={searchButtonRef}
+          type="button"
+          className="site-header-search"
+          aria-label="Search products"
+          aria-expanded={search}
+          aria-haspopup="dialog"
+          aria-keyshortcuts="/"
+          onClick={() => setSearch(true)}
+        >
+          <Search size={20} strokeWidth={1.7} aria-hidden="true" />
+          <span className="site-header-search-text">{header.searchLabel}</span>
+          <kbd className="site-header-shortcut" aria-hidden="true">/</kbd>
+        </button>}
+
+        <div className="site-header-actions">
+          {features.savedProducts && <Link className="site-header-saved" href="/account/wishlist" aria-label="Saved products">
+            <Heart size={21} strokeWidth={1.7} aria-hidden="true" />
+            <span>{header.savedLabel}</span>
+          </Link>}
+          <button
+            type="button"
+            className="site-header-basket"
+            aria-label={'Open basket, ' + itemCount + ' items'}
+            aria-expanded={isCartOpen}
+            aria-haspopup="dialog"
+            onClick={() => setIsCartOpen(true)}
+          >
+            <ShoppingBag size={21} strokeWidth={1.7} aria-hidden="true" />
+            <span className="site-header-basket-label">{header.basketLabel}</span>
+            {itemCount > 0 && <span className="site-header-count" aria-hidden="true">{itemCount}</span>}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Drawer Navigation */}
-      {mobileMenuOpen && (
-        <nav
-          id="mobile-navigation"
-          aria-label="Mobile navigation"
-          className="border-t-2 border-ink bg-paper px-6 py-6 lg:hidden animate-fadeIn space-y-3"
-        >
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block rounded-full border-2 border-ink px-4 py-2.5 text-sm font-bold text-ink shadow-brutal-sm ${
-                pathname === link.href ? 'bg-seed-lime' : 'bg-white hover:bg-seed-lime/30'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="pt-3 border-t-2 border-ink/10 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setTrackOrderOpen(true);
-              }}
-              className="text-xs font-bold uppercase tracking-wider text-ink underline"
-            >
-              Track your order
-            </button>
-            <button
-              type="button"
-              onClick={toggleLanguage}
-              className="btn-brutal px-3 py-1 text-xs bg-white text-ink"
-            >
-              Language: {language}
+      <div className="site-header-rail">
+        <div className="store-container site-header-rail-inner">
+          <nav aria-label="Main navigation" className="site-header-nav">
+            {shopLinks.map(link => (
+              <Link key={link.href} href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined} className="site-header-link">
+                {link.label}
+              </Link>
+            ))}
+            <span className="site-header-divider" aria-hidden="true" />
+            {exploreLinks.map(link => (
+              <Link key={link.href} href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined} className="site-header-link">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <button type="button" className="site-header-track" aria-expanded={track} aria-haspopup="dialog" onClick={() => setTrack(true)}>
+            <PackageCheck size={16} strokeWidth={1.7} aria-hidden="true" />
+            <span>{header.trackLabel}</span>
+          </button>
+        </div>
+      </div>
+
+      {search && features.search && <ProductSearch onClose={() => setSearch(false)} />}
+
+      <Dialog open={menu} onClose={() => setMenu(false)} title="Navigation" className="menu-dialog site-menu">
+        <div className="site-menu-content">
+          <div className="site-menu-heading">
+            <SeedlyLogo brandName={config.name} logoUrl={brand.logoUrl} logoAlt={brand.logoAlt} size="lg" />
+            <button type="button" className="site-header-icon" aria-label="Close navigation" data-autofocus onClick={() => setMenu(false)}>
+              <X size={22} strokeWidth={1.7} aria-hidden="true" />
             </button>
           </div>
-        </nav>
-      )}
+          {features.search && <button type="button" className="site-menu-search" onClick={() => { setMenu(false); setSearch(true); }}>
+            <Search size={19} strokeWidth={1.7} aria-hidden="true" />
+            <span>{header.mobileSearchLabel}</span>
+          </button>}
+          <nav aria-label="Mobile navigation">
+            <p className="site-menu-section-label">{header.mobileShopLabel}</p>
+            <ul className="site-menu-links">
+              {shopLinks.map(link => (
+                <li key={link.href}>
+                  <Link href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined} onClick={() => setMenu(false)}>
+                    <span>{link.label}</span>
+                    <ArrowUpRight size={18} strokeWidth={1.6} aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="site-menu-section-label">{header.mobileExploreLabel}</p>
+            <ul className="site-menu-links site-menu-explore">
+              {exploreLinks.map(link => (
+                <li key={link.href}>
+                  <Link href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined} onClick={() => setMenu(false)}>
+                    <span>{link.label}</span>
+                    <ArrowUpRight size={18} strokeWidth={1.6} aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="site-menu-utilities">
+            <button type="button" className="site-menu-utility" onClick={() => { setMenu(false); setTrack(true); }}>
+              <PackageCheck size={19} strokeWidth={1.7} aria-hidden="true" />
+              <span>{header.mobileTrackLabel}</span>
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </button>
+            <Link className="site-menu-utility" href="/account" onClick={() => setMenu(false)}>
+              <UserRound size={19} strokeWidth={1.7} aria-hidden="true" />
+              <span>{header.mobileAccountLabel}</span>
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
+          <Link className="site-menu-contact" href="/contact" onClick={() => setMenu(false)}>
+            {header.mobileContactLabel} <ArrowUpRight size={15} aria-hidden="true" />
+          </Link>
+        </div>
+      </Dialog>
 
-      {/* Track Order Modal */}
-      <TrackOrderModal isOpen={trackOrderOpen} onClose={() => setTrackOrderOpen(false)} />
+      <TrackOrderModal isOpen={track} onClose={() => setTrack(false)} />
     </header>
   );
 }
-
-export default Navbar;

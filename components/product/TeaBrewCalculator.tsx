@@ -1,4 +1,6 @@
 'use client';
+import { useSiteContent } from '@/components/storefront/SiteContentProvider';
+import type { CmsPageContent, SiteContent, ProductContent } from '@/lib/cms/storefront-types';
 
 import React, { useState } from 'react';
 import { Coffee, Thermometer, Clock, Droplets, Info } from 'lucide-react';
@@ -18,6 +20,8 @@ export function TeaBrewCalculator({
   waterTemp,
   caffeineLevel,
 }: TeaBrewCalculatorProps) {
+  const cms = useSiteContent<ProductContent>('product'); const { copy, links, images } = cms;
+
   const [cups, setCups] = useState(1);
 
   const isGreenTea = slug.includes('green');
@@ -25,32 +29,28 @@ export function TeaBrewCalculator({
   const isSpearmint = slug.includes('spearmint');
 
   // Brewing parameters
-  const gramsPerCup = 2.5;
+  const guide=cms.brewGuides.find(guide=>slug.includes(guide.id)); if(!guide)return null;
+ const gramsPerCup = guide?.gramsPerCup ?? 0;
   const leafGrams = (cups * gramsPerCup).toFixed(1).replace('.0', '');
   const teaspoons = cups === 1 ? '1 rounded tsp' : `${cups} rounded tsps`;
-  const waterMl = cups * 250;
+  const waterMl = cups * (guide?.waterMlPerCup ?? 0);
 
-  const tempDisplay = waterTemp || (isGreenTea ? '80°C' : '90°C–95°C');
-  const steepDisplay = steepTime || (isGreenTea ? '2–3 mins' : isChamomile ? '5–7 mins' : '4–5 mins');
+  const tempDisplay = waterTemp || guide?.temp || '';
+  const steepDisplay = steepTime || guide?.steep || '';
 
-  const tempTip = isGreenTea
-    ? 'Boil fresh water, let it rest in the kettle for 2 minutes to cool to 80°C. Never pour boiling water over green tea to prevent bitterness.'
-    : 'Pour rolling, freshly boiled water directly over the dried blossoms or leaves to extract full aromatic essential oils.';
+  const tempTip = guide?.tip || '';
 
   return (
     <div className="p-5 sm:p-6 bg-[#FBFBFA] rounded-2xl border border-gray-200/90 shadow-xs space-y-5 my-6">
       <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 border-b border-gray-200/80 pb-4">
         <div>
           <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-800 bg-stone-200/80 px-2.5 py-0.5 rounded-full inline-block mb-1">
-            Interactive Brew Guide
-          </span>
+            {copy.text_interactive_brew_guide}</span>
           <h3 className="font-heading font-medium text-lg sm:text-xl text-neutral-900">
-            How many cups are you preparing?
-          </h3>
+            {copy.text_how_many_cups_are_you_preparing}</h3>
         </div>
         <p className="text-xs text-stone-500 font-normal">
-          Adjust cups to calculate exact leaf weight &amp; water ratio
-        </p>
+          {copy.text_adjust_cups_to_calculate_exact_leaf_weight_water_ratio}</p>
       </div>
 
       {/* Cup Count Selector */}
@@ -73,8 +73,7 @@ export function TeaBrewCalculator({
                 {count} {count === 1 ? 'Cup' : 'Cups'}
               </div>
               <div className={`text-[11px] mt-0.5 ${isSelected ? 'text-neutral-300' : 'text-stone-400'}`}>
-                {count * 250} ml
-              </div>
+                {count * 250} {copy.text_ml}</div>
             </button>
           );
         })}
@@ -86,13 +85,12 @@ export function TeaBrewCalculator({
         <div className="p-3.5 bg-white rounded-xl border border-gray-200/80 shadow-xs space-y-1">
           <div className="flex items-center gap-1.5 text-xs text-stone-500 font-normal">
             <Coffee className="w-3.5 h-3.5 text-neutral-700" />
-            <span>Loose Leaf / Flower</span>
+            <span>{copy.text_loose_leaf_flower}</span>
           </div>
           <div className="text-base sm:text-lg font-heading font-semibold text-neutral-900">
-            {leafGrams} g
-          </div>
+            {leafGrams} {copy.text_g}</div>
           <div className="text-[11px] text-stone-400">
-            approx. {teaspoons}
+            {copy.text_approx}{teaspoons}
           </div>
         </div>
 
@@ -100,11 +98,10 @@ export function TeaBrewCalculator({
         <div className="p-3.5 bg-white rounded-xl border border-gray-200/80 shadow-xs space-y-1">
           <div className="flex items-center gap-1.5 text-xs text-stone-500 font-normal">
             <Droplets className="w-3.5 h-3.5 text-neutral-700" />
-            <span>Water Volume</span>
+            <span>{copy.text_water_volume}</span>
           </div>
           <div className="text-base sm:text-lg font-heading font-semibold text-neutral-900">
-            {waterMl} ml
-          </div>
+            {waterMl} {copy.text_ml}</div>
           <div className="text-[11px] text-stone-400">
             {cups === 4 ? '1 Litre Pot' : `${cups} standard teacup${cups > 1 ? 's' : ''}`}
           </div>
@@ -114,7 +111,7 @@ export function TeaBrewCalculator({
         <div className="p-3.5 bg-white rounded-xl border border-gray-200/80 shadow-xs space-y-1">
           <div className="flex items-center gap-1.5 text-xs text-stone-500 font-normal">
             <Thermometer className="w-3.5 h-3.5 text-neutral-700" />
-            <span>Water Temp</span>
+            <span>{copy.text_water_temp}</span>
           </div>
           <div className="text-base sm:text-lg font-heading font-semibold text-neutral-900">
             {tempDisplay}
@@ -128,14 +125,13 @@ export function TeaBrewCalculator({
         <div className="p-3.5 bg-white rounded-xl border border-gray-200/80 shadow-xs space-y-1">
           <div className="flex items-center gap-1.5 text-xs text-stone-500 font-normal">
             <Clock className="w-3.5 h-3.5 text-neutral-700" />
-            <span>Steep Time</span>
+            <span>{copy.text_steep_time}</span>
           </div>
           <div className="text-base sm:text-lg font-heading font-semibold text-neutral-900">
             {steepDisplay}
           </div>
           <div className="text-[11px] text-stone-400">
-            Cover while steeping
-          </div>
+            {copy.text_cover_while_steeping}</div>
         </div>
       </div>
 
@@ -143,7 +139,7 @@ export function TeaBrewCalculator({
       <div className="p-3.5 bg-white rounded-xl border border-gray-200/80 text-xs text-stone-600 leading-relaxed flex items-start gap-2.5 shadow-xs">
         <Info className="w-4 h-4 text-neutral-700 shrink-0 mt-0.5" />
         <div>
-          <strong className="text-neutral-900 font-semibold">Brewmaster Note: </strong>
+          <strong className="text-neutral-900 font-semibold">{copy.text_brewmaster_note}</strong>
           {tempTip}
         </div>
       </div>

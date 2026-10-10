@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const { test } = require('node:test');
 const ts = require('typescript');
 
-// Run the actual service against an in-memory database and a notification stub.
+// Exercise the actual status policy with a small in-memory order fixture.
 // This never opens data/seedly.db or sends customer notifications.
 function loadSource(file, dependencies = {}) {
   const filename = path.join(__dirname, '..', file);

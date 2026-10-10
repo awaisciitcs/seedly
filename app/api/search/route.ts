@@ -1,3 +1,4 @@
+import { normalizeSearch } from '@/lib/catalog';
 import { NextResponse } from 'next/server';
 import { getProducts } from '../../../lib/services/products';
 import { getKits } from '../../../lib/services/kits';
@@ -6,10 +7,10 @@ import { toSearchResult } from '../../../lib/product-search';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
-  const query = new URL(request.url).searchParams.get('q')?.trim().slice(0, 100) || '';
+  const query = normalizeSearch(new URL(request.url).searchParams.get('q') || '');
 
   try {
-    const options = { search: query || undefined };
+    const options = { search: query || undefined, includeReviews: false };
     const [products, kits] = await Promise.all([
       getProducts(options),
       getKits(options),

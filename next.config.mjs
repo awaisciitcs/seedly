@@ -6,10 +6,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
-      {
-        protocol: 'https',
-        hostname: 'fyqmbjzpajmnyyqcrmgc.supabase.co',
-      },
+      ...(process.env.NEXT_PUBLIC_SUPABASE_URL ? [{ protocol: 'https', hostname: new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname, pathname: '/storage/v1/object/public/product-images/**' }] : []),
     ],
   },
   async headers() {
@@ -17,6 +14,7 @@ const nextConfig = {
       {
         source: '/:path*',
         headers: [
+          { key: 'Content-Security-Policy', value: "base-uri 'self'; object-src 'none'; frame-ancestors 'self'" },
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
@@ -27,7 +25,7 @@ const nextConfig = {
           },
           {
             key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            value: '0',
           },
           {
             key: 'X-Frame-Options',
@@ -47,9 +45,12 @@ const nextConfig = {
           },
         ],
       },
+      { source: '/order/:path*', headers: [{key:'Cache-Control',value:'private, no-store, max-age=0'},{key:'Referrer-Policy',value:'no-referrer'}] },
+      { source: '/checkout', headers: [{key:'Cache-Control',value:'private, no-store, max-age=0'},{key:'Referrer-Policy',value:'no-referrer'}] },
       {
         source: '/admin/:path*',
         headers: [
+          { key: 'Content-Security-Policy', value: "base-uri 'self'; object-src 'none'; frame-ancestors 'none'" },
           {
             key: 'X-Frame-Options',
             value: 'DENY',

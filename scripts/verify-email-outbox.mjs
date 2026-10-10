@@ -1,0 +1,61 @@
+import assert from 'node:assert/strict';
+import {createDatabaseFixture,applyFixtureMigration} from './database-fixture.mjs';
+const db=await createDatabaseFixture();
+const call=async(name,args)=>(await db.query('select public.'+name+'('+Object.keys(args).map((key,i)=>key+' => $'+(i+1)).join(',')+') as result',Object.values(args))).rows[0].result;
+try {
+ for(const migration of ['harden_public_boundaries','atomic_admin_catalog','harden_commerce_transactions','sequential_order_references','restrict_admin_commerce_writes','durable_order_emails'])await applyFixtureMigration(db,migration);
+ await db.exec("set role service_role;set request.jwt.claim.role='service_role'");
+ const args={p_order_id:'email-order',p_order_number:'SED-100200',p_customer_name:'Email Fixture',p_customer_email:'fixture@example.test',p_customer_phone:'03001234567',p_shipping_address:'12 Example Street',p_shipping_city:'Lahore',p_shipping_province:'Punjab',p_shipping_postal_code:'',p_shipping_notes:'internal delivery note',p_payment_method:'bank_transfer',p_receipt_path:'private/receipt.pdf',p_idempotency_key:'email-fixture-checkout-key',p_request_fingerprint:'b'.repeat(64),p_tracking_token_hash:'c'.repeat(64),p_items:[{product_id:'prod-a',variant_id:'var-a',quantity:1}],p_expected_quote:{subtotal_minor:1000,shipping_minor:200,total_minor:1200,items:[{product_id:'prod-a',variant_id:'var-a',kit_id:null,quantity:1,unit_price_minor:1000}]}};
+ await call('create_order_secure_transactional',args);await call('create_order_secure_transactional',args);
+ let jobs=await call('claim_order_emails',{p_limit:3});assert.equal(jobs.length,1);let job=jobs[0];assert.equal(job.event_type,'ORDER_CREATED');
+ for(const field of ['admin_note','receipt_path','request_fingerprint','tracking_token_hash','customer_phone','shipping_notes'])assert.equal(field in job.payload,false);
+ assert.equal((await call('claim_order_emails',{p_limit:3})).length,0);
+ const message={to:'fixture@example.test',from:'Seedly <orders@example.test>',replyTo:'support@example.test',subject:'Fixture',html:'<p>Fixture</p>',text:'Fixture',idempotencyKey:'seedly-email/'+job.id};
+ let prepared=await call('prepare_order_email',{p_id:job.id,p_claim_token:job.claim_token,p_message:message});assert.deepEqual(prepared.message,message);
+ prepared=await call('prepare_order_email',{p_id:job.id,p_claim_token:job.claim_token,p_message:{...message,subject:'Changed sender body'}});assert.deepEqual(prepared.message,message);
+ assert.equal(await call('finish_order_email',{p_id:job.id,p_claim_token:'00000000-0000-0000-0000-000000000000',p_status:'ACCEPTED',p_provider_id:'provider-fixture'}),false);
+ await call('finish_order_email',{p_id:job.id,p_claim_token:job.claim_token,p_status:'RETRY',p_error_code:'NETWORK'});
+ assert.equal((await call('claim_order_emails',{p_limit:3})).length,0);
+ await db.exec("update seedly_notifications.email_outbox set available_at=now()-interval '1 minute'");
+ jobs=await call('claim_order_emails',{p_limit:3});job=jobs[0];assert.deepEqual(job.message,message);assert.equal(job.attempts,2);
+ await db.exec("update seedly_notifications.email_outbox set lease_until=now()-interval '1 minute'");
+ const reclaimed=(await call('claim_order_emails',{p_limit:3}))[0];assert.notEqual(reclaimed.claim_token,job.claim_token);
+ assert.equal(await call('finish_order_email',{p_id:job.id,p_claim_token:job.claim_token,p_status:'ACCEPTED',p_provider_id:'provider-fixture'}),false);
+ assert.equal(await call('finish_order_email',{p_id:reclaimed.id,p_claim_token:reclaimed.claim_token,p_status:'ACCEPTED',p_provider_id:'provider-fixture'}),true);
+ assert.equal((await call('claim_order_emails',{p_limit:3})).length,0);
+ await db.exec("reset role;set role authenticated;set request.jwt.claim.sub='10000000-0000-0000-0000-000000000001';set request.jwt.claim.role='authenticated'");
+ await call('update_order_payment_transactional',{p_order_id:'email-order',p_payment_status:'VERIFIED'});await call('update_order_payment_transactional',{p_order_id:'email-order',p_payment_status:'VERIFIED'});
+ await db.exec("reset role;set role service_role;set request.jwt.claim.role='service_role'");
+ jobs=await call('claim_order_emails',{p_limit:3});assert.equal(jobs.length,1);assert.equal(jobs[0].event_type,'PAYMENT_CONFIRMED');
+ await db.exec("update seedly_notifications.email_outbox set first_attempt_at=now()-interval '24 hours',lease_until=now()-interval '1 minute' where status='PROCESSING'");
+ assert.equal((await call('claim_order_emails',{p_limit:3})).length,0);
+ await db.exec('reset role');assert.equal((await db.query("select count(*)::integer as n from seedly_notifications.email_outbox where status='UNKNOWN'")).rows[0].n,1);
+ const count=(await db.query('select count(*)::integer as n from seedly_notifications.email_outbox')).rows[0].n;
+ await db.exec("set role service_role;set request.jwt.claim.role='service_role'");
+ await assert.rejects(()=>call('create_order_secure_transactional',{...args,p_order_id:'rolled-back-email',p_order_number:'SED-100201',p_idempotency_key:'different-fixture-checkout',p_expected_quote:{...args.p_expected_quote,total_minor:1}}),e=>e.code==='P0004');
+ await db.exec('reset role');assert.equal((await db.query('select count(*)::integer as n from seedly_notifications.email_outbox')).rows[0].n,count);
+
+ await db.exec("set role authenticated;set request.jwt.claim.sub='10000000-0000-0000-0000-000000000001';set request.jwt.claim.role='authenticated'");
+ await call('update_order_fulfillment_transactional',{p_order_id:'email-order',p_order_status:'PROCESSING'});
+ await call('update_order_fulfillment_transactional',{p_order_id:'email-order',p_order_status:'PACKED'});
+ await db.exec('reset role');assert.equal((await db.query('select count(*)::integer as n from seedly_notifications.email_outbox')).rows[0].n,count);
+ await db.exec("set role authenticated;set request.jwt.claim.role='authenticated'");
+ await call('update_order_fulfillment_transactional',{p_order_id:'email-order',p_order_status:'SHIPPED',p_tracking_number:'FIXTURE-123',p_courier_name:'Fixture Courier'});
+ await call('update_order_fulfillment_transactional',{p_order_id:'email-order',p_order_status:'DELIVERED'});
+ await db.exec("reset role;set role service_role;set request.jwt.claim.role='service_role'");
+ jobs=await call('claim_order_emails',{p_limit:3});assert.deepEqual(jobs.map(j=>j.event_type).sort(),['ORDER_DELIVERED','ORDER_SHIPPED']);
+ const shipped=jobs.find(j=>j.event_type==='ORDER_SHIPPED');assert.equal(shipped.payload.tracking_number,'FIXTURE-123');assert.equal(shipped.payload.courier_name,'Fixture Courier');
+ for(const j of jobs) await call('finish_order_email',{p_id:j.id,p_claim_token:j.claim_token,p_status:'ACCEPTED',p_provider_id:'fixture-'+j.event_type});
+ await call('create_order_secure_transactional',{...args,p_order_id:'rejected-order',p_order_number:'SED-100201',p_idempotency_key:'rejected-fixture-checkout'});
+ await db.exec("reset role;set role authenticated;set request.jwt.claim.role='authenticated'");
+ await call('update_order_payment_transactional',{p_order_id:'rejected-order',p_payment_status:'REJECTED',p_notes:'Private reason must not appear in email payload'});
+ await db.exec("reset role;set role service_role;set request.jwt.claim.role='service_role'");
+ jobs=await call('claim_order_emails',{p_limit:3});assert.deepEqual(jobs.map(j=>j.event_type).sort(),['ORDER_CREATED','PAYMENT_REJECTED']);
+ for(const j of jobs) assert.equal('admin_note' in j.payload,false);
+ for(const role of ['anon','authenticated']){
+  await db.exec('reset role;set role '+role);
+  await assert.rejects(()=>call('claim_order_emails',{p_limit:3}),e=>e.code==='42501');
+  await assert.rejects(()=>db.query('select * from seedly_notifications.email_outbox'),e=>e.code==='42501');
+ }
+ console.log(JSON.stringify({transactionalQueue:true,allLifecycleEvents:true,noPackingEmail:true,replayQueuesOnce:true,privatePayload:true,leaseRecovery:true,staleWorkerBlocked:true,frozenMessage:true,retryBackoff:true,acceptedNeverReclaimed:true,lateRetryRequiresReview:true,rollbackDiscardsEmail:true,anonymousAndAdminQueueAccessDenied:true,liveDatabaseChanged:false}));
+}catch(error){console.error(JSON.stringify({code:error.code,message:error.message}));process.exitCode=1;}finally{await db.close();}
