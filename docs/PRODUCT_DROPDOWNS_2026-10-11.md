@@ -1,0 +1,9 @@
+# Product dropdowns - 11 October 2026
+
+Product listing filters and sorting use a shared select-only combobox instead of browser-native option menus. Menus match the trigger width, wrap long labels, show the selected option with a sage background and check mark, and reposition or scroll within the viewport. Pointer selection adds no focus outline; keyboard navigation keeps a visible focus indicator. Roboto and existing instant URL-based filtering, displayed-pack prices, basket choices and product links are preserved.
+
+Arrow keys, Home, End and typing an option prefix move the active option. Enter or Space selects it; Tab selects it and moves focus; Escape discards the pending choice. Outside clicks and focus changes close the menu. Desktop menus escape the scrolling sidebar. Mobile menus stay inside the native filter dialog's focus scope, and Escape closes the menu before the drawer. Styling respects reduced motion. No additional dependencies were added.
+
+Before this change, source at f57933c8efb099189e87ea7ce86560ee0cddd0b3 was saved to backups/pre-dropdown-redesign-20261011/source.zip. A checksum snapshot of the modified files and changes.json support the existing restore helper. Run node scripts/restore-version.mjs --backup F:/Seedly/backups/pre-dropdown-redesign-20261011 --section catalog-dropdowns for a dry run; review before adding --apply. Restore the component, catalog controls and styles together, then rebuild. This release runs no database migration, seed, reset, order submission or email delivery.
+
+Validation: the production build and TypeScript checks passed, along with all 107 existing regression tests and 15 isolated desktop/mobile browser checks for option wrapping, keyboard and pointer controls, instant filters, product variants, scrolling, short viewports, drawer focus and reduced motion.
