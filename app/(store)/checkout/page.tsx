@@ -14,7 +14,8 @@ import { useCartQuote } from '@/hooks/useCartQuote';
 import { formatPKR } from '@/lib/utils';
 import type { CheckoutLine, PaymentMethod } from '@/lib/types';
 import { clearPendingCheckout, readPendingCheckout, savePendingCheckout, type CheckoutAttempt } from '@/lib/checkout-attempt';
-import { PAKISTAN_CITIES, CITY_PROVINCE_MAP, PROVINCES } from '@/lib/delivery';
+import { CITY_PROVINCE_MAP, PROVINCES } from '@/lib/delivery';
+import { CheckoutCitySelect } from '@/components/cart/CheckoutCitySelect';
 import { MAX_UPLOAD_FILE_BYTES } from '@/lib/upload-limits';
 import { validateCheckoutFields } from '@/lib/checkout-fields';
 
@@ -154,7 +155,7 @@ export default function CheckoutPage() {
         <ManagedSection document="checkout" sectionId="page_section_01"><section className="checkout-section"><h2 className="text-xl mb-5">{copy.text_1_contact_details}</h2><div className="grid sm:grid-cols-2 gap-5">{field('customer_name', 'Full name', 'text', 'name')}{field('customer_email', 'Email address', 'email', 'email')}{field('customer_phone', 'Mobile number', 'tel', 'tel')}</div></section></ManagedSection>
         <ManagedSection document="checkout" sectionId="page_section_02"><section className="checkout-section"><h2 className="text-xl mb-5">{copy.text_2_delivery_address}</h2><div className="grid sm:grid-cols-2 gap-5">
           {field('shipping_address', 'House, street and area', 'text', 'street-address', true, 500)}
-          <div><label className="field-label" htmlFor="shipping_city">{copy.text_city_town}</label><input className="form-input" list="cities" id="shipping_city" name="shipping_city" value={fields.shipping_city} onChange={e => update('shipping_city', e.target.value)} autoComplete="address-level2" maxLength={100} required aria-invalid={!!errors.shipping_city} aria-describedby={errors.shipping_city ? 'shipping_city-error' : undefined} /><datalist id="cities">{PAKISTAN_CITIES.filter(city => city !== 'Other City').map(city => <option key={city} value={city} />)}</datalist>{errors.shipping_city && <p id="shipping_city-error" className="text-rose-700 text-sm mt-2">{errors.shipping_city}</p>}</div>
+          <div><CheckoutCitySelect id="shipping_city" label={copy.text_city_town} value={fields.shipping_city} onChange={value => update('shipping_city', value)} invalid={!!errors.shipping_city} describedBy={errors.shipping_city ? 'shipping_city-error' : undefined} disabled={busy || recovering} />{errors.shipping_city && <p id="shipping_city-error" className="text-rose-700 text-sm mt-2">{errors.shipping_city}</p>}</div>
           <div><label className="field-label" htmlFor="shipping_province">{copy.text_province_region}</label><select id="shipping_province" name="shipping_province" className="form-input" value={fields.shipping_province} onChange={e => update('shipping_province', e.target.value)} autoComplete="address-level1">{PROVINCES.map(p => <option key={p}>{p}</option>)}</select></div>
           {field('shipping_postal_code', 'Postal code', 'text', 'postal-code', false, 20)}
           <div className="sm:col-span-2"><label htmlFor="shipping_notes" className="field-label">{copy.text_delivery_instructions}<span className="font-normal text-muted-gray">{copy.text_optional_2}</span></label><textarea id="shipping_notes" name="shipping_notes" className="form-input" rows={3} maxLength={800} value={fields.shipping_notes} onChange={e => update('shipping_notes', e.target.value)} /></div>
