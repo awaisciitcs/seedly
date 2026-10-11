@@ -1,4 +1,5 @@
 'use client';
+import {identifyLead,journeyContext,trackEvent} from '@/lib/tracking/client';
 import { useSiteContent } from '@/components/storefront/SiteContentProvider';
 import { ManagedSection } from '@/components/storefront/ManagedSections';
 import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
@@ -117,7 +118,7 @@ export default function CheckoutPage() {
         try { savePendingCheckout(window.sessionStorage, current); } catch { /* Keep the in-memory attempt if storage is blocked. */ }
       }
       setSubmissionStage('order');
-      const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': current.key }, body: JSON.stringify(body), signal: AbortSignal.timeout(30000) });
+      const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': current.key }, body: JSON.stringify({...body,journey:journeyContext()}), signal: AbortSignal.timeout(30000) });
       const result = await response.json();
       if (!response.ok) {
         if (response.status < 500) {
@@ -129,6 +130,8 @@ export default function CheckoutPage() {
       if (!result.data?.order_number || !result.tracking_token) throw new Error('We could not confirm the response. Retry with the same details to recover your order.');
       try { clearPendingCheckout(window.sessionStorage); } catch { /* Storage may be blocked. */ }
       setRecovering(false); setSubmissionStage('complete'); setPlaced(true); completeOrder(body.items as CheckoutLine[]);
+      identifyLead(result.data.lead_id,'checkout');
+      trackEvent('order_confirmed',{total_minor:result.data.total_minor});
       router.push('/order/' + encodeURIComponent(result.data.order_number) + '?token=' + encodeURIComponent(result.tracking_token));
     } catch (err) { setError(err instanceof Error ? err.message : 'Connection interrupted. Retry with the same details to recover your order safely.'); }
     finally { submitting.current = false; setBusy(false); }

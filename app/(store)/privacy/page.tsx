@@ -1,3 +1,4 @@
+import {TrackingPrivacyDetails} from '@/components/tracking/TrackingPrivacyDetails';
 import { getContentDocument } from '@/lib/services/content';
 import { ManagedSection } from '@/components/storefront/ManagedSections';
 import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
@@ -61,6 +62,8 @@ const siteConfig = (await getContentDocument<SiteContent>('site')).config;
             <p className="text-stone-600">
               {copy.text_we_use_essential_first_party_cookies_to_remember_your_s}</p>
           </section></ManagedSection>
+
+          <TrackingPrivacyDetails />
 
           <ManagedSection document="privacy" sectionId="page_section_07"><section className="space-y-2">
             <h2 className="font-heading font-medium text-lg text-stone-900">{copy.text_7_your_data_rights}</h2>

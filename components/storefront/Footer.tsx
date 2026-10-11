@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {openPrivacyChoices} from '@/components/tracking/VisitorTracking';
 import { SeedlyLogo } from '@/components/ui/SeedlyLogo';
 import { useSiteContent } from './SiteContentProvider';
 import type { SiteContent } from '@/lib/cms/storefront-types';
@@ -15,7 +16,7 @@ export function Footer(_props: { hideTrustStrip?: boolean } = {}) {
  <div><h2 className="font-semibold mb-4">{footer.helpTitle}</h2>{features.whatsapp&&config.contact.whatsappUrl&&<a className="button-secondary" href={config.contact.whatsappUrl} target="_blank" rel="noopener noreferrer">{footer.whatsappLabel}</a>}<p className="text-sm text-muted-gray mt-3">{config.contact.hours}</p>{settings&&<p className="text-sm text-muted-gray mt-4">{delivery.template.replace('{fee}',formatPKR(settings.delivery_fee_minor)).replace('{threshold}',formatPKR(settings.free_delivery_threshold_minor))}</p>}<p className="text-sm mt-3"><Link href="/product-disclaimer" className="underline">{footer.guidanceLabel}</Link></p></div>
  </div>
  <p className="text-sm leading-relaxed text-muted-gray border-y border-border-gray py-5">{footer.foodNotice} {config.disclaimer.facility}</p>
- <div className="flex flex-wrap justify-between items-center gap-4 pt-6 text-sm text-muted-gray"><span>? {new Date().getFullYear()} {config.name}, {footer.copyrightLocation}</span><div className="flex gap-5"><Link href="/privacy">{footer.privacyLabel}</Link><Link href="/terms">{footer.termsLabel}</Link>{config.social.instagram&&<a href={config.social.instagram} target="_blank" rel="noopener noreferrer">{footer.instagramLabel}</a>}</div></div>
+ <div className="flex flex-wrap justify-between items-center gap-4 pt-6 text-sm text-muted-gray"><span>? {new Date().getFullYear()} {config.name}, {footer.copyrightLocation}</span><div className="flex flex-wrap gap-5"><Link href="/privacy">{footer.privacyLabel}</Link><Link href="/terms">{footer.termsLabel}</Link><button type="button" className="text-start" onClick={openPrivacyChoices}>Privacy choices</button>{config.social.instagram&&<a href={config.social.instagram} target="_blank" rel="noopener noreferrer">{footer.instagramLabel}</a>}</div></div>
  </div></footer>;
 }
 export default Footer;

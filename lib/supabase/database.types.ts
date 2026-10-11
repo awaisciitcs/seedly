@@ -1,3 +1,4 @@
+import type { Lead, TrackingSettings } from '../tracking/types';
 export type Json =
   | string
   | number
@@ -14,6 +15,9 @@ export type Database = {
   }
   public: {
     Tables: {
+      visitor_tracking_settings: { Row: { [K in keyof TrackingSettings]: TrackingSettings[K] }; Insert: Partial<TrackingSettings> & {id:number}; Update: Partial<TrackingSettings>; Relationships: [] }
+      leads: { Row: { [K in keyof Lead]: Lead[K] } & {submission_key:string;submission_hash:string}; Insert: Omit<Lead,'id'|'created_at'> & {id?:string;created_at?:string;submission_key:string;submission_hash:string}; Update: Partial<Lead>; Relationships: [] }
+
       admin_users: {
         Row: {
           auth_user_id: string | null
@@ -1081,6 +1085,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      purge_expired_leads: { Args: Record<string, never>; Returns: number }
+
       allocate_checkout_order_reference: {
         Args: { p_checkout_reference: string; p_request_fingerprint: string }
         Returns: string

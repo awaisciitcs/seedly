@@ -4,13 +4,14 @@ import { isIP } from 'node:net';
 import { createAdminClient } from './supabase/admin';
 import { RequestError } from './request-guards';
 
-type Scope = 'orders' | 'quotes' | 'receipts' | 'reviews' | 'restock';
+type Scope = 'orders' | 'quotes' | 'receipts' | 'reviews' | 'restock' | 'leads';
 const LIMITS: Record<Scope, { global: number; perClient: number; seconds: number }> = {
   orders: { global: 120, perClient: 10, seconds: 60 },
   quotes: { global: 600, perClient: 60, seconds: 60 },
   receipts: { global: 60, perClient: 5, seconds: 60 },
   reviews: { global: 120, perClient: 5, seconds: 600 },
   restock: { global: 120, perClient: 5, seconds: 600 },
+  leads: { global: 120, perClient: 5, seconds: 600 },
 };
 export class RateLimitError extends RequestError {
   constructor(public retryAfter: number) { super('Too many requests. Please wait a moment and try again.', 429); }

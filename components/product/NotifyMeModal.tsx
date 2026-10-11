@@ -1,4 +1,5 @@
 'use client';
+import {identifyLead,journeyContext} from '@/lib/tracking/client';
 
 import React, { useId, useState } from 'react';
 import { Dialog } from '@/components/ui/Dialog';
@@ -53,6 +54,7 @@ export function NotifyMeModal({
           kitId,
           sellableTitle: displayTitle,
           email: trimmed,
+          journey: journeyContext(),
         }),
       });
 
@@ -61,6 +63,7 @@ export function NotifyMeModal({
         throw new Error(data.error?.message || 'Failed to subscribe to restock alert');
       }
 
+      identifyLead(data.lead_id,'restock');
       setSuccess(true);
     } catch (err: any) {
       setErrorMsg(err.message || 'Something went wrong. Please try again.');

@@ -1,3 +1,4 @@
+import {LeadForm} from '@/components/tracking/LeadForm';
 import { getContentDocument } from '@/lib/services/content';
 import { ManagedSection } from '@/components/storefront/ManagedSections';
 import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
@@ -110,6 +111,8 @@ const siteConfig = (await getContentDocument<SiteContent>('site')).config;
             </div>
           </aside>
         </div>
+
+        <LeadForm />
 
         {/* Helpful Links Grid */}
         <nav aria-label="Customer help" className="mt-14 grid gap-6 border-t border-stone-200 pt-8 sm:grid-cols-3 lg:mt-20">

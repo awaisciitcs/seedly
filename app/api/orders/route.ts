@@ -1,3 +1,5 @@
+import {saveBusinessLead} from '@/lib/services/leads';
+import {cleanJourney} from '@/lib/tracking/validation';
 import { enforcePublicRateLimit, rateLimitHeaders } from '@/lib/public-rate-limit';
 import { scheduleOrderEmails } from '@/lib/email/schedule';
 import { NextResponse } from 'next/server';
@@ -123,9 +125,10 @@ export async function POST(request: Request) {
       items: checkoutItems,
     });
 
+    const leadId=await saveBusinessLead({name,email,phone:cleanPhone,city,source:'checkout',marketing_consent:false,journey:cleanJourney(body.journey),order_id:result.order.id});
     scheduleOrderEmails();
     return NextResponse.json({
-      data: { order_number: result.order.order_number, total_minor: result.order.total_minor, order_status: result.order.order_status, payment_status: result.order.payment_status },
+      data: { lead_id:leadId, order_number: result.order.order_number, total_minor: result.order.total_minor, order_status: result.order.order_status, payment_status: result.order.payment_status },
       tracking_token: result.trackingToken,
       is_idempotent_replay: result.isIdempotentReplay,
     }, {headers: {"Cache-Control":"no-store"}});

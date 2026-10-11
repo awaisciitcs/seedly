@@ -1,4 +1,5 @@
 'use client';
+import {trackEvent} from '@/lib/tracking/client';
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -22,6 +23,7 @@ export function ShopCatalogClient({initialItems,title='The pantry',description='
  const filters = useMemo(()=>readCatalogFilters(params,initialItems,categories,lockedCategory),[params,initialItems,categories,lockedCategory]);
  const options = useMemo(()=>catalogFilterOptions(categoryItems(initialItems,filters.category,categories)),[initialItems,filters.category,categories]);
  const change = (name: string,value: string) => {
+  if(name!=='search')trackEvent(name==='sort'?'catalog_sorted':'product_filter_changed',{filter:name,value});
   const next = new URLSearchParams(window.location.search);
   if (name === 'category') for (const key of ['phase','collection','pack','caffeine','highlight']) next.delete(key);
   if (!value || value === 'all' || name === 'sort' && value === 'featured') next.delete(name); else next.set(name,value);

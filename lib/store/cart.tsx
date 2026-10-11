@@ -1,4 +1,5 @@
 'use client';
+import {trackEvent} from '@/lib/tracking/client';
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import type { CartItem, CheckoutLine, CustomerStoreSettings } from '../types';
 import { addCartItem, restoreCart, cartIdentity, removeOrderedItems } from '../cart-state';
@@ -74,12 +75,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const result = addCartItem(itemsRef.current, item); setAnnouncement(result.message);
     if (!result.added) return false;
     commit(result.items);
+    trackEvent('basket_item_added',{product_id:item.product_id,kit_id:item.kit_id,variant_id:item.variant_id,quantity:item.quantity,price_minor:item.price_minor});
     if (options?.openDrawer !== false) { if (window.innerWidth < 768) setToastItem(item); else setIsCartOpen(true); }
     setCartBump(true); if (bumpTimer.current) clearTimeout(bumpTimer.current);
     bumpTimer.current = setTimeout(() => setCartBump(false), 260); return true;
   }, [commit]);
   const removeItem = useCallback((id: string) => {
     const item = itemsRef.current.find(i => i.id === id); commit(itemsRef.current.filter(i => i.id !== id));
+    if(item)trackEvent('basket_item_removed',{product_id:item.product_id,kit_id:item.kit_id,variant_id:item.variant_id});
     setAnnouncement(item ? 'Removed ' + item.name + ' from your basket.' : 'Basket updated.');
   }, [commit]);
   const updateQuantity = useCallback((id: string, quantity: number) => {
@@ -89,6 +92,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const max = Math.min(99, item.max_quantity ?? 0);
     if (max === 0) { setAnnouncement('This pack is no longer available. Please remove it or choose another size.'); return; }
     const capped = Math.min(quantity, max); commit(itemsRef.current.map(i => i.id === id ? { ...i, quantity: capped } : i));
+    trackEvent('basket_quantity_changed',{product_id:item.product_id,kit_id:item.kit_id,variant_id:item.variant_id,quantity:capped});
     setAnnouncement(capped < quantity ? 'Stock limit reached for ' + item.name + '.' : 'Quantity updated to ' + capped + '.');
   }, [commit, removeItem]);
   const clearCart = useCallback(() => { setIsSyncing(false); syncSequence.current++; commit([]); setToastItem(null); setAnnouncement('Basket cleared.'); }, [commit]);

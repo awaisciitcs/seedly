@@ -103,7 +103,7 @@ test('variant ownership, insufficient stock, and changed quote prevent transacti
  const f=orderFixture();f.setStock(0);await assert.rejects(()=>f.service.createOrder(f.input),/stock/);assert.equal(f.calls(),0);
 });
 test('order API returns safe uncertain-failure response and rejects identity mismatch',async()=>{
- const api=load('app/api/orders/route.ts',{'next/server':{NextResponse:Response},'../../../lib/services/orders':{createOrder:async()=>{throw Error('PRIVATE SQL DETAIL');}},'@/lib/checkout-validation':validation,'@/lib/request-guards':guards,'@/lib/email/schedule':{scheduleOrderEmails(){}}});
+ const api=load('app/api/orders/route.ts',{'next/server':{NextResponse:Response},'../../../lib/services/orders':{createOrder:async()=>{throw Error('PRIVATE SQL DETAIL');}},'@/lib/checkout-validation':validation,'@/lib/request-guards':guards,'@/lib/email/schedule':{scheduleOrderEmails(){}},'@/lib/services/leads':{saveBusinessLead:async()=>null},'@/lib/tracking/validation':{cleanJourney:()=>({analytics_consent:false})}});
  const f=orderFixture();const response=await api.POST(new Request('https://seedly.pk/api/orders',{method:'POST',body:JSON.stringify(f.input)}));
  assert.equal(response.status,500);assert.equal(JSON.stringify(await response.json()).includes('PRIVATE SQL'),false);
  const mismatch=await api.POST(new Request('https://seedly.pk/api/orders',{method:'POST',headers:{'Idempotency-Key':'different-checkout-key-123'},body:JSON.stringify(f.input)}));assert.equal(mismatch.status,400);

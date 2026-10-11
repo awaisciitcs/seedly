@@ -1,4 +1,5 @@
 'use client';
+import {trackEvent} from '@/lib/tracking/client';
 import { useSiteContent } from './SiteContentProvider';
 import type { SiteContent } from '@/lib/cms/storefront-types';
 
@@ -46,6 +47,7 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
         const data: ProductSearchResponse = await result.json();
         if (isCurrent()) {
           setResponse(data);
+          trackEvent('search_used',{result_count:data.total});
           setLoading(false);
         }
       } catch {

@@ -172,6 +172,7 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
       heading: 'CUSTOMERS',
       items: [
         { label: 'Customer Directory', href: '/admin/customers', icon: Users },
+        { label: 'Leads & Journeys', href: '/admin/leads', icon: Users },
         { label: 'Reviews', href: '/admin/reviews', icon: MessageSquare },
         {
           label: 'Stock Alerts',
@@ -189,6 +190,7 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
       heading: 'ADMIN',
       items: [
         { label: 'Store Settings', href: '/admin/settings', icon: Settings, ownerOnly: true },
+        { label: 'Visitor Analytics', href: '/admin/analytics', icon: Settings, ownerOnly: true },
       ],
     },
   ];
@@ -199,6 +201,8 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
     if (pathname.startsWith('/admin/orders')) return 'Orders & Receipts';
     if (pathname.startsWith('/admin/products')) return 'Products & Stock';
     if (pathname.startsWith('/admin/kits')) return 'Curated Kits';
+    if (pathname.startsWith('/admin/analytics')) return 'Visitor Analytics';
+    if (pathname.startsWith('/admin/leads')) return 'Leads & Journeys';
     if (pathname.startsWith('/admin/customers')) return 'Customer Directory';
     if (pathname.startsWith('/admin/reviews')) return 'Reviews Moderation';
     if (pathname.startsWith('/admin/stock-alerts')) return 'Stock Alerts';
