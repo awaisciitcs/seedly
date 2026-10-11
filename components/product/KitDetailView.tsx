@@ -106,7 +106,7 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
   const waMessage = encodeURIComponent(`Hi Seedly, I have a question about the ${kit.name}.`);
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-5 md:px-8 py-8 sm:py-12 bg-white text-neutral-900">
+    <div className="product-detail-page max-w-7xl mx-auto w-full px-5 md:px-8 pt-4 pb-8 sm:pb-12 bg-white text-neutral-900">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-stone-600 mb-8">
         <Link href={links.href} className="hover:text-black transition-colors">{copy.text_home}</Link>
@@ -117,32 +117,16 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
       </nav>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+      <div className="product-purchase-hero grid grid-cols-1 lg:grid-cols-2 gap-y-6 lg:gap-x-12 items-start">
         {/* Left Column: Kit Imagery */}
-        <div className="lg:col-span-6 space-y-4">
+        <div className="product-detail-gallery w-full">
           <ProductGallery name={kit.name} image={kit.image_url} images={kit.gallery_images} />
 
-          {/* Contextual WhatsApp Consultation */}
-          <div className="p-4 rounded-2xl bg-[#FBFBFA] border border-gray-200/90 shadow-xs flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-0.5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-900">{copy.text_questions_about_how_this_routine_works}</p>
-              <p className="text-xs text-stone-500 font-normal">{copy.text_chat_with_our_team_on_whatsapp_for_ingredients_preparat}</p>
-            </div>
-            {features.whatsapp&&(<a
-              href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 rounded-full bg-white border border-gray-200 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold uppercase tracking-wider shadow-xs shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <MessageCircle className="w-3.5 h-3.5 text-neutral-700" />
-              <span>{copy.text_ask_on_whatsapp}</span>
-            </a>)}
-          </div>
         </div>
 
         {/* Right Column: Controls & Info */}
-        <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
-          <div className="space-y-5">
+        <div className="lg:row-span-2">
+          <div className="space-y-3">
             {/* Header / Social Proof */}
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="rounded-full bg-stone-100 text-stone-700 px-3 py-1 text-xs font-semibold uppercase tracking-wider">
@@ -160,16 +144,10 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
             </div>
 
             {/* Title */}
-            <h1 className="font-heading font-medium text-3xl sm:text-4xl lg:text-5xl text-neutral-900 leading-tight tracking-tight">
+            <h1 className="font-heading font-medium text-2xl sm:text-4xl text-neutral-900 leading-tight tracking-tight">
               {kit.name}
             </h1>
             {features.reviews && (<a href={links.href_reviews} className="inline-flex text-sm underline underline-offset-4">{kit.review_count ? kit.rating?.toFixed(1) + " / 5 · " + kit.review_count + " reviews" : "Read or write a review"}</a>)}
-            <DeliveryNote />
-
-            {/* Short descriptor */}
-            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-              {kit.short_description}
-            </p>
 
             {/* Price & Inventory State */}
             <div className="flex flex-wrap items-baseline gap-3 pt-1">
@@ -197,30 +175,8 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
               )}
             </div>
 
-            {/* Bundle Savings & Serving Duration Breakdown */}
-            {kit.slug === 'complete-cycle-kit' && (
-              <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-3 text-xs text-stone-600 space-y-1 shadow-xs">
-                <div className="flex items-center justify-between text-neutral-900 font-semibold">
-                  <span>{copy.text_ritual_bundle_value}</span>
-                  <span className="text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[11px]">{copy.text_save_rs_470}</span>
-                </div>
-                <p>{copy.text_4_x_250g_fresh_pouches_rs_2_970_individual_seed_value}</p>
-                <p>{copy.text_engraved_wooden_measuring_scoop_printed_cycle_calendar}</p>
-                <p className="text-[11px] text-stone-500 pt-0.5">
-                  {copy.text_standalone_total_rs_3_320_at_1_tbsp_day_this_kit_suppli}<strong>{copy.text_50_60_daily_servings_approx_two_28_day_cycles}</strong>.
-                </p>
-              </div>
-            )}
-
-            <KitContentsExplorer items={kit.items} kitSlug={kit.slug} />
-
             {/* In Stock vs Out of Stock Action Controls */}
-            <div ref={mainActionsRef} className="space-y-3 pt-1">
-              <div className="flex items-center gap-2 py-2.5 px-4 bg-[#FBFBFA] border border-gray-200/90 rounded-full text-xs font-normal text-stone-600 shadow-xs">
-                <Truck className="h-4 w-4 text-neutral-700" aria-hidden="true" />
-                <span>
-                  <strong className="text-neutral-900 font-semibold">{copy.text_flat_rs_200_delivery}</strong> · <strong className="text-neutral-900 font-semibold">{copy.text_free}</strong> {copy.text_over_rs_2_500_dispatched_in_24h_from_lahore}</span>
-              </div>
+            <div ref={mainActionsRef} className="product-purchase-actions rounded-2xl border border-[#E3E9DE] bg-[#F7FAF5] p-3 sm:p-4">
               {inStock ? (
                 <PurchaseActions
                   added={added}
@@ -245,6 +201,8 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                   </div>
 
                   <button
+                    type="button"
+                    data-primary-purchase
                     onClick={() => setIsNotifyModalOpen(true)}
                     className="h-12 sm:h-13 w-full rounded-full font-semibold text-xs sm:text-sm uppercase tracking-wider bg-neutral-900 hover:bg-black text-white shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
@@ -254,6 +212,36 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                 </div>
               )}
             </div>
+
+            {/* Short descriptor */}
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
+              {kit.short_description}
+            </p>
+
+            <DeliveryNote />
+
+              <div className="flex items-center gap-2 py-2.5 px-4 bg-[#FBFBFA] border border-gray-200/90 rounded-full text-xs font-normal text-stone-600 shadow-xs">
+                <Truck className="h-4 w-4 text-neutral-700" aria-hidden="true" />
+                <span>
+                  <strong className="text-neutral-900 font-semibold">{copy.text_flat_rs_200_delivery}</strong> · <strong className="text-neutral-900 font-semibold">{copy.text_free}</strong> {copy.text_over_rs_2_500_dispatched_in_24h_from_lahore}</span>
+              </div>
+
+            {/* Bundle Savings & Serving Duration Breakdown */}
+            {kit.slug === 'complete-cycle-kit' && (
+              <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-3 text-xs text-stone-600 space-y-1 shadow-xs">
+                <div className="flex items-center justify-between text-neutral-900 font-semibold">
+                  <span>{copy.text_ritual_bundle_value}</span>
+                  <span className="text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[11px]">{copy.text_save_rs_470}</span>
+                </div>
+                <p>{copy.text_4_x_250g_fresh_pouches_rs_2_970_individual_seed_value}</p>
+                <p>{copy.text_engraved_wooden_measuring_scoop_printed_cycle_calendar}</p>
+                <p className="text-[11px] text-stone-500 pt-0.5">
+                  {copy.text_standalone_total_rs_3_320_at_1_tbsp_day_this_kit_suppli}<strong>{copy.text_50_60_daily_servings_approx_two_28_day_cycles}</strong>.
+                </p>
+              </div>
+            )}
+
+            <KitContentsExplorer items={kit.items} kitSlug={kit.slug} />
 
             <div className="border-t border-gray-100 pt-5 space-y-2 text-xs font-normal leading-5 text-stone-500">
               <p>{copy.text_delivery_across_pakistan}<Link href={links.href_shipping} className="underline underline-offset-4 text-neutral-800 hover:text-black">{copy.text_see_delivery_times_and_charges}</Link>.</p>
@@ -273,6 +261,23 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
             </div>
           </div>
         </div>
+
+          {/* Contextual WhatsApp Consultation */}
+          <div className="p-4 rounded-2xl bg-[#FBFBFA] border border-gray-200/90 shadow-xs flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-900">{copy.text_questions_about_how_this_routine_works}</p>
+              <p className="text-xs text-stone-500 font-normal">{copy.text_chat_with_our_team_on_whatsapp_for_ingredients_preparat}</p>
+            </div>
+            {features.whatsapp&&(<a
+              href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-full bg-white border border-gray-200 hover:bg-neutral-50 text-neutral-800 text-xs font-semibold uppercase tracking-wider shadow-xs shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-neutral-700" />
+              <span>{copy.text_ask_on_whatsapp}</span>
+            </a>)}
+          </div>
       </div>
 
       {/* Routine Dossier Breakdown */}

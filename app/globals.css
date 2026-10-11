@@ -1090,3 +1090,16 @@ html:has(.site-header) { scroll-padding-top:5.25rem; }
   .site-header-basket,.site-header-count { border:1px solid ButtonText; }
   .site-header-link[aria-current="page"] { text-decoration:underline; text-underline-offset:6px; }
 }
+
+
+/* Keep product purchasing close to the price, with compact mobile photography. */
+.product-detail-gallery .gallery-depth,.product-gallery-skeleton {
+  height:clamp(180px,24svh,260px); aspect-ratio:auto;
+}
+.product-detail-gallery .gallery-depth img { object-fit:contain; }
+.product-detail-gallery [aria-label="Product photos"] > button { width:48px; height:48px; }
+@media(min-width:1024px) {
+  .product-detail-gallery .gallery-depth,.product-gallery-skeleton { height:auto; aspect-ratio:1; }
+  .product-detail-gallery .gallery-depth img { object-fit:cover; }
+  .product-detail-gallery [aria-label="Product photos"] > button { width:80px; height:80px; }
+}

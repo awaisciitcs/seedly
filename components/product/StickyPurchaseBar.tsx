@@ -37,34 +37,53 @@ export function StickyPurchaseBar({
   }, []);
 
   useEffect(() => {
-    const el = targetRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
-          setIsVisible(true);
-          document.body.dataset.stickyBarActive = 'true';
-          window.dispatchEvent(new Event('seedly-sticky-bar'));
-        } else {
-          setIsVisible(false);
-          delete document.body.dataset.stickyBarActive;
-          window.dispatchEvent(new Event("seedly-sticky-bar"));
-        }
-      },
-      {
-        threshold: 0,
-        rootMargin: '0px',
-      }
-    );
-
-    observer.observe(el);
-    return () => {
-      observer.disconnect();
-      delete document.body.dataset.stickyBarActive;
+    const target = targetRef.current?.querySelector<HTMLElement>('[data-primary-purchase]') || targetRef.current;
+    if (!target) return;
+    const mobile = window.matchMedia('(max-width: 1023px)');
+    const header = document.querySelector<HTMLElement>('.site-header');
+    let observer: IntersectionObserver | undefined;
+    let observedMargin = "";
+    let lastVisible = false;
+    let active = true;
+    const publish = (visible: boolean) => {
+      if (!active) return;
+      setIsVisible(visible);
+      if (visible) document.body.dataset.stickyBarActive = 'true';
+      else delete document.body.dataset.stickyBarActive;
+      if (visible !== lastVisible) window.dispatchEvent(new Event('seedly-sticky-bar'));
+      lastVisible = visible;
     };
-  }, [targetRef]);
+    const observe = () => {
+      if (!mobile.matches) {
+        observer?.disconnect(); observer = undefined; observedMargin = '';
+        publish(false); return;
+      }
+      // Reserve the visible header and bottom bar, including any announcement above the header.
+      const headerBottom = Math.ceil(Math.max(0, header?.getBoundingClientRect().bottom || 0));
+      const margin = '-' + headerBottom + 'px 0px -80px 0px';
+      if (observer && margin === observedMargin) return;
+      observer?.disconnect(); observedMargin = margin;
+      observer = new IntersectionObserver(entries => {
+        publish(mobile.matches && entries[0].intersectionRatio < 1);
+      }, { threshold: 1, rootMargin: margin });
+      observer.observe(target);
+    };
+    const onScroll = () => { if (mobile.matches) observe(); };
+    observe();
+    const resize = new ResizeObserver(observe);
+    if (header) resize.observe(header);
+    mobile.addEventListener('change', observe);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      active = false;
+      observer?.disconnect();
+      resize.disconnect();
+      mobile.removeEventListener('change', observe);
+      window.removeEventListener('scroll', onScroll);
+      delete document.body.dataset.stickyBarActive;
+      window.dispatchEvent(new Event('seedly-sticky-bar'));
+    };
+  }, [targetRef, inStock]);
 
   const handleAdd = () => {
     if (!inStock) {
@@ -117,7 +136,7 @@ export function StickyPurchaseBar({
             <button
               type="button"
               onClick={handleAdd}
-              disabled={btnState === 'pending'}
+              disabled={btnState !== 'idle'}
               aria-busy={btnState === 'pending'}
               className="h-11 px-5 rounded-full text-xs font-semibold uppercase tracking-wider bg-black text-white hover:bg-neutral-800 shadow-xs hover:shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >

@@ -142,7 +142,7 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
   );
 
   return (
-    <div className="bg-white text-neutral-900">
+    <div className="product-detail-page bg-white text-neutral-900">
       {/* 0. BREADCRUMB & HERO */}
       <div className="max-w-7xl mx-auto w-full px-5 md:px-8 pt-4 pb-12 md:pb-16">
 
@@ -159,35 +159,17 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
           </span>
         </nav>
 
-        {/* Hero: TwoCol (grid-cols-1 lg:grid-cols-2 lg:gap-x-12 gap-y-10 items-start) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 gap-y-10 items-start">
+        {/* Hero: gallery, purchase essentials and secondary support */}
+        <div className="product-purchase-hero grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 gap-y-6 items-start">
 
-          {/* Left Hero Column: Square gallery image + column-width WhatsApp help card */}
-          <div className="w-full space-y-4">
+          {/* Gallery: compact on small screens, square on desktop */}
+          <div className="product-detail-gallery w-full">
             <ProductGallery name={product.name} image={product.image_url} images={product.gallery_images} />
 
-            {/* Contextual WhatsApp Help Card: exactly column width */}
-            <div className="w-full rounded-xl border border-stone-200 bg-[#FBFBFA] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
-              <div className="space-y-0.5 text-start">
-                <p className="text-xs font-semibold uppercase tracking-wider text-neutral-900">
-                  {copy.text_questions_about_this_product}</p>
-                <p className="text-xs text-stone-600 font-normal">
-                  {copy.text_ask_our_team_about_ingredients_preparation_or_storage}</p>
-              </div>
-              {features.whatsapp&&(<a
-                href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-neutral-800 text-xs font-semibold uppercase tracking-wider px-4 py-2 shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs self-start sm:self-auto"
-              >
-                <MessageCircle className="w-3.5 h-3.5 text-neutral-700" />
-                <span>{copy.text_ask_on_whatsapp}</span>
-              </a>)}
-            </div>
           </div>
 
-          {/* Right Hero Column: Steady 16/24px rhythm matching left column height within ~24px */}
-          <div className="flex flex-col space-y-4 text-start">
+          {/* Purchase summary: keep the primary action next to pack selection */}
+          <div className="lg:row-span-2 flex flex-col space-y-3 text-start">
 
             {/* 1. Category Tag */}
             <div>
@@ -207,19 +189,13 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
             </div>
 
             {/* 2. H1 */}
-            <h1 className="font-heading font-medium text-3xl sm:text-4xl text-neutral-900 tracking-tight leading-tight">
+            <h1 className="font-heading font-medium text-2xl sm:text-4xl text-neutral-900 tracking-tight leading-tight">
               {productSentenceTitle}
             </h1>
             {features.reviews && (<a href={links.href_reviews} className="inline-flex text-sm underline underline-offset-4">{product.review_count ? product.rating?.toFixed(1) + " / 5 · " + product.review_count + " reviews" : "Read or write a review"}</a>)}
-            <DeliveryNote />
-
-            {/* 3. Description */}
-            <p className="text-sm text-stone-600 leading-relaxed font-normal">
-              {product.short_description}
-            </p>
 
             {/* 4. Price Row + Stock Pill */}
-            <div className="flex items-baseline gap-3 pt-1">
+            <div className="flex flex-wrap items-baseline gap-3 pt-1">
               <span key={priceMinor} className="font-heading font-semibold text-2xl sm:text-3xl text-neutral-900 tabular-nums">
                 {formatPrice(priceMinor)}
               </span>
@@ -247,13 +223,13 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
             {/* 5. Per-100g Line (updates with selected size) */}
             {selectedVariant && selectedVariant.weight_grams > 0 ? (
               <p className="text-xs text-stone-600 font-normal">
-                {formatPrice(Math.round(priceMinor * 100 / selectedVariant.weight_grams))} {copy.text_per_100g}</p>
+                {selectedVariant.option_value}{' \u00b7 '}{formatPrice(Math.round(priceMinor * 100 / selectedVariant.weight_grams))} {copy.text_per_100g}</p>
             ) : null}
 
             {/* 6. Pack-size Selector (grid-cols-3, equal tiles, no 'Selected: ...' text) */}
             {activeVariants.length > 1 && (
-              <div className="pt-1">
-                <div className="grid grid-cols-3 gap-2.5">
+              <div className="pt-1" role="group" aria-label={copy.text_pack_size}>
+                <div className="grid grid-cols-3 gap-2">
                   {activeVariants.map((v) => {
                     const isSelected = selectedVariant?.id === v.id;
                     const vInStock = (v.inventory_quantity ?? 0) > 0;
@@ -263,7 +239,7 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                         type="button"
                         onClick={() => { setSelectedVariantId(v.id); setQuantity(1); }}
                         aria-pressed={isSelected}
-                        className={`rounded-xl border p-3 text-center sm:text-start transition-all cursor-pointer shadow-xs min-h-[64px] flex flex-col justify-center ${
+                        className={`rounded-xl border px-2.5 py-2.5 text-center sm:text-start transition-all cursor-pointer shadow-xs min-h-[64px] flex flex-col justify-center ${
                           isSelected
                             ? 'border-seedly-dark bg-seedly-dark text-white'
                             : 'border-stone-200 bg-white text-stone-900 hover:border-stone-400'
@@ -286,15 +262,8 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
               </div>
             )}
 
-            {/* 7. Delivery Strip */}
-            <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-3 text-xs text-stone-600 flex items-center gap-2 shadow-xs">
-              <Truck className="h-4 w-4 text-neutral-700 shrink-0" aria-hidden="true" />
-              <span>
-                {copy.text_delivery_charges_are_confirmed_in_your_basket_see_deliv}</span>
-            </div>
-
-            {/* 8 & 9. CTA Row (Stepper, Add to cart flex-1, Wishlist; all h-12) & Buy now (full width h-12) */}
-            <div ref={mainActionsRef} className="pt-1">
+            {/* Primary purchase row, followed by secondary actions */}
+            <div ref={mainActionsRef} className="product-purchase-actions rounded-2xl border border-[#E3E9DE] bg-[#F7FAF5] p-3 sm:p-4">
               {inStock ? (
                 <PurchaseActions
                   added={added}
@@ -320,6 +289,7 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
 
                   <button
                     type="button"
+                    data-primary-purchase
                     onClick={() => setIsNotifyModalOpen(true)}
                     className="h-12 w-full rounded-full font-semibold text-xs sm:text-sm uppercase tracking-wider bg-black hover:bg-neutral-800 text-white shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
@@ -328,6 +298,20 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                   </button>
                 </div>
               )}
+            </div>
+
+            {/* 3. Description */}
+            <p className="text-sm text-stone-600 leading-relaxed font-normal">
+              {product.short_description}
+            </p>
+
+            <DeliveryNote />
+
+            {/* 7. Delivery Strip */}
+            <div className="rounded-xl border border-stone-200 bg-[#FBFBFA] p-3 text-xs text-stone-600 flex items-center gap-2 shadow-xs">
+              <Truck className="h-4 w-4 text-neutral-700 shrink-0" aria-hidden="true" />
+              <span>
+                {copy.text_delivery_charges_are_confirmed_in_your_basket_see_deliv}</span>
             </div>
 
             {/* 10. One fine-print row */}
@@ -346,6 +330,25 @@ const {config:siteConfig,features}=useSiteContent<SiteContent>('site');
                 {copy.text_dietary_notice}</a>
             </p>
           </div>
+
+            {/* Contextual WhatsApp Help Card: exactly column width */}
+            <div className="w-full rounded-xl border border-stone-200 bg-[#FBFBFA] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="space-y-0.5 text-start">
+                <p className="text-xs font-semibold uppercase tracking-wider text-neutral-900">
+                  {copy.text_questions_about_this_product}</p>
+                <p className="text-xs text-stone-600 font-normal">
+                  {copy.text_ask_our_team_about_ingredients_preparation_or_storage}</p>
+              </div>
+              {features.whatsapp&&(<a
+                href={`${siteConfig.contact.whatsappUrl}?text=${waMessage}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-neutral-800 text-xs font-semibold uppercase tracking-wider px-4 py-2 shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs self-start sm:self-auto"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-neutral-700" />
+                <span>{copy.text_ask_on_whatsapp}</span>
+              </a>)}
+            </div>
         </div>
       </div>
 
