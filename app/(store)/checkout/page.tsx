@@ -15,6 +15,7 @@ import { formatPKR } from '@/lib/utils';
 import type { CheckoutLine, PaymentMethod } from '@/lib/types';
 import { clearPendingCheckout, readPendingCheckout, savePendingCheckout, type CheckoutAttempt } from '@/lib/checkout-attempt';
 import { CITY_PROVINCE_MAP, PROVINCES } from '@/lib/delivery';
+import { CouponControls } from '@/components/cart/CouponControls';
 import { CheckoutCitySelect } from '@/components/cart/CheckoutCitySelect';
 import { MAX_UPLOAD_FILE_BYTES } from '@/lib/upload-limits';
 import { validateCheckoutFields } from '@/lib/checkout-fields';
@@ -23,9 +24,9 @@ export default function CheckoutPage() {
   const cms = useSiteContent<CmsPageContent>('checkout'); const { copy, links, images } = cms;
 
   const router = useRouter();
-  const { items, isLoaded, isSyncing, syncError, syncLivePrices, completeOrder, setIsCartOpen, settings, settingsError, refreshSettings } = useCart();
-  const { quote, loading, error: quoteError, refresh } = useCartQuote();
+  const { couponCode, setCouponCode, items, isLoaded, isSyncing, syncError, syncLivePrices, completeOrder, setIsCartOpen, settings, settingsError, refreshSettings } = useCart();
   const [fields, setFields] = useState({ customer_name: '', customer_email: '', customer_phone: '', shipping_address: '', shipping_city: 'Lahore', shipping_province: 'Punjab', shipping_postal_code: '', shipping_notes: '' });
+  const { quote, loading, error: quoteError, refresh } = useCartQuote(true, fields.customer_email);
   const [payment, setPayment] = useState<PaymentMethod>('COD');
   const [wallet, setWallet] = useState<'jazzcash' | 'easypaisa'>('jazzcash');
   const [tid, setTid] = useState('');
@@ -49,6 +50,7 @@ export default function CheckoutPage() {
       if (!pending?.submitted) return;
       attempt.current = pending;
       const body = pending.submitted;
+      setCouponCode(typeof body.coupon_code === 'string' ? body.coupon_code : '');
       setFields(old => Object.fromEntries(Object.keys(old).map(name => [name, typeof body[name] === 'string' ? body[name] : ''])) as typeof old);
       setPayment(body.payment_method as PaymentMethod);
       setRecovering(true);
@@ -96,7 +98,7 @@ export default function CheckoutPage() {
     }
     submitting.current = true; setSubmissionStage('prices'); setBusy(true);
     try {
-      const payload = { ...fields, customer_email: fields.customer_email.trim().toLowerCase(), customer_phone: fields.customer_phone.replace(/[\s()-]/g, ''), payment_method: payment, shipping_notes: fields.shipping_notes + (payment === 'wallet_aggregator' ? ' [' + wallet + ' transaction: ' + (tid.trim() || 'Pending verification') + ']' : ''), items: items.map(({ product_id, variant_id, kit_id, quantity }) => ({ product_id, variant_id, kit_id, quantity })) };
+      const payload = { ...fields, coupon_code: couponCode, customer_email: fields.customer_email.trim().toLowerCase(), customer_phone: fields.customer_phone.replace(/[\s()-]/g, ''), payment_method: payment, shipping_notes: fields.shipping_notes + (payment === 'wallet_aggregator' ? ' [' + wallet + ' transaction: ' + (tid.trim() || 'Pending verification') + ']' : ''), items: items.map(({ product_id, variant_id, kit_id, quantity }) => ({ product_id, variant_id, kit_id, quantity })) };
       const signature = JSON.stringify({ payload, file: file ? [file.name, file.size, file.lastModified] : null });
       if (!attempt.current?.submitted && (!attempt.current || attempt.current.signature !== signature)) attempt.current = { signature, key: crypto.randomUUID() };
       const current = attempt.current;
@@ -105,7 +107,7 @@ export default function CheckoutPage() {
       if (!body) {
         const fresh = await refresh();
         if (!fresh) throw new Error('Could not confirm the current price or stock. Review your basket and retry.');
-        if (!quote || fresh.total_minor !== quote.total_minor || JSON.stringify(fresh.items.map(i => i.unit_price_minor)) !== JSON.stringify(quote.items.map(i => i.unit_price_minor))) throw new Error('Your basket prices have updated. Review the new total before placing the order.');
+        if (!quote || fresh.total_minor !== quote.total_minor || fresh.coupon_code !== quote.coupon_code || fresh.coupon_version !== quote.coupon_version || JSON.stringify(fresh.items.map(i => i.unit_price_minor)) !== JSON.stringify(quote.items.map(i => i.unit_price_minor))) throw new Error('Your basket prices have updated. Review the new total before placing the order.');
         if (file && payment !== 'COD' && !current.receipt) {
           setSubmissionStage('receipt');
           const data = new FormData(); data.append('receipt', file);
@@ -174,7 +176,8 @@ export default function CheckoutPage() {
         <h2 className="text-xl">{recovering ? 'Previous order confirmation' : 'Your order'}</h2>{recovering ? <p className="text-sm text-muted-gray">{copy.text_we_will_recover_the_original_submitted_basket_and_total}</p> : <details open className="border-b border-border-gray pb-5"><summary className="text-sm cursor-pointer min-h-11">{items.reduce((n, item) => n + item.quantity, 0)} {copy.text_items}<Link href={links.href_cart} className="underline ml-2">{copy.text_edit_basket}</Link></summary><div className="space-y-4 mt-3">{items.map(item => { const line = quote?.items.find(l => l.product_id === item.product_id && l.variant_id === item.variant_id && l.kit_id === item.kit_id); return <div key={item.id} className="flex gap-3 items-center"><div className="relative w-16 h-16 shrink-0 overflow-hidden rounded-lg"><Image src={item.image_url} alt="" fill sizes="64px" className="object-cover" /></div><div className="flex-1 min-w-0 text-sm"><p className="font-medium">{item.name}</p><p className="text-muted-gray">{item.variant_label} {copy.text_qty}{item.quantity}</p></div><span className="text-sm">{line ? formatPKR(line.line_total_minor) : '—'}</span></div>; })}</div></details>}
         {!recovering && syncError && <p role="alert" className="text-sm text-rose-700">{syncError} <button type="button" onClick={() => void syncLivePrices()} className="underline">{copy.text_retry}</button></p>}
         {!recovering && quoteError && <p role="alert" className="text-sm text-rose-700">{quoteError} <button type="button" className="underline" onClick={() => void refresh()}>{copy.text_update_total}</button></p>}
-        {!recovering && quote && <dl className="space-y-3"><div className="flex justify-between"><dt>{copy.text_subtotal}</dt><dd>{formatPKR(quote.subtotal_minor)}</dd></div><div className="flex justify-between"><dt>{copy.text_delivery}</dt><dd>{quote.shipping_minor ? formatPKR(quote.shipping_minor) : 'Free'}</dd></div><div className="flex justify-between border-t border-border-gray pt-4 text-xl font-semibold"><dt>{copy.text_total}</dt><dd>{formatPKR(quote.total_minor)}</dd></div></dl>}
+        <CouponControls quote={quote} customerEmail={fields.customer_email} disabled={busy || placed || recovering || isSyncing} />
+        {!recovering && quote && <dl className="space-y-3"><div className="flex justify-between"><dt>{copy.text_subtotal}</dt><dd>{formatPKR(quote.subtotal_minor)}</dd></div><div className="flex justify-between"><dt>{copy.text_delivery}</dt><dd>{quote.shipping_minor ? formatPKR(quote.shipping_minor) : 'Free'}</dd></div>{!!quote.discount_minor && <div className="flex justify-between gap-3 text-seedly-primary"><dt>Discount <span className="text-xs">({quote.coupon_code})</span></dt><dd>−{formatPKR(quote.discount_minor)}</dd></div>}<div className="flex justify-between border-t border-border-gray pt-4 text-xl font-semibold"><dt>{copy.text_total}</dt><dd>{formatPKR(quote.total_minor)}</dd></div></dl>}
         {!recovering && (loading || isSyncing) && <p role="status" className="text-sm">{copy.text_checking_current_prices_and_stock}</p>}
         {!recovering && hasFieldErrors && <p role="alert" className="text-sm text-rose-700 bg-rose-50 p-4 rounded-lg">{copy.text_please_correct_the_highlighted_fields}</p>}
         {error && <p role="alert" className="text-sm text-rose-700 bg-rose-50 p-4 rounded-lg">{error}</p>}

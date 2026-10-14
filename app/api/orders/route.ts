@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { createOrder } from '../../../lib/services/orders';
 import { parseCheckoutLines } from '@/lib/checkout-validation';
 import { readJson, requireSameOrigin, RequestError } from '@/lib/request-guards';
+import { couponCode } from '@/lib/coupons';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
       idempotency_key,
       quote_token,
       receipt_proof,
+      coupon_code,
       items,
     } = body;
 
@@ -112,6 +114,7 @@ export async function POST(request: Request) {
 
     await enforcePublicRateLimit(request, 'orders');
     const result = await createOrder({
+      coupon_code: couponCode(coupon_code),
       customer_name: name, customer_email: email, customer_phone: cleanPhone,
       shipping_address: address, shipping_city: city,
       shipping_province: typeof shipping_province === 'string' ? shipping_province.trim().slice(0, 100) : 'Punjab',

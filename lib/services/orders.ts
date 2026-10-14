@@ -9,6 +9,8 @@ import { getKits } from './kits';
 import { assertOrderStatusUpdate, getInitialOrderState } from '../order-status';
 import { parseCheckoutLines, quoteFingerprint } from '../checkout-validation';
 import { createTrackingToken, createCheckoutReference, verifyQuoteToken, verifyReceiptProof } from '../checkout-security';
+import { quoteCoupon } from './coupons';
+import { couponCode } from '../coupons';
 
 export interface CreateOrderInput {
   customer_name: string;
@@ -24,6 +26,7 @@ export interface CreateOrderInput {
   idempotency_key?: string;
   quote_token?: string;
   receipt_proof?: string;
+  coupon_code?: string;
   items: {
     product_id: string;
     variant_id?: string;
@@ -36,7 +39,8 @@ export interface CreateOrderInput {
 }
 
 export async function validateAndQuote(
-  input: { product_id: string; variant_id?: string; kit_id?: string; quantity: number }[]
+  input: { product_id: string; variant_id?: string; kit_id?: string; quantity: number }[],
+  coupon_code?: string, customer_email?: string
 ) {
   const items = parseCheckoutLines(input);
   const supabase = createPublicClient();
@@ -78,9 +82,11 @@ export async function validateAndQuote(
   });
   const subtotal_minor = validatedItems.reduce((total, item) => total + item.line_total_minor, 0);
   const shipping_minor = subtotal_minor >= settings.free_delivery_threshold_minor ? 0 : settings.delivery_fee_minor;
-  const total_minor = subtotal_minor + shipping_minor;
+  if (!Number.isSafeInteger(subtotal_minor + shipping_minor) || subtotal_minor + shipping_minor > 2_000_000_000) throw new RequestError('This basket exceeds the maximum order value. Please reduce the quantity.');
+  const coupon = await quoteCoupon(coupon_code, subtotal_minor, customer_email);
+  const total_minor = subtotal_minor + shipping_minor - coupon.discount_minor;
   if (!Number.isSafeInteger(total_minor) || total_minor > 2_000_000_000) throw new Error('Invalid basket total.');
-  return { subtotal_minor, shipping_minor, total_minor, items: validatedItems };
+  return { subtotal_minor, shipping_minor, total_minor, ...coupon, items: validatedItems };
 }
 
 export interface CreateOrderResult {
@@ -97,6 +103,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
     throw new Error('Order items cannot be empty or invalid');
   }
   input.items = parseCheckoutLines(input.items);
+  input.coupon_code = couponCode(input.coupon_code);
   if (!input.idempotency_key || !/^[a-zA-Z0-9_-]{20,100}$/.test(input.idempotency_key)) throw new RequestError('Please refresh checkout and try again.');
 
   const orderId = "ord-" + crypto.randomUUID();
@@ -114,6 +121,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
     name: input.customer_name.trim(),
     address: input.shipping_address.trim(), city: input.shipping_city.trim(), province: input.shipping_province.trim(),
     postal: input.shipping_postal_code?.trim() || '', notes: input.shipping_notes?.trim() || '', receipt: input.receipt_path || '',
+    ...(input.coupon_code ? { coupon: input.coupon_code } : {}),
   });
   const requestFingerprint = crypto.createHash('sha256').update(fingerprintPayload).digest('hex');
   const trackingToken = createTrackingToken(input.idempotency_key, requestFingerprint);
@@ -138,7 +146,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
   const settings = await getSiteSettings({ requireConfigured: true });
   if (!settings.ordering_enabled) throw new RequestError('Ordering is temporarily paused. Please contact our team.', 503);
   if (!enabledPaymentMethods(settings).includes(input.payment_method)) throw new RequestError('This payment method is currently unavailable. Choose another method.', 409);
-  const quote = await validateAndQuote(input.items);
+  const quote = await validateAndQuote(input.items, input.coupon_code, input.customer_email);
   verifyQuoteToken(input.quote_token || '', input.items, quote);
   if (input.receipt_path) {
     if (input.payment_method === 'COD') throw new RequestError('A receipt is not needed for cash on delivery.');
@@ -147,7 +155,8 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
 
   if (sequential) orderNumber = assignedNumber || await allocateCheckoutOrderReference(checkoutReference, requestFingerprint);
 
-  const { data: rpcResult, error: rpcError } = await (supabase.rpc as any)('create_order_secure_transactional', {
+  const { data: rpcResult, error: rpcError } = await (supabase.rpc as any)(input.coupon_code ? 'create_order_with_coupon_transactional' : 'create_order_secure_transactional', {
+    ...(input.coupon_code ? { p_coupon_code: input.coupon_code } : {}),
     p_order_id: orderId,
     p_order_number: orderNumber,
     p_customer_name: input.customer_name,
@@ -176,6 +185,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
   });
 
   if (rpcError) {
+    if (rpcError.code === 'P0010') throw new RequestError('This discount code changed, expired, or reached its limit. Refresh your total or remove the code.', 409);
     if (rpcError.code === 'P0001') {
       throw new RequestError('This checkout attempt has changed. Please review your details and start a new attempt.',409);
     }
@@ -223,6 +233,7 @@ function mapRowToOrder(row: any, items: OrderItem[]): Order {
     subtotal_minor: Number(row.subtotal_minor),
     shipping_minor: Number(row.shipping_minor),
     discount_minor: Number(row.discount_minor || 0),
+    coupon_code: row.coupon_code || undefined,
     total_minor: Number(row.total_minor),
     payment_method: row.payment_method,
     payment_status: row.payment_status,

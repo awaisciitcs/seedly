@@ -330,6 +330,7 @@ export default async function OrderConfirmationPage(props: {
               {order.shipping_minor === 0 ? 'FREE' : formatPKR(order.shipping_minor)}
             </span>
           </div>
+          {!!order.discount_minor && <div className="flex justify-between gap-3 text-seedly-primary"><span>Discount {order.coupon_code ? `(${order.coupon_code})` : ''}</span><span>−{formatPKR(order.discount_minor)}</span></div>}
           <div className="border-t border-border-gray pt-3 flex justify-between items-baseline">
             <span className="font-serif font-bold text-base text-charcoal">{copy.text_total_amount}</span>
             <span className="font-serif font-bold text-2xl text-seedly-dark">

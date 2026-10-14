@@ -1,4 +1,5 @@
 import type { Lead, TrackingSettings } from '../tracking/types';
+import type { Coupon, AdminCoupon } from '../coupons';
 export type Json =
   | string
   | number
@@ -15,6 +16,8 @@ export type Database = {
   }
   public: {
     Tables: {
+      coupons: { Row: { [K in keyof Coupon]: Coupon[K] }; Insert: Omit<Coupon,'id'|'created_at'|'updated_at'>; Update: Partial<Coupon>; Relationships: [] }
+      coupon_redemptions: { Row: {id:string;coupon_id:string;order_id:string;customer_email:string;discount_minor:number;created_at:string}; Insert: {coupon_id:string;order_id:string;customer_email:string;discount_minor:number}; Update: never; Relationships: [] }
       visitor_tracking_settings: { Row: { [K in keyof TrackingSettings]: TrackingSettings[K] }; Insert: Partial<TrackingSettings> & {id:number}; Update: Partial<TrackingSettings>; Relationships: [] }
       leads: { Row: { [K in keyof Lead]: Lead[K] } & {submission_key:string;submission_hash:string}; Insert: Omit<Lead,'id'|'created_at'> & {id?:string;created_at?:string;submission_key:string;submission_hash:string}; Update: Partial<Lead>; Relationships: [] }
 
@@ -470,6 +473,7 @@ export type Database = {
           customer_name: string
           customer_phone: string
           discount_minor: number | null
+          coupon_code: string | null
           id: string
           idempotency_key: string | null
           notes: string | null
@@ -502,6 +506,7 @@ export type Database = {
           customer_name: string
           customer_phone: string
           discount_minor?: number | null
+          coupon_code?: string | null
           id: string
           idempotency_key?: string | null
           notes?: string | null
@@ -534,6 +539,7 @@ export type Database = {
           customer_name?: string
           customer_phone?: string
           discount_minor?: number | null
+          coupon_code?: string | null
           id?: string
           idempotency_key?: string | null
           notes?: string | null
@@ -1082,7 +1088,7 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_coupons: { Row: { [K in keyof AdminCoupon]: AdminCoupon[K] }; Relationships: [] }
     }
     Functions: {
       purge_expired_leads: { Args: Record<string, never>; Returns: number }

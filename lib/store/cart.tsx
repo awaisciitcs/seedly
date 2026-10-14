@@ -5,6 +5,7 @@ import type { CartItem, CheckoutLine, CustomerStoreSettings } from '../types';
 import { addCartItem, restoreCart, cartIdentity, removeOrderedItems } from '../cart-state';
 
 interface CartContextType {
+  couponCode: string; setCouponCode: (code: string) => void;
   items: CartItem[]; addItem: (item: CartItem, options?: { openDrawer?: boolean }) => boolean;
   removeItem: (id: string) => void; updateQuantity: (id: string, quantity: number) => void; clearCart: () => void; completeOrder: (ordered: CheckoutLine[]) => void;
   subtotalMinor: number; itemCount: number; isCartOpen: boolean; setIsCartOpen: (open: boolean) => void;
@@ -14,6 +15,7 @@ interface CartContextType {
 }
 const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const [couponCode, setCouponCode] = useState('');
   const [items, setItems] = useState<CartItem[]>([]);
   const settingsSequence = useRef(0);
   const itemsRef = useRef<CartItem[]>([]); const syncSequence = useRef(0);
@@ -59,11 +61,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     finally { if (sequence === syncSequence.current) setIsSyncing(false); }
   }, [commit]);
   useEffect(() => {
+    try { const saved = localStorage.getItem('seedly_coupon') || ''; if (/^[A-Z0-9][A-Z0-9_-]{2,31}$/.test(saved)) setCouponCode(saved); } catch { /* Optional coupon persistence. */ }
     try { commit(restoreCart(JSON.parse(localStorage.getItem('seedly_cart') || '[]'))); } catch { commit([]); }
     setIsLoaded(true); void refreshSettings(); void syncLivePrices();
     return () => { settingsSequence.current++; syncSequence.current++; if (bumpTimer.current) clearTimeout(bumpTimer.current); };
   }, [commit, refreshSettings, syncLivePrices]);
   useEffect(() => { if (isLoaded) { try { localStorage.setItem('seedly_cart', JSON.stringify(items)); } catch { /* Basket works without local storage. */ } } }, [items, isLoaded]);
+  useEffect(() => { if (isLoaded) { try { if (couponCode) localStorage.setItem('seedly_coupon', couponCode); else localStorage.removeItem('seedly_coupon'); } catch { /* Coupons work without storage. */ } } }, [couponCode, isLoaded]);
   useEffect(() => { if (isCartOpen) void syncLivePrices(); }, [isCartOpen, syncLivePrices]);
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -95,11 +99,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     trackEvent('basket_quantity_changed',{product_id:item.product_id,kit_id:item.kit_id,variant_id:item.variant_id,quantity:capped});
     setAnnouncement(capped < quantity ? 'Stock limit reached for ' + item.name + '.' : 'Quantity updated to ' + capped + '.');
   }, [commit, removeItem]);
-  const clearCart = useCallback(() => { setIsSyncing(false); syncSequence.current++; commit([]); setToastItem(null); setAnnouncement('Basket cleared.'); }, [commit]);
-  const completeOrder = useCallback((ordered: CheckoutLine[]) => { setIsSyncing(false); syncSequence.current++; commit(removeOrderedItems(itemsRef.current, ordered)); setToastItem(null); setAnnouncement('Ordered items removed from your basket.'); }, [commit]);
+  const clearCart = useCallback(() => { setCouponCode(''); setIsSyncing(false); syncSequence.current++; commit([]); setToastItem(null); setAnnouncement('Basket cleared.'); }, [commit]);
+  const completeOrder = useCallback((ordered: CheckoutLine[]) => { setCouponCode(''); setIsSyncing(false); syncSequence.current++; commit(removeOrderedItems(itemsRef.current, ordered)); setToastItem(null); setAnnouncement('Ordered items removed from your basket.'); }, [commit]);
   const subtotalMinor = items.reduce((sum, i) => sum + i.price_minor * i.quantity, 0);
   const shippingFeeMinor = settings ? subtotalMinor >= settings.free_delivery_threshold_minor ? 0 : settings.delivery_fee_minor : null;
-  return <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, completeOrder, subtotalMinor, itemCount: items.reduce((sum, i) => sum + i.quantity, 0), isCartOpen, setIsCartOpen, freeShippingThreshold: settings?.free_delivery_threshold_minor ?? 0, shippingFeeMinor, isLoaded, isSyncing, syncError, cartBump, toastItem, dismissToast, announcement, settings, settingsError, refreshSettings, syncLivePrices }}>
+  return <CartContext.Provider value={{ couponCode, setCouponCode, items, addItem, removeItem, updateQuantity, clearCart, completeOrder, subtotalMinor, itemCount: items.reduce((sum, i) => sum + i.quantity, 0), isCartOpen, setIsCartOpen, freeShippingThreshold: settings?.free_delivery_threshold_minor ?? 0, shippingFeeMinor, isLoaded, isSyncing, syncError, cartBump, toastItem, dismissToast, announcement, settings, settingsError, refreshSettings, syncLivePrices }}>
     {children}<div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</div>
   </CartContext.Provider>;
 }

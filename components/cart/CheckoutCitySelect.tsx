@@ -52,16 +52,18 @@ export function CheckoutCitySelect({ id, label, value, onChange, invalid, descri
       const edge = 12, gap = 6;
       const menuWidth = Math.min(rect.width, width - edge * 2);
       menu.style.width = menuWidth + 'px';
-      const desiredHeight = Math.min(menu.scrollHeight, 360);
+      // Measure the uncompressed content, not a panel already constrained by a previous placement.
+      const contentHeight = [...menu.children].reduce((height, child) => height + (child === list.current ? child.scrollHeight : child.getBoundingClientRect().height), 2);
+      const desiredHeight = Math.min(contentHeight, 360);
       const below = Math.max(0, topEdge + height - rect.bottom - gap - edge);
       const above = Math.max(0, rect.top - topEdge - gap - edge);
-      const upwards = below < Math.min(desiredHeight, 220) && above > below;
+      const upwards = below < Math.min(desiredHeight, 240) && above > below;
       const maxHeight = Math.min(360, upwards ? above : below);
       const menuHeight = Math.min(desiredHeight, maxHeight);
       setPosition({
         left: Math.max(leftEdge + edge, Math.min(rect.left, leftEdge + width - menuWidth - edge)),
         top: upwards ? rect.top - gap - menuHeight : rect.bottom + gap,
-        width: menuWidth, maxHeight, visibility: 'visible',
+        width: menuWidth, height: menuHeight, maxHeight, visibility: 'visible',
       });
     };
     const outside = (event: Event) => {
@@ -94,9 +96,10 @@ export function CheckoutCitySelect({ id, label, value, onChange, invalid, descri
     if (!expanded || !list.current) return;
     const option = list.current.children[active] as HTMLElement | undefined;
     if (!option) return;
-    if (option.offsetTop < list.current.scrollTop) list.current.scrollTop = option.offsetTop;
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+    if (option.offsetTop < list.current.scrollTop) list.current.scrollTo({ top: option.offsetTop, behavior });
     else if (option.offsetTop + option.offsetHeight > list.current.scrollTop + list.current.clientHeight) {
-      list.current.scrollTop = option.offsetTop + option.offsetHeight - list.current.clientHeight;
+      list.current.scrollTo({ top: option.offsetTop + option.offsetHeight - list.current.clientHeight, behavior });
     }
   }, [expanded, active, position]);
 
@@ -125,6 +128,8 @@ export function CheckoutCitySelect({ id, label, value, onChange, invalid, descri
       event.preventDefault();
       if (!expanded) open();
       else setActive(index => options.length ? Math.max(0, Math.min(options.length - 1, index + (event.key === 'ArrowDown' ? 1 : -1))) : -1);
+    } else if (expanded && event.ctrlKey && (event.key === 'Home' || event.key === 'End')) {
+      event.preventDefault(); setActive(event.key === 'Home' ? 0 : options.length - 1);
     } else if (event.key === 'Enter' && expanded && !event.nativeEvent.isComposing) {
       event.preventDefault();
       if (options[active]) choose(active); else setExpanded(false);
@@ -155,7 +160,7 @@ export function CheckoutCitySelect({ id, label, value, onChange, invalid, descri
         <ChevronDown size={18} aria-hidden="true" />
       </button>
     </div>
-    {expanded && host && createPortal(<div ref={panel} className="catalog-select-menu checkout-city-menu" style={position}>
+    {expanded && host && createPortal(<div ref={panel} className="catalog-select-menu checkout-city-menu" style={position} data-compact={typeof position.height === 'number' && position.height < 180 ? 'true' : undefined}>
       <div className="checkout-city-heading"><span>Suggested cities</span><span>{options.length}</span></div>
       <ul ref={list} id={menuId} className="checkout-city-options" role="listbox" aria-labelledby={id + '-label'}>
         {options.map((city, index) => <li id={optionId(index)} key={city} className="catalog-select-option checkout-city-option"

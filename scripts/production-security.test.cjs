@@ -6,7 +6,7 @@ function load(file, deps = {}, extra = {}) {
   const filename = path.join(__dirname, '..', file);
   const output = ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true, target: ts.ScriptTarget.ES2022 }, fileName: filename }).outputText;
   const module = { exports: {} };
-  vm.runInNewContext(output, { module, exports: module.exports, URL, Request, Response, FormData, File, Buffer, TextDecoder, Uint8Array, AbortSignal, AbortController, Date, atob, console: { error() {}, log() {} }, process: { env: { SUPABASE_SECRET_KEY: 'sb_secret_fixture' } }, require(name) { if (name in deps) return deps[name]; throw Error('Unexpected dependency ' + name); }, ...extra }, { filename });
+  vm.runInNewContext(output, { module, exports: module.exports, URL, Request, Response, FormData, File, Buffer, TextDecoder, Uint8Array, AbortSignal, AbortController, Date, atob, console: { error() {}, log() {} }, process: { env: { SUPABASE_SECRET_KEY: 'sb_secret_fixture' } }, require(name) { if (name in deps) return deps[name]; if(name==='../coupons'||name==='@/lib/coupons')return load('lib/coupons.ts',{'./request-guards':guards,'./admin-validation':load('lib/admin-validation.ts',{'./request-guards':guards})});if(name==='./coupons')return {quoteCoupon:async()=>({discount_minor:0,coupon_code:''})};throw Error('Unexpected dependency ' + name); }, ...extra }, { filename });
   return module.exports;
 }
 const guards = load('lib/request-guards.ts');

@@ -23,6 +23,7 @@ import {
   RefreshCw,
   ChevronRight,
   EyeOff,
+  Tag,
 } from 'lucide-react';
 
 export interface AdminInfo {
@@ -166,6 +167,7 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
           count: counts?.lowStockCount || 0,
         },
         { label: 'Curated Kits', href: '/admin/kits', icon: Layers },
+        { label: 'Discount Codes', href: '/admin/coupons', icon: Tag },
       ],
     },
     {

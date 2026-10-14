@@ -29,15 +29,17 @@ export function readCheckoutValue(token: string): Record<string, unknown> {
   return value;
 }
 
-export function createQuoteToken(lines: CheckoutLine[], quote: { total_minor: number; shipping_minor: number; items: { unit_price_minor: number }[] }) {
+type SignedQuote = { total_minor: number; shipping_minor: number; discount_minor?: number; coupon_code?: string; coupon_id?: string; coupon_version?: string; items: { unit_price_minor: number }[] };
+export function createQuoteToken(lines: CheckoutLine[], quote: SignedQuote) {
   const expires = Date.now() + 5 * 60_000;
-  return { token: signCheckoutValue({ purpose: 'quote', lines: crypto.createHash("sha256").update(quoteFingerprint(lines)).digest("hex"), total: quote.total_minor, shipping: quote.shipping_minor, prices: quote.items.map(i => i.unit_price_minor), expires }), expires_at: new Date(expires).toISOString() };
+  return { token: signCheckoutValue({ purpose: 'quote', lines: crypto.createHash("sha256").update(quoteFingerprint(lines)).digest("hex"), total: quote.total_minor, shipping: quote.shipping_minor, discount: quote.discount_minor || 0, coupon: quote.coupon_code || '', coupon_id: quote.coupon_id || '', coupon_version: quote.coupon_version || '', prices: quote.items.map(i => i.unit_price_minor), expires }), expires_at: new Date(expires).toISOString() };
 }
 
-export function verifyQuoteToken(token: string, lines: CheckoutLine[], quote: { total_minor: number; shipping_minor: number; items: { unit_price_minor: number }[] }) {
+export function verifyQuoteToken(token: string, lines: CheckoutLine[], quote: SignedQuote) {
   const value = readCheckoutValue(token);
   if (value.purpose !== 'quote' || value.lines !== crypto.createHash("sha256").update(quoteFingerprint(lines)).digest("hex")) throw new RequestError('Your basket changed. Please refresh the order summary.');
   if (value.total !== quote.total_minor || value.shipping !== quote.shipping_minor || JSON.stringify(value.prices) !== JSON.stringify(quote.items.map(i => i.unit_price_minor))) throw new RequestError('Prices or delivery charges changed. Please review the updated total before ordering.');
+  if ((value.discount || 0) !== (quote.discount_minor || 0) || (value.coupon || '') !== (quote.coupon_code || '') || (value.coupon_id || '') !== (quote.coupon_id || '') || (value.coupon_version || '') !== (quote.coupon_version || '')) throw new RequestError('This discount changed. Refresh the order summary before ordering.',409);
 }
 
 export function verifyReceiptProof(token: string, checkoutKey: string, path: string) {

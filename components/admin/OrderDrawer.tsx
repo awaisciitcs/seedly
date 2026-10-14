@@ -451,6 +451,7 @@ export function OrderDrawer({
                       {order.shipping_minor === 0 ? 'FREE' : formatPKR(order.shipping_minor)}
                     </span>
                   </div>
+                  {!!order.discount_minor && <div className="flex justify-between text-emerald-200"><span>Discount {order.coupon_code ? `(${order.coupon_code})` : ''}</span><span>−{formatPKR(order.discount_minor)}</span></div>}
                   <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-white/10">
                     <span>Total Amount:</span>
                     <span className="text-lime num-lining">{formatPKR(order.total_minor)}</span>

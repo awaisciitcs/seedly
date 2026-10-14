@@ -9,7 +9,7 @@ function load(file,deps={}){
  const filename=path.join(__dirname,'..',file);
  const output=ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,esModuleInterop:true,target:ts.ScriptTarget.ES2022},fileName:filename}).outputText;
  const module={exports:{}};
- vm.runInNewContext(output,{module,exports:module.exports,Buffer,URL,Request,Response,TextDecoder,Uint8Array,Date,console:{error(){},log(){}},process:{env:{SUPABASE_SECRET_KEY:'unit-test-only-private-secret-do-not-use'}},require(name){if(name in deps)return deps[name];if(name==='@/lib/public-rate-limit')return {enforcePublicRateLimit:async()=>{},rateLimitHeaders:()=>({})};if(name==='./fetch')return {boundedSupabaseFetch:()=>{}};throw Error('Unexpected dependency '+name);}},{filename});
+ vm.runInNewContext(output,{module,exports:module.exports,Buffer,URL,Request,Response,TextDecoder,Uint8Array,Date,console:{error(){},log(){}},process:{env:{SUPABASE_SECRET_KEY:'unit-test-only-private-secret-do-not-use'}},require(name){if(name in deps)return deps[name];if(name==='@/lib/public-rate-limit')return {enforcePublicRateLimit:async()=>{},rateLimitHeaders:()=>({})};if(name==='./fetch')return {boundedSupabaseFetch:()=>{}};if(name==='../coupons'||name==='@/lib/coupons')return load('lib/coupons.ts',{'./request-guards':guards,'./admin-validation':load('lib/admin-validation.ts',{'./request-guards':guards})});if(name==='./coupons')return {quoteCoupon:async()=>({discount_minor:0,coupon_code:''})};throw Error('Unexpected dependency '+name);}},{filename});
  return module.exports;
 }
 const guards=load('lib/request-guards.ts');

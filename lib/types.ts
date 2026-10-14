@@ -158,6 +158,7 @@ export interface Order {
   subtotal_minor: number;
   shipping_minor: number;
   discount_minor: number;
+  coupon_code?: string;
   total_minor: number;
   payment_method: PaymentMethod;
   payment_status: PaymentStatus;
@@ -223,6 +224,10 @@ export interface CheckoutLine {
 export interface CheckoutQuote {
   subtotal_minor: number;
   shipping_minor: number;
+  discount_minor?: number;
+  coupon_code?: string;
+  coupon_id?: string;
+  coupon_version?: string;
   total_minor: number;
   items: (CheckoutLine & { name: string; unit_price_minor: number; line_total_minor: number; image_url: string; sku: string })[];
   token: string;

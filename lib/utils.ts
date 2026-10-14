@@ -9,8 +9,8 @@ export function cn(...inputs: ClassValue[]) {
  * Format paisa (integer minor unit) to Pakistani Rupees (e.g. 68000 -> "Rs. 680")
  */
 export function formatPrice(minor: number = 0): string {
-  const pkr = Math.floor(minor / 100);
-  return `Rs. ${pkr.toLocaleString('en-PK')}`;
+  const pkr = minor / 100;
+  return `Rs. ${pkr.toLocaleString('en-PK', { minimumFractionDigits: minor % 100 ? 2 : 0, maximumFractionDigits: 2 })}`;
 }
 
 export const formatPKR = formatPrice;
