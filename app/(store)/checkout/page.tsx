@@ -18,7 +18,7 @@ import { CITY_PROVINCE_MAP, PROVINCES } from '@/lib/delivery';
 import { CouponControls } from '@/components/cart/CouponControls';
 import { CheckoutCitySelect } from '@/components/cart/CheckoutCitySelect';
 import { MAX_UPLOAD_FILE_BYTES } from '@/lib/upload-limits';
-import { validateCheckoutFields } from '@/lib/checkout-fields';
+import { CHECKOUT_FIELD_LIMITS, validateCheckoutFields } from '@/lib/checkout-fields';
 
 export default function CheckoutPage() {
   const cms = useSiteContent<CmsPageContent>('checkout'); const { copy, links, images } = cms;
@@ -125,7 +125,9 @@ export default function CheckoutPage() {
       const result = await response.json();
       if (!response.ok) {
         if (response.status < 500) {
-          current.submitted = undefined; setRecovering(false);
+          current.submitted = undefined;
+          // A 4xx response confirms no new order was committed. Refresh an expired receipt proof on retry.
+          current.receipt = undefined; setRecovering(false);
           try { clearPendingCheckout(window.sessionStorage); } catch { /* Storage may be blocked. */ }
         }
         throw new Error(result.error?.message || 'Could not place your order. Your details are still here; please retry.');
@@ -139,7 +141,7 @@ export default function CheckoutPage() {
     } catch (err) { setError(err instanceof Error ? err.message : 'Connection interrupted. Retry with the same details to recover your order safely.'); }
     finally { submitting.current = false; setBusy(false); }
   };
-  const field = (name: keyof typeof fields, label: string, type = 'text', complete?: string, required = true, max = 200) => <div className={name === 'shipping_address' ? 'sm:col-span-2' : ''}>
+  const field = (name: keyof typeof fields, label: string, type = 'text', complete?: string, required = true, max = CHECKOUT_FIELD_LIMITS[name]) => <div className={name === 'shipping_address' ? 'sm:col-span-2' : ''}>
     <label htmlFor={name} className="field-label">{label}{!required && <span className="text-muted-gray font-normal"> {copy.text_optional}</span>}</label>
     <input className="form-input" id={name} name={name} type={type} autoComplete={complete} value={fields[name]} onChange={event => update(name, event.target.value)} required={required} maxLength={max} aria-invalid={!!errors[name]} aria-describedby={errors[name] ? name + '-error' : undefined} />
     {errors[name] && <p id={name + '-error'} className="text-sm text-rose-700 mt-2">{errors[name]}</p>}

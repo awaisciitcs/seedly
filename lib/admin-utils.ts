@@ -112,14 +112,13 @@ export function isTestOrder(order: {
   const email = (order.customer_email || '').toLowerCase();
   const num = (order.order_number || '').toLowerCase();
 
-  return (
-    name.includes('test') ||
-    name.includes('maryam nawaz') ||
-    email.includes('test') ||
-    email.includes('maryam.customer') ||
-    email.includes('mailinator') ||
-    num.includes('test')
-  );
+  const [local = '', domain = ''] = email.split('@');
+  return /\b(?:test|fixture|simulation)\b/.test(name)
+    || /(?:^|[._+-])(?:test|fixture|simulation)(?:[._+-]|$)/.test(local)
+    || domain.endsWith('.test')
+    || ['example.com', 'example.net', 'example.org', 'mailinator.com'].includes(domain)
+    || /^sed-(?:test|fixture|simulation)(?:-|$)/.test(num);
+
 }
 
 /**

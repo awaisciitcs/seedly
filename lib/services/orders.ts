@@ -146,6 +146,8 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
   const settings = await getSiteSettings({ requireConfigured: true });
   if (!settings.ordering_enabled) throw new RequestError('Ordering is temporarily paused. Please contact our team.', 503);
   if (!enabledPaymentMethods(settings).includes(input.payment_method)) throw new RequestError('This payment method is currently unavailable. Choose another method.', 409);
+  // Recover committed attempts above, but require the same proof as the bank-transfer form for new orders.
+  if (input.payment_method === 'bank_transfer' && (!input.receipt_path || !input.receipt_proof)) throw new RequestError('Attach your bank transfer receipt before placing the order.');
   const quote = await validateAndQuote(input.items, input.coupon_code, input.customer_email);
   verifyQuoteToken(input.quote_token || '', input.items, quote);
   if (input.receipt_path) {
@@ -394,16 +396,19 @@ export async function getOrders(options?: {
     }
   }
 
-  query = query.order('created_at', { ascending: false });
-
-  if (options?.limit) {
-    query = query.limit(options.limit);
-  }
-
-  const { data: rows, error } = await query;
-
-  if (error || !rows) {
-    throw new Error('Orders are temporarily unavailable.');
+  query = query.order('created_at', { ascending: false }).order('id', { ascending: false });
+  // PostgREST caps a single response. Never present a truncated history as all orders.
+  const rows: any[] = [];
+  const requestedLimit = options?.limit;
+  if (requestedLimit !== undefined && (!Number.isSafeInteger(requestedLimit) || requestedLimit < 1)) throw new RequestError('Invalid order limit.');
+  const batchSize = 500;
+  for (let offset = 0; ; offset += batchSize) {
+    const size = requestedLimit ? Math.min(batchSize, requestedLimit - rows.length) : batchSize;
+    if (size <= 0) break;
+    const { data, error } = await query.range(offset, offset + size - 1);
+    if (error || !data) throw new Error('Orders are temporarily unavailable.');
+    rows.push(...data);
+    if (data.length < size || requestedLimit && rows.length >= requestedLimit) break;
   }
 
   return rows.map((row: any) => {

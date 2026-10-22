@@ -147,7 +147,7 @@ export async function getProducts(options?: {
   }
 
   // Fetch approved non-demo review statistics
-  if (options?.includeReviews === false) return rows.map(row => mapRowToProduct(row));
+  if (options?.includeReviews === false) return rows.map(row => mapRowToProduct(row, undefined, options?.status === ''));
   const { data: revRows } = await supabase
     .from('reviews')
     .select('product_id, rating')

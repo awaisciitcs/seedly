@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Search,
@@ -24,22 +24,20 @@ import { PAYMENT_METHOD_LABELS } from '@/lib/order-status';
 interface OrdersTableClientProps {
   initialOrders: Order[];
   initialFilter?: string;
+  initialSearch?: string;
   initialPaymentStatus?: string;
 }
 
 export function OrdersTableClient({
   initialOrders,
   initialFilter,
+  initialSearch,
   initialPaymentStatus,
 }: OrdersTableClientProps) {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(initialSearch || '');
   const [statusFilter, setStatusFilter] = useState<string>(
-    initialPaymentStatus === 'UNDER_REVIEW'
-      ? 'review'
-      : initialFilter === 'PROCESSING'
-      ? 'processing'
-      : 'needs_action'
+    initialPaymentStatus ? 'payment:' + initialPaymentStatus : initialFilter ? 'status:' + initialFilter : 'needs_action'
   );
   const [excludeTestOrders, setExcludeTestOrders] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -57,8 +55,12 @@ export function OrdersTableClient({
       // Status tab filters
       if (statusFilter === 'needs_action') {
         const needsReview = o.payment_method !== 'COD' && o.payment_status === 'UNDER_REVIEW';
-        const needsPack = o.order_status === 'PAID' || o.order_status === 'RECEIVED';
+        const needsPack = ['RECEIVED', 'PAID', 'PROCESSING', 'PACKED'].includes(o.order_status);
         if (!needsReview && !needsPack) return false;
+      } else if (statusFilter.startsWith('status:')) {
+        if (o.order_status !== statusFilter.slice(7)) return false;
+      } else if (statusFilter.startsWith('payment:')) {
+        if (o.payment_status !== statusFilter.slice(8)) return false;
       } else if (statusFilter === 'review') {
         if (o.payment_status !== 'UNDER_REVIEW') return false;
       } else if (statusFilter === 'processing') {
@@ -90,6 +92,13 @@ export function OrdersTableClient({
 
     return list;
   }, [orders, excludeTestOrders, statusFilter, search, sortField, sortAsc]);
+
+  const [page, setPage] = useState(1);
+  const pageSize = 25;
+  const pageCount = Math.max(1, Math.ceil(displayOrders.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pagedOrders = displayOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  useEffect(() => { setPage(1); }, [search, statusFilter, excludeTestOrders, sortField, sortAsc]);
 
   const handleRowClick = (orderId: string) => {
     setSelectedOrderId(orderId);
@@ -203,6 +212,7 @@ export function OrdersTableClient({
           >
             All Orders ({orders.length})
           </button>
+          {(statusFilter.startsWith('status:') || statusFilter.startsWith('payment:')) && <span className="rounded-full bg-white/20 px-4 py-1.5 text-xs text-white" role="status">Filtered: {statusFilter.split(':')[1].replaceAll('_', ' ')}</span>}
         </div>
       </div>
 
@@ -283,7 +293,7 @@ export function OrdersTableClient({
                   </td>
                 </tr>
               ) : (
-                displayOrders.map((o) => {
+                pagedOrders.map((o) => {
                   const isTest = isTestOrder(o);
                   const cleanPhone = (o.customer_phone || '').replace(/[^0-9]/g, '');
                   const waNum = cleanPhone.startsWith('92')
@@ -443,24 +453,27 @@ export function OrdersTableClient({
         {/* Table Footer */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-white/10 text-xs text-botanical-sage">
           <p>
-            Showing {displayOrders.length} of {orders.length} orders
+            Showing {displayOrders.length ? (currentPage - 1) * pageSize + 1 : 0}–{Math.min(currentPage * pageSize, displayOrders.length)} of {displayOrders.length} matching orders
           </p>
 
           <div className="flex items-center gap-1.5 self-end sm:self-auto">
             <button
               type="button"
-              disabled
-              className="glass-btn-3d p-1.5 rounded-lg opacity-40 cursor-not-allowed"
+              aria-label="Previous orders page"
+              disabled={currentPage <= 1}
+              onClick={() => setPage(currentPage - 1)}
+              className="glass-btn-3d p-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
-            <span className="w-7 h-7 rounded-lg bg-lime text-botanical-deep font-bold flex items-center justify-center text-xs shadow-[0_0_10px_rgba(183,228,89,0.4)]">
-              1
+            <span aria-live="polite" className="min-w-14 px-2 h-7 rounded-lg bg-lime text-botanical-deep font-bold flex items-center justify-center text-xs shadow-[0_0_10px_rgba(183,228,89,0.4)]">              {currentPage} / {pageCount}
             </span>
             <button
               type="button"
-              disabled
-              className="glass-btn-3d p-1.5 rounded-lg opacity-40 cursor-not-allowed"
+              aria-label="Next orders page"
+              disabled={currentPage >= pageCount}
+              onClick={() => setPage(currentPage + 1)}
+              className="glass-btn-3d p-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-3.5 h-3.5" />
             </button>

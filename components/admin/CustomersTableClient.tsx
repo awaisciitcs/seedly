@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Users,
   Mail,
@@ -13,6 +13,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { formatPKR, formatPKTDateTime, isTestOrder } from '@/lib/admin-utils';
+import { csvDocument } from '@/lib/csv';
 
 interface CustomerRecord {
   name: string;
@@ -52,6 +53,19 @@ export function CustomersTableClient({ initialCustomers }: { initialCustomers: C
     });
   }, [initialCustomers, excludeTestAccounts, search]);
 
+  const [page, setPage] = useState(1);
+  const pageSize = 25;
+  const pageCount = Math.max(1, Math.ceil(displayCustomers.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pagedCustomers = displayCustomers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  useEffect(() => { setPage(1); }, [search, excludeTestAccounts]);
+  const exportCustomers = () => {
+    const rows = [['Name', 'Email', 'Phone', 'City', 'Orders', 'Confirmed value PKR', 'Last order'], ...displayCustomers.map(customer => [customer.name, customer.email, customer.phone, customer.city, customer.orderCount, customer.totalSpendMinor / 100, customer.lastOrderDate])];
+    const url = URL.createObjectURL(new Blob([csvDocument(rows)], {type: 'text/csv;charset=utf-8'}));
+    const link = document.createElement('a'); link.href = url; link.download = 'seedly-customers-' + Date.now() + '.csv';
+    document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Header */}
@@ -60,7 +74,7 @@ export function CustomersTableClient({ initialCustomers }: { initialCustomers: C
           Customer Directory
         </h1>
         <p className="text-xs text-botanical-sage mt-1">
-          Inspect customer order frequency, total lifetime spend, and contact channels.
+          Inspect customer order frequency, confirmed order value, and contact channels.
         </p>
       </div>
 
@@ -92,6 +106,7 @@ export function CustomersTableClient({ initialCustomers }: { initialCustomers: C
 
             <button
               type="button"
+              onClick={exportCustomers}
               className="glass-btn-3d px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-botanical-sage" />
@@ -109,7 +124,7 @@ export function CustomersTableClient({ initialCustomers }: { initialCustomers: C
                 <th className="py-3.5 px-4 font-semibold">CONTACT CHANNELS</th>
                 <th className="py-3.5 px-4 font-semibold">PRIMARY CITY</th>
                 <th className="py-3.5 px-4 font-semibold">TOTAL ORDERS</th>
-                <th className="py-3.5 px-4 font-semibold">LIFETIME VALUE (PKR)</th>
+                <th className="py-3.5 px-4 font-semibold">CONFIRMED VALUE (PKR)</th>
                 <th className="py-3.5 px-4 font-semibold text-right">LAST ORDER</th>
               </tr>
             </thead>
@@ -121,7 +136,7 @@ export function CustomersTableClient({ initialCustomers }: { initialCustomers: C
                   </td>
                 </tr>
               ) : (
-                displayCustomers.map((c, idx) => {
+                pagedCustomers.map((c, idx) => {
                   const initial = (c.name || 'C').charAt(0).toUpperCase();
                   const colorClass = AVATAR_COLORS[idx % AVATAR_COLORS.length];
                   const cleanPhone = (c.phone || '').replace(/[^0-9]/g, '');
@@ -208,24 +223,27 @@ export function CustomersTableClient({ initialCustomers }: { initialCustomers: C
         {/* Table Footer */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-white/10 text-xs text-botanical-sage">
           <p>
-            Showing {displayCustomers.length} of {initialCustomers.length} customers
+            Showing {displayCustomers.length ? (currentPage - 1) * pageSize + 1 : 0}–{Math.min(currentPage * pageSize, displayCustomers.length)} of {displayCustomers.length} matching customers
           </p>
 
           <div className="flex items-center gap-1.5 self-end sm:self-auto">
             <button
               type="button"
-              disabled
-              className="glass-btn-3d p-1.5 rounded-lg opacity-40 cursor-not-allowed"
+              aria-label="Previous customers page"
+              disabled={currentPage <= 1}
+              onClick={() => setPage(currentPage - 1)}
+              className="glass-btn-3d p-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
-            <span className="w-7 h-7 rounded-lg bg-lime text-botanical-deep font-bold flex items-center justify-center text-xs shadow-[0_0_10px_rgba(183,228,89,0.4)]">
-              1
+            <span aria-live="polite" className="min-w-14 px-2 h-7 rounded-lg bg-lime text-botanical-deep font-bold flex items-center justify-center text-xs shadow-[0_0_10px_rgba(183,228,89,0.4)]">              {currentPage} / {pageCount}
             </span>
             <button
               type="button"
-              disabled
-              className="glass-btn-3d p-1.5 rounded-lg opacity-40 cursor-not-allowed"
+              aria-label="Next customers page"
+              disabled={currentPage >= pageCount}
+              onClick={() => setPage(currentPage + 1)}
+              className="glass-btn-3d p-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-3.5 h-3.5" />
             </button>

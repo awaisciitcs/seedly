@@ -2,6 +2,7 @@ import React from 'react';
 import { requireAdminOrRedirect } from '@/lib/auth/require-admin';
 import { getOrders } from '@/lib/services/orders';
 import { isTestOrder } from '@/lib/admin-utils';
+import { isConfirmedOrder } from '@/lib/admin-metrics';
 import { CustomersTableClient } from '@/components/admin/CustomersTableClient';
 
 export const dynamic = 'force-dynamic';
@@ -33,7 +34,7 @@ export default async function AdminCustomersPage() {
     const existing = customerMap.get(key);
     if (existing) {
       existing.orderCount += 1;
-      existing.totalSpendMinor += o.total_minor;
+      existing.totalSpendMinor += isConfirmedOrder(o) ? o.total_minor : 0;
       if (new Date(o.created_at) > new Date(existing.lastOrderDate)) {
         existing.lastOrderDate = o.created_at;
       }
@@ -45,7 +46,7 @@ export default async function AdminCustomersPage() {
         phone: o.customer_phone,
         city: o.shipping_city,
         orderCount: 1,
-        totalSpendMinor: o.total_minor,
+        totalSpendMinor: isConfirmedOrder(o) ? o.total_minor : 0,
         lastOrderDate: o.created_at,
         isTest,
       });

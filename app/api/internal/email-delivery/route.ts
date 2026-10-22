@@ -6,11 +6,11 @@ export const runtime = 'nodejs';
 export const maxDuration = 60;
 async function handle(request: Request) {
   const secret = process.env.CRON_SECRET || process.env.EMAIL_CRON_SECRET;
-  if (!secret || secret.length < 32) return NextResponse.json({error:'Email worker is not configured.'},{status:503});
+  if (!secret || secret.length < 32) return NextResponse.json({error:'Email worker is not configured.'},{status:503,headers:{'Cache-Control':'no-store'}});
   const authorization = request.headers.get('authorization') || '';
   const given = authorization.startsWith('Bearer ') && authorization.length <= 512 ? authorization.slice(7) : '';
   const digest = (value: string) => crypto.createHash('sha256').update(value).digest();
-  if (!given || !crypto.timingSafeEqual(digest(given),digest(secret))) return NextResponse.json({error:'Unauthorized.'},{status:401});
+  if (!given || !crypto.timingSafeEqual(digest(given),digest(secret))) return NextResponse.json({error:'Unauthorized.'},{status:401,headers:{'Cache-Control':'no-store'}});
   try {
     const summary = await processOrderEmails();
     return NextResponse.json(summary,{status:summary.configured ? 200 : 503,headers:{'Cache-Control':'no-store'}});

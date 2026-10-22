@@ -7,6 +7,8 @@ import { createOrder } from '../../../lib/services/orders';
 import { parseCheckoutLines } from '@/lib/checkout-validation';
 import { readJson, requireSameOrigin, RequestError } from '@/lib/request-guards';
 import { couponCode } from '@/lib/coupons';
+import { CHECKOUT_FIELD_LIMITS, validateCheckoutFields, type CheckoutFields } from '@/lib/checkout-fields';
+import { PROVINCES } from '@/lib/delivery';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,41 +37,25 @@ export async function POST(request: Request) {
       items,
     } = body;
 
-    if ([customer_name, customer_email, customer_phone, shipping_address, shipping_city].some(value => typeof value !== 'string' || !value.trim() || value.length > 500)) {
-      return NextResponse.json(
-        { error: { message: 'Missing required customer and delivery fields.' } },
-        { status: 400 }
-      );
+    const fields = {} as CheckoutFields;
+    for (const field of Object.keys(CHECKOUT_FIELD_LIMITS) as (keyof CheckoutFields)[]) {
+      const value = body[field];
+      const optional = field === 'shipping_postal_code' || field === 'shipping_notes';
+      if (value === undefined && optional) fields[field] = '';
+      else if (typeof value !== 'string') throw new RequestError('Provide valid customer and delivery fields.');
+      else fields[field] = value;
     }
-    const name = String(customer_name).trim();
-    const email = String(customer_email).trim().toLowerCase();
-    const phone = String(customer_phone).trim();
-    const address = String(shipping_address).trim();
-    const city = String(shipping_city).trim();
-
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: { message: 'Please provide a valid email address.' } },
-        { status: 400 }
-      );
-    }
-
-    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
-    const phoneRegex = /^((\+92)|(0092)|(92)|0)?(3[0-9]{9})$/;
-    if (!phoneRegex.test(cleanPhone)) {
-      return NextResponse.json(
-        { error: { message: 'Please enter a valid Pakistani mobile number (e.g. 0371 9055758).' } },
-        { status: 400 }
-      );
-    }
-
-    if (address.length < 8 || name.length < 2) {
-      return NextResponse.json(
-        { error: { message: 'Shipping address is too short. Please provide full street/house details.' } },
-        { status: 400 }
-      );
-    }
+    const fieldErrors = validateCheckoutFields(fields);
+    if (!PROVINCES.includes(fields.shipping_province.trim())) fieldErrors.shipping_province = 'Select a supported province or region.';
+    if (Object.keys(fieldErrors).length) return NextResponse.json(
+      { error: { message: Object.values(fieldErrors)[0], fields: fieldErrors } },
+      { status: 400, headers: { 'Cache-Control': 'no-store' } }
+    );
+    const name = fields.customer_name.trim();
+    const email = fields.customer_email.trim().toLowerCase();
+    const cleanPhone = fields.customer_phone.replace(/[\s\-\(\)]/g, '');
+    const address = fields.shipping_address.trim();
+    const city = fields.shipping_city.trim();
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
@@ -117,9 +103,9 @@ export async function POST(request: Request) {
       coupon_code: couponCode(coupon_code),
       customer_name: name, customer_email: email, customer_phone: cleanPhone,
       shipping_address: address, shipping_city: city,
-      shipping_province: typeof shipping_province === 'string' ? shipping_province.trim().slice(0, 100) : 'Punjab',
-      shipping_postal_code: typeof shipping_postal_code === 'string' ? shipping_postal_code.slice(0, 20) : '',
-      shipping_notes: typeof shipping_notes === 'string' ? shipping_notes.slice(0, 1000) : '',
+      shipping_province: fields.shipping_province.trim(),
+      shipping_postal_code: fields.shipping_postal_code.trim(),
+      shipping_notes: fields.shipping_notes.trim(),
       payment_method: payment_method as 'COD' | 'bank_transfer' | 'wallet_aggregator',
       receipt_path: typeof receipt_path === 'string' ? receipt_path : undefined,
       receipt_proof: typeof receipt_proof === 'string' ? receipt_proof : undefined,

@@ -3,6 +3,7 @@ import { ManagedSection } from '@/components/storefront/ManagedSections';
 import type { CmsPageContent, SiteContent } from '@/lib/cms/storefront-types';
 import { getContentMetadata } from '@/lib/cms/metadata';
 import { DeliveryNote } from '@/components/storefront/DeliveryNote';
+import { getCustomerStoreSettings } from '@/lib/services/settings';
 import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -15,6 +16,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ShippingPage() {
   const cms = await getContentDocument<CmsPageContent>('shipping'); const { copy, links, images } = cms;
 const siteConfig = (await getContentDocument<SiteContent>('site')).config;
+ const paymentSettings = await getCustomerStoreSettings().catch(() => null);
+ const codAvailable = Boolean(paymentSettings?.ordering_available && paymentSettings.enabled_payment_methods.includes('COD'));
+ const prepaidAvailable = Boolean(paymentSettings?.ordering_available && paymentSettings.enabled_payment_methods.some(method => method !== 'COD'));
 
   return (
     <div className="bg-white text-stone-900">
@@ -85,12 +89,12 @@ const siteConfig = (await getContentDocument<SiteContent>('site')).config;
           <div className="space-y-2">
             <h2 className="font-heading font-medium text-lg text-stone-900 flex items-center gap-2">
               <Banknote className="w-4 h-4 text-stone-800" />
-              <span>{copy.text_cash_on_delivery_cod_payment_verification}</span>
+              <span>Payment availability and verification</span>
             </h2>
             <p className="text-stone-600 leading-relaxed">
-              {copy.text_cash_on_delivery_is_available_across_all_serviceable_de}<strong>{siteConfig.contact.phone}</strong> {copy.text_to_confirm_your_delivery_address_prior_to_handing_parce}</p>
+              {codAvailable ? <>{copy.text_cash_on_delivery_is_available_across_all_serviceable_de}<strong>{siteConfig.contact.phone}</strong> {copy.text_to_confirm_your_delivery_address_prior_to_handing_parce}</> : <>Cash on delivery is not currently available. Check the enabled payment options at checkout before placing an order.</>}</p>
             <p className="text-stone-600 leading-relaxed">
-              {copy.text_for_online_bank_transfers_ibft_jazzcash_or_easypaisa_ou}</p>
+              {prepaidAvailable ? 'Use only the bank or wallet details shown for an enabled payment option at checkout. Prepaid payments remain under review until our team verifies them; preparation does not advance automatically.' : 'Do not transfer payment while prepaid checkout is unavailable. Please contact our team if you need assistance.'}</p>
           </div>
 
           <div className="space-y-2 pt-2 border-t border-stone-200/60">

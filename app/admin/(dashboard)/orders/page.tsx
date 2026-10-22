@@ -16,15 +16,13 @@ export default async function AdminOrdersPage(props: {
   const status = searchParams.status;
   const search = searchParams.search;
 
-  const orders = await getOrders({
-    paymentStatus,
-    status,
-    search,
-  });
+  // Keep the complete dataset so changing a tab can leave the deep-linked queue.
+  const orders = await getOrders();
 
   return (
     <OrdersTableClient
       initialOrders={orders}
+      initialSearch={search}
       initialFilter={status}
       initialPaymentStatus={paymentStatus}
     />

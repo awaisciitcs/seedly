@@ -103,7 +103,7 @@ test('variant ownership, insufficient stock, and changed quote prevent transacti
  const f=orderFixture();f.setStock(0);await assert.rejects(()=>f.service.createOrder(f.input),/stock/);assert.equal(f.calls(),0);
 });
 test('order API returns safe uncertain-failure response and rejects identity mismatch',async()=>{
- const api=load('app/api/orders/route.ts',{'next/server':{NextResponse:Response},'../../../lib/services/orders':{createOrder:async()=>{throw Error('PRIVATE SQL DETAIL');}},'@/lib/checkout-validation':validation,'@/lib/request-guards':guards,'@/lib/email/schedule':{scheduleOrderEmails(){}},'@/lib/services/leads':{saveBusinessLead:async()=>null},'@/lib/tracking/validation':{cleanJourney:()=>({analytics_consent:false})}});
+ const api=load('app/api/orders/route.ts',{'@/lib/checkout-fields':load('lib/checkout-fields.ts'),'@/lib/delivery':load('lib/delivery.ts'),'next/server':{NextResponse:Response},'../../../lib/services/orders':{createOrder:async()=>{throw Error('PRIVATE SQL DETAIL');}},'@/lib/checkout-validation':validation,'@/lib/request-guards':guards,'@/lib/email/schedule':{scheduleOrderEmails(){}},'@/lib/services/leads':{saveBusinessLead:async()=>null},'@/lib/tracking/validation':{cleanJourney:()=>({analytics_consent:false})}});
  const f=orderFixture();const response=await api.POST(new Request('https://seedly.pk/api/orders',{method:'POST',body:JSON.stringify(f.input)}));
  assert.equal(response.status,500);assert.equal(JSON.stringify(await response.json()).includes('PRIVATE SQL'),false);
  const mismatch=await api.POST(new Request('https://seedly.pk/api/orders',{method:'POST',headers:{'Idempotency-Key':'different-checkout-key-123'},body:JSON.stringify(f.input)}));assert.equal(mismatch.status,400);
@@ -128,3 +128,9 @@ test('paused or disabled checkout prevents new transactions but still recovers c
  const replay=await committed.service.createOrder({...committed.input,quote_token:'expired'});assert.equal(replay.order.order_number,original.order.order_number);assert.equal(replay.isIdempotentReplay,true);assert.equal(committed.calls(),1);
 });
 test('database availability changes are mapped to a safe checkout conflict',async()=>{const fixture=orderFixture();fixture.setFailure({code:'P0006',message:'PRIVATE DATABASE DETAIL'});await assert.rejects(()=>fixture.service.createOrder(fixture.input),error=>error.status===409&&!error.message.includes('PRIVATE'));});
+
+test('new bank-transfer orders require a receipt and proof before reserving stock or allocating a reference',async()=>{
+ const f=orderFixture(true);
+ for(const change of [{},{receipt_path:'fixture.pdf'},{receipt_proof:'fixture-proof'}])await assert.rejects(()=>f.service.createOrder({...f.input,payment_method:'bank_transfer',...change}),/Attach your bank transfer receipt/);
+ assert.equal(f.calls(),0);assert.equal(f.assignments(),0);
+});

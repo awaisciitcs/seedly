@@ -108,10 +108,13 @@ function AdminLoginForm() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1.5">
+            <label htmlFor="admin-email" className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider mb-1.5">
               Admin Email
             </label>
             <input
+              id="admin-email"
+              name="email"
+              autoComplete="username"
               type="email"
               required
               placeholder="owner@seedly.pk"
@@ -123,7 +126,7 @@ function AdminLoginForm() {
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider">
+              <label htmlFor="admin-password" className="block text-xs font-semibold text-botanical-sage uppercase tracking-wider">
                 Password
               </label>
               <button
@@ -135,6 +138,9 @@ function AdminLoginForm() {
               </button>
             </div>
             <input
+              id="admin-password"
+              name="password"
+              autoComplete="current-password"
               type="password"
               required
               placeholder="••••••••"

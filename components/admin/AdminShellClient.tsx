@@ -53,6 +53,7 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
   const [admin, setAdmin] = useState<AdminInfo>(initialAdmin);
   const [counts, setCounts] = useState<AdminCounts | null>(null);
   const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [inspectOrderId, setInspectOrderId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -116,15 +117,19 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
   };
 
   const handleSignOut = async () => {
+    if (signingOut) return;
+    setSignOutError('');
     setSigningOut(true);
     try {
       const supabase = createClient();
-      await supabase.auth.signOut();
-      router.push('/admin/login');
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      router.replace('/admin/login');
       router.refresh();
-    } catch (err) {
-      console.error('Error signing out:', err);
-      router.push('/admin/login');
+    } catch {
+      setSignOutError('We could not sign you out. Check your connection and try again.');
+    } finally {
+      setSigningOut(false);
     }
   };
 
@@ -361,6 +366,9 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
               <button
                 type="button"
                 onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
+                aria-label="Account options"
+                aria-expanded={isAvatarMenuOpen}
+                aria-controls="admin-account-options"
                 className="glass-inset px-2.5 py-1.5 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <div className="w-6 h-6 rounded-full bg-lime text-botanical-deep font-bold flex items-center justify-center text-xs shadow-[0_0_8px_rgba(183,228,89,0.5)]">
@@ -375,6 +383,7 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
               {isAvatarMenuOpen && (
                 <div
                   className="glass absolute right-0 mt-2 w-64 rounded-2xl p-3 space-y-2 border border-white/20 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150"
+                  id="admin-account-options"
                   data-elev="overlay"
                 >
                   <div className="px-2 py-1.5 border-b border-white/10 space-y-0.5">
@@ -408,6 +417,7 @@ export function AdminShellClient({ initialAdmin, children }: AdminShellClientPro
                     </span>
                   </button>
 
+                  {signOutError && <p role="alert" className="px-2 py-2 text-xs text-rose-300">{signOutError}</p>}
                   {/* Sign Out Action */}
                   <button
                     type="button"

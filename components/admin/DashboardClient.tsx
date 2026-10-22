@@ -25,6 +25,7 @@ import {
   Activity,
 } from 'lucide-react';
 import { Order, Product, Kit, StockAlertSubscription } from '@/lib/types';
+import { dashboardMetrics, metricComparison } from '@/lib/admin-metrics';
 
 interface DashboardProps {
   initialOrders: Order[];
@@ -69,7 +70,7 @@ export function DashboardClient({
 
   const ordersToPack = useMemo(() => {
     return filteredOrders.filter(
-      (o) => o.order_status === 'PAID' || o.order_status === 'PROCESSING'
+      (o) => ['RECEIVED', 'PAID', 'PROCESSING'].includes(o.order_status)
     );
   }, [filteredOrders]);
 
@@ -89,7 +90,6 @@ export function DashboardClient({
         .map((v: any) => ({
           ...v,
           productName: p.name,
-          daysOfCover: Math.max(1, Math.round(v.inventory_quantity / 2.5)),
         }))
     );
   }, [initialProducts]);
@@ -99,15 +99,10 @@ export function DashboardClient({
     return initialStockAlerts.filter((s) => s.status === 'ACTIVE');
   }, [initialStockAlerts]);
 
-  // KPI Calculations (Realized/Confirmed sales vs Total)
-  const netSalesMinor = useMemo(() => {
-    return filteredOrders
-      .filter((o) => ['PAID', 'PROCESSING', 'PACKED', 'SHIPPED', 'DELIVERED'].includes(o.order_status))
-      .reduce((sum, o) => sum + o.total_minor, 0);
-  }, [filteredOrders]);
-
-  const totalOrdersCount = filteredOrders.length;
-  const aovMinor = totalOrdersCount > 0 ? Math.round(netSalesMinor / Math.max(1, totalOrdersCount)) : 0;
+  const metrics = useMemo(() => dashboardMetrics(filteredOrders, dateRange), [filteredOrders, dateRange]);
+  const netSalesMinor = metrics.current.valueMinor;
+  const totalOrdersCount = metrics.current.orderCount;
+  const aovMinor = metrics.current.averageMinor;
 
   // Pipeline counts
   const pipelineCounts = useMemo(() => {
@@ -297,7 +292,7 @@ export function DashboardClient({
 
           {/* Keycap Primary CTA */}
           <Link
-            href="/admin/orders?status=PAID"
+            href="/admin/orders"
             className={`btn-keycap px-5 py-2.5 text-xs font-bold gap-2 ${
               ordersToPack.length === 0 ? 'opacity-50 pointer-events-none' : ''
             }`}
@@ -407,7 +402,8 @@ export function DashboardClient({
         </div>
       </div>
 
-      {/* ROW 2: 4 BUSINESS KPIS WITH 3D TILT & SPECULAR GLARE */}
+      <p className="text-xs text-botanical-sage">KPIs use order creation dates in Pakistan time. Work queues include all outstanding orders.</p>
+      {/* BUSINESS KPIS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Net Realized Sales */}
         <div className="tilt" {...tilt1}>
@@ -415,8 +411,8 @@ export function DashboardClient({
           <div className="tilt-lift relative z-10 p-5 space-y-3 pointer-events-none">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-xs text-botanical-sage">
-                <span>Net Confirmed Sales</span>
-                <span title="Realized revenue from verified/paid/delivered orders. Excludes cancelled or test orders.">
+                <span>Confirmed order value</span>
+                <span title="Value of confirmed orders created in the selected period, including unpaid COD orders. Excludes cancelled and refunded orders.">
                   <HelpCircle className="w-3 h-3 text-botanical-sage/60" />
                 </span>
               </div>
@@ -431,13 +427,9 @@ export function DashboardClient({
 
             <div className="flex items-center justify-between text-xs pt-1">
               <span className="text-[11px] font-mono text-emerald-400 font-semibold flex items-center gap-1">
-                <span>↑ 14.8%</span>
-                <span className="text-botanical-sage font-normal">vs prev 30d</span>
+                <span>{metricComparison(netSalesMinor, metrics.previous?.valueMinor)}</span>
               </span>
               {/* Mini Sparkline SVG */}
-              <svg className="w-16 h-6 stroke-emerald-400 fill-none" viewBox="0 0 64 24">
-                <path d="M 0 18 Q 16 14, 32 8 T 64 4" strokeWidth="2" strokeLinecap="round" />
-              </svg>
             </div>
           </div>
         </div>
@@ -449,7 +441,7 @@ export function DashboardClient({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-xs text-botanical-sage">
                 <span>Total Orders</span>
-                <span title="Count of non-test customer checkouts across Pakistan">
+                <span title="Orders created in the selected period; the test-order switch also applies.">
                   <HelpCircle className="w-3 h-3 text-botanical-sage/60" />
                 </span>
               </div>
@@ -464,12 +456,8 @@ export function DashboardClient({
 
             <div className="flex items-center justify-between text-xs pt-1">
               <span className="text-[11px] font-mono text-teal-300 font-semibold flex items-center gap-1">
-                <span>↑ 8.2%</span>
-                <span className="text-botanical-sage font-normal">order velocity</span>
+                <span>{metricComparison(totalOrdersCount, metrics.previous?.orderCount)}</span>
               </span>
-              <svg className="w-16 h-6 stroke-teal-300 fill-none" viewBox="0 0 64 24">
-                <path d="M 0 20 Q 20 16, 40 10 T 64 6" strokeWidth="2" strokeLinecap="round" />
-              </svg>
             </div>
           </div>
         </div>
@@ -481,7 +469,7 @@ export function DashboardClient({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-xs text-botanical-sage">
                 <span>Average Order Value</span>
-                <span title="Net revenue divided by fulfilled customer orders">
+                <span title="Confirmed order value divided by the number of those same confirmed orders.">
                   <HelpCircle className="w-3 h-3 text-botanical-sage/60" />
                 </span>
               </div>
@@ -496,12 +484,8 @@ export function DashboardClient({
 
             <div className="flex items-center justify-between text-xs pt-1">
               <span className="text-[11px] font-mono text-emerald-400 font-semibold flex items-center gap-1">
-                <span>↑ Rs. 240</span>
-                <span className="text-botanical-sage font-normal">basket depth</span>
+                <span>{metricComparison(aovMinor, metrics.previous?.averageMinor)}</span>
               </span>
-              <svg className="w-16 h-6 stroke-lime fill-none" viewBox="0 0 64 24">
-                <path d="M 0 16 Q 24 18, 44 8 T 64 2" strokeWidth="2" strokeLinecap="round" />
-              </svg>
             </div>
           </div>
         </div>
@@ -512,8 +496,8 @@ export function DashboardClient({
           <div className="tilt-lift relative z-10 p-5 space-y-3 pointer-events-none">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-xs text-botanical-sage">
-                <span>Fulfillment Velocity</span>
-                <span title="Average duration from payment confirmation to dispatch courier handoff">
+                <span>Dispatched orders</span>
+                <span title="Orders created in the selected period that are shipped or delivered.">
                   <HelpCircle className="w-3 h-3 text-botanical-sage/60" />
                 </span>
               </div>
@@ -523,16 +507,13 @@ export function DashboardClient({
             </div>
 
             <div className="font-serif text-3xl font-bold text-white tracking-tight num-lining">
-              18h avg
+              {metrics.current.dispatchedCount}
             </div>
 
             <div className="flex items-center justify-between text-xs pt-1">
               <span className="text-[11px] font-mono text-emerald-400 font-semibold">
-                94% under 24h SLA
+                From the selected order period
               </span>
-              <svg className="w-16 h-6 stroke-emerald-400 fill-none" viewBox="0 0 64 24">
-                <path d="M 0 6 Q 20 8, 40 14 T 64 18" strokeWidth="2" strokeLinecap="round" />
-              </svg>
             </div>
           </div>
         </div>
@@ -869,7 +850,7 @@ export function DashboardClient({
                         </td>
                         <td className="py-3 pr-2 font-mono text-botanical-sage num-lining">30 units</td>
                         <td className="py-3 pr-2 font-mono text-xs text-white/90">
-                          ~{item.daysOfCover}d cover
+                          Review stock level
                         </td>
                         <td className="py-3 text-right">
                           <Link
