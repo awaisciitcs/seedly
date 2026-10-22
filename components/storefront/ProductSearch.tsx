@@ -198,7 +198,7 @@ export function ProductSearch({ onClose }: ProductSearchProps) {
                       <Image src={item.image} alt="" fill sizes="80px" className="object-cover" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="mb-1 text-xs text-muted-gray">{item.category}{item.size && <> {copy.text_middot}{item.size}</>}</p>
+                      <p className="mb-1 text-xs text-muted-gray">{item.category}{item.size && <> {copy.text_middot} {item.size}</>}</p>
                       <p className="text-sm font-medium leading-snug text-seedly-dark sm:text-base">{item.name}</p>
                       <p className="mt-1.5 text-sm tabular-nums text-charcoal">{formatPKR(item.priceMinor)}</p>
                     </div>

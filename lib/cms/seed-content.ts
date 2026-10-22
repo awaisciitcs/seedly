@@ -1640,7 +1640,7 @@ export const CMS_INITIAL_DOCUMENTS: Array<{slug:string;kind:'page'|'global'|'con
         "paymentLabel": "Cash on delivery available"
       },
       "delivery": {
-        "template": "Delivery {fee} ? Free from {threshold}.",
+        "template": "Delivery {fee}; free from {threshold}.",
         "fallback": "Delivery charges are confirmed in your basket.",
         "linkLabel": "Delivery information"
       },
@@ -1689,7 +1689,7 @@ export const CMS_INITIAL_DOCUMENTS: Array<{slug:string;kind:'page'|'global'|'con
         "text_results_update_as_you_type_use_the_arrow_keys_to_browse": "Results update as you type. Use the arrow keys to browse products, Enter to open, and Escape to close.",
         "text_we_couldn_t_load_products_please_try_again": "We couldn't load products. Please try again.",
         "text_try_again": "Try again",
-        "text_middot": " &middot; ",
+        "text_middot": "\u00b7",
         "text_no_products_found": "No products found",
         "text_try_a_product_or_ingredient_like_pumpkin_flax_or_chamom": "Try a product or ingredient, like pumpkin, flax or chamomile.",
         "text_track_your_order": "Track your order"
